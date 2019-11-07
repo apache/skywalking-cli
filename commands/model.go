@@ -16,23 +16,34 @@
  *
  */
 
-package logger
+package commands
 
 import (
-	"os"
-
-	"github.com/sirupsen/logrus"
+	"fmt"
+	"github.com/apache/skywalking-cli/graphql/schema"
+	"strings"
 )
 
-var Log *logrus.Logger
+type StepEnumValue struct {
+	Enum     []schema.Step
+	Default  schema.Step
+	Selected schema.Step
+}
 
-func init() {
-	if Log == nil {
-		Log = logrus.New()
+func (s *StepEnumValue) Set(value string) error {
+	for _, enum := range s.Enum {
+		if enum.String() == value {
+			s.Selected = enum
+			return nil
+		}
 	}
-	Log.SetOutput(os.Stdout)
-	Log.SetFormatter(&logrus.TextFormatter{
-		FullTimestamp:   true,
-		TimestampFormat: "2006-01-02 15:04:05",
-	})
+	steps := make([]string, len(schema.AllStep))
+	for i, step := range schema.AllStep {
+		steps[i] = step.String()
+	}
+	return fmt.Errorf("allowed steps are %s", strings.Join(steps, ", "))
+}
+
+func (s StepEnumValue) String() string {
+	return s.Selected.String()
 }
