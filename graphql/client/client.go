@@ -33,7 +33,7 @@ func Services(duration schema.Duration) []schema.Service {
 		logger.Log.Debugln(msg)
 	}
 
-	var services map[string][]schema.Service
+	var response map[string][]schema.Service
 	request := graphql.NewRequest(`
 		query ($duration: Duration!) {
 			services: getAllServices(duration: $duration) {
@@ -42,10 +42,10 @@ func Services(duration schema.Duration) []schema.Service {
 		}
 	`)
 	request.Var("duration", duration)
-	if err := client.Run(ctx, request, &services); err != nil {
+	if err := client.Run(ctx, request, &response); err != nil {
 		logger.Log.Fatalln(err)
 		panic(err)
 	}
 
-	return services["services"]
+	return response["services"]
 }
