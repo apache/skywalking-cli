@@ -19,7 +19,6 @@
 package display
 
 import (
-	"errors"
 	"fmt"
 	"github.com/apache/skywalking-cli/display/json"
 	"github.com/apache/skywalking-cli/display/table"
@@ -46,6 +45,6 @@ func Display(ctx *cli.Context, object interface{}) error {
 	case Table:
 		return table.Display(object)
 	default:
-		return errors.New(fmt.Sprintf("unsupported display style: %s", displayStyle))
+		return fmt.Errorf("unsupported display style: %s", displayStyle)
 	}
 }
