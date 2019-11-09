@@ -104,27 +104,17 @@ func ParseDuration(start string, end string) (time.Time, time.Time, schema.Step)
 		}
 
 		return startTime, endTime, step
-	}
-
-	// end is absent
-	if len(end) == 0 {
+	} else if len(end) <= 0 { // end is absent
 		if step, startTime, err = tryParseTime(start); err != nil {
 			logger.Log.Fatalln("Unsupported time format:", start, err)
 		}
 		return startTime, startTime.Add(30 * stepDuration[step]), step
-	}
-
-	// start is present
-	if len(start) == 0 {
+	} else { // start is present
 		if step, endTime, err = tryParseTime(end); err != nil {
 			logger.Log.Fatalln("Unsupported time format:", end, err)
 		}
 		return endTime.Add(-30 * stepDuration[step]), endTime, step
 	}
-
-	logger.Log.Fatalln("Should never happen")
-
-	return startTime, endTime, step
 }
 
 // AlignPrecision aligns the two time strings to same precision
