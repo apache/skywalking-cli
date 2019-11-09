@@ -1,6 +1,9 @@
 Apache SkyWalking CLI
 ===============
 
+![](https://github.com/apache/skywalking-cli/workflows/Build/badge.svg?branch=master)
+![](https://codecov.io/gh/apache/skywalking-cli/branch/master/graph/badge.svg)
+
 <img src="http://skywalking.apache.org/assets/logo.svg" alt="Sky Walking logo" height="90px" align="right" />
 
 The CLI (Command Line Interface) for [Apache SkyWalking](https://github.com/apache/skywalking).
