@@ -109,7 +109,7 @@ func ParseDuration(start string, end string) (time.Time, time.Time, schema.Step)
 			logger.Log.Fatalln("Unsupported time format:", start, err)
 		}
 		return startTime, startTime.Add(30 * stepDuration[step]), step
-	} else { // start is present
+	} else { // start is absent
 		if step, endTime, err = tryParseTime(end); err != nil {
 			logger.Log.Fatalln("Unsupported time format:", end, err)
 		}
