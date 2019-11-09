@@ -16,23 +16,36 @@
  *
  */
 
-package logger
+package client
 
 import (
-	"os"
-
-	"github.com/sirupsen/logrus"
+	"context"
+	"github.com/apache/skywalking-cli/config"
+	"github.com/apache/skywalking-cli/graphql/schema"
+	"github.com/apache/skywalking-cli/logger"
+	"github.com/machinebox/graphql"
 )
 
-var Log *logrus.Logger
-
-func init() {
-	if Log == nil {
-		Log = logrus.New()
+func Services(duration schema.Duration) []schema.Service {
+	ctx := context.Background()
+	client := graphql.NewClient(config.Config.Global.BaseURL)
+	client.Log = func(msg string) {
+		logger.Log.Debugln(msg)
 	}
-	Log.SetOutput(os.Stdout)
-	Log.SetFormatter(&logrus.TextFormatter{
-		DisableTimestamp:       true,
-		DisableLevelTruncation: true,
-	})
+
+	var response map[string][]schema.Service
+	request := graphql.NewRequest(`
+		query ($duration: Duration!) {
+			services: getAllServices(duration: $duration) {
+				id name
+			}
+		}
+	`)
+	request.Var("duration", duration)
+	if err := client.Run(ctx, request, &response); err != nil {
+		logger.Log.Fatalln(err)
+		panic(err)
+	}
+
+	return response["services"]
 }

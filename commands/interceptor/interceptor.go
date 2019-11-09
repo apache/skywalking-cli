@@ -16,8 +16,20 @@
  *
  */
 
-package service
+package interceptor
 
-func (s *service) showList() error {
-	return nil
+import (
+	"github.com/urfave/cli"
+)
+
+// BeforeChain is a convenient function to chain up multiple cli.BeforeFunc
+func BeforeChain(beforeFunctions []cli.BeforeFunc) cli.BeforeFunc {
+	return func(ctx *cli.Context) error {
+		for _, beforeFunc := range beforeFunctions {
+			if err := beforeFunc(ctx); err != nil {
+				return err
+			}
+		}
+		return nil
+	}
 }

@@ -20,3 +20,6 @@
 build:
 	GO_BUILD_FLAGS="-v" ./scripts/build
 	./bin/swctl --version
+
+clean:
+	-rm -rf ./bin

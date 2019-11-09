@@ -20,7 +20,7 @@
 cli_build() {
   out="bin"
   CGO_ENABLED=0 go build $GO_BUILD_FLAGS \
-  -o "${out}/swctl" cmd/* || return
+  -o "${out}/swctl" swctl/* || return
 }
 
 if echo "$0" | grep "build$" > /dev/null; then

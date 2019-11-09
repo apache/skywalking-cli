@@ -16,27 +16,29 @@
  *
  */
 
-package main
+package util
 
 import (
-	"github.com/apache/skywalking-cli/swctl/service"
-	"github.com/urfave/cli"
+	"github.com/apache/skywalking-cli/logger"
+	"os/user"
+	"strings"
 )
 
-var serviceCmd = cli.Command{
-	Name: "service",
-	Flags: []cli.Flag{
-		cli.BoolFlag{
-			Name:  "list",
-			Usage: "list all available services.",
-		},
-	},
-	Action: func(c *cli.Context) {
-		ctl := service.NewService(c)
+// UserHomeDir returns the current user's home directory absolute path,
+// which is usually represented as `~` in most shells
+func UserHomeDir() string {
+	if currentUser, err := user.Current(); err != nil {
+		logger.Log.Warnln("Cannot obtain user home directory")
+	} else {
+		return currentUser.HomeDir
+	}
+	return ""
+}
 
-		err := ctl.Exec()
-		if err != nil {
-			log.Fatal(err)
-		}
-	},
+// ExpandFilePath expands the leading `~` to absolute path
+func ExpandFilePath(path string) string {
+	if strings.HasPrefix(path, "~") {
+		return strings.Replace(path, "~", UserHomeDir(), 1)
+	}
+	return path
 }
