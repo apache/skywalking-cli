@@ -96,7 +96,7 @@ func ParseDuration(start string, end string) (time.Time, time.Time, schema.Step)
 	if len(start) > 0 && len(end) > 0 {
 		start, end = AlignPrecision(start, end)
 
-		if step, startTime, err = tryParseTime(start); err != nil {
+		if _, startTime, err = tryParseTime(start); err != nil {
 			logger.Log.Fatalln("Unsupported time format:", start, err)
 		}
 		if step, endTime, err = tryParseTime(end); err != nil {
