@@ -48,7 +48,7 @@ jobs:
       - name: Test
         run: |
           go test ./... -coverprofile=coverage.txt -covermode=atomic
-          bash <(curl -s https://codecov.io/bash)
+          CODECOV_TOKEN="a5af28a3-92a2-4b35-9a77-54ad99b1ae00" bash <(curl -s https://codecov.io/bash)
 
       - name: Build
         run: make clean && make
