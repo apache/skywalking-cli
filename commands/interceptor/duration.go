@@ -73,8 +73,8 @@ func DurationInterceptor(ctx *cli.Context) error {
 
 // ParseDuration parses the `start` and `end` to a triplet, (startTime, endTime, step)
 // if --start and --end are both absent, then: start := now - 30min; end := now
-// if --start is given, --end is absent, then: end := now
-// if --start is absent, --end is given, then: start := end - 30min
+// if --start is given, --end is absent, then: end := now + 30 units, where unit is the precision of `start`, (hours, minutes, etc.)
+// if --start is absent, --end is given, then: start := end - 30 unis, where unit is the precision of `end`, (hours, minutes, etc.)
 // NOTE that when either(both) `start` or `end` is(are) given, there is no timezone info
 // in the format, (e.g. 2019-11-09 1001), so they'll be considered as UTC-based,
 // and generate the missing `start`(`end`) based on the same timezone, UTC
