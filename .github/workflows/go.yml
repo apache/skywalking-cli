@@ -40,5 +40,15 @@ jobs:
               dep ensure
           fi
 
+      - name: Lint
+        run: |
+          curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh| sh -s -- -b $(go env GOPATH)/bin v1.21.0
+          $(go env GOPATH)/bin/golangci-lint run -v ./...
+
+      - name: Test
+        run: |
+          go test ./... -coverprofile=coverage.txt -covermode=atomic
+          bash <(curl -s https://codecov.io/bash)
+
       - name: Build
-        run: make
+        run: make clean && make

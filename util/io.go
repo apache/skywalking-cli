@@ -16,34 +16,29 @@
  *
  */
 
-package commands
+package util
 
 import (
-	"fmt"
-	"github.com/apache/skywalking-cli/graphql/schema"
+	"github.com/apache/skywalking-cli/logger"
+	"os/user"
 	"strings"
 )
 
-type StepEnumValue struct {
-	Enum     []schema.Step
-	Default  schema.Step
-	Selected schema.Step
+// UserHomeDir returns the current user's home directory absolute path,
+// which is usually represented as `~` in most shells
+func UserHomeDir() string {
+	if currentUser, err := user.Current(); err != nil {
+		logger.Log.Warnln("Cannot obtain user home directory")
+	} else {
+		return currentUser.HomeDir
+	}
+	return ""
 }
 
-func (s *StepEnumValue) Set(value string) error {
-	for _, enum := range s.Enum {
-		if enum.String() == value {
-			s.Selected = enum
-			return nil
-		}
+// ExpandFilePath expands the leading `~` to absolute path
+func ExpandFilePath(path string) string {
+	if strings.HasPrefix(path, "~") {
+		return strings.Replace(path, "~", UserHomeDir(), 1)
 	}
-	steps := make([]string, len(schema.AllStep))
-	for i, step := range schema.AllStep {
-		steps[i] = step.String()
-	}
-	return fmt.Errorf("allowed steps are %s", strings.Join(steps, ", "))
-}
-
-func (s StepEnumValue) String() string {
-	return s.Selected.String()
+	return path
 }

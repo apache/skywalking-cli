@@ -22,13 +22,13 @@ import (
 	"encoding/json"
 	"github.com/apache/skywalking-cli/commands/service"
 	"github.com/apache/skywalking-cli/config"
+	"github.com/apache/skywalking-cli/logger"
+	"github.com/apache/skywalking-cli/util"
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
-
-	"github.com/apache/skywalking-cli/logger"
 )
 
 var log *logrus.Logger
@@ -43,8 +43,8 @@ func main() {
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
 			Name:  "config",
-			Value: "./settings.yml",
-			Usage: "load configuration `FILE`, default to ./settings.yml",
+			Value: "~/.skywalking.yml",
+			Usage: "load configuration `FILE`",
 		},
 		cli.BoolFlag{
 			Name:     "debug",
@@ -56,20 +56,20 @@ func main() {
 		service.Command,
 	}
 
-	app.Before = BeforeCommand
+	app.Before = beforeCommand
 
 	if err := app.Run(os.Args); err != nil {
 		log.Fatalln(err)
 	}
 }
 
-func BeforeCommand(c *cli.Context) error {
+func beforeCommand(c *cli.Context) error {
 	if c.Bool("debug") {
 		log.SetLevel(logrus.DebugLevel)
 		log.Debugln("Debug mode is enabled")
 	}
 
-	configFile := c.String("config")
+	configFile := util.ExpandFilePath(c.String("config"))
 	log.Debugln("Using configuration file:", configFile)
 
 	if bytes, err := ioutil.ReadFile(configFile); err != nil {

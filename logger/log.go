@@ -32,7 +32,7 @@ func init() {
 	}
 	Log.SetOutput(os.Stdout)
 	Log.SetFormatter(&logrus.TextFormatter{
-		FullTimestamp:   true,
-		TimestampFormat: "2006-01-02 15:04:05",
+		DisableTimestamp:       true,
+		DisableLevelTruncation: true,
 	})
 }

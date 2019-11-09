@@ -28,7 +28,7 @@ import (
 
 func Services(duration schema.Duration) []schema.Service {
 	ctx := context.Background()
-	client := graphql.NewClient(config.Config.Global.BaseUrl)
+	client := graphql.NewClient(config.Config.Global.BaseURL)
 	client.Log = func(msg string) {
 		logger.Log.Debugln(msg)
 	}

@@ -16,16 +16,13 @@
  *
  */
 
-package commands
+package interceptor
 
 import (
-	"github.com/apache/skywalking-cli/graphql/schema"
-	"github.com/apache/skywalking-cli/logger"
 	"github.com/urfave/cli"
-	"time"
 )
 
-// Convenient function to chain up multiple cli.BeforeFunc
+// BeforeChain is a convenient function to chain up multiple cli.BeforeFunc
 func BeforeChain(beforeFunctions []cli.BeforeFunc) cli.BeforeFunc {
 	return func(ctx *cli.Context) error {
 		for _, beforeFunc := range beforeFunctions {
@@ -35,37 +32,4 @@ func BeforeChain(beforeFunctions []cli.BeforeFunc) cli.BeforeFunc {
 		}
 		return nil
 	}
-}
-
-var StepFormats = map[schema.Step]string{
-	schema.StepMonth:  "2006-01-02",
-	schema.StepDay:    "2006-01-02",
-	schema.StepHour:   "2006-01-02 15",
-	schema.StepMinute: "2006-01-02 1504",
-	schema.StepSecond: "2006-01-02 1504",
-}
-
-// Set the duration if not set, and format it according to
-// the given step
-func SetUpDuration(ctx *cli.Context) error {
-	step := ctx.Generic("step").(*StepEnumValue).Selected
-	end := ctx.String("end")
-	if len(end) == 0 {
-		end = time.Now().Format(StepFormats[step])
-		logger.Log.Debugln("Missing --end, defaults to", end)
-		if err := ctx.Set("end", end); err != nil {
-			return err
-		}
-	}
-
-	start := ctx.String("start")
-	if len(start) == 0 {
-		start = time.Now().Add(-15 * time.Minute).Format(StepFormats[step])
-		logger.Log.Debugln("Missing --start, defaults to", start)
-		if err := ctx.Set("start", start); err != nil {
-			return err
-		}
-	}
-
-	return nil
 }
