@@ -44,20 +44,20 @@ func TestParseDuration(t *testing.T) {
 			name: "Should set current time if start is absent",
 			args: args{
 				start: "",
-				end:   now.Add(10 * time.Minute).Format(timeFormat),
+				end:   now.Format(timeFormat),
 			},
-			wantedStartTime: now,
-			wantedEndTime:   now.Add(10 * time.Minute),
+			wantedStartTime: now.Add(-30 * time.Minute),
+			wantedEndTime:   now,
 			wantedStep:      schema.StepMinute,
 		},
 		{
 			name: "Should set current time if end is absent",
 			args: args{
-				start: now.Add(-10 * time.Minute).Format(timeFormat),
+				start: now.Format(timeFormat),
 				end:   "",
 			},
-			wantedStartTime: now.Add(-10 * time.Minute),
-			wantedEndTime:   now,
+			wantedStartTime: now,
+			wantedEndTime:   now.Add(30 * time.Minute),
 			wantedStep:      schema.StepMinute,
 		},
 		{
@@ -92,6 +92,58 @@ func TestParseDuration(t *testing.T) {
 			}
 			if gotStep != tt.wantedStep {
 				t.Errorf("ParseDuration() got step = %v, wanted step %v", gotStep, tt.wantedStep)
+			}
+		})
+	}
+}
+
+func TestAlignPrecision(t *testing.T) {
+	type args struct {
+		start string
+		end   string
+	}
+	tests := []struct {
+		name        string
+		args        args
+		wantedStart string
+		wantedEnd   string
+	}{
+		{
+			name: "Should keep both when same precision",
+			args: args{
+				start: "2019-01-01",
+				end:   "2019-01-01",
+			},
+			wantedStart: "2019-01-01",
+			wantedEnd:   "2019-01-01",
+		},
+		{
+			name: "Should truncate start when it's less precise",
+			args: args{
+				start: "2019-01-01 1200",
+				end:   "2019-01-01",
+			},
+			wantedStart: "2019-01-01",
+			wantedEnd:   "2019-01-01",
+		},
+		{
+			name: "Should truncate end when it's less precise",
+			args: args{
+				start: "2019-01-01",
+				end:   "2019-01-01 1200",
+			},
+			wantedStart: "2019-01-01",
+			wantedEnd:   "2019-01-01",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotStart, gotEnd := AlignPrecision(tt.args.start, tt.args.end)
+			if gotStart != tt.wantedStart {
+				t.Errorf("AlignPrecision() gotStart = %v, wantedStart %v", gotStart, tt.wantedStart)
+			}
+			if gotEnd != tt.wantedEnd {
+				t.Errorf("AlignPrecision() gotEnd = %v, wantedStart %v", gotEnd, tt.wantedEnd)
 			}
 		})
 	}

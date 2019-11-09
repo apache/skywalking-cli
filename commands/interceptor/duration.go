@@ -26,32 +26,31 @@ import (
 )
 
 var stepFormats = map[schema.Step]string{
-	schema.StepSecond: "2006-01-02 1504",
+	schema.StepSecond: "2006-01-02 150400",
 	schema.StepMinute: "2006-01-02 1504",
 	schema.StepHour:   "2006-01-02 15",
 	schema.StepDay:    "2006-01-02",
-	schema.StepMonth:  "2006-01-02",
+	schema.StepMonth:  "2006-01",
 }
 
-var supportedTimeLayouts = []string{
-	"2006-01-02 150400",
-	"2006-01-02 1504",
-	"2006-01-02 15",
-	"2006-01-02",
-	"2006-01",
+var stepDuration = map[schema.Step]time.Duration{
+	schema.StepSecond: time.Second,
+	schema.StepMinute: time.Minute,
+	schema.StepHour:   time.Hour,
+	schema.StepDay:    time.Hour * 24,
+	schema.StepMonth:  time.Hour * 24 * 30,
 }
 
-func tryParseTime(unparsed string, parsed *time.Time) error {
+func tryParseTime(unparsed string) (schema.Step, time.Time, error) {
 	var possibleError error = nil
-	for _, layout := range supportedTimeLayouts {
+	for step, layout := range stepFormats {
 		t, err := time.Parse(layout, unparsed)
 		if err == nil {
-			*parsed = t
-			return nil
+			return step, t, nil
 		}
 		possibleError = err
 	}
-	return possibleError
+	return schema.StepSecond, time.Time{}, possibleError
 }
 
 // DurationInterceptor sets the duration if absent, and formats it accordingly,
@@ -80,42 +79,62 @@ func DurationInterceptor(ctx *cli.Context) error {
 // in the format, (e.g. 2019-11-09 1001), so they'll be considered as UTC-based,
 // and generate the missing `start`(`end`) based on the same timezone, UTC
 func ParseDuration(start string, end string) (time.Time, time.Time, schema.Step) {
+	logger.Log.Debugln("Start time:", start, "end time:", end)
+
 	now := time.Now().UTC()
 
-	startTime := now
-	endTime := now
-	logger.Log.Debugln("Start time:", start, "end time:", end)
-	if len(start) == 0 && len(end) == 0 { // both absent
-		startTime = now.Add(-30 * time.Minute)
-		endTime = now
-	} else if len(end) == 0 { // start is present
-		if err := tryParseTime(start, &startTime); err != nil {
+	// both are absent
+	if len(start) == 0 && len(end) == 0 {
+		return now.Add(-30 * time.Minute), now, schema.StepMinute
+	}
+
+	var startTime, endTime time.Time
+	var step schema.Step
+	var err error
+
+	// both are present
+	if len(start) > 0 && len(end) > 0 {
+		start, end = AlignPrecision(start, end)
+
+		if step, startTime, err = tryParseTime(start); err != nil {
 			logger.Log.Fatalln("Unsupported time format:", start, err)
 		}
-	} else if len(start) == 0 { // end is present
-		if err := tryParseTime(end, &endTime); err != nil {
+		if step, endTime, err = tryParseTime(end); err != nil {
 			logger.Log.Fatalln("Unsupported time format:", end, err)
 		}
-	} else { // both are present
-		if err := tryParseTime(start, &startTime); err != nil {
+
+		return startTime, endTime, step
+	}
+
+	// end is absent
+	if len(end) == 0 {
+		if step, startTime, err = tryParseTime(start); err != nil {
 			logger.Log.Fatalln("Unsupported time format:", start, err)
 		}
-		if err := tryParseTime(end, &endTime); err != nil {
+		return startTime, startTime.Add(30 * stepDuration[step]), step
+	}
+
+	// start is present
+	if len(start) == 0 {
+		if step, endTime, err = tryParseTime(end); err != nil {
 			logger.Log.Fatalln("Unsupported time format:", end, err)
 		}
+		return endTime.Add(-30 * stepDuration[step]), endTime, step
 	}
-	duration := endTime.Sub(startTime)
-	step := schema.StepSecond
-	if duration.Hours() >= 24*30 { // time range > 1 month
-		step = schema.StepMonth
-	} else if duration.Hours() > 24 { // time range > 1 day
-		step = schema.StepDay
-	} else if duration.Minutes() > 60 { // time range > 1 hour
-		step = schema.StepHour
-	} else if duration.Seconds() > 60 { // time range > 1 minute
-		step = schema.StepMinute
-	} else if duration.Seconds() <= 0 { // illegal
-		logger.Log.Fatalln("end time must be later than start time, end time:", endTime, ", start time:", startTime)
-	}
+
+	logger.Log.Fatalln("Should never happen")
+
 	return startTime, endTime, step
+}
+
+// AlignPrecision aligns the two time strings to same precision
+// by truncating the more precise one
+func AlignPrecision(start string, end string) (string, string) {
+	if len(start) < len(end) {
+		return start, end[0:len(start)]
+	}
+	if len(start) > len(end) {
+		return start[0:len(end)], end
+	}
+	return start, end
 }
