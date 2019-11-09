@@ -16,37 +16,19 @@
  *
  */
 
-package client
+package json
 
 import (
-	"context"
-	"github.com/apache/skywalking-cli/graphql/schema"
-	"github.com/apache/skywalking-cli/logger"
-	"github.com/machinebox/graphql"
-	"github.com/urfave/cli"
+	"encoding/json"
+	"fmt"
 )
 
-func Services(cliCtx *cli.Context, duration schema.Duration) []schema.Service {
-	client := graphql.NewClient(cliCtx.GlobalString("base-url"))
-	client.Log = func(msg string) {
-		logger.Log.Debugln(msg)
+func Display(object interface{}) error {
+	if bytes, e := json.Marshal(object); e == nil {
+		fmt.Printf("%v\n", string(bytes))
+	} else {
+		return e
 	}
 
-	var response map[string][]schema.Service
-	request := graphql.NewRequest(`
-		query ($duration: Duration!) {
-			services: getAllServices(duration: $duration) {
-				id name
-			}
-		}
-	`)
-	request.Var("duration", duration)
-
-	ctx := context.Background()
-	if err := client.Run(ctx, request, &response); err != nil {
-		logger.Log.Fatalln(err)
-		panic(err)
-	}
-
-	return response["services"]
+	return nil
 }
