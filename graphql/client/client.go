@@ -20,7 +20,6 @@ package client
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"github.com/apache/skywalking-cli/graphql/schema"
 	"github.com/apache/skywalking-cli/logger"
@@ -105,7 +104,7 @@ func searchServices(cliCtx *cli.Context, serviceName string, duration schema.Dur
 	executeQuery(cliCtx, request, &response)
 	services := response["service"]
 	if services == nil || len(services) < 1 {
-		return service, errors.New(fmt.Sprintf("no such service [%s]", serviceName))
+		return service, fmt.Errorf("no such service [%s]", serviceName)
 	}
 	return services[0], nil
 }
