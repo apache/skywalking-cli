@@ -38,18 +38,15 @@ Generally, the second level commands are entity related, there're entities like 
 and we have corresponding sub-command like `service`; the third level commands are operations on the entities, such as `list` command
 will list all the `service`s, `service instance`s, etc.
 
-## All available commands
-This section covers all the available commands in SkyWalking CLI and their usages
+## Common options
+There're some common options that are shared by multiple commands, and they follow the same rules in different commands,
 
-### `service` sub-command
-`service` sub-command (second level command) is an entry for all operations related to services, and it also has some sub-commands.
-
-#### `service list [--start=<start time>] [--end=<end time>]`
-`service list` lists all the services in the time range of \[`start`, `end`\].
-`--start` and `--end` are both optional, and their default values follow the rules below:
+### `--start`, `--end`
+`--start` and `--end` specify a time range during which the query is preformed,
+they are both optional and their default values follow the rules below:
 
 - when `start` and `end` are both absent, `start = now - 30 minutes` and `end = now`, namely past 30 minutes;
-- when `start` and `end` are both present, they are aligned to same precision by **truncating the more precise one**,
+- when `start` and `end` are both present, they are aligned to the same precision by **truncating the more precise one**,
 e.g. if `start = 2019-01-01 1234, end = 2019-01-01 18`, then `start` is truncated (because it's more precise) to `2019-01-01 12`,
 and `end = 2019-01-01 18`;
 - when `start` is absent and `end` is present, will determine the precision of `end` and then use the precision to calculate `start` (minus 30 units),
@@ -58,6 +55,67 @@ and if `end = 2019-11-09 12`, the precision is `HOUR`, so `start = end - 30HOUR 
 - when `start` is present and `end` is absent, will determine the precision of `start` and then use the precision to calculate `end` (plus 30 units),
 e.g. `start = 2019-11-09 1204`, the precision is `MINUTE`, so `end = start + 30 minutes = 2019-11-09 1234`,
 and if `start = 2019-11-08 06`, the precision is `HOUR`, so `end = start + 30HOUR = 2019-11-09 12`;
+
+
+## All available commands
+This section covers all the available commands in SkyWalking CLI and their usages.
+
+- [`swctl`](#swctl-top-level-command)
+- [`service`](#service-second-level-command) (second level command)
+  - [`list`, `ls`](#service-list---startstart-time---endend-time)
+
+### `swctl` top-level command
+`swctl` is the top-level command, which has some options that will take effects globally.
+
+| option | description | default |
+| :--- | :--- | :--- |
+| `--config` | from where the default options values will be loaded | `~/.skywalking.yml` |
+| `--debug` | enable debug mode, will print more detailed information at runtime | `false` |
+| `--base-url` | base url of GraphQL backend | `http://127.0.0.1:12800/graphql` |
+| `--display` | display style when printing the query result, supported styles are: `json`, `yaml`, `table` | `json` |
+
+### `service` second-level command
+`service` second-level command is an entry for all operations related to services,
+and it also has some options and third-level commands.
+
+#### `service list [--start=<start time>] [--end=<end time>]`
+`service list` lists all the services in the time range of \[`start`, `end`\].
+
+| option | description | default |
+| :--- | :--- | :--- |
+| `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
+| `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
+
+# Developer guide
+
+## Compiling and building
+Clone the source code and simply run `make clean && make` in the source directory,
+this will download all necessary dependencies and build a binary file in `./bin/swctl`.
+
+```shell
+make clean && make
+```
+
+## Writing a new command
+All commands files locate in directory [`commands`](commands), and an individual directory for each second-level command,
+an individual `go` file for each third-level command, for example, there is a directory [`service`](commands/service) for command `swctl service`, 
+and a [`list.go`](commands/service/list.go) file for `swctl service list` command.
+
+Determine what entity your command will operate on, and put your command `go` file into that directory, or create one if it doesn't exist,
+for example, if you want to create a command to `list` all the `instance`s of a service, create a directory `commands/instance`,
+and a `go` file `commands/instance/list.go`.
+
+## Reusing common options
+There're some [common options](#common-options) that can be shared by multiple commands, check [`commands/flags`](commands/flags)
+to get all the shared options, and reuse them when possible, an example shares the options is [`commands/service/list.go`](commands/service/list.go#L35)
+
+## Running tests
+Before submitting a pull request, add some test code to test the added/modified codes,
+and run the tests locally, make sure all tests passed.
+
+```shell
+go test -v ./...
+```
 
 # License
 [Apache 2.0 License.](/LICENSE)
