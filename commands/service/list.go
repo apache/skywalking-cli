@@ -19,10 +19,10 @@
 package service
 
 import (
-	"encoding/json"
-	"fmt"
+	"github.com/apache/skywalking-cli/commands/flags"
 	"github.com/apache/skywalking-cli/commands/interceptor"
 	"github.com/apache/skywalking-cli/commands/model"
+	"github.com/apache/skywalking-cli/display"
 	"github.com/apache/skywalking-cli/graphql/client"
 	"github.com/apache/skywalking-cli/graphql/schema"
 	"github.com/urfave/cli"
@@ -32,25 +32,7 @@ var ListCommand = cli.Command{
 	Name:      "list",
 	ShortName: "ls",
 	Usage:     "List all available services",
-	Flags: []cli.Flag{
-		cli.StringFlag{
-			Name:  "start",
-			Usage: "query start `TIME`",
-		},
-		cli.StringFlag{
-			Name:  "end",
-			Usage: "query end `TIME`",
-		},
-		cli.GenericFlag{
-			Name:   "step",
-			Hidden: true,
-			Value: &model.StepEnumValue{
-				Enum:     schema.AllStep,
-				Default:  schema.StepMinute,
-				Selected: schema.StepMinute,
-			},
-		},
-	},
+	Flags:     flags.DurationFlags,
 	Before: interceptor.BeforeChain([]cli.BeforeFunc{
 		interceptor.DurationInterceptor,
 	}),
@@ -58,18 +40,12 @@ var ListCommand = cli.Command{
 		end := ctx.String("end")
 		start := ctx.String("start")
 		step := ctx.Generic("step")
-		services := client.Services(schema.Duration{
+		services := client.Services(ctx, schema.Duration{
 			Start: start,
 			End:   end,
 			Step:  step.(*model.StepEnumValue).Selected,
 		})
 
-		if bytes, e := json.Marshal(services); e == nil {
-			fmt.Printf("%v\n", string(bytes))
-		} else {
-			return e
-		}
-
-		return nil
+		return display.Display(ctx, services)
 	},
 }
