@@ -62,7 +62,7 @@ func main() {
 			Name:     "display",
 			Required: false,
 			Usage:    "display `style` of the result, supported styles are: json, yaml, table",
-			Value:    "yaml",
+			Value:    "json",
 		}),
 	}
 

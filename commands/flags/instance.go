@@ -24,5 +24,5 @@ var InstanceServiceIdFlags = append(DurationFlags,
 	cli.StringFlag{
 		Required: true,
 		Name:     "service",
-		Usage:    "query service `ID`",
+		Usage:    "query service `Name or ID`",
 	})

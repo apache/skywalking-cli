@@ -20,13 +20,15 @@ package client
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"github.com/apache/skywalking-cli/graphql/schema"
 	"github.com/apache/skywalking-cli/logger"
 	"github.com/machinebox/graphql"
 	"github.com/urfave/cli"
 )
 
-func newGraphqlClient(cliCtx *cli.Context) (client *graphql.Client) {
+func newClient(cliCtx *cli.Context) (client *graphql.Client) {
 	client = graphql.NewClient(cliCtx.GlobalString("base-url"))
 	client.Log = func(msg string) {
 		logger.Log.Debugln(msg)
@@ -34,9 +36,15 @@ func newGraphqlClient(cliCtx *cli.Context) (client *graphql.Client) {
 	return
 }
 
-func Services(cliCtx *cli.Context, duration schema.Duration) []schema.Service {
-	client := newGraphqlClient(cliCtx)
+func executeQuery(cliCtx *cli.Context, request *graphql.Request, response interface{}) {
+	client := newClient(cliCtx)
+	ctx := context.Background()
+	if err := client.Run(ctx, request, response); err != nil {
+		logger.Log.Fatalln(err)
+	}
+}
 
+func Services(cliCtx *cli.Context, duration schema.Duration) []schema.Service {
 	var response map[string][]schema.Service
 	request := graphql.NewRequest(`
 		query ($duration: Duration!) {
@@ -47,17 +55,18 @@ func Services(cliCtx *cli.Context, duration schema.Duration) []schema.Service {
 	`)
 	request.Var("duration", duration)
 
-	ctx := context.Background()
-	if err := client.Run(ctx, request, &response); err != nil {
-		logger.Log.Fatalln(err)
-		panic(err)
-	}
-
+	executeQuery(cliCtx, request, &response)
 	return response["services"]
 }
 
-func Instances(cliCtx *cli.Context, serviceId string, duration schema.Duration) []schema.ServiceInstance {
-	client := newGraphqlClient(cliCtx)
+func Instances(cliCtx *cli.Context, nameOrID string, duration schema.Duration) []schema.ServiceInstance {
+	var serviceId string
+	service, err := searchServices(cliCtx, nameOrID, duration)
+	if err != nil {
+		serviceId = nameOrID
+	} else {
+		serviceId = service.ID
+	}
 
 	var response map[string][]schema.ServiceInstance
 	request := graphql.NewRequest(`
@@ -77,11 +86,26 @@ func Instances(cliCtx *cli.Context, serviceId string, duration schema.Duration) 
 	request.Var("serviceId", serviceId)
 	request.Var("duration", duration)
 
-	ctx := context.Background()
-	if err := client.Run(ctx, request, &response); err != nil {
-		logger.Log.Fatalln(err)
-		panic(err)
-	}
-
+	executeQuery(cliCtx, request, &response)
 	return response["instances"]
+}
+
+func searchServices(cliCtx *cli.Context, serviceName string, duration schema.Duration) (service schema.Service, err error) {
+	var response map[string][]schema.Service
+	request := graphql.NewRequest(`
+		query searchServices($keyword: String!, $duration: Duration!) {
+    		service: searchServices(duration: $duration, keyword: $keyword) {
+      				id name
+			}
+		}
+	`)
+	request.Var("keyword", serviceName)
+	request.Var("duration", duration)
+
+	executeQuery(cliCtx, request, &response)
+	services := response["service"]
+	if services == nil || len(services) < 1 {
+		return service, errors.New(fmt.Sprintf("no such service [%s]", serviceName))
+	}
+	return services[0], nil
 }
