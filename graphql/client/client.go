@@ -26,11 +26,16 @@ import (
 	"github.com/urfave/cli"
 )
 
-func Services(cliCtx *cli.Context, duration schema.Duration) []schema.Service {
-	client := graphql.NewClient(cliCtx.GlobalString("base-url"))
+func newGraphqlClient(cliCtx *cli.Context) (client *graphql.Client) {
+	client = graphql.NewClient(cliCtx.GlobalString("base-url"))
 	client.Log = func(msg string) {
 		logger.Log.Debugln(msg)
 	}
+	return
+}
+
+func Services(cliCtx *cli.Context, duration schema.Duration) []schema.Service {
+	client := newGraphqlClient(cliCtx)
 
 	var response map[string][]schema.Service
 	request := graphql.NewRequest(`
@@ -49,4 +54,33 @@ func Services(cliCtx *cli.Context, duration schema.Duration) []schema.Service {
 	}
 
 	return response["services"]
+}
+
+func Instances(cliCtx *cli.Context, serviceId string, duration schema.Duration) []schema.ServiceInstance {
+	client := newGraphqlClient(cliCtx)
+
+	var response map[string][]schema.ServiceInstance
+	request := graphql.NewRequest(`
+		query ($serviceId: ID!, $duration: Duration!) {
+    		instances: getServiceInstances(duration: $duration, serviceId: $serviceId) {
+      			id
+      			name
+      			language
+      			attributes {
+        			name
+        			value
+      			}
+			}
+		}
+	`)
+	request.Var("serviceId", serviceId)
+	request.Var("duration", duration)
+
+	ctx := context.Background()
+	if err := client.Run(ctx, request, &response); err != nil {
+		logger.Log.Fatalln(err)
+		panic(err)
+	}
+
+	return response["instances"]
 }
