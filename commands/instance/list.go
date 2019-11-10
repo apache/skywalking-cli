@@ -25,6 +25,7 @@ import (
 	"github.com/apache/skywalking-cli/display"
 	"github.com/apache/skywalking-cli/graphql/client"
 	"github.com/apache/skywalking-cli/graphql/schema"
+	"github.com/apache/skywalking-cli/logger"
 	"github.com/urfave/cli"
 )
 
@@ -37,16 +38,31 @@ var ListCommand = cli.Command{
 		interceptor.DurationInterceptor,
 	}),
 	Action: func(ctx *cli.Context) error {
-		serviceId := ctx.String("service")
+		serviceId := ctx.String("service-id")
+		serviceName := ctx.String("service-name")
+
+		if serviceId == "" && serviceName == "" {
+			logger.Log.Fatalf("flags \"service-id, service-name\" must set one")
+		}
+
+		if serviceId == "" && serviceName != "" {
+			service, err := client.SearchService(ctx, serviceName)
+			if err != nil {
+				logger.Log.Fatalln(err)
+			}
+			serviceId = service.ID
+		}
+
 		end := ctx.String("end")
 		start := ctx.String("start")
 		step := ctx.Generic("step")
-		services := client.Instances(ctx, serviceId, schema.Duration{
+
+		instances := client.Instances(ctx, serviceId, schema.Duration{
 			Start: start,
 			End:   end,
 			Step:  step.(*model.StepEnumValue).Selected,
 		})
 
-		return display.Display(ctx, services)
+		return display.Display(ctx, instances)
 	},
 }

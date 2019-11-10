@@ -58,15 +58,7 @@ func Services(cliCtx *cli.Context, duration schema.Duration) []schema.Service {
 	return response["services"]
 }
 
-func Instances(cliCtx *cli.Context, nameOrID string, duration schema.Duration) []schema.ServiceInstance {
-	var serviceId string
-	service, err := searchServices(cliCtx, nameOrID, duration)
-	if err != nil {
-		serviceId = nameOrID
-	} else {
-		serviceId = service.ID
-	}
-
+func Instances(cliCtx *cli.Context, serviceId string, duration schema.Duration) []schema.ServiceInstance {
 	var response map[string][]schema.ServiceInstance
 	request := graphql.NewRequest(`
 		query ($serviceId: ID!, $duration: Duration!) {
@@ -89,22 +81,21 @@ func Instances(cliCtx *cli.Context, nameOrID string, duration schema.Duration) [
 	return response["instances"]
 }
 
-func searchServices(cliCtx *cli.Context, serviceName string, duration schema.Duration) (service schema.Service, err error) {
-	var response map[string][]schema.Service
+func SearchService(cliCtx *cli.Context, serviceCode string) (service schema.Service, err error) {
+	var response map[string]schema.Service
 	request := graphql.NewRequest(`
-		query searchServices($keyword: String!, $duration: Duration!) {
-    		service: searchServices(duration: $duration, keyword: $keyword) {
+		query searchService($serviceCode: String!) {
+    		service: searchService(serviceCode: $serviceCode) {
       				id name
 			}
 		}
 	`)
-	request.Var("keyword", serviceName)
-	request.Var("duration", duration)
+	request.Var("serviceCode", serviceCode)
 
 	executeQuery(cliCtx, request, &response)
-	services := response["service"]
-	if services == nil || len(services) < 1 {
-		return service, fmt.Errorf("no such service [%s]", serviceName)
+	service = response["service"]
+	if service.ID == "" {
+		return service, fmt.Errorf("no such service [%s]", serviceCode)
 	}
-	return services[0], nil
+	return service, nil
 }
