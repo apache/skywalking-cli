@@ -32,7 +32,7 @@ import (
 var ListCommand = cli.Command{
 	Name:      "list",
 	ShortName: "ls",
-	Usage:     "List all available instance by given --service parameter",
+	Usage:     "List all available instance by given --service-id or --service-name parameter",
 	Flags:     flags.InstanceServiceIdFlags,
 	Before: interceptor.BeforeChain([]cli.BeforeFunc{
 		interceptor.DurationInterceptor,
