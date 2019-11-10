@@ -16,37 +16,33 @@
  *
  */
 
-package client
+package flags
 
 import (
-	"context"
+	"github.com/apache/skywalking-cli/commands/model"
 	"github.com/apache/skywalking-cli/graphql/schema"
-	"github.com/apache/skywalking-cli/logger"
-	"github.com/machinebox/graphql"
 	"github.com/urfave/cli"
 )
 
-func Services(cliCtx *cli.Context, duration schema.Duration) []schema.Service {
-	client := graphql.NewClient(cliCtx.GlobalString("base-url"))
-	client.Log = func(msg string) {
-		logger.Log.Debugln(msg)
-	}
-
-	var response map[string][]schema.Service
-	request := graphql.NewRequest(`
-		query ($duration: Duration!) {
-			services: getAllServices(duration: $duration) {
-				id name
-			}
-		}
-	`)
-	request.Var("duration", duration)
-
-	ctx := context.Background()
-	if err := client.Run(ctx, request, &response); err != nil {
-		logger.Log.Fatalln(err)
-		panic(err)
-	}
-
-	return response["services"]
+// DurationFlags are common flags that involves a duration, composed
+// by a start time, an end time, and a step, which is commonly used
+// in most of the commands
+var DurationFlags = []cli.Flag{
+	cli.StringFlag{
+		Name:  "start",
+		Usage: "query start `TIME`",
+	},
+	cli.StringFlag{
+		Name:  "end",
+		Usage: "query end `TIME`",
+	},
+	cli.GenericFlag{
+		Name:   "step",
+		Hidden: true,
+		Value: &model.StepEnumValue{
+			Enum:     schema.AllStep,
+			Default:  schema.StepMinute,
+			Selected: schema.StepMinute,
+		},
+	},
 }

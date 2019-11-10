@@ -16,37 +16,40 @@
  *
  */
 
-package client
+package table
 
 import (
-	"context"
-	"github.com/apache/skywalking-cli/graphql/schema"
-	"github.com/apache/skywalking-cli/logger"
-	"github.com/machinebox/graphql"
-	"github.com/urfave/cli"
+	"encoding/json"
+	"github.com/olekukonko/tablewriter"
+	"os"
 )
 
-func Services(cliCtx *cli.Context, duration schema.Duration) []schema.Service {
-	client := graphql.NewClient(cliCtx.GlobalString("base-url"))
-	client.Log = func(msg string) {
-		logger.Log.Debugln(msg)
+func Display(object interface{}) error {
+	var objMaps []map[string]string
+
+	bytes, _ := json.Marshal(object)
+	_ = json.Unmarshal(bytes, &objMaps)
+
+	var header []string
+
+	for k := range objMaps[0] {
+		header = append(header, k)
 	}
 
-	var response map[string][]schema.Service
-	request := graphql.NewRequest(`
-		query ($duration: Duration!) {
-			services: getAllServices(duration: $duration) {
-				id name
-			}
+	var data [][]string
+
+	for _, objMap := range objMaps {
+		var datum []string
+		for _, key := range header {
+			datum = append(datum, objMap[key])
 		}
-	`)
-	request.Var("duration", duration)
-
-	ctx := context.Background()
-	if err := client.Run(ctx, request, &response); err != nil {
-		logger.Log.Fatalln(err)
-		panic(err)
+		data = append(data, datum)
 	}
 
-	return response["services"]
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetHeader(header)
+	table.AppendBulk(data)
+	table.Render()
+
+	return nil
 }

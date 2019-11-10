@@ -16,10 +16,35 @@
  *
  */
 
-package config
+package display
 
-var Config struct {
-	Global struct {
-		BaseURL string `yaml:"base-url"`
+import (
+	"fmt"
+	"github.com/apache/skywalking-cli/display/json"
+	"github.com/apache/skywalking-cli/display/table"
+	"github.com/apache/skywalking-cli/display/yaml"
+	"github.com/urfave/cli"
+	"strings"
+)
+
+const (
+	Json  string = "json"
+	Yaml  string = "yaml"
+	Table string = "table"
+)
+
+// Display the object in the style specified in flag --display
+func Display(ctx *cli.Context, object interface{}) error {
+	displayStyle := ctx.GlobalString("display")
+
+	switch strings.ToLower(displayStyle) {
+	case Json:
+		return json.Display(object)
+	case Yaml:
+		return yaml.Display(object)
+	case Table:
+		return table.Display(object)
+	default:
+		return fmt.Errorf("unsupported display style: %s", displayStyle)
 	}
 }

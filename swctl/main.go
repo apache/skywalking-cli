@@ -19,14 +19,13 @@
 package main
 
 import (
-	"encoding/json"
+	"github.com/apache/skywalking-cli/commands/interceptor"
 	"github.com/apache/skywalking-cli/commands/service"
-	"github.com/apache/skywalking-cli/config"
 	"github.com/apache/skywalking-cli/logger"
 	"github.com/apache/skywalking-cli/util"
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
-	"gopkg.in/yaml.v2"
+	"github.com/urfave/cli/altsrc"
 	"io/ioutil"
 	"os"
 )
@@ -40,46 +39,64 @@ func init() {
 func main() {
 	app := cli.NewApp()
 	app.Usage = "The CLI (Command Line Interface) for Apache SkyWalking."
-	app.Flags = []cli.Flag{
-		cli.StringFlag{
+
+	flags := []cli.Flag{
+		altsrc.NewStringFlag(cli.StringFlag{
 			Name:  "config",
 			Value: "~/.skywalking.yml",
 			Usage: "load configuration `FILE`",
-		},
-		cli.BoolFlag{
+		}),
+		altsrc.NewStringFlag(cli.StringFlag{
+			Name:     "base-url",
+			Required: false,
+			Usage:    "base `url` of the OAP backend graphql",
+			Value:    "http://127.0.0.1:12800/graphql",
+		}),
+		altsrc.NewBoolFlag(cli.BoolFlag{
 			Name:     "debug",
 			Required: false,
 			Usage:    "enable debug mode, will print more detailed logs",
-		},
+		}),
+		altsrc.NewStringFlag(cli.StringFlag{
+			Name:     "display",
+			Required: false,
+			Usage:    "display `style` of the result, supported styles are: json, yaml",
+		}),
 	}
+
 	app.Commands = []cli.Command{
 		service.Command,
 	}
 
-	app.Before = beforeCommand
+	app.Before = interceptor.BeforeChain([]cli.BeforeFunc{
+		expandConfigFile,
+		altsrc.InitInputSourceWithContext(flags, altsrc.NewYamlSourceFromFlagFunc("config")),
+		setUpCommandLineContext,
+	})
+
+	app.Flags = flags
 
 	if err := app.Run(os.Args); err != nil {
 		log.Fatalln(err)
 	}
 }
 
-func beforeCommand(c *cli.Context) error {
+func expandConfigFile(c *cli.Context) error {
+	return c.Set("config", util.ExpandFilePath(c.String("config")))
+}
+
+func setUpCommandLineContext(c *cli.Context) error {
 	if c.Bool("debug") {
 		log.SetLevel(logrus.DebugLevel)
 		log.Debugln("Debug mode is enabled")
 	}
 
-	configFile := util.ExpandFilePath(c.String("config"))
-	log.Debugln("Using configuration file:", configFile)
+	configFile := c.String("config")
 
 	if bytes, err := ioutil.ReadFile(configFile); err != nil {
 		return err
-	} else if err := yaml.Unmarshal(bytes, &config.Config); err != nil {
-		return err
-	}
-
-	if bytes, err := json.Marshal(config.Config); err == nil {
-		log.Debugln("Configurations: ", string(bytes))
+	} else {
+		log.Debug("Using configurations:\n", string(bytes))
 	}
 
 	return nil
