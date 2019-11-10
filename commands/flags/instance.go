@@ -23,7 +23,7 @@ import "github.com/urfave/cli"
 var InstanceServiceIdFlags = append(DurationFlags,
 	cli.StringFlag{
 		Name:  "service-id",
-		Usage: "query service `ID` (priority over --service-name)",
+		Usage: "query service `ID` (priority over \"--service-name\")",
 	},
 	cli.StringFlag{
 		Name:  "service-name",
