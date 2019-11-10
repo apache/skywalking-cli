@@ -66,6 +66,7 @@ func Instances(cliCtx *cli.Context, serviceId string, duration schema.Duration) 
       			id
       			name
       			language
+				instanceUUID
       			attributes {
         			name
         			value
