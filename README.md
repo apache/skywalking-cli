@@ -63,6 +63,8 @@ This section covers all the available commands in SkyWalking CLI and their usage
 - [`swctl`](#swctl-top-level-command)
 - [`service`](#service-second-level-command) (second level command)
   - [`list`, `ls`](#service-list---startstart-time---endend-time)
+- [`instance`](#instance-second-level-command) (second level command)
+  - [`list`, `ls`](#instance-list---service-idservice-id---service-nameservice-name---startstart-time---endend-time)
 
 ### `swctl` top-level command
 `swctl` is the top-level command, which has some options that will take effects globally.
@@ -83,6 +85,20 @@ and it also has some options and third-level commands.
 
 | option | description | default |
 | :--- | :--- | :--- |
+| `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
+| `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
+
+### `instance` second-level command
+`instance` second-level command is an entry for all operations related to instances,
+and it also has some options and third-level commands.
+
+#### `instance list [--service-id=<service id>] [--service-name=<service name>] [--start=<start time>] [--end=<end time>]`
+`instance list` lists all the instances in the time range of \[`start`, `end`\] and given --service-id or --service-name.
+
+| option | description | default |
+| :--- | :--- | :--- |
+| `--service-id` | Query service id (priority over --service-name)|  |
+| `--service-name` | Query service name |  |
 | `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
 | `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
 
