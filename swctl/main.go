@@ -19,6 +19,7 @@
 package main
 
 import (
+	"github.com/apache/skywalking-cli/commands/instance"
 	"github.com/apache/skywalking-cli/commands/interceptor"
 	"github.com/apache/skywalking-cli/commands/service"
 	"github.com/apache/skywalking-cli/logger"
@@ -60,12 +61,14 @@ func main() {
 		altsrc.NewStringFlag(cli.StringFlag{
 			Name:     "display",
 			Required: false,
-			Usage:    "display `style` of the result, supported styles are: json, yaml",
+			Usage:    "display `style` of the result, supported styles are: json, yaml, table",
+			Value:    "json",
 		}),
 	}
 
 	app.Commands = []cli.Command{
 		service.Command,
+		instance.Command,
 	}
 
 	app.Before = interceptor.BeforeChain([]cli.BeforeFunc{
