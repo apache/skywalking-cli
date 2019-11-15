@@ -1,28 +1,29 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- */
+// Licensed to Apache Software Foundation (ASF) under one or more contributor
+// license agreements. See the NOTICE file distributed with
+// this work for additional information regarding copyright
+// ownership. Apache Software Foundation (ASF) licenses this file to you under
+// the Apache License, Version 2.0 (the "License"); you may
+// not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied.  See the License for the
+// specific language governing permissions and limitations
+// under the License.
 
 package interceptor
 
 import (
+	"time"
+
+	"github.com/urfave/cli"
+
 	"github.com/apache/skywalking-cli/graphql/schema"
 	"github.com/apache/skywalking-cli/logger"
-	"github.com/urfave/cli"
-	"time"
 )
 
 var stepFormats = map[schema.Step]string{
@@ -72,24 +73,25 @@ func DurationInterceptor(ctx *cli.Context) error {
 }
 
 // ParseDuration parses the `start` and `end` to a triplet, (startTime, endTime, step)
-// if --start and --end are both absent, then: start := now - 30min; end := now
-// if --start is given, --end is absent, then: end := now + 30 units, where unit is the precision of `start`, (hours, minutes, etc.)
-// if --start is absent, --end is given, then: start := end - 30 unis, where unit is the precision of `end`, (hours, minutes, etc.)
+// if --start and --end are both absent,
+//   then: start := now - 30min; end := now
+// if --start is given, --end is absent,
+//   then: end := now + 30 units, where unit is the precision of `start`, (hours, minutes, etc.)
+// if --start is absent, --end is given,
+//   then: start := end - 30 unis, where unit is the precision of `end`, (hours, minutes, etc.)
 // NOTE that when either(both) `start` or `end` is(are) given, there is no timezone info
 // in the format, (e.g. 2019-11-09 1001), so they'll be considered as UTC-based,
 // and generate the missing `start`(`end`) based on the same timezone, UTC
-func ParseDuration(start string, end string) (time.Time, time.Time, schema.Step) {
+func ParseDuration(start, end string) (startTime, endTime time.Time, step schema.Step) {
 	logger.Log.Debugln("Start time:", start, "end time:", end)
 
 	now := time.Now().UTC()
 
 	// both are absent
-	if len(start) == 0 && len(end) == 0 {
+	if start == "" && end == "" {
 		return now.Add(-30 * time.Minute), now, schema.StepMinute
 	}
 
-	var startTime, endTime time.Time
-	var step schema.Step
 	var err error
 
 	// both are present
@@ -104,7 +106,7 @@ func ParseDuration(start string, end string) (time.Time, time.Time, schema.Step)
 		}
 
 		return startTime, endTime, step
-	} else if len(end) <= 0 { // end is absent
+	} else if end == "" { // end is absent
 		if step, startTime, err = tryParseTime(start); err != nil {
 			logger.Log.Fatalln("Unsupported time format:", start, err)
 		}
@@ -119,7 +121,7 @@ func ParseDuration(start string, end string) (time.Time, time.Time, schema.Step)
 
 // AlignPrecision aligns the two time strings to same precision
 // by truncating the more precise one
-func AlignPrecision(start string, end string) (string, string) {
+func AlignPrecision(start, end string) (_, _ string) {
 	if len(start) < len(end) {
 		return start, end[0:len(start)]
 	}
