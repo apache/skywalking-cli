@@ -34,7 +34,7 @@ jobs:
 
       - name: Check License
         run: |
-          go get -u github.com/elastic/go-licenser
+          GO111MODULE=off go get -u github.com/elastic/go-licenser
           $(go env GOPATH)/bin/go-licenser -d -licensor='Apache Software Foundation (ASF)' .
 
       - name: Get dependencies
