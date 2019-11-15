@@ -18,6 +18,7 @@
 package main
 
 import (
+	"github.com/apache/skywalking-cli/commands/instance"
 	"io/ioutil"
 	"os"
 
@@ -29,6 +30,11 @@ import (
 	"github.com/apache/skywalking-cli/commands/service"
 	"github.com/apache/skywalking-cli/logger"
 	"github.com/apache/skywalking-cli/util"
+	"github.com/sirupsen/logrus"
+	"github.com/urfave/cli"
+	"github.com/urfave/cli/altsrc"
+	"io/ioutil"
+	"os"
 )
 
 var log *logrus.Logger
@@ -61,12 +67,14 @@ func main() {
 		altsrc.NewStringFlag(cli.StringFlag{
 			Name:     "display",
 			Required: false,
-			Usage:    "display `style` of the result, supported styles are: json, yaml",
+			Usage:    "display `style` of the result, supported styles are: json, yaml, table",
+			Value:    "json",
 		}),
 	}
 
 	app.Commands = []cli.Command{
 		service.Command,
+		instance.Command,
 	}
 
 	app.Before = interceptor.BeforeChain([]cli.BeforeFunc{
