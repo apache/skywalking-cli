@@ -18,9 +18,10 @@
 package main
 
 import (
-	"github.com/apache/skywalking-cli/commands/instance"
 	"io/ioutil"
 	"os"
+
+	"github.com/apache/skywalking-cli/commands/instance"
 
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
@@ -30,11 +31,6 @@ import (
 	"github.com/apache/skywalking-cli/commands/service"
 	"github.com/apache/skywalking-cli/logger"
 	"github.com/apache/skywalking-cli/util"
-	"github.com/sirupsen/logrus"
-	"github.com/urfave/cli"
-	"github.com/urfave/cli/altsrc"
-	"io/ioutil"
-	"os"
 )
 
 var log *logrus.Logger
