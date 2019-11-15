@@ -18,6 +18,8 @@
 package instance
 
 import (
+	"github.com/apache/skywalking-cli/graphql/client"
+	"github.com/apache/skywalking-cli/logger"
 	"github.com/urfave/cli"
 )
 
@@ -27,5 +29,24 @@ var Command = cli.Command{
 	Usage:     "Instance related sub-command",
 	Subcommands: cli.Commands{
 		ListCommand,
+		SearchCommand,
 	},
+}
+
+func verifyAndSwitch(ctx *cli.Context) string {
+	serviceID := ctx.String("service-id")
+	serviceName := ctx.String("service-name")
+
+	if serviceID == "" && serviceName == "" {
+		logger.Log.Fatalf("flags \"service-id, service-name\" must set one")
+	}
+
+	if serviceID == "" && serviceName != "" {
+		service, err := client.SearchService(ctx, serviceName)
+		if err != nil {
+			logger.Log.Fatalln(err)
+		}
+		serviceID = service.ID
+	}
+	return serviceID
 }

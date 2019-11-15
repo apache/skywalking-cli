@@ -26,32 +26,18 @@ import (
 	"github.com/apache/skywalking-cli/display"
 	"github.com/apache/skywalking-cli/graphql/client"
 	"github.com/apache/skywalking-cli/graphql/schema"
-	"github.com/apache/skywalking-cli/logger"
 )
 
 var ListCommand = cli.Command{
 	Name:      "list",
 	ShortName: "ls",
 	Usage:     "List all available instance by given --service-id or --service-name parameter",
-	Flags:     flags.InstanceServiceIDFlags,
+	Flags:     append(flags.DurationFlags, flags.InstanceServiceIDFlags...),
 	Before: interceptor.BeforeChain([]cli.BeforeFunc{
 		interceptor.DurationInterceptor,
 	}),
 	Action: func(ctx *cli.Context) error {
-		serviceID := ctx.String("service-id")
-		serviceName := ctx.String("service-name")
-
-		if serviceID == "" && serviceName == "" {
-			logger.Log.Fatalf("flags \"service-id, service-name\" must set one")
-		}
-
-		if serviceID == "" && serviceName != "" {
-			service, err := client.SearchService(ctx, serviceName)
-			if err != nil {
-				logger.Log.Fatalln(err)
-			}
-			serviceID = service.ID
-		}
+		serviceID := verifyAndSwitch(ctx)
 
 		end := ctx.String("end")
 		start := ctx.String("start")
