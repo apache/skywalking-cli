@@ -15,42 +15,23 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package display
+package schema
 
-import (
-	"fmt"
-	"strings"
-
-	"github.com/apache/skywalking-cli/display/graph"
-
-	"github.com/urfave/cli"
-
-	"github.com/apache/skywalking-cli/display/json"
-	"github.com/apache/skywalking-cli/display/table"
-	"github.com/apache/skywalking-cli/display/yaml"
-)
+type MetricsName string
 
 const (
-	JSON  string = "json"
-	YAML  string = "yaml"
-	TABLE string = "table"
-	GRAPH string = "graph"
+	GlobalP50  MetricsName = "all_p50"
+	GlobalP75  MetricsName = "all_p75"
+	GlobalP90  MetricsName = "all_p90"
+	GlobalP95  MetricsName = "all_p95"
+	GlobalP99  MetricsName = "all_p99"
+	ServiceP50 MetricsName = "service_p50"
+	ServiceP75 MetricsName = "service_p75"
+	ServiceP90 MetricsName = "service_p90"
+	ServiceP95 MetricsName = "service_p95"
+	ServiceP99 MetricsName = "service_p99"
 )
 
-// Display the object in the style specified in flag --display
-func Display(ctx *cli.Context, object interface{}) error {
-	displayStyle := ctx.GlobalString("display")
-
-	switch strings.ToLower(displayStyle) {
-	case JSON:
-		return json.Display(object)
-	case YAML:
-		return yaml.Display(object)
-	case TABLE:
-		return table.Display(object)
-	case GRAPH:
-		return graph.Display(object)
-	default:
-		return fmt.Errorf("unsupported display style: %s", displayStyle)
-	}
+func (e MetricsName) String() string {
+	return string(e)
 }

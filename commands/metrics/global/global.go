@@ -15,42 +15,24 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package display
+package global
 
 import (
-	"fmt"
-	"strings"
-
-	"github.com/apache/skywalking-cli/display/graph"
-
 	"github.com/urfave/cli"
 
-	"github.com/apache/skywalking-cli/display/json"
-	"github.com/apache/skywalking-cli/display/table"
-	"github.com/apache/skywalking-cli/display/yaml"
+	"github.com/apache/skywalking-cli/commands/metrics/global/pxx"
+	"github.com/apache/skywalking-cli/graphql/schema"
 )
 
-const (
-	JSON  string = "json"
-	YAML  string = "yaml"
-	TABLE string = "table"
-	GRAPH string = "graph"
-)
-
-// Display the object in the style specified in flag --display
-func Display(ctx *cli.Context, object interface{}) error {
-	displayStyle := ctx.GlobalString("display")
-
-	switch strings.ToLower(displayStyle) {
-	case JSON:
-		return json.Display(object)
-	case YAML:
-		return yaml.Display(object)
-	case TABLE:
-		return table.Display(object)
-	case GRAPH:
-		return graph.Display(object)
-	default:
-		return fmt.Errorf("unsupported display style: %s", displayStyle)
-	}
+var Command = cli.Command{
+	Name:      "global",
+	ShortName: "g",
+	Usage:     "Global metrics related sub-command",
+	Subcommands: cli.Commands{
+		pxx.PXX("p99", schema.GlobalP99),
+		pxx.PXX("p95", schema.GlobalP95),
+		pxx.PXX("p90", schema.GlobalP90),
+		pxx.PXX("p75", schema.GlobalP75),
+		pxx.PXX("p50", schema.GlobalP50),
+	},
 }

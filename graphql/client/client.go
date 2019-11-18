@@ -100,3 +100,27 @@ func SearchService(cliCtx *cli.Context, serviceCode string) (service schema.Serv
 	}
 	return service, nil
 }
+
+func LinearIntValues(cliCtx *cli.Context, metricCondition schema.MetricCondition, duration schema.Duration) []int64 {
+	var response map[string]schema.IntValues
+
+	request := graphql.NewRequest(`
+		query ($metric: MetricCondition!, $duration: Duration!) {
+			metrics: getLinearIntValues(metric: $metric, duration: $duration) {
+				values { value }
+			}
+		}
+	`)
+	request.Var("metric", metricCondition)
+	request.Var("duration", duration)
+
+	executeQuery(cliCtx, request, &response)
+
+	var values []int64
+
+	for _, value := range response["metrics"].Values {
+		values = append(values, value.Value)
+	}
+
+	return values
+}
