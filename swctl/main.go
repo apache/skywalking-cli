@@ -75,7 +75,7 @@ func main() {
 
 	app.Before = interceptor.BeforeChain([]cli.BeforeFunc{
 		expandConfigFile,
-		altsrc.InitInputSourceWithContext(flags, altsrc.NewYamlSourceFromFlagFunc("config")),
+		tryConfigFile(flags),
 		setUpCommandLineContext,
 	})
 
@@ -90,18 +90,31 @@ func expandConfigFile(c *cli.Context) error {
 	return c.Set("config", util.ExpandFilePath(c.String("config")))
 }
 
+func tryConfigFile(flags []cli.Flag) cli.BeforeFunc {
+	return func(c *cli.Context) error {
+
+		configFile := c.String("config")
+		if bytes, err := ioutil.ReadFile(configFile); err == nil {
+			log.Debug("Using configurations:\n", string(bytes))
+
+			err := altsrc.InitInputSourceWithContext(flags, altsrc.NewYamlSourceFromFlagFunc("config"))(c)
+			if err != nil {
+				return err
+			}
+		} else if os.IsNotExist(err) {
+			log.Warnf("open %s no such file, skip loading configuration file\n", c.GlobalString("config"))
+		} else {
+			return err
+		}
+
+		return nil
+	}
+}
+
 func setUpCommandLineContext(c *cli.Context) error {
 	if c.Bool("debug") {
 		log.SetLevel(logrus.DebugLevel)
 		log.Debugln("Debug mode is enabled")
-	}
-
-	configFile := c.String("config")
-
-	if bytes, err := ioutil.ReadFile(configFile); err == nil {
-		log.Debug("Using configurations:\n", string(bytes))
-	} else {
-		return err
 	}
 
 	return nil
