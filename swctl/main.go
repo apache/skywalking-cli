@@ -74,9 +74,9 @@ func main() {
 	}
 
 	app.Before = interceptor.BeforeChain([]cli.BeforeFunc{
+		setUpCommandLineContext,
 		expandConfigFile,
 		tryConfigFile(flags),
-		setUpCommandLineContext,
 	})
 
 	app.Flags = flags
@@ -92,17 +92,16 @@ func expandConfigFile(c *cli.Context) error {
 
 func tryConfigFile(flags []cli.Flag) cli.BeforeFunc {
 	return func(c *cli.Context) error {
-
 		configFile := c.String("config")
 		if bytes, err := ioutil.ReadFile(configFile); err == nil {
 			log.Debug("Using configurations:\n", string(bytes))
 
-			err := altsrc.InitInputSourceWithContext(flags, altsrc.NewYamlSourceFromFlagFunc("config"))(c)
+			err = altsrc.InitInputSourceWithContext(flags, altsrc.NewYamlSourceFromFlagFunc("config"))(c)
 			if err != nil {
 				return err
 			}
 		} else if os.IsNotExist(err) {
-			log.Warnf("open %s no such file, skip loading configuration file\n", c.GlobalString("config"))
+			log.Debugf("open %s no such file, skip loading configuration file\n", c.GlobalString("config"))
 		} else {
 			return err
 		}
