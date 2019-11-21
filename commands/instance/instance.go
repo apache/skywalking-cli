@@ -33,7 +33,7 @@ var Command = cli.Command{
 	},
 }
 
-func verifyAndSwitch(ctx *cli.Context) string {
+func verifyAndSwitchServiceParameter(ctx *cli.Context) string {
 	serviceID := ctx.String("service-id")
 	serviceName := ctx.String("service-name")
 

@@ -37,7 +37,7 @@ var ListCommand = cli.Command{
 		interceptor.DurationInterceptor,
 	}),
 	Action: func(ctx *cli.Context) error {
-		serviceID := verifyAndSwitch(ctx)
+		serviceID := verifyAndSwitchServiceParameter(ctx)
 
 		end := ctx.String("end")
 		start := ctx.String("start")
