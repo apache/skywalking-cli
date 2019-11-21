@@ -86,8 +86,8 @@ func SearchService(cliCtx *cli.Context, serviceCode string) (service schema.Serv
 	var response map[string]schema.Service
 	request := graphql.NewRequest(`
 		query searchService($serviceCode: String!) {
-    		service: searchService(serviceCode: $serviceCode) {
-      				id name
+			service: searchService(serviceCode: $serviceCode) {
+				id name
 			}
 		}
 	`)

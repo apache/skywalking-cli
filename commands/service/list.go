@@ -29,10 +29,12 @@ import (
 )
 
 var ListCommand = cli.Command{
-	Name:      "list",
-	ShortName: "ls",
-	Usage:     "List all available services",
-	Flags:     flags.DurationFlags,
+	Name:        "list",
+	ShortName:   "ls",
+	Usage:       "List services",
+	ArgsUsage:   "<service name>",
+	Description: "list all services if no <service name> is given, otherwise, only list the given service",
+	Flags:       flags.DurationFlags,
 	Before: interceptor.BeforeChain([]cli.BeforeFunc{
 		interceptor.DurationInterceptor,
 	}),
@@ -40,11 +42,19 @@ var ListCommand = cli.Command{
 		end := ctx.String("end")
 		start := ctx.String("start")
 		step := ctx.Generic("step")
-		services := client.Services(ctx, schema.Duration{
-			Start: start,
-			End:   end,
-			Step:  step.(*model.StepEnumValue).Selected,
-		})
+
+		var services []schema.Service
+
+		if args := ctx.Args(); len(args) == 0 {
+			services = client.Services(ctx, schema.Duration{
+				Start: start,
+				End:   end,
+				Step:  step.(*model.StepEnumValue).Selected,
+			})
+		} else {
+			service, _ := client.SearchService(ctx, args.First())
+			services = []schema.Service{service}
+		}
 
 		return display.Display(ctx, services)
 	},
