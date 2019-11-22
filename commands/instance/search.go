@@ -29,10 +29,9 @@ import (
 )
 
 var SearchCommand = cli.Command{
-	Name:      "search",
-	ShortName: "sr",
-	Usage:     "Filter the instance from the existing service instance list by given --regex and --service-id or --service-name parameters",
-	Flags:     append(flags.DurationFlags, append(flags.SearchRegexFlags, flags.InstanceServiceIDFlags...)...),
+	Name:  "search",
+	Usage: "Filter the instance from the existing service instance list by given --regex and --service-id or --service-name parameters",
+	Flags: append(flags.DurationFlags, append(flags.SearchRegexFlags, flags.InstanceServiceIDFlags...)...),
 	Before: interceptor.BeforeChain([]cli.BeforeFunc{
 		interceptor.DurationInterceptor,
 	}),
