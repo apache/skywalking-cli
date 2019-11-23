@@ -18,9 +18,10 @@
 package instance
 
 import (
+	"github.com/urfave/cli"
+
 	"github.com/apache/skywalking-cli/graphql/client"
 	"github.com/apache/skywalking-cli/logger"
-	"github.com/urfave/cli"
 )
 
 var Command = cli.Command{
