@@ -18,6 +18,8 @@
 package instance
 
 import (
+	"regexp"
+
 	"github.com/apache/skywalking-cli/commands/flags"
 	"github.com/apache/skywalking-cli/commands/interceptor"
 	"github.com/apache/skywalking-cli/commands/model"
@@ -25,12 +27,11 @@ import (
 	"github.com/apache/skywalking-cli/graphql/client"
 	"github.com/apache/skywalking-cli/graphql/schema"
 	"github.com/urfave/cli"
-	"regexp"
 )
 
 var SearchCommand = cli.Command{
 	Name:  "search",
-	Usage: "Filter the instance from the existing service instance list by given --regex and --service-id or --service-name parameters",
+	Usage: "Filter the instance from the existing service instance list",
 	Flags: append(flags.DurationFlags, append(flags.SearchRegexFlags, flags.InstanceServiceIDFlags...)...),
 	Before: interceptor.BeforeChain([]cli.BeforeFunc{
 		interceptor.DurationInterceptor,
