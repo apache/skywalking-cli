@@ -24,7 +24,12 @@ import (
 
 func Display(object interface{}) error {
 	if bytes, e := json.Marshal(object); e == nil {
-		fmt.Printf("%v\n", string(bytes))
+		content := string(bytes)
+		if content == "null" {
+			fmt.Print("[]\n")
+		} else {
+			fmt.Printf("%v\n", content)
+		}
 	} else {
 		return e
 	}
