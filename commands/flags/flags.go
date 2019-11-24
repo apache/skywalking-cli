@@ -15,24 +15,17 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package global
+package flags
 
-import (
-	"github.com/urfave/cli"
+import "github.com/urfave/cli"
 
-	"github.com/apache/skywalking-cli/commands/metrics/global/pxx"
-	"github.com/apache/skywalking-cli/graphql/schema"
-)
+// Flags concatenates the `flags` into one []cli.Flag
+func Flags(flags ...[]cli.Flag) []cli.Flag {
+	var result []cli.Flag
 
-var Command = cli.Command{
-	Name:      "global",
-	ShortName: "g",
-	Usage:     "Global metrics related sub-command",
-	Subcommands: cli.Commands{
-		pxx.PXX("p99", schema.GlobalP99),
-		pxx.PXX("p95", schema.GlobalP95),
-		pxx.PXX("p90", schema.GlobalP90),
-		pxx.PXX("p75", schema.GlobalP75),
-		pxx.PXX("p50", schema.GlobalP50),
-	},
+	for _, flags := range flags {
+		result = append(result, flags...)
+	}
+
+	return result
 }

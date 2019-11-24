@@ -17,21 +17,22 @@
 
 package schema
 
-type MetricsName string
+import "time"
 
-const (
-	GlobalP50  MetricsName = "all_p50"
-	GlobalP75  MetricsName = "all_p75"
-	GlobalP90  MetricsName = "all_p90"
-	GlobalP95  MetricsName = "all_p95"
-	GlobalP99  MetricsName = "all_p99"
-	ServiceP50 MetricsName = "service_p50"
-	ServiceP75 MetricsName = "service_p75"
-	ServiceP90 MetricsName = "service_p90"
-	ServiceP95 MetricsName = "service_p95"
-	ServiceP99 MetricsName = "service_p99"
-)
+// StepFormats is a mapping from schema.Step to its time format
+var StepFormats = map[Step]string{
+	StepSecond: "2006-01-02 150400",
+	StepMinute: "2006-01-02 1504",
+	StepHour:   "2006-01-02 15",
+	StepDay:    "2006-01-02",
+	StepMonth:  "2006-01",
+}
 
-func (e MetricsName) String() string {
-	return string(e)
+// StepDuration is a mapping from schema.Step to its time.Duration
+var StepDuration = map[Step]time.Duration{
+	StepSecond: time.Second,
+	StepMinute: time.Minute,
+	StepHour:   time.Hour,
+	StepDay:    time.Hour * 24,
+	StepMonth:  time.Hour * 24 * 30,
 }

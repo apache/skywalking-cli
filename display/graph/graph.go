@@ -19,46 +19,16 @@ package graph
 
 import (
 	"fmt"
+	"github.com/apache/skywalking-cli/display/graph/linear"
 	"reflect"
-
-	"github.com/guptarohit/asciigraph"
 )
 
 func Display(object interface{}) error {
-	var unifiedValues []float64
-
-	switch reflect.TypeOf(object) {
-	case reflect.TypeOf([]float64{}):
-	case reflect.TypeOf([]float32{}):
-		for _, v := range object.([]float32) {
-			unifiedValues = append(unifiedValues, float64(v))
-		}
-	case reflect.TypeOf([]int64{}):
-		for _, v := range object.([]int64) {
-			unifiedValues = append(unifiedValues, float64(v))
-		}
-	case reflect.TypeOf([]int32{}):
-		for _, v := range object.([]int32) {
-			unifiedValues = append(unifiedValues, float64(v))
-		}
-	case reflect.TypeOf([]int16{}):
-		for _, v := range object.([]int16) {
-			unifiedValues = append(unifiedValues, float64(v))
-		}
-	case reflect.TypeOf([]int8{}):
-		for _, v := range object.([]int8) {
-			unifiedValues = append(unifiedValues, float64(v))
-		}
-	case reflect.TypeOf([]int{}):
-		for _, v := range object.([]int) {
-			unifiedValues = append(unifiedValues, float64(v))
-		}
-	default:
-		return fmt.Errorf("type of %T is not supported to display as graph", object)
+	if reflect.TypeOf(object) != reflect.TypeOf(map[string]float64{}) {
+		return fmt.Errorf("type of %T is not supported to be displayed as ascii graph", reflect.TypeOf(object))
 	}
 
-	graph := asciigraph.Plot(unifiedValues)
-	fmt.Println(graph)
+	kvs := object.(map[string]float64)
 
-	return nil
+	return linear.Display(kvs)
 }

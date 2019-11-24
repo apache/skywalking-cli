@@ -18,15 +18,45 @@
 package metrics
 
 import (
+	"github.com/apache/skywalking-cli/commands/flags"
+	"github.com/apache/skywalking-cli/commands/interceptor"
+	"github.com/apache/skywalking-cli/commands/model"
+	"github.com/apache/skywalking-cli/display"
+	"github.com/apache/skywalking-cli/graphql/client"
+	"github.com/apache/skywalking-cli/graphql/schema"
 	"github.com/urfave/cli"
-
-	"github.com/apache/skywalking-cli/commands/metrics/global"
 )
 
 var Command = cli.Command{
 	Name:  "metrics",
 	Usage: "Metrics related sub-command",
-	Subcommands: cli.Commands{
-		global.Command,
+	Flags: flags.Flags(
+		flags.DurationFlags,
+		[]cli.Flag{
+			cli.StringFlag{
+				Name:     "name",
+				Usage:    "metrics `NAME`",
+				Required: true,
+			},
+		},
+	),
+	Before: interceptor.BeforeChain([]cli.BeforeFunc{
+		interceptor.DurationInterceptor,
+	}),
+	Action: func(ctx *cli.Context) error {
+		end := ctx.String("end")
+		start := ctx.String("start")
+		step := ctx.Generic("step")
+		metricsName := ctx.String("name")
+
+		metricsValues := client.LinearIntValues(ctx, schema.MetricCondition{
+			Name: metricsName,
+		}, schema.Duration{
+			Start: start,
+			End:   end,
+			Step:  step.(*model.StepEnumValue).Selected,
+		})
+
+		return display.Display(ctx, metricsValues)
 	},
 }

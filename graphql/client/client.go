@@ -20,6 +20,7 @@ package client
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/machinebox/graphql"
 	"github.com/urfave/cli"
@@ -101,7 +102,7 @@ func SearchService(cliCtx *cli.Context, serviceCode string) (service schema.Serv
 	return service, nil
 }
 
-func LinearIntValues(cliCtx *cli.Context, metricCondition schema.MetricCondition, duration schema.Duration) []int64 {
+func LinearIntValues(cliCtx *cli.Context, metricCondition schema.MetricCondition, duration schema.Duration) map[string]float64 {
 	var response map[string]schema.IntValues
 
 	request := graphql.NewRequest(`
@@ -116,11 +117,21 @@ func LinearIntValues(cliCtx *cli.Context, metricCondition schema.MetricCondition
 
 	executeQuery(cliCtx, request, &response)
 
-	var values []int64
+	values := metricsToMap(duration, response["metrics"].Values)
 
-	for _, value := range response["metrics"].Values {
-		values = append(values, value.Value)
+	return values
+}
+
+func metricsToMap(duration schema.Duration, kvInts []*schema.KVInt) map[string]float64 {
+	values := map[string]float64{}
+	format := schema.StepFormats[duration.Step]
+	startTime, err := time.Parse(format, duration.Start)
+	if err != nil {
+		logger.Log.Fatalln(err)
 	}
-
+	step := schema.StepDuration[duration.Step]
+	for idx, value := range kvInts {
+		values[startTime.Add(time.Duration(idx)*step).Format(format)] = float64(value.Value)
+	}
 	return values
 }
