@@ -19,6 +19,10 @@ package linear
 
 import (
 	"context"
+	"strings"
+
+	"github.com/mum4k/termdash/widgetapi"
+
 	"github.com/mum4k/termdash"
 	"github.com/mum4k/termdash/container"
 	"github.com/mum4k/termdash/container/grid"
@@ -26,13 +30,11 @@ import (
 	"github.com/mum4k/termdash/terminal/termbox"
 	"github.com/mum4k/termdash/terminal/terminalapi"
 	"github.com/mum4k/termdash/widgets/linechart"
-	"strings"
 )
 
 const RootID = "root"
 
 func newWidgets(inputs map[string]float64) (lineChart *linechart.LineChart, err error) {
-
 	index := 0
 
 	xLabels := map[int]string{}
@@ -54,8 +56,9 @@ func newWidgets(inputs map[string]float64) (lineChart *linechart.LineChart, err 
 	return lineChart, err
 }
 
-func gridLayout(lineChart *linechart.LineChart) ([]container.Option, error) {
-	widget := grid.Widget(lineChart,
+func gridLayout(lineChart widgetapi.Widget) ([]container.Option, error) {
+	widget := grid.Widget(
+		lineChart,
 		container.Border(linestyle.Light),
 		container.BorderTitleAlignCenter(),
 		container.BorderTitle("Press q to quit"),
@@ -96,13 +99,15 @@ func Display(inputs map[string]float64) error {
 		return err
 	}
 
-	if err := c.Update(RootID, gridOpts...); err != nil {
+	err = c.Update(RootID, gridOpts...)
+
+	if err != nil {
 		return err
 	}
 
 	ctx, cancel := context.WithCancel(context.Background())
 	quitter := func(keyboard *terminalapi.Keyboard) {
-		if strings.ToLower(keyboard.Key.String()) == "q" {
+		if strings.EqualFold(keyboard.Key.String(), "q") {
 			cancel()
 		}
 	}

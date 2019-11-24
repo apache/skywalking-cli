@@ -18,13 +18,14 @@
 package metrics
 
 import (
+	"github.com/urfave/cli"
+
 	"github.com/apache/skywalking-cli/commands/flags"
 	"github.com/apache/skywalking-cli/commands/interceptor"
 	"github.com/apache/skywalking-cli/commands/model"
 	"github.com/apache/skywalking-cli/display"
 	"github.com/apache/skywalking-cli/graphql/client"
 	"github.com/apache/skywalking-cli/graphql/schema"
-	"github.com/urfave/cli"
 )
 
 var Command = cli.Command{

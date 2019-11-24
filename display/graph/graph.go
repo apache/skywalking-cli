@@ -19,8 +19,9 @@ package graph
 
 import (
 	"fmt"
-	"github.com/apache/skywalking-cli/display/graph/linear"
 	"reflect"
+
+	"github.com/apache/skywalking-cli/display/graph/linear"
 )
 
 func Display(object interface{}) error {
