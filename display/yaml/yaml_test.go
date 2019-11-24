@@ -15,17 +15,28 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package flags
+package yaml
 
-import "github.com/urfave/cli"
+import (
+	"testing"
 
-var InstanceServiceIDFlags = []cli.Flag{
-	cli.StringFlag{
-		Name:  "service-id",
-		Usage: "query service `ID` (priority over \"--service-name\")",
-	},
-	cli.StringFlag{
-		Name:  "service-name",
-		Usage: "query service `Name`",
-	},
+	"github.com/apache/skywalking-cli/graphql/schema"
+)
+
+func TestYamlDisplay(t *testing.T) {
+	var result []schema.Service
+	display(t, result)
+	result = make([]schema.Service, 0)
+	display(t, result)
+	result = append(result, schema.Service{
+		ID:   "1",
+		Name: "yaml",
+	})
+	display(t, result)
+}
+
+func display(t *testing.T, result []schema.Service) {
+	if err := Display(result); err != nil {
+		t.Error(err)
+	}
 }
