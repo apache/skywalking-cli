@@ -29,14 +29,14 @@ import (
 )
 
 var Command = cli.Command{
-	Name:  "metrics",
-	Usage: "Metrics related sub-command",
+	Name:  "linear-metrics",
+	Usage: "Query linear metrics defined in backend OAL",
 	Flags: flags.Flags(
 		flags.DurationFlags,
 		[]cli.Flag{
 			cli.StringFlag{
 				Name:     "name",
-				Usage:    "metrics `NAME`",
+				Usage:    "metrics `NAME`, such as `all_p99`",
 				Required: true,
 			},
 		},
