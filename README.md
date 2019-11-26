@@ -114,8 +114,8 @@ and it also has some options and third-level commands.
 | `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
 | `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
 
-### `metrics` second-level command
-`metrics` second-level command is an entrance for all operations related to metrics,
+### `linear-metrics` second-level command
+`linear-metrics` second-level command is an entrance for all operations related to linear metrics,
 and it also has some options.
 
 | option | description | default |
