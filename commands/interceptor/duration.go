@@ -26,25 +26,9 @@ import (
 	"github.com/apache/skywalking-cli/logger"
 )
 
-var stepFormats = map[schema.Step]string{
-	schema.StepSecond: "2006-01-02 150400",
-	schema.StepMinute: "2006-01-02 1504",
-	schema.StepHour:   "2006-01-02 15",
-	schema.StepDay:    "2006-01-02",
-	schema.StepMonth:  "2006-01",
-}
-
-var stepDuration = map[schema.Step]time.Duration{
-	schema.StepSecond: time.Second,
-	schema.StepMinute: time.Minute,
-	schema.StepHour:   time.Hour,
-	schema.StepDay:    time.Hour * 24,
-	schema.StepMonth:  time.Hour * 24 * 30,
-}
-
 func tryParseTime(unparsed string) (schema.Step, time.Time, error) {
 	var possibleError error = nil
-	for step, layout := range stepFormats {
+	for step, layout := range schema.StepFormats {
 		t, err := time.Parse(layout, unparsed)
 		if err == nil {
 			return step, t, nil
@@ -62,9 +46,9 @@ func DurationInterceptor(ctx *cli.Context) error {
 
 	startTime, endTime, step := ParseDuration(start, end)
 
-	if err := ctx.Set("start", startTime.Format(stepFormats[step])); err != nil {
+	if err := ctx.Set("start", startTime.Format(schema.StepFormats[step])); err != nil {
 		return err
-	} else if err := ctx.Set("end", endTime.Format(stepFormats[step])); err != nil {
+	} else if err := ctx.Set("end", endTime.Format(schema.StepFormats[step])); err != nil {
 		return err
 	} else if err := ctx.Set("step", step.String()); err != nil {
 		return err
@@ -110,12 +94,12 @@ func ParseDuration(start, end string) (startTime, endTime time.Time, step schema
 		if step, startTime, err = tryParseTime(start); err != nil {
 			logger.Log.Fatalln("Unsupported time format:", start, err)
 		}
-		return startTime, startTime.Add(30 * stepDuration[step]), step
+		return startTime, startTime.Add(30 * schema.StepDuration[step]), step
 	} else { // start is absent
 		if step, endTime, err = tryParseTime(end); err != nil {
 			logger.Log.Fatalln("Unsupported time format:", end, err)
 		}
-		return endTime.Add(-30 * stepDuration[step]), endTime, step
+		return endTime.Add(-30 * schema.StepDuration[step]), endTime, step
 	}
 }
 

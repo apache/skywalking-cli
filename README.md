@@ -114,6 +114,16 @@ and it also has some options and third-level commands.
 | `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
 | `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
 
+### `linear-metrics` second-level command
+`linear-metrics` second-level command is an entrance for all operations related to linear metrics,
+and it also has some options.
+
+| option | description | default |
+| : --- | : --- | : --- |
+| `--name` | Metrics name, defined in [OAL](https://github.com/apache/skywalking/blob/master/oap-server/server-bootstrap/src/main/resources/official_analysis.oal), such as `all_p99`, etc. |
+| `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
+| `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
+
 # Developer guide
 
 ## Compiling and building
