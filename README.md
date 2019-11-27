@@ -65,6 +65,7 @@ This section covers all the available commands in SkyWalking CLI and their usage
   - [`list`, `ls`](#service-list---startstart-time---endend-time)
 - [`instance`](#instance-second-level-command) (second level command)
   - [`list`, `ls`](#instance-list---service-idservice-id---service-nameservice-name---startstart-time---endend-time)
+  - [`search`](#instance-search---regexinstance-name-regex---service-idservice-id---service-nameservice-name---startstart-time---endend-time)
 
 ### `swctl` top-level command
 `swctl` is the top-level command, which has some options that will take effects globally.
@@ -99,6 +100,27 @@ and it also has some options and third-level commands.
 | :--- | :--- | :--- |
 | `--service-id` | Query service id (priority over --service-name)|  |
 | `--service-name` | Query service name |  |
+| `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
+| `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
+
+#### `instance search [--regex=<instance name regex>] [--service-id=<service id>] [--service-name=<service name>] [--start=<start time>] [--end=<end time>]`
+`instance search` filter the instance in the time range of \[`start`, `end`\] and given --regex --service-id or --service-name.
+
+| option | description | default |
+| :--- | :--- | :--- |
+| `--regex` | Query regex of instance name|  |
+| `--service-id` | Query service id (priority over --service-name)|  |
+| `--service-name` | Query service name |  |
+| `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
+| `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
+
+### `linear-metrics` second-level command
+`linear-metrics` second-level command is an entrance for all operations related to linear metrics,
+and it also has some options.
+
+| option | description | default |
+| :--- | :--- | :--- |
+| `--name` | Metrics name, defined in [OAL](https://github.com/apache/skywalking/blob/master/oap-server/server-bootstrap/src/main/resources/official_analysis.oal), such as `all_p99`, etc. |
 | `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
 | `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
 

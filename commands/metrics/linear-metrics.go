@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package instance
+package metrics
 
 import (
 	"github.com/urfave/cli"
@@ -28,27 +28,36 @@ import (
 	"github.com/apache/skywalking-cli/graphql/schema"
 )
 
-var ListCommand = cli.Command{
-	Name:      "list",
-	ShortName: "ls",
-	Usage:     "List all available instance by given --service-id or --service-name parameter",
-	Flags:     append(flags.DurationFlags, flags.InstanceServiceIDFlags...),
+var Command = cli.Command{
+	Name:  "linear-metrics",
+	Usage: "Query linear metrics defined in backend OAL",
+	Flags: flags.Flags(
+		flags.DurationFlags,
+		[]cli.Flag{
+			cli.StringFlag{
+				Name:     "name",
+				Usage:    "metrics `NAME`, such as `all_p99`",
+				Required: true,
+			},
+		},
+	),
 	Before: interceptor.BeforeChain([]cli.BeforeFunc{
 		interceptor.DurationInterceptor,
 	}),
 	Action: func(ctx *cli.Context) error {
-		serviceID := verifyAndSwitchServiceParameter(ctx)
-
 		end := ctx.String("end")
 		start := ctx.String("start")
 		step := ctx.Generic("step")
+		metricsName := ctx.String("name")
 
-		instances := client.Instances(ctx, serviceID, schema.Duration{
+		metricsValues := client.LinearIntValues(ctx, schema.MetricCondition{
+			Name: metricsName,
+		}, schema.Duration{
 			Start: start,
 			End:   end,
 			Step:  step.(*model.StepEnumValue).Selected,
 		})
 
-		return display.Display(ctx, instances)
+		return display.Display(ctx, metricsValues)
 	},
 }

@@ -18,6 +18,8 @@
 package instance
 
 import (
+	"regexp"
+
 	"github.com/urfave/cli"
 
 	"github.com/apache/skywalking-cli/commands/flags"
@@ -28,11 +30,10 @@ import (
 	"github.com/apache/skywalking-cli/graphql/schema"
 )
 
-var ListCommand = cli.Command{
-	Name:      "list",
-	ShortName: "ls",
-	Usage:     "List all available instance by given --service-id or --service-name parameter",
-	Flags:     append(flags.DurationFlags, flags.InstanceServiceIDFlags...),
+var SearchCommand = cli.Command{
+	Name:  "search",
+	Usage: "Filter the instance from the existing service instance list",
+	Flags: append(flags.DurationFlags, append(flags.SearchRegexFlags, flags.InstanceServiceIDFlags...)...),
 	Before: interceptor.BeforeChain([]cli.BeforeFunc{
 		interceptor.DurationInterceptor,
 	}),
@@ -43,12 +44,22 @@ var ListCommand = cli.Command{
 		start := ctx.String("start")
 		step := ctx.Generic("step")
 
+		regex := ctx.String("regex")
+
 		instances := client.Instances(ctx, serviceID, schema.Duration{
 			Start: start,
 			End:   end,
 			Step:  step.(*model.StepEnumValue).Selected,
 		})
 
-		return display.Display(ctx, instances)
+		var result []schema.ServiceInstance
+		if len(instances) > 0 {
+			for _, instance := range instances {
+				if ok, _ := regexp.Match(regex, []byte(instance.Name)); ok {
+					result = append(result, instance)
+				}
+			}
+		}
+		return display.Display(ctx, result)
 	},
 }

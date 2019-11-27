@@ -19,13 +19,10 @@ package flags
 
 import "github.com/urfave/cli"
 
-var InstanceServiceIDFlags = []cli.Flag{
+var SearchRegexFlags = []cli.Flag{
 	cli.StringFlag{
-		Name:  "service-id",
-		Usage: "query service `ID` (priority over \"--service-name\")",
-	},
-	cli.StringFlag{
-		Name:  "service-name",
-		Usage: "query service `Name`",
+		Name:     "regex",
+		Required: true,
+		Usage:    "search `Regex`",
 	},
 }

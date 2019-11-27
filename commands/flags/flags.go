@@ -19,13 +19,13 @@ package flags
 
 import "github.com/urfave/cli"
 
-var InstanceServiceIDFlags = []cli.Flag{
-	cli.StringFlag{
-		Name:  "service-id",
-		Usage: "query service `ID` (priority over \"--service-name\")",
-	},
-	cli.StringFlag{
-		Name:  "service-name",
-		Usage: "query service `Name`",
-	},
+// Flags concatenates the `flags` into one []cli.Flag
+func Flags(flags ...[]cli.Flag) []cli.Flag {
+	var result []cli.Flag
+
+	for _, flags := range flags {
+		result = append(result, flags...)
+	}
+
+	return result
 }

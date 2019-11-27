@@ -21,6 +21,8 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/apache/skywalking-cli/display/graph"
+
 	"github.com/urfave/cli"
 
 	"github.com/apache/skywalking-cli/display/json"
@@ -32,6 +34,7 @@ const (
 	JSON  string = "json"
 	YAML  string = "yaml"
 	TABLE string = "table"
+	GRAPH string = "graph"
 )
 
 // Display the object in the style specified in flag --display
@@ -45,6 +48,8 @@ func Display(ctx *cli.Context, object interface{}) error {
 		return yaml.Display(object)
 	case TABLE:
 		return table.Display(object)
+	case GRAPH:
+		return graph.Display(object)
 	default:
 		return fmt.Errorf("unsupported display style: %s", displayStyle)
 	}

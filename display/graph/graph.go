@@ -15,17 +15,21 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package flags
+package graph
 
-import "github.com/urfave/cli"
+import (
+	"fmt"
+	"reflect"
 
-var InstanceServiceIDFlags = []cli.Flag{
-	cli.StringFlag{
-		Name:  "service-id",
-		Usage: "query service `ID` (priority over \"--service-name\")",
-	},
-	cli.StringFlag{
-		Name:  "service-name",
-		Usage: "query service `Name`",
-	},
+	"github.com/apache/skywalking-cli/display/graph/linear"
+)
+
+func Display(object interface{}) error {
+	if reflect.TypeOf(object) != reflect.TypeOf(map[string]float64{}) {
+		return fmt.Errorf("type of %T is not supported to be displayed as ascii graph", reflect.TypeOf(object))
+	}
+
+	kvs := object.(map[string]float64)
+
+	return linear.Display(kvs)
 }

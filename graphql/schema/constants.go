@@ -15,17 +15,24 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package flags
+package schema
 
-import "github.com/urfave/cli"
+import "time"
 
-var InstanceServiceIDFlags = []cli.Flag{
-	cli.StringFlag{
-		Name:  "service-id",
-		Usage: "query service `ID` (priority over \"--service-name\")",
-	},
-	cli.StringFlag{
-		Name:  "service-name",
-		Usage: "query service `Name`",
-	},
+// StepFormats is a mapping from schema.Step to its time format
+var StepFormats = map[Step]string{
+	StepSecond: "2006-01-02 150400",
+	StepMinute: "2006-01-02 1504",
+	StepHour:   "2006-01-02 15",
+	StepDay:    "2006-01-02",
+	StepMonth:  "2006-01",
+}
+
+// StepDuration is a mapping from schema.Step to its time.Duration
+var StepDuration = map[Step]time.Duration{
+	StepSecond: time.Second,
+	StepMinute: time.Minute,
+	StepHour:   time.Hour,
+	StepDay:    time.Hour * 24,
+	StepMonth:  time.Hour * 24 * 30,
 }

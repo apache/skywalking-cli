@@ -30,6 +30,10 @@ func Display(object interface{}) error {
 	bytes, _ := json.Marshal(object)
 	_ = json.Unmarshal(bytes, &objMaps)
 
+	if len(objMaps) < 1 {
+		return nil
+	}
+
 	var header []string
 
 	for k := range objMaps[0] {
