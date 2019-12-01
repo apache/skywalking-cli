@@ -21,7 +21,9 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/apache/skywalking-cli/commands/metrics"
+	"github.com/apache/skywalking-cli/commands/endpoint"
+	linearMetrics "github.com/apache/skywalking-cli/commands/metrics/linear"
+	singleMetrics "github.com/apache/skywalking-cli/commands/metrics/single"
 
 	"github.com/apache/skywalking-cli/commands/instance"
 
@@ -73,7 +75,9 @@ func main() {
 	app.Commands = []cli.Command{
 		service.Command,
 		instance.Command,
-		metrics.Command,
+		linearMetrics.Command,
+		singleMetrics.Command,
+		endpoint.Command,
 	}
 
 	app.Before = interceptor.BeforeChain([]cli.BeforeFunc{

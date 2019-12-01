@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package metrics
+package single
 
 import (
 	"github.com/urfave/cli"
@@ -29,15 +29,20 @@ import (
 )
 
 var Command = cli.Command{
-	Name:  "linear-metrics",
-	Usage: "Query linear metrics defined in backend OAL",
+	Name:  "single-metrics",
+	Usage: "Query single metrics defined in backend OAL",
 	Flags: flags.Flags(
 		flags.DurationFlags,
 		[]cli.Flag{
 			cli.StringFlag{
 				Name:     "name",
-				Usage:    "metrics `NAME`, such as `all_p99`",
+				Usage:    "metrics `NAME`, which should be defined in OAL script",
 				Required: true,
+			},
+			cli.StringSliceFlag{
+				Name:     "ids",
+				Usage:    "`IDs`, IDs required by the metric type",
+				Required: false,
 			},
 		},
 	),
@@ -49,9 +54,11 @@ var Command = cli.Command{
 		start := ctx.String("start")
 		step := ctx.Generic("step")
 		metricsName := ctx.String("name")
+		ids := ctx.StringSlice("ids")
 
-		metricsValues := client.LinearIntValues(ctx, schema.MetricCondition{
+		metricsValues := client.IntValues(ctx, schema.BatchMetricConditions{
 			Name: metricsName,
+			Ids:  ids,
 		}, schema.Duration{
 			Start: start,
 			End:   end,
