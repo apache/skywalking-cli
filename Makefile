@@ -49,7 +49,7 @@ $(PLATFORMS):
 
 .PHONY: lint
 lint:
-	$(GO_LINT) version || curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(GOPATH)/bin v1.21.0
+	$(GO_LINT) version || curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(GO_PATH)/bin v1.21.0
 	$(GO_LINT) run -v ./...
 
 .PHONE: test
