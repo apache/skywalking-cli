@@ -114,6 +114,19 @@ and it also has some options and third-level commands.
 | `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
 | `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
 
+### `endpoint` second-level command
+`endpoint` second-level command is an entry for all operations related to endpoints,
+and it also has some options and third-level commands.
+
+#### `endpoint list [--start=<start time>] [--end=<end time>] --service-id=<service id> [--limit=<count>] [--keyword=<search keyword>]`
+`endpoint list` lists all the endpoints of the given service id in the time range of \[`start`, `end`\].
+
+| option | description | default |
+| :--- | :--- | :--- |
+| `--service-id` | <service id> whose endpoints are to be searched |
+| `--limit` | returns at most <limit> endpoints (default: 100) |
+| `--keyword` | <keyword> of the endpoint name to search for, empty to search all |
+
 ### `linear-metrics` second-level command
 `linear-metrics` second-level command is an entrance for all operations related to linear metrics,
 and it also has some options.
@@ -124,14 +137,25 @@ and it also has some options.
 | `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
 | `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
 
+### `single-metrics` second-level command
+`single-metrics` second-level command is an entrance for all operations related to single-value metrics,
+and it also has some options.
+
+| option | description | default |
+| :--- | :--- | :--- |
+| `--name` | Metrics name, defined in [OAL](https://github.com/apache/skywalking/blob/master/oap-server/server-bootstrap/src/main/resources/official_analysis.oal), such as `service_sla`, etc. |
+| `--ids` | IDs that are required by the metric type, such as service IDs for `service_sla` |
+| `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
+| `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
+
 # Developer guide
 
 ## Compiling and building
-Clone the source code and simply run `make clean && make` in the source directory,
-this will download all necessary dependencies and build a binary file in `./bin/swctl`.
+Clone the source code and simply run `make` in the source directory,
+this will download all necessary dependencies and run tests, lint, and build three binary files in `./bin/`, for Windows, Linux, MacOS respectively.
 
 ```shell
-make clean && make
+make
 ```
 
 ## Writing a new command
@@ -147,12 +171,28 @@ and a `go` file `commands/instance/list.go`.
 There're some [common options](#common-options) that can be shared by multiple commands, check [`commands/flags`](commands/flags)
 to get all the shared options, and reuse them when possible, an example shares the options is [`commands/service/list.go`](commands/service/list.go#L35)
 
+## Linting your codes
+We have some rules for the code style and please lint your codes locally before opening a pull request
+
+```shell
+make lint
+```
+
+if you found some errors in the output of the above command, try `make fix` to fix some obvious style issues, as for the complicated errors, please fix them manually.
+
+## Checking license
+The Apache Software Foundation requires every source file to contain a license header, run `make license` to check that there is license header in every source file.
+
+```shell
+make license
+``` 
+
 ## Running tests
 Before submitting a pull request, add some test code to test the added/modified codes,
 and run the tests locally, make sure all tests passed.
 
 ```shell
-go test -v ./...
+make test
 ```
 
 # License
