@@ -66,6 +66,10 @@ This section covers all the available commands in SkyWalking CLI and their usage
 - [`instance`](#instance-second-level-command) (second level command)
   - [`list`, `ls`](#instance-list---service-idservice-id---service-nameservice-name---startstart-time---endend-time)
   - [`search`](#instance-search---regexinstance-name-regex---service-idservice-id---service-nameservice-name---startstart-time---endend-time)
+- [`endpoint`](#endpoint-second-level-command)
+  - [`list`, `ls`](#endpoint-list---startstart-time---endend-time---service-idservice-id---limitcount---keywordsearch-keyword)
+- [`linear-metrics`](#linear-metrics-second-level-command)
+- [`single-metrics`](#single-metrics-second-level-command)
 
 ### `swctl` top-level command
 `swctl` is the top-level command, which has some options that will take effects globally.
@@ -134,6 +138,7 @@ and it also has some options.
 | option | description | default |
 | :--- | :--- | :--- |
 | `--name` | Metrics name, defined in [OAL](https://github.com/apache/skywalking/blob/master/oap-server/server-bootstrap/src/main/resources/official_analysis.oal), such as `all_p99`, etc. |
+| `--id` | the related id if the metrics requires one, e.g. for metrics `service_p99`, the service `id` is required, use `--id` to specify the service id, the same for `instance`, `endpoint`, etc. |
 | `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
 | `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
 

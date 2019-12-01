@@ -57,8 +57,8 @@ var Command = cli.Command{
 
 		var id *string = nil
 
-		if serviceID := ctx.String("id"); serviceID != "" {
-			id = &serviceID
+		if idString := ctx.String("id"); idString != "" {
+			id = &idString
 		}
 
 		metricsValues := client.LinearIntValues(ctx, schema.MetricCondition{

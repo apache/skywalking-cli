@@ -41,7 +41,7 @@ var Command = cli.Command{
 			},
 			cli.StringSliceFlag{
 				Name:     "ids",
-				Usage:    "`IDs`, IDs required by the metric type",
+				Usage:    "`IDs`, IDs that are required by the given metric type",
 				Required: false,
 			},
 		},
