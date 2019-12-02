@@ -17,11 +17,12 @@ As SkyWalking CLI is using `Makefile`, compiling the project is as easy as execu
 ```shell
 git clone https://github.com/apache/skywalking-cli
 cd skywalking-cli
-make clean && make
+make
 ```
 
-and copy the `./bin/swctl` to your `PATH` directory, usually `/usr/bin/` or `/usr/local/bin`, or you can copy it to any directory you like,
-and add that directory to `PATH`.
+and copy the `./bin/swctl-latest-(darwin|linux|windows)-amd64` to your `PATH` directory according to your OS,
+usually `/usr/bin/` or `/usr/local/bin`, or you can copy it to any directory you like,
+and add that directory to `PATH`, we recommend you to rename the `swctl-latest-(darwin|linux|windows)-amd64` to `swctl`.
 
 # Commands
 Commands in SkyWalking CLI are organized into two levels, in the form of `swctl --option <level1> --option <level2> --option`,
@@ -41,7 +42,10 @@ will list all the `service`s, `service instance`s, etc.
 ## Common options
 There're some common options that are shared by multiple commands, and they follow the same rules in different commands,
 
-### `--start`, `--end`
+<details>
+
+<summary>--start, --end</summary>
+
 `--start` and `--end` specify a time range during which the query is preformed,
 they are both optional and their default values follow the rules below:
 
@@ -56,22 +60,12 @@ and if `end = 2019-11-09 12`, the precision is `HOUR`, so `start = end - 30HOUR 
 e.g. `start = 2019-11-09 1204`, the precision is `MINUTE`, so `end = start + 30 minutes = 2019-11-09 1234`,
 and if `start = 2019-11-08 06`, the precision is `HOUR`, so `end = start + 30HOUR = 2019-11-09 12`;
 
+</details>
 
 ## All available commands
 This section covers all the available commands in SkyWalking CLI and their usages.
 
-- [`swctl`](#swctl-top-level-command)
-- [`service`](#service-second-level-command) (second level command)
-  - [`list`, `ls`](#service-list---startstart-time---endend-time)
-- [`instance`](#instance-second-level-command) (second level command)
-  - [`list`, `ls`](#instance-list---service-idservice-id---service-nameservice-name---startstart-time---endend-time)
-  - [`search`](#instance-search---regexinstance-name-regex---service-idservice-id---service-nameservice-name---startstart-time---endend-time)
-- [`endpoint`](#endpoint-second-level-command)
-  - [`list`, `ls`](#endpoint-list---startstart-time---endend-time---service-idservice-id---limitcount---keywordsearch-keyword)
-- [`linear-metrics`](#linear-metrics-second-level-command)
-- [`single-metrics`](#single-metrics-second-level-command)
-
-### `swctl` top-level command
+### `swctl`
 `swctl` is the top-level command, which has some options that will take effects globally.
 
 | option | description | default |
@@ -81,59 +75,75 @@ This section covers all the available commands in SkyWalking CLI and their usage
 | `--base-url` | base url of GraphQL backend | `http://127.0.0.1:12800/graphql` |
 | `--display` | display style when printing the query result, supported styles are: `json`, `yaml`, `table` | `json` |
 
-### `service` second-level command
-`service` second-level command is an entry for all operations related to services,
-and it also has some options and third-level commands.
+### `service`
 
-#### `service list [--start=<start time>] [--end=<end time>]`
-`service list` lists all the services in the time range of \[`start`, `end`\].
+<details>
+
+<summary>service list [--start=start-time] [--end=end-time]</summary>
+
+`service list` lists all the services in the time range of `[start, end]`.
 
 | option | description | default |
 | :--- | :--- | :--- |
 | `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
 | `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
 
-### `instance` second-level command
-`instance` second-level command is an entry for all operations related to instances,
-and it also has some options and third-level commands.
+</details>
 
-#### `instance list [--service-id=<service id>] [--service-name=<service name>] [--start=<start time>] [--end=<end time>]`
-`instance list` lists all the instances in the time range of \[`start`, `end`\] and given --service-id or --service-name.
+### `instance`
+
+<details>
+
+<summary>instance list [--start=start-time] [--end=end-time] [--service-id=service-id] [--service-name=service-name]</summary>
+
+`instance list` lists all the instances in the time range of `[start, end]` and given `--service-id` or `--service-name`.
 
 | option | description | default |
 | :--- | :--- | :--- |
-| `--service-id` | Query service id (priority over --service-name)|  |
-| `--service-name` | Query service name |  |
+| `--service-id` | Query by service id (priority over `--service-name`)|  |
+| `--service-name` | Query by service name if `--service-id` is absent |  |
 | `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
 | `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
 
-#### `instance search [--regex=<instance name regex>] [--service-id=<service id>] [--service-name=<service name>] [--start=<start time>] [--end=<end time>]`
-`instance search` filter the instance in the time range of \[`start`, `end`\] and given --regex --service-id or --service-name.
+</details>
+
+<details>
+
+<summary>instance search [--start=start-time] [--end=end-time] [--regex=instance-name-regex] [--service-id=service-id] [--service-name=service-name]</summary>
+
+`instance search` filter the instance in the time range of `[start, end]` and given --regex --service-id or --service-name.
 
 | option | description | default |
 | :--- | :--- | :--- |
 | `--regex` | Query regex of instance name|  |
-| `--service-id` | Query service id (priority over --service-name)|  |
-| `--service-name` | Query service name |  |
+| `--service-id` | Query by service id (priority over `--service-name`)|  |
+| `--service-name` | Query by service name if `service-id` is absent |  |
 | `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
 | `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
 
-### `endpoint` second-level command
-`endpoint` second-level command is an entry for all operations related to endpoints,
-and it also has some options and third-level commands.
+</details>
 
-#### `endpoint list [--start=<start time>] [--end=<end time>] --service-id=<service id> [--limit=<count>] [--keyword=<search keyword>]`
-`endpoint list` lists all the endpoints of the given service id in the time range of \[`start`, `end`\].
+### `endpoint`
+
+<details>
+
+<summary>endpoint list [--start=start-time] [--end=end-time] --service-id=service-id [--limit=count] [--keyword=search-keyword]</summary>
+
+`endpoint list` lists all the endpoints of the given service id in the time range of `[start, end]`.
 
 | option | description | default |
 | :--- | :--- | :--- |
-| `--service-id` | <service id> whose endpoints are to be searched |
-| `--limit` | returns at most <limit> endpoints (default: 100) |
-| `--keyword` | <keyword> of the endpoint name to search for, empty to search all |
+| `--service-id` | <service id> whose endpoints are to be searched | |
+| `--limit` | returns at most <limit> endpoints (default: 100) | 100 |
+| `--keyword` | <keyword> of the endpoint name to search for, empty to search all | "" |
 
-### `linear-metrics` second-level command
-`linear-metrics` second-level command is an entrance for all operations related to linear metrics,
-and it also has some options.
+</details>
+
+### `linear-metrics`
+
+<details>
+
+<summary>linear-metrics [--start=start-time] [--end=end-time] --name=metrics-name [--id=entity-id]</summary>
 
 | option | description | default |
 | :--- | :--- | :--- |
@@ -142,9 +152,13 @@ and it also has some options.
 | `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
 | `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
 
-### `single-metrics` second-level command
-`single-metrics` second-level command is an entrance for all operations related to single-value metrics,
-and it also has some options.
+</details>
+
+### `single-metrics`
+
+<details>
+
+<summary>single-metrics [--start=start-time] [--end=end-time] --name=metrics-name [--ids=entity-ids]</summary>
 
 | option | description | default |
 | :--- | :--- | :--- |
@@ -153,52 +167,7 @@ and it also has some options.
 | `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
 | `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
 
-# Developer guide
-
-## Compiling and building
-Clone the source code and simply run `make` in the source directory,
-this will download all necessary dependencies and run tests, lint, and build three binary files in `./bin/`, for Windows, Linux, MacOS respectively.
-
-```shell
-make
-```
-
-## Writing a new command
-All commands files locate in directory [`commands`](commands), and an individual directory for each second-level command,
-an individual `go` file for each third-level command, for example, there is a directory [`service`](commands/service) for command `swctl service`, 
-and a [`list.go`](commands/service/list.go) file for `swctl service list` command.
-
-Determine what entity your command will operate on, and put your command `go` file into that directory, or create one if it doesn't exist,
-for example, if you want to create a command to `list` all the `instance`s of a service, create a directory `commands/instance`,
-and a `go` file `commands/instance/list.go`.
-
-## Reusing common options
-There're some [common options](#common-options) that can be shared by multiple commands, check [`commands/flags`](commands/flags)
-to get all the shared options, and reuse them when possible, an example shares the options is [`commands/service/list.go`](commands/service/list.go#L35)
-
-## Linting your codes
-We have some rules for the code style and please lint your codes locally before opening a pull request
-
-```shell
-make lint
-```
-
-if you found some errors in the output of the above command, try `make fix` to fix some obvious style issues, as for the complicated errors, please fix them manually.
-
-## Checking license
-The Apache Software Foundation requires every source file to contain a license header, run `make license` to check that there is license header in every source file.
-
-```shell
-make license
-``` 
-
-## Running tests
-Before submitting a pull request, add some test code to test the added/modified codes,
-and run the tests locally, make sure all tests passed.
-
-```shell
-make test
-```
+</details>
 
 # License
 [Apache 2.0 License.](/LICENSE)
