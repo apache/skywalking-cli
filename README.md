@@ -245,8 +245,8 @@ $ ./bin/swctl instance ls --service-name=projectC | jq '.[] | select(.name == "p
 <summary>Query a single metrics value for a specific endpoint</summary>
 
 ```shell
-$ ./bin/swctl endpoint ls --service-id 3 | jq '.[] | select(.name == "Kafka/test-trace-topic/Consumer/test").id' | xargs ./bin/swctl single-metrics --name endpoint_cpm --ids
-[{"id":"3","value":116}]
+$ ./bin/swctl service ls projectC | jq '.[0].id' | xargs ./bin/swctl endpoint ls --service-id | jq '.[] | [.id] | join(",")' | xargs ./bin/swctl single-metrics --name endpoint_cpm --ids
+[{"id":"22","value":116}]
 ```
 
 </details>
@@ -256,7 +256,7 @@ $ ./bin/swctl endpoint ls --service-id 3 | jq '.[] | select(.name == "Kafka/test
 <summary>Query metrics single values for all endpoints of service of id 3</summary>
 
 ```shell
-$ ./bin/swctl endpoint ls --service-id 3 | jq '.[] | [.id] | join(",")' | xargs ./bin/swctl single-metrics --name endpoint_cpm --end='2019-12-02 2137' --ids
+$ ./bin/swctl service ls projectC | jq '.[0].id' | xargs ./bin/swctl endpoint ls --service-id | jq '.[] | [.id] | join(",")' | xargs ./bin/swctl single-metrics --name endpoint_cpm --end='2019-12-02 2137' --ids
 [{"id":"3","value":116}]
 ```
 
