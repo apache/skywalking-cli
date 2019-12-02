@@ -18,6 +18,8 @@
 package single
 
 import (
+	"strings"
+
 	"github.com/urfave/cli"
 
 	"github.com/apache/skywalking-cli/commands/flags"
@@ -54,7 +56,13 @@ var Command = cli.Command{
 		start := ctx.String("start")
 		step := ctx.Generic("step")
 		metricsName := ctx.String("name")
-		ids := ctx.StringSlice("ids")
+		idsString := ctx.StringSlice("ids")
+
+		var ids []string
+
+		for _, id := range idsString {
+			ids = append(ids, strings.Split(id, ",")...)
+		}
 
 		metricsValues := client.IntValues(ctx, schema.BatchMetricConditions{
 			Name: metricsName,

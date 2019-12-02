@@ -169,5 +169,98 @@ This section covers all the available commands in SkyWalking CLI and their usage
 
 </details>
 
+# Use Cases
+
+<details>
+
+<summary>Query a specific service by name</summary>
+
+```shell
+# query the service named projectC
+$ ./bin/swctl service ls projectC
+[{"id":"4","name":"projectC"}]
+```
+
+</details>
+
+<details>
+
+<summary>Query instances of a specific service</summary>
+
+If you have already got the `id` of the service:
+
+```shell
+$ ./bin/swctl instance ls --service-id=3
+[{"id":"3","name":"projectD-pid:7909@skywalking-server-0001","attributes":[{"name":"os_name","value":"Linux"},{"name":"host_name","value":"skywalking-server-0001"},{"name":"process_no","value":"7909"},{"name":"ipv4s","value":"192.168.252.12"}],"language":"JAVA","instanceUUID":"ec8a79d7cb58447c978ee85846f6699a"}]
+```
+
+otherwise,
+
+```shell
+$ ./bin/swctl instance ls --service-name=projectC
+[{"id":"3","name":"projectD-pid:7909@skywalking-server-0001","attributes":[{"name":"os_name","value":"Linux"},{"name":"host_name","value":"skywalking-server-0001"},{"name":"process_no","value":"7909"},{"name":"ipv4s","value":"192.168.252.12"}],"language":"JAVA","instanceUUID":"ec8a79d7cb58447c978ee85846f6699a"}]
+```
+
+</details>
+
+<details>
+
+<summary>Query endpoints of a specific service</summary>
+
+If you have already got the `id` of the service:
+
+```shell
+$ ./bin/swctl endpoint ls --service-id=3
+```
+
+otherwise,
+
+```shell
+./bin/swctl service ls projectC | jq '.[].id' | xargs ./bin/swctl-latest-darwin-amd64 endpoint ls --service-id 
+[{"id":"22","name":"/projectC/{value}"}]
+```
+
+</details>
+
+<details>
+
+<summary>Query a linear metrics graph for an instance</summary>
+
+If you have already got the `id` of the instance:
+
+```shell
+$ ./bin/swctl --display=graph linear-metrics --name=service_instance_resp_time --id 5
+```
+
+otherwise
+
+```shell
+$ ./bin/swctl instance ls --service-name=projectC | jq '.[] | select(.name == "projectC-pid:7895@skywalking-server-0001").id' | xargs ./bin/swctl --display=graph linear-metrics --name=service_instance_resp_time --id
+```
+
+</details>
+
+<details>
+
+<summary>Query a single metrics value for a specific endpoint</summary>
+
+```shell
+$ ./bin/swctl endpoint ls --service-id 3 | jq '.[] | select(.name == "Kafka/test-trace-topic/Consumer/test").id' | xargs ./bin/swctl single-metrics --name endpoint_cpm --ids
+[{"id":"3","value":116}]
+```
+
+</details>
+
+<details>
+
+<summary>Query metrics single values for all endpoints of service of id 3</summary>
+
+```shell
+$ ./bin/swctl endpoint ls --service-id 3 | jq '.[] | [.id] | join(",")' | xargs ./bin/swctl single-metrics --name endpoint_cpm --end='2019-12-02 2137' --ids
+[{"id":"3","value":116}]
+```
+
+</details>
+
 # License
 [Apache 2.0 License.](/LICENSE)
