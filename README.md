@@ -298,5 +298,8 @@ $ ./bin/swctl service ls projectC | jq '.[0].id' | xargs ./bin/swctl endpoint ls
 
 </details>
 
+# Contributing
+For developers who want to contribute to this project, see [Contribution Guide](CONTRIBUTING.md)
+
 # License
 [Apache 2.0 License.](/LICENSE)
