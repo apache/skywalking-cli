@@ -19,6 +19,9 @@ VERSION ?= latest
 OUT_DIR = bin
 BINARY = swctl
 
+RELEASE_BIN = skywalking-cli-$(VERSION)-bin
+RELEASE_SRC = skywalking-cli-$(VERSION)-src
+
 OS = $(shell uname)
 
 GO = go
@@ -79,5 +82,29 @@ coverage: test
 .PHONY: clean
 clean:
 	$(GO_CLEAN) ./...
-	-rm -rf ./bin
+	-rm -rf bin
 	-rm -rf coverage.txt
+	-rm -rf *.tgz
+	-rm -rf *.tgz
+	-rm -rf *.asc
+	-rm -rf *.sha512
+
+release-src: clean
+	-tar -zcvf $(RELEASE_SRC).tgz \
+	--exclude bin \
+	--exclude .git \
+	--exclude .idea \
+	--exclude .DS_Store \
+	--exclude .github \
+	--exclude $(RELEASE_SRC).tgz \
+	.
+
+release-bin: build
+	-mkdir $(RELEASE_BIN)
+	-cp -R bin $(RELEASE_BIN)
+	-tar -zcvf $(RELEASE_BIN).tgz $(RELEASE_BIN)
+	-rm -rf $(RELEASE_BIN)
+
+release: verify license release-src release-bin
+	gpg --batch --yes --armor --detach-sig $(RELEASE_SRC).tgz
+	shasum -a 512 $(RELEASE_SRC).tgz > $(RELEASE_SRC).tgz.sha512
