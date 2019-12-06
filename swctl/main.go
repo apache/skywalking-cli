@@ -46,6 +46,7 @@ func init() {
 func main() {
 	app := cli.NewApp()
 	app.Usage = "The CLI (Command Line Interface) for Apache SkyWalking."
+	app.Version = "0.1.0"
 
 	flags := []cli.Flag{
 		altsrc.NewStringFlag(cli.StringFlag{
