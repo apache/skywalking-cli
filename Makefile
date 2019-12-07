@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-VERSION ?= latest
+VERSION ?= 0.1.0
 OUT_DIR = bin
 BINARY = swctl
 
@@ -102,6 +102,9 @@ release-src: clean
 release-bin: build
 	-mkdir $(RELEASE_BIN)
 	-cp -R bin $(RELEASE_BIN)
+	-cp -R dist/* $(RELEASE_BIN)
+	-cp -R CHANGES.md $(RELEASE_BIN)
+	-cp -R README.md $(RELEASE_BIN)
 	-tar -zcvf $(RELEASE_BIN).tgz $(RELEASE_BIN)
 	-rm -rf $(RELEASE_BIN)
 
