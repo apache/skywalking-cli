@@ -11,6 +11,10 @@ The CLI (Command Line Interface) for [Apache SkyWalking](https://github.com/apac
 SkyWalking CLI is a command interaction tool for the SkyWalking user or OPS team, as an alternative besides using browser GUI.
 It is based on SkyWalking [GraphQL query protocol](https://github.com/apache/skywalking-query-protocol), same as GUI.
 
+# Download
+Go to the [download page](https://skywalking.apache.org/downloads/) to download all available binaries, including MacOS, Linux, Windows.
+If you want to try the latest features, however, you can compile the latest codes yourself, as the guide below. 
+
 # Install
 As SkyWalking CLI is using `Makefile`, compiling the project is as easy as executing a command in the root directory of the project.
 
