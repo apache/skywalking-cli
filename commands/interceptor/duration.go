@@ -69,7 +69,7 @@ func DurationInterceptor(ctx *cli.Context) error {
 func ParseDuration(start, end string) (startTime, endTime time.Time, step schema.Step) {
 	logger.Log.Debugln("Start time:", start, "end time:", end)
 
-	now := time.Now().UTC()
+	now := time.Now()
 
 	// both are absent
 	if start == "" && end == "" {
