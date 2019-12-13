@@ -247,8 +247,8 @@ type Trace struct {
 }
 
 type TraceBrief struct {
-	Traces []*BasicTrace `json:"traces"`
-	Total  int           `json:"total"`
+	Data  []*BasicTrace `json:"data"`
+	Total int           `json:"total"`
 }
 
 type TraceQueryCondition struct {
