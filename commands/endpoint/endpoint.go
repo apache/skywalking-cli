@@ -15,49 +15,17 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package table
+package endpoint
 
 import (
-	"encoding/json"
-	"os"
-
-	"github.com/apache/skywalking-cli/logger"
-
-	"github.com/olekukonko/tablewriter"
+	"github.com/urfave/cli"
 )
 
-func Display(object interface{}) error {
-	var stringMapArrays []map[string]string
-
-	bytes, _ := json.Marshal(object)
-	_ = json.Unmarshal(bytes, &stringMapArrays)
-
-	if len(stringMapArrays) < 1 {
-		return nil
-	}
-
-	var header []string
-
-	for k := range stringMapArrays[0] {
-		header = append(header, k)
-	}
-
-	logger.Log.Debugln("stringMapArrays = ", stringMapArrays, " Headers = ", header)
-
-	var data [][]string
-
-	for _, objMap := range stringMapArrays {
-		var datum []string
-		for _, key := range header {
-			datum = append(datum, objMap[key])
-		}
-		data = append(data, datum)
-	}
-
-	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader(header)
-	table.AppendBulk(data)
-	table.Render()
-
-	return nil
+var Command = cli.Command{
+	Name:      "endpoint",
+	ShortName: "e",
+	Usage:     "Endpoint related sub-command",
+	Subcommands: cli.Commands{
+		ListCommand,
+	},
 }

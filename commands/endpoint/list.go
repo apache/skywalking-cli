@@ -15,49 +15,46 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package metrics
+package endpoint
 
 import (
 	"github.com/urfave/cli"
 
-	"github.com/apache/skywalking-cli/commands/flags"
-	"github.com/apache/skywalking-cli/commands/interceptor"
-	"github.com/apache/skywalking-cli/commands/model"
 	"github.com/apache/skywalking-cli/display"
 	"github.com/apache/skywalking-cli/graphql/client"
-	"github.com/apache/skywalking-cli/graphql/schema"
 )
 
-var Command = cli.Command{
-	Name:  "linear-metrics",
-	Usage: "Query linear metrics defined in backend OAL",
-	Flags: flags.Flags(
-		flags.DurationFlags,
-		[]cli.Flag{
-			cli.StringFlag{
-				Name:     "name",
-				Usage:    "metrics `NAME`, such as `all_p99`",
-				Required: true,
-			},
+var ListCommand = cli.Command{
+	Name:        "list",
+	ShortName:   "ls",
+	Usage:       "List endpoints",
+	Description: "list all endpoints if no <endpoint id> is given, otherwise, only list the given endpoint",
+	Flags: []cli.Flag{
+		cli.StringFlag{
+			Name:     "service-id",
+			Usage:    "`<service id>` whose endpoints are to be searched",
+			Required: true,
 		},
-	),
-	Before: interceptor.BeforeChain([]cli.BeforeFunc{
-		interceptor.DurationInterceptor,
-	}),
+		cli.IntFlag{
+			Name:     "limit",
+			Usage:    "returns at most `<limit>` endpoints",
+			Required: false,
+			Value:    100,
+		},
+		cli.StringFlag{
+			Name:     "keyword",
+			Usage:    "`<keyword>` of the endpoint name to search for, empty to search all",
+			Required: false,
+			Value:    "",
+		},
+	},
 	Action: func(ctx *cli.Context) error {
-		end := ctx.String("end")
-		start := ctx.String("start")
-		step := ctx.Generic("step")
-		metricsName := ctx.String("name")
+		serviceID := ctx.String("service-id")
+		limit := ctx.Int("limit")
+		keyword := ctx.String("keyword")
 
-		metricsValues := client.LinearIntValues(ctx, schema.MetricCondition{
-			Name: metricsName,
-		}, schema.Duration{
-			Start: start,
-			End:   end,
-			Step:  step.(*model.StepEnumValue).Selected,
-		})
+		endpoints := client.SearchEndpoints(ctx, serviceID, keyword, limit)
 
-		return display.Display(ctx, metricsValues)
+		return display.Display(ctx, endpoints)
 	},
 }

@@ -200,3 +200,34 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 
+========================================================================
+Apache 2.0 licenses
+========================================================================
+
+The following components are provided under the Apache License. See project link for details.
+The text of each license is the standard Apache 2.0 license.
+
+	machinebox (graphql) 0.2.2: https://github.com/machinebox/graphql Apache 2.0
+	mum4k (termdash) 0.10.0: https://github.com/mum4k/termdash Apache 2.0
+	yaml.v2 2.2.2: https://gopkg.in/yaml.v2 Apache 2.0
+
+========================================================================
+MIT licenses
+========================================================================
+
+The following components are provided under the MIT License. See project link for details.
+The text of each license is also included at licenses/LICENSE-[project].txt.
+
+	olekukonko (tablewriter) 0.0.2: https://github.com/olekukonko/tablewriter MIT
+	sirupsen (logrus) 1.4.2: https://github.com/sirupsen/logrus MIT
+	urfave (cli) 1.22.1: https://github.com/urfave/cli MIT
+	nsf (termbox-go) 0.0.0-20190817171036-93860e161317: https://github.com/nsf/termbox-go MIT
+
+========================================================================
+BSD licenses
+========================================================================
+
+The following components are provided under a BSD license. See project link for details.
+The text of each license is also included at licenses/LICENSE-[project].txt.
+
+	pkg (errors) 0.8.1 https://github.com/pkg/errors BSD 2-Clause

@@ -26,8 +26,7 @@ import (
 )
 
 func TestParseDuration(t *testing.T) {
-	now := time.Now().UTC()
-
+	now := time.Now()
 	type args struct {
 		start string
 		end   string
@@ -84,14 +83,16 @@ func TestParseDuration(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			gotStartTime, gotEndTime, gotStep := ParseDuration(tt.args.start, tt.args.end)
-			if !reflect.DeepEqual(gotStartTime.Truncate(time.Minute), tt.wantedStartTime.Truncate(time.Minute)) {
+			current := gotStartTime.Truncate(time.Minute).Format(timeFormat)
+			spec := tt.wantedStartTime.Truncate(time.Minute).Format(timeFormat)
+			if !reflect.DeepEqual(current, spec) {
 				t.Errorf(
 					"ParseDuration() got start time = %v, wanted start time %v",
 					gotStartTime.Truncate(time.Minute),
 					tt.wantedStartTime.Truncate(time.Minute),
 				)
 			}
-			if !reflect.DeepEqual(gotEndTime.Truncate(time.Minute), tt.wantedEndTime.Truncate(time.Minute)) {
+			if !reflect.DeepEqual(current, spec) {
 				t.Errorf(
 					"ParseDuration() got end time = %v, wanted end time %v",
 					gotEndTime.Truncate(time.Minute),
