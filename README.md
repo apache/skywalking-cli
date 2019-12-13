@@ -11,17 +11,22 @@ The CLI (Command Line Interface) for [Apache SkyWalking](https://github.com/apac
 SkyWalking CLI is a command interaction tool for the SkyWalking user or OPS team, as an alternative besides using browser GUI.
 It is based on SkyWalking [GraphQL query protocol](https://github.com/apache/skywalking-query-protocol), same as GUI.
 
+# Download
+Go to the [download page](https://skywalking.apache.org/downloads/) to download all available binaries, including MacOS, Linux, Windows.
+If you want to try the latest features, however, you can compile the latest codes yourself, as the guide below. 
+
 # Install
 As SkyWalking CLI is using `Makefile`, compiling the project is as easy as executing a command in the root directory of the project.
 
 ```shell
 git clone https://github.com/apache/skywalking-cli
 cd skywalking-cli
-make clean && make
+make
 ```
 
-and copy the `./bin/swctl` to your `PATH` directory, usually `/usr/bin/` or `/usr/local/bin`, or you can copy it to any directory you like,
-and add that directory to `PATH`.
+and copy the `./bin/swctl-latest-(darwin|linux|windows)-amd64` to your `PATH` directory according to your OS,
+usually `/usr/bin/` or `/usr/local/bin`, or you can copy it to any directory you like,
+and add that directory to `PATH`, we recommend you to rename the `swctl-latest-(darwin|linux|windows)-amd64` to `swctl`.
 
 # Commands
 Commands in SkyWalking CLI are organized into two levels, in the form of `swctl --option <level1> --option <level2> --option`,
@@ -41,7 +46,10 @@ will list all the `service`s, `service instance`s, etc.
 ## Common options
 There're some common options that are shared by multiple commands, and they follow the same rules in different commands,
 
-### `--start`, `--end`
+<details>
+
+<summary>--start, --end</summary>
+
 `--start` and `--end` specify a time range during which the query is preformed,
 they are both optional and their default values follow the rules below:
 
@@ -56,18 +64,12 @@ and if `end = 2019-11-09 12`, the precision is `HOUR`, so `start = end - 30HOUR 
 e.g. `start = 2019-11-09 1204`, the precision is `MINUTE`, so `end = start + 30 minutes = 2019-11-09 1234`,
 and if `start = 2019-11-08 06`, the precision is `HOUR`, so `end = start + 30HOUR = 2019-11-09 12`;
 
+</details>
 
 ## All available commands
 This section covers all the available commands in SkyWalking CLI and their usages.
 
-- [`swctl`](#swctl-top-level-command)
-- [`service`](#service-second-level-command) (second level command)
-  - [`list`, `ls`](#service-list---startstart-time---endend-time)
-- [`instance`](#instance-second-level-command) (second level command)
-  - [`list`, `ls`](#instance-list---service-idservice-id---service-nameservice-name---startstart-time---endend-time)
-  - [`search`](#instance-search---regexinstance-name-regex---service-idservice-id---service-nameservice-name---startstart-time---endend-time)
-
-### `swctl` top-level command
+### `swctl`
 `swctl` is the top-level command, which has some options that will take effects globally.
 
 | option | description | default |
@@ -77,83 +79,231 @@ This section covers all the available commands in SkyWalking CLI and their usage
 | `--base-url` | base url of GraphQL backend | `http://127.0.0.1:12800/graphql` |
 | `--display` | display style when printing the query result, supported styles are: `json`, `yaml`, `table` | `json` |
 
-### `service` second-level command
-`service` second-level command is an entry for all operations related to services,
-and it also has some options and third-level commands.
+### `service`
 
-#### `service list [--start=<start time>] [--end=<end time>]`
-`service list` lists all the services in the time range of \[`start`, `end`\].
+<details>
+
+<summary>service list [--start=start-time] [--end=end-time]</summary>
+
+`service list` lists all the services in the time range of `[start, end]`.
 
 | option | description | default |
 | :--- | :--- | :--- |
 | `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
 | `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
 
-### `instance` second-level command
-`instance` second-level command is an entry for all operations related to instances,
-and it also has some options and third-level commands.
+</details>
 
-#### `instance list [--service-id=<service id>] [--service-name=<service name>] [--start=<start time>] [--end=<end time>]`
-`instance list` lists all the instances in the time range of \[`start`, `end`\] and given --service-id or --service-name.
+### `instance`
+
+<details>
+
+<summary>instance list [--start=start-time] [--end=end-time] [--service-id=service-id] [--service-name=service-name]</summary>
+
+`instance list` lists all the instances in the time range of `[start, end]` and given `--service-id` or `--service-name`.
 
 | option | description | default |
 | :--- | :--- | :--- |
-| `--service-id` | Query service id (priority over --service-name)|  |
-| `--service-name` | Query service name |  |
+| `--service-id` | Query by service id (priority over `--service-name`)|  |
+| `--service-name` | Query by service name if `--service-id` is absent |  |
 | `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
 | `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
 
-#### `instance search [--regex=<instance name regex>] [--service-id=<service id>] [--service-name=<service name>] [--start=<start time>] [--end=<end time>]`
-`instance search` filter the instance in the time range of \[`start`, `end`\] and given --regex --service-id or --service-name.
+</details>
+
+<details>
+
+<summary>instance search [--start=start-time] [--end=end-time] [--regex=instance-name-regex] [--service-id=service-id] [--service-name=service-name]</summary>
+
+`instance search` filter the instance in the time range of `[start, end]` and given --regex --service-id or --service-name.
 
 | option | description | default |
 | :--- | :--- | :--- |
 | `--regex` | Query regex of instance name|  |
-| `--service-id` | Query service id (priority over --service-name)|  |
-| `--service-name` | Query service name |  |
+| `--service-id` | Query by service id (priority over `--service-name`)|  |
+| `--service-name` | Query by service name if `service-id` is absent |  |
 | `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
 | `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
 
-### `linear-metrics` second-level command
-`linear-metrics` second-level command is an entrance for all operations related to linear metrics,
-and it also has some options.
+</details>
+
+### `endpoint`
+
+<details>
+
+<summary>endpoint list [--start=start-time] [--end=end-time] --service-id=service-id [--limit=count] [--keyword=search-keyword]</summary>
+
+`endpoint list` lists all the endpoints of the given service id in the time range of `[start, end]`.
+
+| option | description | default |
+| :--- | :--- | :--- |
+| `--service-id` | <service id> whose endpoints are to be searched | |
+| `--limit` | returns at most <limit> endpoints (default: 100) | 100 |
+| `--keyword` | <keyword> of the endpoint name to search for, empty to search all | "" |
+
+</details>
+
+### `linear-metrics`
+
+<details>
+
+<summary>linear-metrics [--start=start-time] [--end=end-time] --name=metrics-name [--id=entity-id]</summary>
 
 | option | description | default |
 | :--- | :--- | :--- |
 | `--name` | Metrics name, defined in [OAL](https://github.com/apache/skywalking/blob/master/oap-server/server-bootstrap/src/main/resources/official_analysis.oal), such as `all_p99`, etc. |
+| `--id` | the related id if the metrics requires one, e.g. for metrics `service_p99`, the service `id` is required, use `--id` to specify the service id, the same for `instance`, `endpoint`, etc. |
 | `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
 | `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
 
-# Developer guide
+</details>
 
-## Compiling and building
-Clone the source code and simply run `make clean && make` in the source directory,
-this will download all necessary dependencies and build a binary file in `./bin/swctl`.
+### `single-metrics`
 
-```shell
-make clean && make
-```
+<details>
 
-## Writing a new command
-All commands files locate in directory [`commands`](commands), and an individual directory for each second-level command,
-an individual `go` file for each third-level command, for example, there is a directory [`service`](commands/service) for command `swctl service`, 
-and a [`list.go`](commands/service/list.go) file for `swctl service list` command.
+<summary>single-metrics [--start=start-time] [--end=end-time] --name=metrics-name [--ids=entity-ids]</summary>
 
-Determine what entity your command will operate on, and put your command `go` file into that directory, or create one if it doesn't exist,
-for example, if you want to create a command to `list` all the `instance`s of a service, create a directory `commands/instance`,
-and a `go` file `commands/instance/list.go`.
+| option | description | default |
+| :--- | :--- | :--- |
+| `--name` | Metrics name, defined in [OAL](https://github.com/apache/skywalking/blob/master/oap-server/server-bootstrap/src/main/resources/official_analysis.oal), such as `service_sla`, etc. |
+| `--ids` | IDs that are required by the metric type, such as service IDs for `service_sla` |
+| `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
+| `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
 
-## Reusing common options
-There're some [common options](#common-options) that can be shared by multiple commands, check [`commands/flags`](commands/flags)
-to get all the shared options, and reuse them when possible, an example shares the options is [`commands/service/list.go`](commands/service/list.go#L35)
+</details>
 
-## Running tests
-Before submitting a pull request, add some test code to test the added/modified codes,
-and run the tests locally, make sure all tests passed.
+# Use Cases
+
+<details>
+
+<summary>Query a specific service by name</summary>
 
 ```shell
-go test -v ./...
+# query the service named projectC
+$ ./bin/swctl service ls projectC
+[{"id":"4","name":"projectC"}]
 ```
+
+</details>
+
+<details>
+
+<summary>Query instances of a specific service</summary>
+
+If you have already got the `id` of the service:
+
+```shell
+$ ./bin/swctl instance ls --service-id=3
+[{"id":"3","name":"projectD-pid:7909@skywalking-server-0001","attributes":[{"name":"os_name","value":"Linux"},{"name":"host_name","value":"skywalking-server-0001"},{"name":"process_no","value":"7909"},{"name":"ipv4s","value":"192.168.252.12"}],"language":"JAVA","instanceUUID":"ec8a79d7cb58447c978ee85846f6699a"}]
+```
+
+otherwise,
+
+```shell
+$ ./bin/swctl instance ls --service-name=projectC
+[{"id":"3","name":"projectD-pid:7909@skywalking-server-0001","attributes":[{"name":"os_name","value":"Linux"},{"name":"host_name","value":"skywalking-server-0001"},{"name":"process_no","value":"7909"},{"name":"ipv4s","value":"192.168.252.12"}],"language":"JAVA","instanceUUID":"ec8a79d7cb58447c978ee85846f6699a"}]
+```
+
+</details>
+
+<details>
+
+<summary>Query endpoints of a specific service</summary>
+
+If you have already got the `id` of the service:
+
+```shell
+$ ./bin/swctl endpoint ls --service-id=3
+```
+
+otherwise,
+
+```shell
+./bin/swctl service ls projectC | jq '.[].id' | xargs ./bin/swctl-latest-darwin-amd64 endpoint ls --service-id 
+[{"id":"22","name":"/projectC/{value}"}]
+```
+
+</details>
+
+<details>
+
+<summary>Query a linear metrics graph for an instance</summary>
+
+If you have already got the `id` of the instance:
+
+```shell
+$ ./bin/swctl --display=graph linear-metrics --name=service_instance_resp_time --id 5
+┌─────────────────────────────────────────────────────────────────────────────────Press q to quit──────────────────────────────────────────────────────────────────────────────────┐
+│                                                                                                                                                                                  │
+│                                                                                                                                                                                  │
+│         │                                                                                                                                                    ⡜⠢⡀                 │
+│  1181.80│                                      ⡰⡀                                                         ⢀⡠⢢         ⡰⢣                                    ⡰⠁ ⠈⠢⡀               │
+│         │                                     ⢠⠃⠱⡀              ⡀                                       ⢀⠔⠁  ⠱⡀     ⢀⠜  ⢣                        ⢀⠞⡄       ⢠⠃    ⠈⠢⡀             │
+│         │                                     ⡎  ⠱⡀          ⢀⠔⠊⠱⡀                 ⢀⣀⣀⣀              ⢀⡠⠊⠁     ⠘⢄   ⢀⠎    ⢣                      ⡠⠃ ⠘⡄      ⡎       ⠈⠑⠢⢄⡀  ⢀⡠⠔⠊⠁  │
+│         │          ⢀⠤⣀⡀       ⢀⡀             ⡸    ⢣        ⡠⠔⠁   ⠱⡀            ⡠⠊⠉⠉⠁   ⠉⠉⠒⠒⠤⠤⣀⣀⣀ ⢀⡠⠔⠊⠁          ⠣⡀⡠⠃      ⢣           ⢀⠔⠤⡀     ⡰⠁   ⠘⡄    ⡜            ⠈⠑⠊⠁      │
+│  1043.41│⡀       ⢀⠔⠁  ⠈⠑⠒⠤⠔⠒⠊⠉⠁⠈⠒⢄          ⢀⠇     ⢣    ⢀⠤⠊       ⠱⡀         ⢀⠔⠁                ⠉⠁               ⠑⠁        ⢣         ⡠⠃  ⠈⠒⢄ ⢀⠜      ⠘⡄  ⢰⠁                      │
+│         │⠈⠑⠤⣀   ⡠⠊                ⠑⠤⡀       ⡜       ⢣ ⣀⠔⠁          ⠱⡀       ⡰⠁                                              ⠣⢄⣀    ⢠⠊       ⠉⠊        ⠘⡄⢠⠃                       │
+│         │    ⠑⠢⠊                    ⠈⠢⡀    ⢰⠁        ⠋              ⠱⡀  ⣀⠤⠔⠊                                                   ⠉⠒⠢⠔⠁                   ⠘⠎                        │
+│         │                             ⠈⠢⡀ ⢀⠇                         ⠑⠊⠉                                                                                                         │
+│      905│                               ⠈⠢⡜                                                                                                                                      │
+│         └──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────  │
+│          2019-12-02 2121   2019-12-02 2107   2019-12-02 2115   2019-12-02 2119   2019-12-02 2137   2019-12-02 2126   2019-12-02 2118   2019-12-02 2128   2019-12-02 2136         │
+│                                                                                                                                                                                  │
+│                                                                                                                                                                                  │
+└──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+otherwise
+
+```shell
+$ ./bin/swctl instance ls --service-name=projectC | jq '.[] | select(.name == "projectC-pid:7895@skywalking-server-0001").id' | xargs ./bin/swctl --display=graph linear-metrics --name=service_instance_resp_time --id
+┌─────────────────────────────────────────────────────────────────────────────────Press q to quit──────────────────────────────────────────────────────────────────────────────────┐
+│                                                                                                                                                                                  │
+│                                                                                                                                                                                  │
+│         │                                                                           ⡠⠒⢣                                                                                          │
+│  1181.80│                          ⡠⠊⢢                                           ⣀⠔⠉   ⢣              ⡔⡄                               ⡔⡄                                        │
+│         │           ⣀            ⡠⠊   ⠑⡄                                    ⣀⡠⠔⠒⠉       ⢣            ⡜ ⠈⢆                            ⢀⠎ ⠈⢢              ⡀                        │
+│         │          ⡜ ⠉⠒⠤⣀   ⢀⣀⣀⡠⠊      ⠈⠢⡀               ⢀⡠⢄⣀⡀            ⡰⠉             ⢣          ⡜    ⢣                          ⡠⠃    ⠑⡄        ⢀⡠⠔⠉⠘⢄                       │
+│         │        ⢀⠜      ⠉⠉⠉⠁            ⠑⢄          ⢀⡠⠔⠊⠁   ⠈⠉⠑⢢        ⡰⠁               ⢣       ⢀⠎      ⠱⡀          ⢀⠦⡀         ⢀⠜       ⠈⢢ ⢀⣀⣀⡠⠤⠒⠁     ⠣⡀                  ⡀  │
+│  1043.41│       ⢀⠎                         ⠑⢄      ⢀⠔⠁           ⠱⡀     ⡰⠁                 ⢣⣀    ⢀⠎        ⠘⢄        ⢀⠎ ⠈⢢      ⢀⠤⠊          ⠉⠁            ⠘⢄               ⡠⠊   │
+│         │      ⢠⠃                           ⠈⠢⡀  ⡠⠒⠁              ⠘⢄   ⡰⠁                    ⠉⠉⠉⠒⠊          ⠈⢢      ⢀⠎    ⠑⢄  ⡠⠒⠁                            ⠣⠤⣀⣀⣀       ⢀⠔⠉     │
+│         │⠤⠤⠤⠤⠤⠤⠃                              ⠈⠢⠊                   ⠣⡀⡰⠁                                      ⠱⡀   ⢀⠎       ⠑⠉                                    ⠉⠉⠉⠉⠒⠒⠒⠁       │
+│         │                                                            ⠑⠁                                        ⠑⡄ ⢀⠎                                                             │
+│      905│                                                                                                       ⠈⢆⠎                                                              │
+│         └──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────  │
+│          2019-12-02 2122   2019-12-02 2137   2019-12-02 2136   2019-12-02 2128   2019-12-02 2108   2019-12-02 2130   2019-12-02 2129   2019-12-02 2115   2019-12-02 2119         │
+│                                                                                                                                                                                  │
+│                                                                                                                                                                                  │
+└──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+</details>
+
+<details>
+
+<summary>Query a single metrics value for a specific endpoint</summary>
+
+```shell
+$ ./bin/swctl service ls projectC | jq '.[0].id' | xargs ./bin/swctl endpoint ls --service-id | jq '.[] | [.id] | join(",")' | xargs ./bin/swctl single-metrics --name endpoint_cpm --ids
+[{"id":"22","value":116}]
+```
+
+</details>
+
+<details>
+
+<summary>Query metrics single values for all endpoints of service of id 3</summary>
+
+```shell
+$ ./bin/swctl service ls projectC | jq '.[0].id' | xargs ./bin/swctl endpoint ls --service-id | jq '.[] | [.id] | join(",")' | xargs ./bin/swctl single-metrics --name endpoint_cpm --end='2019-12-02 2137' --ids
+[{"id":"3","value":116}]
+```
+
+</details>
+
+# Contributing
+For developers who want to contribute to this project, see [Contribution Guide](CONTRIBUTING.md)
 
 # License
 [Apache 2.0 License.](/LICENSE)
