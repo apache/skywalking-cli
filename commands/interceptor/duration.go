@@ -18,6 +18,7 @@
 package interceptor
 
 import (
+	"strconv"
 	"time"
 
 	"github.com/urfave/cli"
@@ -43,8 +44,9 @@ func tryParseTime(unparsed string) (schema.Step, time.Time, error) {
 func DurationInterceptor(ctx *cli.Context) error {
 	start := ctx.String("start")
 	end := ctx.String("end")
+	timezone := ctx.GlobalString("timezone")
 
-	startTime, endTime, step := ParseDuration(start, end)
+	startTime, endTime, step := ParseDuration(start, end, timezone)
 
 	if err := ctx.Set("start", startTime.Format(schema.StepFormats[step])); err != nil {
 		return err
@@ -66,10 +68,19 @@ func DurationInterceptor(ctx *cli.Context) error {
 // NOTE that when either(both) `start` or `end` is(are) given, there is no timezone info
 // in the format, (e.g. 2019-11-09 1001), so they'll be considered as UTC-based,
 // and generate the missing `start`(`end`) based on the same timezone, UTC
-func ParseDuration(start, end string) (startTime, endTime time.Time, step schema.Step) {
-	logger.Log.Debugln("Start time:", start, "end time:", end)
+func ParseDuration(start, end, timezone string) (startTime, endTime time.Time, step schema.Step) {
+	logger.Log.Debugln("Start time:", start, "end time:", end, "timezone:", timezone)
 
 	now := time.Now()
+
+	if timezone != "" {
+		if offset, err := strconv.Atoi(timezone); err == nil {
+			// `offset` is in form of "+1300", while `time.FixedZone` takes offset in seconds
+			now = now.In(time.FixedZone("", offset/100*60*60))
+
+			logger.Log.Debugln("Now:", now, "with server timezone:", timezone)
+		}
+	}
 
 	// both are absent
 	if start == "" && end == "" {

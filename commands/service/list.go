@@ -36,6 +36,7 @@ var ListCommand = cli.Command{
 	Description: "list all services if no <service name> is given, otherwise, only list the given service",
 	Flags:       flags.DurationFlags,
 	Before: interceptor.BeforeChain([]cli.BeforeFunc{
+		interceptor.TimezoneInterceptor,
 		interceptor.DurationInterceptor,
 	}),
 	Action: func(ctx *cli.Context) error {

@@ -15,41 +15,28 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package instance
+package metadata
 
 import (
+	"github.com/machinebox/graphql"
 	"github.com/urfave/cli"
 
-	"github.com/apache/skywalking-cli/commands/flags"
-	"github.com/apache/skywalking-cli/commands/interceptor"
-	"github.com/apache/skywalking-cli/commands/model"
-	"github.com/apache/skywalking-cli/display"
 	"github.com/apache/skywalking-cli/graphql/client"
 	"github.com/apache/skywalking-cli/graphql/schema"
 )
 
-var ListCommand = cli.Command{
-	Name:      "list",
-	ShortName: "ls",
-	Usage:     "List all available instance by given --service-id or --service-name parameter",
-	Flags:     append(flags.DurationFlags, flags.InstanceServiceIDFlags...),
-	Before: interceptor.BeforeChain([]cli.BeforeFunc{
-		interceptor.TimezoneInterceptor,
-		interceptor.DurationInterceptor,
-	}),
-	Action: func(ctx *cli.Context) error {
-		serviceID := verifyAndSwitchServiceParameter(ctx)
+func ServerTimeInfo(cliCtx *cli.Context) (schema.TimeInfo, error) {
+	request := graphql.NewRequest(`
+		query {
+			timeInfo: getTimeInfo {
+				timezone, currentTimestamp
+			}
+		}
+	`)
 
-		end := ctx.String("end")
-		start := ctx.String("start")
-		step := ctx.Generic("step")
-
-		instances := client.Instances(ctx, serviceID, schema.Duration{
-			Start: start,
-			End:   end,
-			Step:  step.(*model.StepEnumValue).Selected,
-		})
-
-		return display.Display(ctx, instances)
-	},
+	var response map[string]schema.TimeInfo
+	if err := client.ExecuteQuery(cliCtx, request, &response); err != nil {
+		return schema.TimeInfo{}, err
+	}
+	return response["timeInfo"], nil
 }

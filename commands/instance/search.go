@@ -35,6 +35,7 @@ var SearchCommand = cli.Command{
 	Usage: "Filter the instance from the existing service instance list",
 	Flags: append(flags.DurationFlags, append(flags.SearchRegexFlags, flags.InstanceServiceIDFlags...)...),
 	Before: interceptor.BeforeChain([]cli.BeforeFunc{
+		interceptor.TimezoneInterceptor,
 		interceptor.DurationInterceptor,
 	}),
 	Action: func(ctx *cli.Context) error {

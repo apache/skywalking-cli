@@ -60,6 +60,12 @@ func main() {
 			Usage:    "base `url` of the OAP backend graphql",
 			Value:    "http://127.0.0.1:12800/graphql",
 		}),
+		altsrc.NewStringFlag(cli.StringFlag{
+			Name:     "timezone",
+			Required: false,
+			Hidden:   true,
+			Usage:    "the timezone of the server side",
+		}),
 		altsrc.NewBoolFlag(cli.BoolFlag{
 			Name:     "debug",
 			Required: false,

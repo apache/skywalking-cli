@@ -47,6 +47,7 @@ var Command = cli.Command{
 		},
 	),
 	Before: interceptor.BeforeChain([]cli.BeforeFunc{
+		interceptor.TimezoneInterceptor,
 		interceptor.DurationInterceptor,
 	}),
 	Action: func(ctx *cli.Context) error {
