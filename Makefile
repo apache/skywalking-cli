@@ -33,6 +33,7 @@ GO_TEST = $(GO) test
 GO_LINT = $(GO_PATH)/bin/golangci-lint
 GO_LICENSER = $(GO_PATH)/bin/go-licenser
 GO_BUILD_FLAGS = -v
+GO_BUILD_LDFLAGS = -X main.version=$(VERSION)
 
 PLATFORMS := windows linux darwin
 os = $(word 1, $@)
@@ -48,7 +49,7 @@ deps:
 .PHONY: $(PLATFORMS)
 $(PLATFORMS):
 	mkdir -p $(OUT_DIR)
-	GOOS=$(os) GOARCH=$(ARCH) $(GO_BUILD) $(GO_BUILD_FLAGS) -o $(OUT_DIR)/$(BINARY)-$(VERSION)-$(os)-$(ARCH) swctl/main.go
+	GOOS=$(os) GOARCH=$(ARCH) $(GO_BUILD) $(GO_BUILD_FLAGS) -ldflags "$(GO_BUILD_LDFLAGS)" -o $(OUT_DIR)/$(BINARY)-$(VERSION)-$(os)-$(ARCH) swctl/main.go
 
 .PHONY: lint
 lint:
