@@ -37,7 +37,14 @@ func newClient(cliCtx *cli.Context) (client *graphql.Client) {
 	return
 }
 
-func executeQuery(cliCtx *cli.Context, request *graphql.Request, response interface{}) {
+func ExecuteQuery(cliCtx *cli.Context, request *graphql.Request, response interface{}) error {
+	client := newClient(cliCtx)
+	ctx := context.Background()
+	err := client.Run(ctx, request, response)
+	return err
+}
+
+func ExecuteQueryOrFail(cliCtx *cli.Context, request *graphql.Request, response interface{}) {
 	client := newClient(cliCtx)
 	ctx := context.Background()
 	if err := client.Run(ctx, request, response); err != nil {
@@ -56,7 +63,7 @@ func Services(cliCtx *cli.Context, duration schema.Duration) []schema.Service {
 	`)
 	request.Var("duration", duration)
 
-	executeQuery(cliCtx, request, &response)
+	ExecuteQueryOrFail(cliCtx, request, &response)
 	return response["services"]
 }
 
@@ -73,7 +80,7 @@ func SearchEndpoints(cliCtx *cli.Context, serviceID, keyword string, limit int) 
 	request.Var("keyword", keyword)
 	request.Var("limit", limit)
 
-	executeQuery(cliCtx, request, &response)
+	ExecuteQueryOrFail(cliCtx, request, &response)
 	return response["endpoints"]
 }
 
@@ -88,7 +95,7 @@ func GetEndpointInfo(cliCtx *cli.Context, endpointID string) schema.Endpoint {
 	`)
 	request.Var("endpointId", endpointID)
 
-	executeQuery(cliCtx, request, &response)
+	ExecuteQueryOrFail(cliCtx, request, &response)
 	return response["endpoint"]
 }
 
@@ -111,7 +118,7 @@ func Instances(cliCtx *cli.Context, serviceID string, duration schema.Duration) 
 	request.Var("serviceId", serviceID)
 	request.Var("duration", duration)
 
-	executeQuery(cliCtx, request, &response)
+	ExecuteQueryOrFail(cliCtx, request, &response)
 	return response["instances"]
 }
 
@@ -126,7 +133,7 @@ func SearchService(cliCtx *cli.Context, serviceCode string) (service schema.Serv
 	`)
 	request.Var("serviceCode", serviceCode)
 
-	executeQuery(cliCtx, request, &response)
+	ExecuteQueryOrFail(cliCtx, request, &response)
 	service = response["service"]
 	if service.ID == "" {
 		return service, fmt.Errorf("no such service [%s]", serviceCode)
@@ -147,7 +154,7 @@ func LinearIntValues(ctx *cli.Context, condition schema.MetricCondition, duratio
 	request.Var("metric", condition)
 	request.Var("duration", duration)
 
-	executeQuery(ctx, request, &response)
+	ExecuteQueryOrFail(ctx, request, &response)
 
 	values := metricsToMap(duration, response["metrics"].Values)
 
@@ -167,7 +174,7 @@ func IntValues(ctx *cli.Context, condition schema.BatchMetricConditions, duratio
 	request.Var("metric", condition)
 	request.Var("duration", duration)
 
-	executeQuery(ctx, request, &response)
+	ExecuteQueryOrFail(ctx, request, &response)
 
 	return response["metrics"].Values
 }
