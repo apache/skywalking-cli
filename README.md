@@ -48,7 +48,7 @@ There're some common options that are shared by multiple commands, and they foll
 
 <details>
 
-<summary>--start, --end</summary>
+<summary>--start, --end, --timezone</summary>
 
 `--start` and `--end` specify a time range during which the query is preformed,
 they are both optional and their default values follow the rules below:
@@ -63,6 +63,12 @@ and if `end = 2019-11-09 12`, the precision is `HOUR`, so `start = end - 30HOUR 
 - when `start` is present and `end` is absent, will determine the precision of `start` and then use the precision to calculate `end` (plus 30 units),
 e.g. `start = 2019-11-09 1204`, the precision is `MINUTE`, so `end = start + 30 minutes = 2019-11-09 1234`,
 and if `start = 2019-11-08 06`, the precision is `HOUR`, so `end = start + 30HOUR = 2019-11-09 12`;
+
+`--timezone` specifies the timezone where `--start` `--end` are based, in the form of `+0800`:
+
+- if `--timezone` is given in the command line option, then it's used directly;
+- else if the backend support the timezone API (since 6.5.0), CLI will try to get the timezone from backend, and use it;
+- otherwise, the CLI will use the current timezone in the current machine; 
 
 </details>
 
@@ -299,6 +305,20 @@ $ ./bin/swctl service ls projectC | jq '.[0].id' | xargs ./bin/swctl endpoint ls
 $ ./bin/swctl service ls projectC | jq '.[0].id' | xargs ./bin/swctl endpoint ls --service-id | jq '.[] | [.id] | join(",")' | xargs ./bin/swctl single-metrics --name endpoint_cpm --end='2019-12-02 2137' --ids
 [{"id":"3","value":116}]
 ```
+
+</details>
+
+<details>
+
+<summary>Automatically convert to server side timezone</summary>
+
+if your backend nodes are deployed in docker and the timezone is UTC, you may not want to convert your timezone to UTC every time you type a command, `--timezone` comes to your rescue.
+
+```shell
+$ ./bin/swctl --debug --timezone="0" service ls
+```
+
+`--timezone="+1200"` and `--timezone="-0900"` are also valid usage.
 
 </details>
 

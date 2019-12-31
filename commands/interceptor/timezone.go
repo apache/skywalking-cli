@@ -29,6 +29,11 @@ import (
 // TimezoneInterceptor sets the server timezone if the server supports the API,
 // otherwise, sets to local timezone
 func TimezoneInterceptor(ctx *cli.Context) error {
+	// If there is timezone given by the user in command line, use it directly
+	if ctx.GlobalString("timezone") != "" {
+		return nil
+	}
+
 	serverTimeInfo, err := metadata.ServerTimeInfo(ctx)
 
 	if err != nil {
