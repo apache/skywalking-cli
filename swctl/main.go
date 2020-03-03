@@ -38,6 +38,7 @@ import (
 )
 
 var log *logrus.Logger
+var version string // Will be initialized when building
 
 func init() {
 	log = logger.Log
@@ -46,7 +47,7 @@ func init() {
 func main() {
 	app := cli.NewApp()
 	app.Usage = "The CLI (Command Line Interface) for Apache SkyWalking."
-	app.Version = "0.1.0"
+	app.Version = version
 
 	flags := []cli.Flag{
 		altsrc.NewStringFlag(cli.StringFlag{
