@@ -24,3 +24,7 @@ github:
     - apm
     - distributed-tracing
     - cli
+  enabled_merge_buttons:
+    squash:  true
+    merge:   false
+    rebase:  false
