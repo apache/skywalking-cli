@@ -137,7 +137,7 @@ are in `https://dist.apache.org/repos/dist/dev/skywalking/cli/$VERSION` with `.a
 1. `LICENSE` and `NOTICE` are in source codes and distribution package.
 1. Check `shasum -c apache-skywalking-cli-{src,bin}-$VERSION.tgz.sha512`
 1. Build distribution from source code package by following this [the build guide](#build-and-sign-the-source-code-package).
-1. Apache RAT check.
+1. Licenses check, `make license`;
 
 Vote result should follow these.
 

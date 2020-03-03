@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-VERSION ?= 0.1.0
+VERSION ?= latest
 OUT_DIR = bin
 BINARY = swctl
 
