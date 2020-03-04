@@ -209,7 +209,7 @@ The text of each license is the standard Apache 2.0 license.
 
 	machinebox (graphql) 0.2.2: https://github.com/machinebox/graphql Apache 2.0
 	mum4k (termdash) 0.10.0: https://github.com/mum4k/termdash Apache 2.0
-	yaml.v2 2.2.2: https://gopkg.in/yaml.v2 Apache 2.0
+	yaml.v2 2.2.4: https://gopkg.in/yaml.v2 Apache 2.0
 
 ========================================================================
 MIT licenses
