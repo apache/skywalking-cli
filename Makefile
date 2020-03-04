@@ -41,10 +41,15 @@ ARCH = amd64
 
 SHELL = /bin/bash
 
-all: clean deps lint test license build
+all: clean deps codegen lint test license build
 
 deps:
 	$(GO_GET) -v -t -d ./...
+
+codegen:
+	echo 'scalar Long' > query-protocol/schema.graphqls
+	$(GO) run github.com/99designs/gqlgen generate
+	-rm -rf generated.go
 
 .PHONY: $(PLATFORMS)
 $(PLATFORMS):
@@ -57,7 +62,7 @@ lint:
 	$(GO_LINT) run -v ./...
 
 .PHONE: test
-test: clean lint
+test: clean codegen lint
 	$(GO_TEST) ./... -coverprofile=coverage.txt -covermode=atomic
 
 .PHONY: build
@@ -66,7 +71,7 @@ build: deps windows linux darwin
 .PHONY: license
 license: clean
 	$(GO_LICENSER) -version || GO111MODULE=off $(GO_GET) -u github.com/elastic/go-licenser
-	$(GO_LICENSER) -d -licensor='Apache Software Foundation (ASF)' .
+	$(GO_LICENSER) -exclude graphql/schema/ -d -licensor='Apache Software Foundation (ASF)' .
 
 .PHONY: verify
 verify: clean lint test license
@@ -98,6 +103,7 @@ release-src: clean
 	--exclude .DS_Store \
 	--exclude .github \
 	--exclude $(RELEASE_SRC).tgz \
+	--exclude graphql/schema/schema.go \
 	.
 
 release-bin: build
