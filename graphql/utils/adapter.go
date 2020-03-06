@@ -15,40 +15,31 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package instance
+package utils
 
 import (
-	"github.com/urfave/cli"
+	"time"
 
-	"github.com/apache/skywalking-cli/graphql/metadata"
-
+	"github.com/apache/skywalking-cli/graphql/schema"
 	"github.com/apache/skywalking-cli/logger"
 )
 
-var Command = cli.Command{
-	Name:      "instance",
-	ShortName: "i",
-	Usage:     "Instance related sub-command",
-	Subcommands: cli.Commands{
-		ListCommand,
-		SearchCommand,
-	},
-}
+type IntValues schema.IntValues
 
-func verifyAndSwitchServiceParameter(ctx *cli.Context) string {
-	serviceID := ctx.String("service-id")
-	serviceName := ctx.String("service-name")
+func MetricsToMap(duration schema.Duration, intValues schema.IntValues) map[string]float64 {
+	kvInts := intValues.Values
+	values := map[string]float64{}
+	format := StepFormats[duration.Step]
+	startTime, err := time.Parse(format, duration.Start)
 
-	if serviceID == "" && serviceName == "" {
-		logger.Log.Fatalf("flags \"service-id, service-name\" must set one")
+	if err != nil {
+		logger.Log.Fatalln(err)
 	}
 
-	if serviceID == "" && serviceName != "" {
-		service, err := metadata.SearchService(ctx, serviceName)
-		if err != nil {
-			logger.Log.Fatalln(err)
-		}
-		serviceID = service.ID
+	step := StepDuration[duration.Step]
+	for idx, value := range kvInts {
+		values[startTime.Add(time.Duration(idx)*step).Format(format)] = float64(value.Value)
 	}
-	return serviceID
+
+	return values
 }

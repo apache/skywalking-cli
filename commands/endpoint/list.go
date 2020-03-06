@@ -20,8 +20,9 @@ package endpoint
 import (
 	"github.com/urfave/cli"
 
+	"github.com/apache/skywalking-cli/graphql/metadata"
+
 	"github.com/apache/skywalking-cli/display"
-	"github.com/apache/skywalking-cli/graphql/client"
 )
 
 var ListCommand = cli.Command{
@@ -53,7 +54,7 @@ var ListCommand = cli.Command{
 		limit := ctx.Int("limit")
 		keyword := ctx.String("keyword")
 
-		endpoints := client.SearchEndpoints(ctx, serviceID, keyword, limit)
+		endpoints := metadata.SearchEndpoints(ctx, serviceID, keyword, limit)
 
 		return display.Display(ctx, endpoints)
 	},

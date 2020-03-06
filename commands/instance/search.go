@@ -20,13 +20,14 @@ package instance
 import (
 	"regexp"
 
+	"github.com/apache/skywalking-cli/graphql/metadata"
+
 	"github.com/urfave/cli"
 
 	"github.com/apache/skywalking-cli/commands/flags"
 	"github.com/apache/skywalking-cli/commands/interceptor"
 	"github.com/apache/skywalking-cli/commands/model"
 	"github.com/apache/skywalking-cli/display"
-	"github.com/apache/skywalking-cli/graphql/client"
 	"github.com/apache/skywalking-cli/graphql/schema"
 )
 
@@ -47,7 +48,7 @@ var SearchCommand = cli.Command{
 
 		regex := ctx.String("regex")
 
-		instances := client.Instances(ctx, serviceID, schema.Duration{
+		instances := metadata.Instances(ctx, serviceID, schema.Duration{
 			Start: start,
 			End:   end,
 			Step:  step.(*model.StepEnumValue).Selected,

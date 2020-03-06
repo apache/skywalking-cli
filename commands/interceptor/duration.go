@@ -21,6 +21,8 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/apache/skywalking-cli/graphql/utils"
+
 	"github.com/urfave/cli"
 
 	"github.com/apache/skywalking-cli/graphql/schema"
@@ -29,7 +31,7 @@ import (
 
 func tryParseTime(unparsed string) (schema.Step, time.Time, error) {
 	var possibleError error = nil
-	for step, layout := range schema.StepFormats {
+	for step, layout := range utils.StepFormats {
 		t, err := time.Parse(layout, unparsed)
 		if err == nil {
 			return step, t, nil
@@ -48,9 +50,9 @@ func DurationInterceptor(ctx *cli.Context) error {
 
 	startTime, endTime, step := ParseDuration(start, end, timezone)
 
-	if err := ctx.Set("start", startTime.Format(schema.StepFormats[step])); err != nil {
+	if err := ctx.Set("start", startTime.Format(utils.StepFormats[step])); err != nil {
 		return err
-	} else if err := ctx.Set("end", endTime.Format(schema.StepFormats[step])); err != nil {
+	} else if err := ctx.Set("end", endTime.Format(utils.StepFormats[step])); err != nil {
 		return err
 	} else if err := ctx.Set("step", step.String()); err != nil {
 		return err
@@ -103,12 +105,12 @@ func ParseDuration(start, end, timezone string) (startTime, endTime time.Time, s
 		if step, startTime, err = tryParseTime(start); err != nil {
 			logger.Log.Fatalln("Unsupported time format:", start, err)
 		}
-		return startTime, startTime.Add(30 * schema.StepDuration[step]), step
+		return startTime, startTime.Add(30 * utils.StepDuration[step]), step
 	} else { // start is absent
 		if step, endTime, err = tryParseTime(end); err != nil {
 			logger.Log.Fatalln("Unsupported time format:", end, err)
 		}
-		return endTime.Add(-30 * schema.StepDuration[step]), endTime, step
+		return endTime.Add(-30 * utils.StepDuration[step]), endTime, step
 	}
 }
 

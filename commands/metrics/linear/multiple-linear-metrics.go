@@ -15,12 +15,13 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package service
+package linear
 
 import (
 	"github.com/urfave/cli"
 
-	"github.com/apache/skywalking-cli/graphql/metadata"
+	"github.com/apache/skywalking-cli/graphql/metrics"
+	"github.com/apache/skywalking-cli/graphql/utils"
 
 	"github.com/apache/skywalking-cli/commands/flags"
 	"github.com/apache/skywalking-cli/commands/interceptor"
@@ -29,13 +30,30 @@ import (
 	"github.com/apache/skywalking-cli/graphql/schema"
 )
 
-var ListCommand = cli.Command{
-	Name:        "list",
-	ShortName:   "ls",
-	Usage:       "List services",
-	ArgsUsage:   "<service name>",
-	Description: "list all services if no <service name> is given, otherwise, only list the given service",
-	Flags:       flags.DurationFlags,
+var Multiple = cli.Command{
+	Name:  "multiple-linear",
+	Usage: "Query multiple linear metrics defined in backend OAL",
+	Flags: flags.Flags(
+		flags.DurationFlags,
+		[]cli.Flag{
+			cli.StringFlag{
+				Name:     "name",
+				Usage:    "metrics `NAME`, such as `all_percentile`",
+				Required: true,
+			},
+			cli.StringFlag{
+				Name:     "id",
+				Usage:    "`ID`, the related id if the metrics requires one",
+				Required: false,
+			},
+			cli.IntFlag{
+				Name:     "num",
+				Usage:    "`num`, the number of linear metrics to query, (default: 5)",
+				Required: false,
+				Value:    5,
+			},
+		},
+	),
 	Before: interceptor.BeforeChain([]cli.BeforeFunc{
 		interceptor.TimezoneInterceptor,
 		interceptor.DurationInterceptor,
@@ -44,20 +62,32 @@ var ListCommand = cli.Command{
 		end := ctx.String("end")
 		start := ctx.String("start")
 		step := ctx.Generic("step")
+		metricsName := ctx.String("name")
+		numOfLinear := ctx.Int("num")
 
-		var services []schema.Service
+		var id *string = nil
 
-		if args := ctx.Args(); len(args) == 0 {
-			services = metadata.AllServices(ctx, schema.Duration{
-				Start: start,
-				End:   end,
-				Step:  step.(*model.StepEnumValue).Selected,
-			})
-		} else {
-			service, _ := metadata.SearchService(ctx, args.First())
-			services = []schema.Service{service}
+		if idString := ctx.String("id"); idString != "" {
+			id = &idString
 		}
 
-		return display.Display(ctx, services)
+		duration := schema.Duration{
+			Start: start,
+			End:   end,
+			Step:  step.(*model.StepEnumValue).Selected,
+		}
+
+		values := metrics.MultipleLinearIntValues(ctx, schema.MetricCondition{
+			Name: metricsName,
+			ID:   id,
+		}, numOfLinear, duration)
+
+		reshaped := make([]map[string]float64, len(values))
+
+		for index, value := range values {
+			reshaped[index] = utils.MetricsToMap(duration, value)
+		}
+
+		return display.Display(ctx, reshaped)
 	},
 }

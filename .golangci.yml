@@ -38,7 +38,7 @@ linters-settings:
   misspell:
     locale: US
   lll:
-    line-length: 120
+    line-length: 150
   goimports:
     local-prefixes: github.com/apache/skywalking-cli
   gocritic:

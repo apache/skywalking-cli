@@ -57,7 +57,7 @@ $(PLATFORMS):
 	GOOS=$(os) GOARCH=$(ARCH) $(GO_BUILD) $(GO_BUILD_FLAGS) -ldflags "$(GO_BUILD_LDFLAGS)" -o $(OUT_DIR)/$(BINARY)-$(VERSION)-$(os)-$(ARCH) swctl/main.go
 
 .PHONY: lint
-lint:
+lint: codegen
 	$(GO_LINT) version || curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(GO_PATH)/bin v1.21.0
 	$(GO_LINT) run -v ./...
 
@@ -86,7 +86,7 @@ coverage: test
 	bash <(curl -s https://codecov.io/bash) -t a5af28a3-92a2-4b35-9a77-54ad99b1ae00
 
 .PHONY: clean
-clean:
+clean: codegen
 	$(GO_CLEAN) ./...
 	-rm -rf bin
 	-rm -rf coverage.txt
@@ -94,6 +94,7 @@ clean:
 	-rm -rf *.tgz
 	-rm -rf *.asc
 	-rm -rf *.sha512
+	-rm -rf query-protocol/schema.graphqls
 
 release-src: clean
 	-tar -zcvf $(RELEASE_SRC).tgz \

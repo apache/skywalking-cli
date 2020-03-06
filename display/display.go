@@ -31,10 +31,10 @@ import (
 )
 
 const (
-	JSON  string = "json"
-	YAML  string = "yaml"
-	TABLE string = "table"
-	GRAPH string = "graph"
+	JSON  = "json"
+	YAML  = "yaml"
+	TABLE = "table"
+	GRAPH = "graph"
 )
 
 // Display the object in the style specified in flag --display
