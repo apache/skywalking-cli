@@ -15,40 +15,28 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package instance
+package utils
 
 import (
-	"github.com/urfave/cli"
+	"time"
 
-	"github.com/apache/skywalking-cli/graphql/metadata"
-
-	"github.com/apache/skywalking-cli/logger"
+	"github.com/apache/skywalking-cli/graphql/schema"
 )
 
-var Command = cli.Command{
-	Name:      "instance",
-	ShortName: "i",
-	Usage:     "Instance related sub-command",
-	Subcommands: cli.Commands{
-		ListCommand,
-		SearchCommand,
-	},
+// StepFormats is a mapping from schema.Step to its time format
+var StepFormats = map[schema.Step]string{
+	schema.StepSecond: "2006-01-02 150400",
+	schema.StepMinute: "2006-01-02 1504",
+	schema.StepHour:   "2006-01-02 15",
+	schema.StepDay:    "2006-01-02",
+	schema.StepMonth:  "2006-01",
 }
 
-func verifyAndSwitchServiceParameter(ctx *cli.Context) string {
-	serviceID := ctx.String("service-id")
-	serviceName := ctx.String("service-name")
-
-	if serviceID == "" && serviceName == "" {
-		logger.Log.Fatalf("flags \"service-id, service-name\" must set one")
-	}
-
-	if serviceID == "" && serviceName != "" {
-		service, err := metadata.SearchService(ctx, serviceName)
-		if err != nil {
-			logger.Log.Fatalln(err)
-		}
-		serviceID = service.ID
-	}
-	return serviceID
+// StepDuration is a mapping from schema.Step to its time.Duration
+var StepDuration = map[schema.Step]time.Duration{
+	schema.StepSecond: time.Second,
+	schema.StepMinute: time.Minute,
+	schema.StepHour:   time.Hour,
+	schema.StepDay:    time.Hour * 24,
+	schema.StepMonth:  time.Hour * 24 * 30,
 }

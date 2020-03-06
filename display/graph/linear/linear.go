@@ -19,14 +19,15 @@ package linear
 
 import (
 	"context"
+	"fmt"
+	"math"
 	"strings"
 
-	"github.com/mum4k/termdash/widgetapi"
+	"github.com/mum4k/termdash/linestyle"
 
 	"github.com/mum4k/termdash"
 	"github.com/mum4k/termdash/container"
 	"github.com/mum4k/termdash/container/grid"
-	"github.com/mum4k/termdash/linestyle"
 	"github.com/mum4k/termdash/terminal/termbox"
 	"github.com/mum4k/termdash/terminal/terminalapi"
 	"github.com/mum4k/termdash/widgets/linechart"
@@ -34,20 +35,19 @@ import (
 
 const RootID = "root"
 
-func newWidgets(inputs map[string]float64) (lineChart *linechart.LineChart, err error) {
+func newLineChart(inputs map[string]float64) (lineChart *linechart.LineChart, err error) {
 	index := 0
 
 	xLabels := map[int]string{}
-	var yValues []float64
+	yValues := make([]float64, len(inputs))
+
 	for xLabel, yValue := range inputs {
 		xLabels[index] = xLabel
+		yValues[index] = yValue
 		index++
-		yValues = append(yValues, yValue)
 	}
 
-	if lineChart, err = linechart.New(
-		linechart.YAxisAdaptive(),
-	); err != nil {
+	if lineChart, err = linechart.New(linechart.YAxisAdaptive()); err != nil {
 		return
 	}
 
@@ -56,21 +56,42 @@ func newWidgets(inputs map[string]float64) (lineChart *linechart.LineChart, err 
 	return lineChart, err
 }
 
-func gridLayout(lineChart widgetapi.Widget) ([]container.Option, error) {
-	widget := grid.Widget(
-		lineChart,
-		container.Border(linestyle.Light),
-		container.BorderTitleAlignCenter(),
-		container.BorderTitle("Press q to quit"),
-	)
+func layout(lineCharts ...*linechart.LineChart) ([]container.Option, error) {
+	cols := maxSqrt(len(lineCharts))
+
+	rows := make([][]grid.Element, int(math.Ceil(float64(len(lineCharts))/float64(cols))))
+
+	for r := 0; r < len(rows); r++ {
+		var row []grid.Element
+		for c := 0; c < cols && r*cols+c < len(lineCharts); c++ {
+			percentage := int(math.Floor(float64(100) / float64(cols)))
+			if r == len(rows)-1 {
+				percentage = int(math.Floor(float64(100) / float64(len(lineCharts)-r*cols)))
+			}
+			row = append(row, grid.ColWidthPerc(
+				int(math.Min(99, float64(percentage))),
+				grid.Widget(
+					lineCharts[r*cols+c],
+					container.Border(linestyle.Light),
+					container.BorderTitleAlignCenter(),
+					container.BorderTitle(fmt.Sprintf("#%v", r*cols+c)),
+				),
+			))
+		}
+		rows[r] = row
+	}
 
 	builder := grid.New()
-	builder.Add(widget)
+
+	for _, row := range rows {
+		percentage := int(math.Min(99, float64(100/len(rows))))
+		builder.Add(grid.RowHeightPerc(percentage, row...))
+	}
 
 	return builder.Build()
 }
 
-func Display(inputs map[string]float64) error {
+func Display(inputs []map[string]float64) error {
 	t, err := termbox.New()
 	if err != nil {
 		return err
@@ -80,26 +101,31 @@ func Display(inputs map[string]float64) error {
 	c, err := container.New(
 		t,
 		container.ID(RootID),
-		container.PaddingTop(2),
-		container.PaddingRight(2),
-		container.PaddingBottom(2),
-		container.PaddingLeft(2),
 	)
 	if err != nil {
 		return err
 	}
 
-	w, err := newWidgets(inputs)
+	var elements []*linechart.LineChart
+
+	for _, input := range inputs {
+		w, e := newLineChart(input)
+		if e != nil {
+			return e
+		}
+		elements = append(elements, w)
+	}
+
+	gridOpts, err := layout(elements...)
 	if err != nil {
 		return err
 	}
 
-	gridOpts, err := gridLayout(w)
-	if err != nil {
-		return err
-	}
-
-	err = c.Update(RootID, gridOpts...)
+	err = c.Update(RootID, append(
+		gridOpts,
+		container.Border(linestyle.Light),
+		container.BorderTitle("PRESS Q TO QUIT"))...,
+	)
 
 	if err != nil {
 		return err
@@ -115,4 +141,8 @@ func Display(inputs map[string]float64) error {
 	err = termdash.Run(ctx, t, c, termdash.KeyboardSubscriber(quitter))
 
 	return err
+}
+
+func maxSqrt(num int) int {
+	return int(math.Ceil(math.Sqrt(float64(num))))
 }

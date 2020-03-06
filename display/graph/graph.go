@@ -25,11 +25,17 @@ import (
 )
 
 func Display(object interface{}) error {
-	if reflect.TypeOf(object) != reflect.TypeOf(map[string]float64{}) {
-		return fmt.Errorf("type of %T is not supported to be displayed as ascii graph", reflect.TypeOf(object))
+	if reflect.TypeOf(object) == reflect.TypeOf(map[string]float64{}) {
+		kvs := []map[string]float64{object.(map[string]float64)}
+
+		return linear.Display(kvs)
 	}
 
-	kvs := object.(map[string]float64)
+	if reflect.TypeOf(object) == reflect.TypeOf([]map[string]float64{}) {
+		kvs := object.([]map[string]float64)
 
-	return linear.Display(kvs)
+		return linear.Display(kvs)
+	}
+
+	return fmt.Errorf("type of %T is not supported to be displayed as ascii graph", reflect.TypeOf(object))
 }

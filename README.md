@@ -149,11 +149,13 @@ This section covers all the available commands in SkyWalking CLI and their usage
 
 </details>
 
-### `linear-metrics`
+### `metrics`
+
+#### `metrics linear`
 
 <details>
 
-<summary>linear-metrics [--start=start-time] [--end=end-time] --name=metrics-name [--id=entity-id]</summary>
+<summary>metrics linear [--start=start-time] [--end=end-time] --name=metrics-name [--id=entity-id]</summary>
 
 | option | description | default |
 | :--- | :--- | :--- |
@@ -164,11 +166,27 @@ This section covers all the available commands in SkyWalking CLI and their usage
 
 </details>
 
-### `single-metrics`
+#### `metrics multiple-linear`
 
 <details>
 
-<summary>single-metrics [--start=start-time] [--end=end-time] --name=metrics-name [--ids=entity-ids]</summary>
+<summary>metrics multiple-linear [--start=start-time] [--end=end-time] --name=metrics-name [--id=entity-id] [--num=number-of-linear-metrics]</summary>
+
+| option | description | default |
+| :--- | :--- | :--- |
+| `--name` | Metrics name, defined in [OAL](https://github.com/apache/skywalking/blob/master/oap-server/server-bootstrap/src/main/resources/official_analysis.oal), such as `all_p99`, etc. |
+| `--id` | the related id if the metrics requires one, e.g. for metrics `service_p99`, the service `id` is required, use `--id` to specify the service id, the same for `instance`, `endpoint`, etc. |
+| `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
+| `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
+| `--num` | Number of the linear metrics to fetch | `5` |
+
+</details>
+
+#### `metrics single`
+
+<details>
+
+<summary>metrics single [--start=start-time] [--end=end-time] --name=metrics-name [--ids=entity-ids]</summary>
 
 | option | description | default |
 | :--- | :--- | :--- |
@@ -239,7 +257,7 @@ otherwise,
 If you have already got the `id` of the instance:
 
 ```shell
-$ ./bin/swctl --display=graph linear-metrics --name=service_instance_resp_time --id 5
+$ ./bin/swctl --display=graph metrics linear --name=service_instance_resp_time --id 5
 ┌─────────────────────────────────────────────────────────────────────────────────Press q to quit──────────────────────────────────────────────────────────────────────────────────┐
 │                                                                                                                                                                                  │
 │                                                                                                                                                                                  │
@@ -263,7 +281,7 @@ $ ./bin/swctl --display=graph linear-metrics --name=service_instance_resp_time -
 otherwise
 
 ```shell
-$ ./bin/swctl instance ls --service-name=projectC | jq '.[] | select(.name == "projectC-pid:7895@skywalking-server-0001").id' | xargs ./bin/swctl --display=graph linear-metrics --name=service_instance_resp_time --id
+$ ./bin/swctl instance ls --service-name=projectC | jq '.[] | select(.name == "projectC-pid:7895@skywalking-server-0001").id' | xargs ./bin/swctl --display=graph metrics linear --name=service_instance_resp_time --id
 ┌─────────────────────────────────────────────────────────────────────────────────Press q to quit──────────────────────────────────────────────────────────────────────────────────┐
 │                                                                                                                                                                                  │
 │                                                                                                                                                                                  │
@@ -291,7 +309,7 @@ $ ./bin/swctl instance ls --service-name=projectC | jq '.[] | select(.name == "p
 <summary>Query a single metrics value for a specific endpoint</summary>
 
 ```shell
-$ ./bin/swctl service ls projectC | jq '.[0].id' | xargs ./bin/swctl endpoint ls --service-id | jq '.[] | [.id] | join(",")' | xargs ./bin/swctl single-metrics --name endpoint_cpm --ids
+$ ./bin/swctl service ls projectC | jq '.[0].id' | xargs ./bin/swctl endpoint ls --service-id | jq '.[] | [.id] | join(",")' | xargs ./bin/swctl metrics single --name endpoint_cpm --ids
 [{"id":"22","value":116}]
 ```
 
@@ -302,8 +320,75 @@ $ ./bin/swctl service ls projectC | jq '.[0].id' | xargs ./bin/swctl endpoint ls
 <summary>Query metrics single values for all endpoints of service of id 3</summary>
 
 ```shell
-$ ./bin/swctl service ls projectC | jq '.[0].id' | xargs ./bin/swctl endpoint ls --service-id | jq '.[] | [.id] | join(",")' | xargs ./bin/swctl single-metrics --name endpoint_cpm --end='2019-12-02 2137' --ids
+$ ./bin/swctl service ls projectC | jq '.[0].id' | xargs ./bin/swctl endpoint ls --service-id | jq '.[] | [.id] | join(",")' | xargs ./bin/swctl metrics single --name endpoint_cpm --end='2019-12-02 2137' --ids
 [{"id":"3","value":116}]
+```
+
+</details>
+
+<details>
+
+<summary>Query multiple metrics values for all percentiles</summary>
+
+```shell
+$ ./bin/swctl-latest-darwin-amd64 --display=graph --debug metrics multiple-linear --name all_percentile
+
+┌PRESS Q TO QUIT───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│┌───────────────────────────────#0───────────────────────────────┐┌───────────────────────────────#1───────────────────────────────┐┌─────────────────────────────────#2─────────────────────────────────┐│
+││      │  ⡏⠉⠉⢹   ⢸⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⡇      ⢸⠉⠉⠉⠉⠉⠉⠉⡇  ⢸⠉⠉⠉⠉⠉⠉⠉⡇   ⡏⠉⠉⠉ ││       │     ⢸⡀                       ⢸        ⢸        ⡇       ││        │                                                  ⡠⠔⡇      ││
+││960.80│ ⢀⠇  ⠘⡄  ⡜            ⢣      ⢸       ⢇  ⢸       ⡇   ⡇    ││1963.60│     ⡜⡇                       ⢸        ⢸       ⢠⡇       ││ 2600.40│                                                  ⡇ ⢣      ││
+││      │ ⢸    ⡇  ⡇            ⢸      ⢸       ⢸  ⡜       ⢸  ⢸     ││       │     ⡇⢸                       ⡼⡀       ⣾       ⢸⢣       ││        │                                                 ⢸  ⢸      ││
+││      │ ⢸    ⡇  ⡇            ⢸      ⡸       ⢸  ⡇       ⢸  ⢸     ││       │     ⡇⠈⡆                      ⡇⡇       ⡇⡇      ⢸⢸       ││        │                                                 ⢸  ⢸      ││
+││      │ ⢸    ⢣ ⢠⠃            ⠘⡄     ⡇       ⢸  ⡇       ⢸  ⢸     ││       │    ⢰⠁ ⡇                      ⡇⡇  ⡤⢤   ⡇⡇      ⡇⢸       ││        │                                                 ⡇  ⠘⡄     ││
+││824.64│ ⡇    ⢸ ⢸              ⡇     ⡇       ⠈⡆ ⡇       ⠘⡄ ⡜     ││1832.88│    ⢸  ⢣                      ⡇⡇  ⡇⢸   ⡇⡇      ⡇⢸       ││ 2486.33│                                                 ⡇   ⡇     ││
+││      │ ⡇    ⢸ ⢸              ⡇     ⡇        ⡇ ⡇        ⡇ ⡇     ││       │    ⢸  ⢸                      ⡇⡇ ⢸ ⠈⡆ ⢀⠇⡇     ⢠⠃⢸       ││        │                                                ⢰⠁   ⡇     ││
+││      │ ⡇    ⠈⡆⡎              ⢣     ⡇        ⡇⢸         ⡇ ⡇     ││       │    ⡎  ⢸                     ⢰⠁⡇ ⢸  ⡇ ⢸ ⡇     ⢸ ⠘⡄      ││        │                       ⡀        ⢸⠉⠲⡀  ⢀         ⢸    ⢱     ││
+││      │⢰⠁     ⡇⡇              ⢸     ⡇        ⢇⢸         ⡇ ⡇     ││       │    ⡇  ⢸                     ⢸ ⢱ ⢸  ⡇ ⢸ ⢣     ⢸  ⡇      ││        │⡀                     ⢰⢱    ⢀⡄  ⡇  ⢱ ⢀⠎⡆        ⡎    ⢸  ⣀⠤ ││
+││688.48│⢸      ⡇⡇              ⢸     ⡇        ⢸⢸         ⢸⢸      ││1702.16│    ⡇   ⡇                    ⢸ ⢸ ⡇  ⢣ ⢸ ⢸     ⡜  ⡇      ││ 2372.24│⠱⡀       ⡴⡀  ⢀       ⢠⠃⠈⡆  ⢀⠎⠸⡀⢠⠃   ⢣⠎ ⢸  ⣠    ⡠⠃    ⢸ ⢰⠁  ││
+││      │⢸      ⢱⠁              ⠘⡄    ⡇        ⢸⢸         ⢸⢸      ││       │   ⢸    ⡇                    ⢸ ⢸ ⡇  ⢸ ⢸ ⢸     ⡇  ⡇      ││        │ ⢣      ⡜ ⠱⡀⡠⠋⡆     ⣀⠎  ⢱ ⡠⠊  ⢣⢸        ⢇⡔⠁⢣ ⣀⠔⠁     ⠈⣦⠃   ││
+││      │⡜      ⠸                ⡇   ⢸         ⢸⡜         ⢸⢸      ││       │   ⢸    ⡇       ⡆     ⢀⡆     ⢸ ⢸⢀⠇  ⢸ ⡎ ⢸     ⡇  ⡇      ││        │  ⡇   ⡔⠊   ⠑⠁ ⠸⡀  ⢠⠋    ⠈⠖⠁   ⠈⠇        ⠈   ⠉         ⠏    ││
+││      │⡇                       ⢣   ⢸         ⠈⡇         ⠘⡜      ││       │   ⡜    ⢱      ⢠⢣  ⢰⢄ ⡜⢸     ⡇ ⢸⢸   ⢸ ⡇ ⢸    ⢠⠃  ⢱      ││        │  ⢇   ⡇        ⢣⡀ ⡎                                        ││
+││552.32│⠁                       ⠸⡀  ⢸          ⡇          ⡇      ││1571.44│   ⡇    ⢸      ⢸⢸  ⡸ ⠙ ⠘⡄    ⡇ ⠘⣼    ⡇⡇ ⢸    ⢸   ⢸      ││ 2258.16│  ⢸  ⢸          ⠈⠙                                         ││
+││      │                         ⢇  ⢸                     ⠁      ││       │  ⢀⠇    ⢸      ⡜⢸  ⡇    ⢇    ⡇  ⡿    ⡇⡇  ⡇   ⢸   ⢸      ││        │  ⢸  ⢸                                                     ││
+││      │                         ⢸  ⢸                            ││       │⢣ ⢸     ⠸⡀     ⡇ ⡇ ⡇    ⢸    ⡇  ⡇    ⣇⠇  ⡇   ⡜   ⢸      ││        │  ⠈⡆ ⡜                                                     ││
+││      │                          ⡇ ⢸                            ││       │⠈⢆⡸      ⡇⢀   ⢠⠃ ⡇⢀⠇    ⠈⡦⠔⢇⢀⠇  ⠁    ⢹   ⡇   ⡇   ⢸      ││        │   ⡇ ⡇                                                     ││
+││416.16│                          ⢱ ⢸                            ││1440.72│ ⠘⡇      ⠋⠙⡄  ⢸  ⢱⢸        ⠸⣸        ⢸   ⠱⡀  ⡇   ⠈⡆     ││2144.080│   ⡇ ⡇                                                     ││
+││      │                          ⠘⡄⡎                            ││       │           ⢇  ⡎  ⢸⢸         ⢿             ⠱⡀⢠⠃    ⡇     ││        │   ⢸⢸                                                      ││
+││      │                           ⡇⡇                            ││       │           ⢸ ⢰⠁  ⠸⡜         ⠈              ⠘⣼     ⠧⣀    ││        │   ⢸⢸                                                      ││
+││      │                           ⢸⡇                            ││       │            ⡇⡎    ⡇                         ⠈       ⠑⢄  ││        │   ⠘⡜                                                      ││
+││   280│                           ⠈⡇                            ││   1310│            ⢱⠁                                          ││    2030│    ⡇                                                      ││
+││      └─────────────────────────────────────────────────────────││       └────────────────────────────────────────────────────────││        └───────────────────────────────────────────────────────────││
+││       2020-03-07 0111   2020-03-07 0134   2020-03-07 0133      ││        2020-03-07 0116   2020-03-07 0121   2020-03-07 0122     ││         2020-03-07 0123   2020-03-07 0139   2020-03-07 0117        ││
+│└────────────────────────────────────────────────────────────────┘└────────────────────────────────────────────────────────────────┘└────────────────────────────────────────────────────────────────────┘│
+│┌────────────────────────────────────────────────#3─────────────────────────────────────────────────┐┌────────────────────────────────────────────────#4─────────────────────────────────────────────────┐│
+││       │                                           ⢀⢇                                              ││        │⠤⠤⠤⠤⠤⠤⡄     ⡤⠤⢤        ⢸⠑⠒⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠒⠊⠉⠉⠉⠉⠉⠉⠉⠒⠢⡄     ⡤⠒⠊⡇       ⢠⠔⠒⢹           ⢠⠔⠒⠉⠑⠢⠄ ││
+││       │                                           ⡸⠸⡀               ⢀⡆                            ││        │      ⡇     ⡇ ⢸        ⡸                          ⡇     ⡇  ⢇       ⢸  ⢸           ⢸       ││
+││3559.60│                                          ⢀⠇ ⢇              ⢀⠎⢸                            ││54073.20│      ⢱    ⢰⠁ ⠈⡆       ⡇                          ⢱    ⢰⠁  ⢸       ⡜   ⡇          ⡎       ││
+││       │           ⢀⢄                             ⡸  ⠸⡀            ⢀⠎ ⠘⡄                           ││        │      ⢸    ⢸   ⡇       ⡇                          ⢸    ⢸   ⢸       ⡇   ⡇          ⡇       ││
+││       │          ⢀⠎ ⠑⢄                          ⢀⠇   ⢇           ⢀⠎   ⡇         ⣼                 ││        │      ⢸    ⢸   ⡇       ⡇                          ⢸    ⢸   ⢸       ⡇   ⡇          ⡇       ││
+││       │         ⢀⠎   ⠈⢆                      ⣀  ⡸    ⠸⡀ ⣀⡀       ⡜    ⢸        ⡸⠸⡀                ││        │      ⠸⡀   ⡸   ⢇      ⢰⠁                          ⠸⡀   ⡸   ⠈⡆      ⡇   ⢣         ⢀⠇       ││
+││3325.68│   ⣀⣀  ⣀⠤⠊     ⠘⡄   ⢀⣀⣀⣀⣀⡠⠤⡀      ⢀⣀⠔⠊ ⠉⠑⠃     ⠉⠉ ⠘⢄     ⡰⠁    ⠘⡄      ⢰⠁ ⡇       ⢀⣀⡠⠤⠤⠤⠄  ││43924.56│       ⡇   ⡇   ⢸      ⢸                            ⡇   ⡇    ⡇     ⢰⠁   ⢸         ⢸        ││
+││       │ ⢠⠊  ⠉⠉         ⠸⡀ ⡔⠁      ⠑⢄  ⡠⠊⠉⠁                 ⠣⣀  ⢠⠃      ⡇     ⢠⠃  ⡇    ⢀⠤⠊⠁        ││        │       ⡇   ⡇   ⢸      ⢸                            ⡇   ⡇    ⡇     ⢸    ⢸         ⢸        ││
+││       │⠔⠁               ⠱⠊         ⠈⠢⠊                       ⠉⠒⠎       ⠸⠤⠤⠤⠔⠊⠁   ⢇    ⢸           ││        │       ⡇   ⡇   ⢸      ⡸                            ⡇   ⡇    ⢇     ⢸    ⢸         ⢸        ││
+││       │                                                                          ⢸    ⡎           ││        │       ⢱  ⢰⠁   ⠈⡆     ⡇                            ⢸  ⢸     ⢸     ⢸     ⡇        ⡎        ││
+││3091.76│                                                                          ⢸    ⡇           ││33775.92│       ⢸  ⢸     ⡇     ⡇                            ⢸  ⢸     ⢸     ⡇     ⡇        ⡇        ││
+││       │                                                                          ⢸   ⢀⠇           ││        │       ⢸  ⢸     ⡇     ⡇                            ⢸  ⢸     ⢸     ⡇     ⡇        ⡇        ││
+││       │                                                                           ⡇  ⢸            ││        │       ⠸⡀ ⡸     ⢇    ⢰⠁                            ⠘⡄ ⡜     ⠈⡆    ⡇     ⢣       ⢠⠃        ││
+││       │                                                                           ⡇  ⢸            ││        │        ⡇ ⡇     ⢸    ⢸                              ⡇ ⡇      ⡇   ⢠⠃     ⢸       ⢸         ││
+││2857.84│                                                                           ⡇  ⡎            ││23627.28│        ⡇ ⡇     ⢸    ⢸                              ⡇ ⡇      ⡇   ⢸      ⢸       ⢸         ││
+││       │                                                                           ⢸  ⡇            ││        │        ⡇ ⡇     ⢸    ⡸                              ⢇⢀⠇      ⢇   ⢸      ⢸       ⢸         ││
+││       │                                                                           ⢸ ⢀⠇            ││        │        ⢱⢰⠁     ⠈⡆   ⡇                              ⢸⢸       ⢸   ⢸       ⡇      ⡇         ││
+││       │                                                                           ⢸ ⢸             ││        │        ⢸⢸       ⡇   ⡇                              ⢸⢸       ⢸   ⡎       ⡇      ⡇         ││
+││2623.92│                                                                           ⠈⡆⢸             ││13478.64│        ⢸⢸       ⡇   ⡇                              ⢸⢸       ⢸   ⡇       ⡇      ⡇         ││
+││       │                                                                            ⡇⡎             ││        │        ⠸⡸       ⢇  ⢰⠁                              ⠈⡎       ⠈⡆  ⡇       ⢣     ⢠⠃         ││
+││       │                                                                            ⡇⡇             ││        │         ⡇       ⢸  ⣸                                ⡇        ⡇  ⡇       ⢸     ⢸          ││
+││       │                                                                            ⢱⠇             ││        │         ⠃       ⠘⠊⠉                                          ⠘⡄⢸        ⠘⠒⠊⠉⠉⠉⠉          ││
+││   2390│                                                                            ⢸              ││    3330│                                                               ⠈⢾                         ││
+││       └───────────────────────────────────────────────────────────────────────────────────────────││        └──────────────────────────────────────────────────────────────────────────────────────────││
+││        2020-03-07 0115   2020-03-07 0139   2020-03-07 0134   2020-03-07 0136   2020-03-07 0132    ││         2020-03-07 0115   2020-03-07 0126   2020-03-07 0112   2020-03-07 0134   2020-03-07 0124   ││
+│└───────────────────────────────────────────────────────────────────────────────────────────────────┘└───────────────────────────────────────────────────────────────────────────────────────────────────┘│
+└──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+
 ```
 
 </details>

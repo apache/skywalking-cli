@@ -15,24 +15,21 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package schema
+package metrics
 
-import "time"
+import (
+	"github.com/urfave/cli"
 
-// StepFormats is a mapping from schema.Step to its time format
-var StepFormats = map[Step]string{
-	StepSecond: "2006-01-02 150400",
-	StepMinute: "2006-01-02 1504",
-	StepHour:   "2006-01-02 15",
-	StepDay:    "2006-01-02",
-	StepMonth:  "2006-01",
-}
+	"github.com/apache/skywalking-cli/commands/metrics/linear"
+	"github.com/apache/skywalking-cli/commands/metrics/single"
+)
 
-// StepDuration is a mapping from schema.Step to its time.Duration
-var StepDuration = map[Step]time.Duration{
-	StepSecond: time.Second,
-	StepMinute: time.Minute,
-	StepHour:   time.Hour,
-	StepDay:    time.Hour * 24,
-	StepMonth:  time.Hour * 24 * 30,
+var Command = cli.Command{
+	Name:  "metrics",
+	Usage: "Query metrics defined in backend OAL",
+	Subcommands: cli.Commands{
+		single.Command,
+		linear.Single,
+		linear.Multiple,
+	},
 }

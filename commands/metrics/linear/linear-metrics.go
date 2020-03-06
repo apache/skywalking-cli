@@ -20,16 +20,18 @@ package linear
 import (
 	"github.com/urfave/cli"
 
+	"github.com/apache/skywalking-cli/graphql/metrics"
+	"github.com/apache/skywalking-cli/graphql/utils"
+
 	"github.com/apache/skywalking-cli/commands/flags"
 	"github.com/apache/skywalking-cli/commands/interceptor"
 	"github.com/apache/skywalking-cli/commands/model"
 	"github.com/apache/skywalking-cli/display"
-	"github.com/apache/skywalking-cli/graphql/client"
 	"github.com/apache/skywalking-cli/graphql/schema"
 )
 
-var Command = cli.Command{
-	Name:  "linear-metrics",
+var Single = cli.Command{
+	Name:  "linear",
 	Usage: "Query linear metrics defined in backend OAL",
 	Flags: flags.Flags(
 		flags.DurationFlags,
@@ -62,15 +64,17 @@ var Command = cli.Command{
 			id = &idString
 		}
 
-		metricsValues := client.LinearIntValues(ctx, schema.MetricCondition{
-			Name: metricsName,
-			ID:   id,
-		}, schema.Duration{
+		duration := schema.Duration{
 			Start: start,
 			End:   end,
 			Step:  step.(*model.StepEnumValue).Selected,
-		})
+		}
 
-		return display.Display(ctx, metricsValues)
+		metricsValues := metrics.LinearIntValues(ctx, schema.MetricCondition{
+			Name: metricsName,
+			ID:   id,
+		}, duration)
+
+		return display.Display(ctx, utils.MetricsToMap(duration, metricsValues))
 	},
 }

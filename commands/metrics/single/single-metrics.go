@@ -20,18 +20,19 @@ package single
 import (
 	"strings"
 
+	"github.com/apache/skywalking-cli/graphql/metrics"
+
 	"github.com/urfave/cli"
 
 	"github.com/apache/skywalking-cli/commands/flags"
 	"github.com/apache/skywalking-cli/commands/interceptor"
 	"github.com/apache/skywalking-cli/commands/model"
 	"github.com/apache/skywalking-cli/display"
-	"github.com/apache/skywalking-cli/graphql/client"
 	"github.com/apache/skywalking-cli/graphql/schema"
 )
 
 var Command = cli.Command{
-	Name:  "single-metrics",
+	Name:  "single",
 	Usage: "Query single metrics defined in backend OAL",
 	Flags: flags.Flags(
 		flags.DurationFlags,
@@ -65,7 +66,7 @@ var Command = cli.Command{
 			ids = append(ids, strings.Split(id, ",")...)
 		}
 
-		metricsValues := client.IntValues(ctx, schema.BatchMetricConditions{
+		metricsValues := metrics.IntValues(ctx, schema.BatchMetricConditions{
 			Name: metricsName,
 			Ids:  ids,
 		}, schema.Duration{
@@ -74,6 +75,6 @@ var Command = cli.Command{
 			Step:  step.(*model.StepEnumValue).Selected,
 		})
 
-		return display.Display(ctx, metricsValues)
+		return display.Display(ctx, metricsValues.Values)
 	},
 }

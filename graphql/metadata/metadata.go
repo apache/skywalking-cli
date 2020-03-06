@@ -18,6 +18,8 @@
 package metadata
 
 import (
+	"fmt"
+
 	"github.com/machinebox/graphql"
 	"github.com/urfave/cli"
 
@@ -25,7 +27,97 @@ import (
 	"github.com/apache/skywalking-cli/graphql/schema"
 )
 
+func AllServices(cliCtx *cli.Context, duration schema.Duration) []schema.Service {
+	var response map[string][]schema.Service
+	request := graphql.NewRequest(`
+		query ($duration: Duration!) {
+			services: getAllServices(duration: $duration) {
+				id name
+			}
+		}
+	`)
+	request.Var("duration", duration)
+
+	client.ExecuteQueryOrFail(cliCtx, request, &response)
+	return response["services"]
+}
+
+func SearchService(cliCtx *cli.Context, serviceCode string) (service schema.Service, err error) {
+	var response map[string]schema.Service
+	request := graphql.NewRequest(`
+		query searchService($serviceCode: String!) {
+			service: searchService(serviceCode: $serviceCode) {
+				id name
+			}
+		}
+	`)
+	request.Var("serviceCode", serviceCode)
+
+	client.ExecuteQueryOrFail(cliCtx, request, &response)
+	service = response["service"]
+	if service.ID == "" {
+		return service, fmt.Errorf("no such service [%s]", serviceCode)
+	}
+	return service, nil
+}
+
+func SearchEndpoints(cliCtx *cli.Context, serviceID, keyword string, limit int) []schema.Endpoint {
+	var response map[string][]schema.Endpoint
+	request := graphql.NewRequest(`
+		query ($keyword: String!, $serviceId: ID!, $limit: Int!) {
+			endpoints: searchEndpoint(keyword: $keyword, serviceId: $serviceId, limit: $limit) {
+				id name
+			}
+		}
+	`)
+	request.Var("serviceId", serviceID)
+	request.Var("keyword", keyword)
+	request.Var("limit", limit)
+
+	client.ExecuteQueryOrFail(cliCtx, request, &response)
+	return response["endpoints"]
+}
+
+func EndpointInfo(cliCtx *cli.Context, endpointID string) schema.Endpoint {
+	var response map[string]schema.Endpoint
+	request := graphql.NewRequest(`
+		query ($endpointId: ID!) {
+			endpoint: getEndpointInfo(endpointId: $endpointId) {
+				id name
+			}
+		}
+	`)
+	request.Var("endpointId", endpointID)
+
+	client.ExecuteQueryOrFail(cliCtx, request, &response)
+	return response["endpoint"]
+}
+
+func Instances(cliCtx *cli.Context, serviceID string, duration schema.Duration) []schema.ServiceInstance {
+	var response map[string][]schema.ServiceInstance
+	request := graphql.NewRequest(`
+		query ($serviceId: ID!, $duration: Duration!) {
+			instances: getServiceInstances(duration: $duration, serviceId: $serviceId) {
+				id
+				name
+				language
+				instanceUUID
+				attributes {
+					name
+					value
+				}
+			}
+		}
+	`)
+	request.Var("serviceId", serviceID)
+	request.Var("duration", duration)
+
+	client.ExecuteQueryOrFail(cliCtx, request, &response)
+	return response["instances"]
+}
+
 func ServerTimeInfo(cliCtx *cli.Context) (schema.TimeInfo, error) {
+	var response map[string]schema.TimeInfo
 	request := graphql.NewRequest(`
 		query {
 			timeInfo: getTimeInfo {
@@ -34,7 +126,6 @@ func ServerTimeInfo(cliCtx *cli.Context) (schema.TimeInfo, error) {
 		}
 	`)
 
-	var response map[string]schema.TimeInfo
 	if err := client.ExecuteQuery(cliCtx, request, &response); err != nil {
 		return schema.TimeInfo{}, err
 	}
