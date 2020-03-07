@@ -41,7 +41,6 @@ Content:
 
 The test build of SkyWalking CLI $VERSION is now available.
 
-This is our Apache release.
 We welcome any comments you may have, and will take all feedback into
 account if a quality vote is called for this build.
 
