@@ -80,3 +80,21 @@ func MultipleLinearIntValues(ctx *cli.Context, condition schema.MetricCondition,
 
 	return response["metrics"]
 }
+
+func Thermodynamic(ctx *cli.Context, condition schema.MetricCondition, duration schema.Duration) schema.Thermodynamic {
+	request := graphql.NewRequest(`
+		query ($metric: MetricCondition!, $duration: Duration!) {
+			metrics: getThermodynamic(metric: $metric, duration: $duration) {
+				nodes responseTimeStep: axisYStep
+			}
+		}
+	`)
+	request.Var("metric", condition)
+	request.Var("duration", duration)
+
+	var response map[string]schema.Thermodynamic
+
+	client.ExecuteQueryOrFail(ctx, request, &response)
+
+	return response["metrics"]
+}
