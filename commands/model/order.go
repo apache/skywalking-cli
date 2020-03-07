@@ -24,29 +24,29 @@ import (
 	"github.com/apache/skywalking-cli/graphql/schema"
 )
 
-// StepEnumValue defines the values domain of --step option
-type StepEnumValue struct {
-	Enum     []schema.Step
-	Default  schema.Step
-	Selected schema.Step
+// OrderEnumValue defines the values domain of --order option
+type OrderEnumValue struct {
+	Enum     []schema.Order
+	Default  schema.Order
+	Selected schema.Order
 }
 
-// Set the --step value, from raw string to StepEnumValue
-func (s *StepEnumValue) Set(value string) error {
+// Set the --order value, from raw string to OrderEnumValue
+func (s *OrderEnumValue) Set(value string) error {
 	for _, enum := range s.Enum {
 		if strings.EqualFold(enum.String(), value) {
 			s.Selected = enum
 			return nil
 		}
 	}
-	steps := make([]string, len(schema.AllStep))
-	for i, step := range schema.AllStep {
-		steps[i] = step.String()
+	orders := make([]string, len(schema.AllOrder))
+	for i, order := range schema.AllOrder {
+		orders[i] = order.String()
 	}
-	return fmt.Errorf("allowed steps are %s", strings.Join(steps, ", "))
+	return fmt.Errorf("allowed orders are %s", strings.Join(orders, ", "))
 }
 
-// String representation of the step
-func (s StepEnumValue) String() string {
+// String representation of the order
+func (s OrderEnumValue) String() string {
 	return s.Selected.String()
 }

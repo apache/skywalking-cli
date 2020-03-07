@@ -20,6 +20,10 @@ package metrics
 import (
 	"github.com/urfave/cli"
 
+	"github.com/apache/skywalking-cli/commands/metrics/aggregation"
+
+	"github.com/apache/skywalking-cli/commands/metrics/thermodynamic"
+
 	"github.com/apache/skywalking-cli/commands/metrics/linear"
 	"github.com/apache/skywalking-cli/commands/metrics/single"
 )
@@ -31,5 +35,7 @@ var Command = cli.Command{
 		single.Command,
 		linear.Single,
 		linear.Multiple,
+		thermodynamic.Command,
+		aggregation.TopN,
 	},
 }
