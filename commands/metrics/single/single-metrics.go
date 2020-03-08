@@ -20,6 +20,8 @@ package single
 import (
 	"strings"
 
+	"github.com/apache/skywalking-cli/display/displayable"
+
 	"github.com/apache/skywalking-cli/graphql/metrics"
 
 	"github.com/urfave/cli"
@@ -75,6 +77,6 @@ var Command = cli.Command{
 			Step:  step.(*model.StepEnumValue).Selected,
 		})
 
-		return display.Display(ctx, metricsValues.Values)
+		return display.Display(ctx, &displayable.Displayable{Data: metricsValues.Values})
 	},
 }

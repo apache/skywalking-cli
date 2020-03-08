@@ -20,6 +20,8 @@ package instance
 import (
 	"github.com/urfave/cli"
 
+	"github.com/apache/skywalking-cli/display/displayable"
+
 	"github.com/apache/skywalking-cli/graphql/metadata"
 
 	"github.com/apache/skywalking-cli/commands/flags"
@@ -51,6 +53,6 @@ var ListCommand = cli.Command{
 			Step:  step.(*model.StepEnumValue).Selected,
 		})
 
-		return display.Display(ctx, instances)
+		return display.Display(ctx, &displayable.Displayable{Data: instances})
 	},
 }

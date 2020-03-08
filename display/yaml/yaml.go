@@ -20,15 +20,16 @@ package yaml
 import (
 	"fmt"
 
+	d "github.com/apache/skywalking-cli/display/displayable"
+
 	"gopkg.in/yaml.v2"
 )
 
-func Display(object interface{}) error {
-	if bytes, e := yaml.Marshal(object); e == nil {
-		fmt.Printf("%v", string(bytes))
-	} else {
+func Display(displayable *d.Displayable) error {
+	bytes, e := yaml.Marshal(displayable.Data)
+	if e != nil {
 		return e
 	}
-
-	return nil
+	_, e = fmt.Printf("%v", string(bytes))
+	return e
 }

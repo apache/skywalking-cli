@@ -20,6 +20,8 @@ package linear
 import (
 	"github.com/urfave/cli"
 
+	"github.com/apache/skywalking-cli/display/displayable"
+
 	"github.com/apache/skywalking-cli/graphql/metrics"
 	"github.com/apache/skywalking-cli/graphql/utils"
 
@@ -75,6 +77,6 @@ var Single = cli.Command{
 			ID:   id,
 		}, duration)
 
-		return display.Display(ctx, utils.MetricsToMap(duration, metricsValues))
+		return display.Display(ctx, &displayable.Displayable{Data: utils.MetricsToMap(duration, metricsValues)})
 	},
 }

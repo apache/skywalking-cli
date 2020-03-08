@@ -15,20 +15,11 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package json
+package util
 
-import (
-	"encoding/json"
-	"fmt"
-
-	d "github.com/apache/skywalking-cli/display/displayable"
-)
-
-func Display(displayable *d.Displayable) error {
-	bytes, e := json.Marshal(displayable.Data)
-	if e != nil {
-		return e
+func MaxInt(a, b int) int {
+	if a > b {
+		return a
 	}
-	_, e = fmt.Printf("%v\n", string(bytes))
-	return e
+	return b
 }

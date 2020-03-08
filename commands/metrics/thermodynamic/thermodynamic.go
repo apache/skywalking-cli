@@ -20,6 +20,8 @@ package thermodynamic
 import (
 	"github.com/urfave/cli"
 
+	"github.com/apache/skywalking-cli/display/displayable"
+
 	"github.com/apache/skywalking-cli/commands/flags"
 	"github.com/apache/skywalking-cli/commands/interceptor"
 	"github.com/apache/skywalking-cli/commands/model"
@@ -62,6 +64,10 @@ var Command = cli.Command{
 			Name: metricsName,
 		}, duration)
 
-		return display.Display(ctx, metricsValues)
+		return display.Display(ctx, &displayable.Displayable{
+			Data:     metricsValues,
+			Duration: duration,
+			Title:    metricsName,
+		})
 	},
 }

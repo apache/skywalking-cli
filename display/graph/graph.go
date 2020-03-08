@@ -21,21 +21,31 @@ import (
 	"fmt"
 	"reflect"
 
+	"github.com/apache/skywalking-cli/display/graph/heatmap"
+	"github.com/apache/skywalking-cli/graphql/schema"
+
+	d "github.com/apache/skywalking-cli/display/displayable"
 	"github.com/apache/skywalking-cli/display/graph/linear"
 )
 
-func Display(object interface{}) error {
-	if reflect.TypeOf(object) == reflect.TypeOf(map[string]float64{}) {
-		kvs := []map[string]float64{object.(map[string]float64)}
+func Display(displayable *d.Displayable) error {
+	data := displayable.Data
+
+	if reflect.TypeOf(data) == reflect.TypeOf(schema.Thermodynamic{}) {
+		return heatmap.Display(displayable)
+	}
+
+	if reflect.TypeOf(data) == reflect.TypeOf(map[string]float64{}) {
+		kvs := []map[string]float64{data.(map[string]float64)}
 
 		return linear.Display(kvs)
 	}
 
-	if reflect.TypeOf(object) == reflect.TypeOf([]map[string]float64{}) {
-		kvs := object.([]map[string]float64)
+	if reflect.TypeOf(data) == reflect.TypeOf([]map[string]float64{}) {
+		kvs := data.([]map[string]float64)
 
 		return linear.Display(kvs)
 	}
 
-	return fmt.Errorf("type of %T is not supported to be displayed as ascii graph", reflect.TypeOf(object))
+	return fmt.Errorf("type of %T is not supported to be displayed as ascii graph", reflect.TypeOf(data))
 }

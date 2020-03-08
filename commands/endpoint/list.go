@@ -20,6 +20,8 @@ package endpoint
 import (
 	"github.com/urfave/cli"
 
+	"github.com/apache/skywalking-cli/display/displayable"
+
 	"github.com/apache/skywalking-cli/graphql/metadata"
 
 	"github.com/apache/skywalking-cli/display"
@@ -56,6 +58,6 @@ var ListCommand = cli.Command{
 
 		endpoints := metadata.SearchEndpoints(ctx, serviceID, keyword, limit)
 
-		return display.Display(ctx, endpoints)
+		return display.Display(ctx, &displayable.Displayable{Data: endpoints})
 	},
 }
