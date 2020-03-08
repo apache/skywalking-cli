@@ -222,6 +222,8 @@ The text of each license is also included at licenses/LICENSE-[project].txt.
 	sirupsen (logrus) 1.4.2: https://github.com/sirupsen/logrus MIT
 	urfave (cli) 1.22.1: https://github.com/urfave/cli MIT
 	nsf (termbox-go) 0.0.0-20190817171036-93860e161317: https://github.com/nsf/termbox-go MIT
+	gizak (termui) v3: https://github.com/gizak/termui MIT
+	mattn (go-runewidth) v3: https://github.com/mattn/go-runewidth MIT
 
 ========================================================================
 BSD licenses

@@ -20,6 +20,8 @@ package service
 import (
 	"github.com/urfave/cli"
 
+	"github.com/apache/skywalking-cli/display/displayable"
+
 	"github.com/apache/skywalking-cli/graphql/metadata"
 
 	"github.com/apache/skywalking-cli/commands/flags"
@@ -58,6 +60,6 @@ var ListCommand = cli.Command{
 			services = []schema.Service{service}
 		}
 
-		return display.Display(ctx, services)
+		return display.Display(ctx, &displayable.Displayable{Data: services})
 	},
 }

@@ -21,6 +21,8 @@ import (
 	"fmt"
 	"strings"
 
+	d "github.com/apache/skywalking-cli/display/displayable"
+
 	"github.com/apache/skywalking-cli/display/graph"
 
 	"github.com/urfave/cli"
@@ -38,18 +40,18 @@ const (
 )
 
 // Display the object in the style specified in flag --display
-func Display(ctx *cli.Context, object interface{}) error {
+func Display(ctx *cli.Context, displayable *d.Displayable) error {
 	displayStyle := ctx.GlobalString("display")
 
 	switch strings.ToLower(displayStyle) {
 	case JSON:
-		return json.Display(object)
+		return json.Display(displayable)
 	case YAML:
-		return yaml.Display(object)
+		return yaml.Display(displayable)
 	case TABLE:
-		return table.Display(object)
+		return table.Display(displayable)
 	case GRAPH:
-		return graph.Display(object)
+		return graph.Display(displayable)
 	default:
 		return fmt.Errorf("unsupported display style: %s", displayStyle)
 	}

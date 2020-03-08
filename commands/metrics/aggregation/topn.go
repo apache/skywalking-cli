@@ -22,6 +22,8 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/apache/skywalking-cli/display/displayable"
+
 	"github.com/apache/skywalking-cli/commands/interceptor"
 
 	"github.com/urfave/cli"
@@ -107,6 +109,6 @@ var TopN = cli.Command{
 			metricsValues = aggregation.ServiceTopN(ctx, name, topN, duration, order)
 		}
 
-		return display.Display(ctx, metricsValues)
+		return display.Display(ctx, &displayable.Displayable{Data: metricsValues})
 	},
 }

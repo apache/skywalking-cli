@@ -20,6 +20,8 @@ package instance
 import (
 	"regexp"
 
+	"github.com/apache/skywalking-cli/display/displayable"
+
 	"github.com/apache/skywalking-cli/graphql/metadata"
 
 	"github.com/urfave/cli"
@@ -62,6 +64,6 @@ var SearchCommand = cli.Command{
 				}
 			}
 		}
-		return display.Display(ctx, result)
+		return display.Display(ctx, &displayable.Displayable{Data: result})
 	},
 }

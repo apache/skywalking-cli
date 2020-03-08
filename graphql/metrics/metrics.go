@@ -85,7 +85,7 @@ func Thermodynamic(ctx *cli.Context, condition schema.MetricCondition, duration 
 	request := graphql.NewRequest(`
 		query ($metric: MetricCondition!, $duration: Duration!) {
 			metrics: getThermodynamic(metric: $metric, duration: $duration) {
-				nodes responseTimeStep: axisYStep
+				nodes axisYStep
 			}
 		}
 	`)

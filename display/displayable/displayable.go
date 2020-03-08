@@ -15,20 +15,12 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package json
+package displayable
 
-import (
-	"encoding/json"
-	"fmt"
+import "github.com/apache/skywalking-cli/graphql/schema"
 
-	d "github.com/apache/skywalking-cli/display/displayable"
-)
-
-func Display(displayable *d.Displayable) error {
-	bytes, e := json.Marshal(displayable.Data)
-	if e != nil {
-		return e
-	}
-	_, e = fmt.Printf("%v\n", string(bytes))
-	return e
+type Displayable struct {
+	Data     interface{}
+	Duration schema.Duration
+	Title    string
 }

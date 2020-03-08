@@ -20,6 +20,8 @@ package table
 import (
 	"testing"
 
+	"github.com/apache/skywalking-cli/display/displayable"
+
 	"github.com/apache/skywalking-cli/graphql/schema"
 )
 
@@ -36,7 +38,7 @@ func TestTableDisplay(t *testing.T) {
 }
 
 func display(t *testing.T, result []schema.Service) {
-	if err := Display(result); err != nil {
+	if err := Display(&displayable.Displayable{Data: result}); err != nil {
 		t.Error(err)
 	}
 }

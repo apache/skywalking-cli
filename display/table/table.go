@@ -21,15 +21,17 @@ import (
 	"encoding/json"
 	"os"
 
+	d "github.com/apache/skywalking-cli/display/displayable"
+
 	"github.com/apache/skywalking-cli/logger"
 
 	"github.com/olekukonko/tablewriter"
 )
 
-func Display(object interface{}) error {
+func Display(displayable *d.Displayable) error {
 	var stringMapArrays []map[string]string
 
-	bytes, _ := json.Marshal(object)
+	bytes, _ := json.Marshal(displayable.Data)
 	_ = json.Unmarshal(bytes, &stringMapArrays)
 
 	if len(stringMapArrays) < 1 {
