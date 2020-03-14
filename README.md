@@ -220,11 +220,12 @@ Ascii Graph, like coloring in terminal, so please use `json`  or `yaml` instead.
 
 <details>
 
-<summary>metrics thermodynamic --name=thermodynamic name</summary>
+<summary>metrics thermodynamic --name=thermodynamic name --ids=entity-ids</summary>
 
 | option | description | default |
 | :--- | :--- | :--- |
 | `--name` | Metrics name, defined in [OAL](https://github.com/apache/skywalking/blob/master/oap-server/server-bootstrap/src/main/resources/official_analysis.oal), such as `service_sla`, etc. |
+| `--ids` | IDs that are required by the metric type, such as service IDs for `service_heatmap` |
 | `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
 | `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
 

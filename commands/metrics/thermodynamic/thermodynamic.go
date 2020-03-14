@@ -39,8 +39,13 @@ var Command = cli.Command{
 		[]cli.Flag{
 			cli.StringFlag{
 				Name:     "name",
-				Usage:    "metrics `NAME`, which should be defined in OAL script",
+				Usage:    "metrics `name`, which should be defined in OAL script",
 				Required: true,
+			},
+			cli.StringFlag{
+				Name:     "id",
+				Usage:    "metrics `id` if the metrics require one",
+				Required: false,
 			},
 		},
 	),
@@ -54,6 +59,12 @@ var Command = cli.Command{
 		step := ctx.Generic("step")
 		metricsName := ctx.String("name")
 
+		var id *string = nil
+		if ctx.String("id") != "" {
+			idString := ctx.String("id")
+			id = &idString
+		}
+
 		duration := schema.Duration{
 			Start: start,
 			End:   end,
@@ -62,6 +73,7 @@ var Command = cli.Command{
 
 		metricsValues := metrics.Thermodynamic(ctx, schema.MetricCondition{
 			Name: metricsName,
+			ID:   id,
 		}, duration)
 
 		return display.Display(ctx, &displayable.Displayable{
