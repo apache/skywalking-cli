@@ -10,7 +10,7 @@ Release Notes.
 - Support visualization of heat map
 - Support top N entities, `swctl metrics top 5 --name service_sla`
 - Support thermodynamic metrics, `swctl metrics thermodynamic --name all_heatmap`
-- Support multiple linear metrics, `swctl --display=graph --debug metrics multiple-linear --name all_percentie` 
+- Support multiple linear metrics, `swctl --display=graph --debug metrics multiple-linear --name all_percentile` 
 - Automatically make use of server timezone API when possible
 
 ### Chores
