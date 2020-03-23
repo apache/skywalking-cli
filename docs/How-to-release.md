@@ -166,8 +166,15 @@ We only publish Apache mirror path as release info.
 
 1. Send ANNOUNCEMENT email to `dev@skywalking.apache.org`.
 
+1. Update links on the website download page. http://skywalking.apache.org/downloads/ . Include the new source codes, distribution packages, corresponding sha512, asc and document
+links. Links could be found by following rules(3)-(6).
+
+1. Add a release event on website homepage and event page. Announce the public release with changelog or key features.
+
+1. Send ANNOUNCE email to `dev@skywalking.apache.org` and `announce@apache.org`, the sender should use his/her Apache email account.
+
 ```text
-Subject: [ANNOUNCEMENT] Release Apache SkyWalking CLI version $VERSION
+Subject: [ANNOUNCEMENT] Apache SkyWalking CLI $VERSION Released
 
 Content:
 
@@ -175,29 +182,36 @@ Hi all,
 
 The Apache SkyWalking Team is glad to announce the release of Apache SkyWalking CLI $VERSION.
 
-SkyWalking CLI: Apache SkyWalking CLI https://skywalking.apache.org/
+SkyWalking CLI: A Command Line Interface for Apache SkyWalking https://skywalking.apache.org/
 
 SkyWalking: APM (application performance monitor) tool for distributed systems, 
 especially designed for microservices, cloud native and container-based (Docker, Kubernetes, Mesos) architectures. 
 
-Vote Thread: 
+This release contains a number of new features, bug fixes and improvements compared to
+version a.b.c(last release). The notable changes since x.y.z include:
 
-Download Links : http://skywalking.apache.org/downloads/
+(Highlight key changes)
+1. ...
+2. ...
+3. ...
 
-Release Notes : https://github.com/apache/skywalking-cli/blob/v$VERSION/CHANGES.md
+Please refer to the change log for the complete list of changes:
+https://github.com/apache/skywalking-cli/blob/$VERSION/CHANGES.md
 
-Website: http://skywalking.apache.org/
+Apache SkyWalking website:
+http://skywalking.apache.org/
 
-SkyWalking Resources:
+Downloads:
+http://skywalking.apache.org/downloads/
+
+Twitter:
+https://twitter.com/ASFSkyWalking
+
+SkyWalking (CLI) Resources:
 - Issue: https://github.com/apache/skywalking/issues
 - Mailing list: dev@skywalkiing.apache.org
-- Documents: https://github.com/apache/skywalking/blob/v$VERSION/docs/README.md
+- Documents: https://github.com/apache/skywalking-cli/blob/$VERSION/docs/README.md
 
 
-- Apache SkyWalking Team
+- The Apache SkyWalking Team
 ```
-
-1. Update website download page. http://skywalking.apache.org/downloads/ , including the new download source, distribution, sha512, asc and document
-links. Links could be found by following above rules.
-
-1. Add a release event on website homepage and even page. Announce the public release with changelog or key features.
