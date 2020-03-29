@@ -231,6 +231,36 @@ Ascii Graph, like coloring in terminal, so please use `json`  or `yaml` instead.
 
 </details>
 
+<details>
+
+<summary>instance search [--start=start-time] [--end=end-time] [--regex=instance-name-regex] [--service-id=service-id] [--service-name=service-name]</summary>
+
+`instance search` filter the instance in the time range of `[start, end]` and given --regex --service-id or --service-name.
+
+| option | description | default |
+| :--- | :--- | :--- |
+| `--regex` | Query regex of instance name|  |
+| `--service-id` | Query by service id (priority over `--service-name`)|  |
+| `--service-name` | Query by service name if `service-id` is absent |  |
+| `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
+| `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
+
+</details>
+
+### `trace`
+
+<details>
+
+<summary>trace [trace id]</summary>
+
+`trace` displays the spans of a given trace.
+
+| argument | description | default |
+| :--- | :--- | :--- |
+| `trace id` | the trace id whose spans are to displayed |  |
+
+</details>
+
 # Use Cases
 
 <details>
@@ -471,6 +501,16 @@ $ ./bin/swctl metrics thermodynamic --name all_heatmap
 
 ```shell
 $ ./bin/swctl --display=graph metrics thermodynamic --name all_heatmap 
+```
+
+</details>
+
+<details>
+
+<summary>Display the spans of a trace</summary>
+
+```shell
+$ ./bin/swctl --display graph trace 1585375544413.464998031.46647
 ```
 
 </details>

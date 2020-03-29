@@ -21,6 +21,8 @@ import (
 	"io/ioutil"
 	"os"
 
+	"github.com/apache/skywalking-cli/commands/trace"
+
 	"github.com/apache/skywalking-cli/commands/metrics"
 
 	"github.com/apache/skywalking-cli/commands/endpoint"
@@ -84,6 +86,7 @@ func main() {
 		instance.Command,
 		service.Command,
 		metrics.Command,
+		trace.Command,
 	}
 
 	app.Before = interceptor.BeforeChain([]cli.BeforeFunc{

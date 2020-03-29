@@ -21,6 +21,8 @@ import (
 	"github.com/machinebox/graphql"
 	"github.com/urfave/cli"
 
+	"github.com/apache/skywalking-cli/assets"
+
 	"github.com/apache/skywalking-cli/graphql/client"
 
 	"github.com/apache/skywalking-cli/graphql/schema"
@@ -29,72 +31,52 @@ import (
 func IntValues(ctx *cli.Context, condition schema.BatchMetricConditions, duration schema.Duration) schema.IntValues {
 	var response map[string]schema.IntValues
 
-	request := graphql.NewRequest(`
-		query ($metric: BatchMetricConditions!, $duration: Duration!) {
-			metrics: getValues(metric: $metric, duration: $duration) {
-				values { id value }
-			}
-		}
-	`)
+	request := graphql.NewRequest(assets.Read("graphqls/metadata/IntValues.graphql"))
+
 	request.Var("metric", condition)
 	request.Var("duration", duration)
 
 	client.ExecuteQueryOrFail(ctx, request, &response)
 
-	return response["metrics"]
+	return response["result"]
 }
 
 func LinearIntValues(ctx *cli.Context, condition schema.MetricCondition, duration schema.Duration) schema.IntValues {
 	var response map[string]schema.IntValues
 
-	request := graphql.NewRequest(`
-		query ($metric: MetricCondition!, $duration: Duration!) {
-			metrics: getLinearIntValues(metric: $metric, duration: $duration) {
-				values { value }
-			}
-		}
-	`)
+	request := graphql.NewRequest(assets.Read("graphqls/metadata/LinearIntValues.graphql"))
+
 	request.Var("metric", condition)
 	request.Var("duration", duration)
 
 	client.ExecuteQueryOrFail(ctx, request, &response)
 
-	return response["metrics"]
+	return response["result"]
 }
 
 func MultipleLinearIntValues(ctx *cli.Context, condition schema.MetricCondition, numOfLinear int, duration schema.Duration) []schema.IntValues {
-	request := graphql.NewRequest(`
-		query ($metric: MetricCondition!, $numOfLinear: Int!, $duration: Duration!) {
-			metrics: getMultipleLinearIntValues(metric: $metric, numOfLinear: $numOfLinear, duration: $duration) {
-				values { value }
-			}
-		}
-	`)
+	var response map[string][]schema.IntValues
+
+	request := graphql.NewRequest(assets.Read("graphqls/metadata/MultipleLinearIntValues.graphql"))
+
 	request.Var("metric", condition)
 	request.Var("numOfLinear", numOfLinear)
 	request.Var("duration", duration)
 
-	var response map[string][]schema.IntValues
-
 	client.ExecuteQueryOrFail(ctx, request, &response)
 
-	return response["metrics"]
+	return response["result"]
 }
 
 func Thermodynamic(ctx *cli.Context, condition schema.MetricCondition, duration schema.Duration) schema.Thermodynamic {
-	request := graphql.NewRequest(`
-		query ($metric: MetricCondition!, $duration: Duration!) {
-			metrics: getThermodynamic(metric: $metric, duration: $duration) {
-				nodes axisYStep
-			}
-		}
-	`)
+	var response map[string]schema.Thermodynamic
+
+	request := graphql.NewRequest(assets.Read("graphqls/metadata/Thermodynamic.graphql"))
+
 	request.Var("metric", condition)
 	request.Var("duration", duration)
 
-	var response map[string]schema.Thermodynamic
-
 	client.ExecuteQueryOrFail(ctx, request, &response)
 
-	return response["metrics"]
+	return response["result"]
 }

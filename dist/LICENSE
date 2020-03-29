@@ -224,6 +224,7 @@ The text of each license is also included at licenses/LICENSE-[project].txt.
 	nsf (termbox-go) 0.0.0-20190817171036-93860e161317: https://github.com/nsf/termbox-go MIT
 	gizak (termui) v3: https://github.com/gizak/termui MIT
 	mattn (go-runewidth) v3: https://github.com/mattn/go-runewidth MIT
+	gobuffalo (packr) v2: https://github.com/gobuffalo/packr MIT
 
 ========================================================================
 BSD licenses

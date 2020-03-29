@@ -35,6 +35,12 @@ jobs:
           go-version: 1.13
         id: go
 
+      - name: Set up Packr
+        run: go get -u github.com/gobuffalo/packr/v2/...
+
+      - name: Set up GQLGen
+        run: go get -u github.com/99designs/gqlgen
+
       - name: Check out code into the Go module directory
         uses: actions/checkout@v2
 

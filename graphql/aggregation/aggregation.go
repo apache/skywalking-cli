@@ -21,6 +21,8 @@ import (
 	"github.com/machinebox/graphql"
 	"github.com/urfave/cli"
 
+	"github.com/apache/skywalking-cli/assets"
+
 	"github.com/apache/skywalking-cli/graphql/client"
 	"github.com/apache/skywalking-cli/graphql/schema"
 )
@@ -28,18 +30,7 @@ import (
 func ServiceTopN(ctx *cli.Context, name string, topN int, duration schema.Duration, order schema.Order) []schema.TopNEntity {
 	var response map[string][]schema.TopNEntity
 
-	request := graphql.NewRequest(`
-		query ($name: String!, $topN: Int!, $duration: Duration!, $order: Order!) {
-			result: getServiceTopN(
-				duration: $duration,
-				name: $name,
-				topN: $topN,
-				order: $order
-			) {
-				id name value
-			}
-		}
-	`)
+	request := graphql.NewRequest(assets.Read("graphqls/aggregation/ServiceTopN.graphql"))
 	request.Var("name", name)
 	request.Var("topN", topN)
 	request.Var("duration", duration)
@@ -53,18 +44,7 @@ func ServiceTopN(ctx *cli.Context, name string, topN int, duration schema.Durati
 func AllServiceInstanceTopN(ctx *cli.Context, name string, topN int, duration schema.Duration, order schema.Order) []schema.TopNEntity {
 	var response map[string][]schema.TopNEntity
 
-	request := graphql.NewRequest(`
-		query ($name: String!, $topN: Int!, $duration: Duration!, $order: Order!) {
-			result: getAllServiceInstanceTopN(
-				duration: $duration,
-				name: $name,
-				topN: $topN,
-				order: $order
-			) {
-				id name value
-			}
-		}
-	`)
+	request := graphql.NewRequest(assets.Read("graphqls/aggregation/AllServiceInstanceTopN.graphql"))
 	request.Var("name", name)
 	request.Var("topN", topN)
 	request.Var("duration", duration)
@@ -78,19 +58,7 @@ func AllServiceInstanceTopN(ctx *cli.Context, name string, topN int, duration sc
 func ServiceInstanceTopN(ctx *cli.Context, serviceID, name string, topN int, duration schema.Duration, order schema.Order) []schema.TopNEntity {
 	var response map[string][]schema.TopNEntity
 
-	request := graphql.NewRequest(`
-		query ($serviceId: ID!, $name: String!, $topN: Int!, $duration: Duration!, $order: Order!) {
-			result: getServiceInstanceTopN(
-				serviceId: $serviceId,
-				duration: $duration,
-				name: $name,
-				topN: $topN,
-				order: $order
-			) {
-				id name value
-			}
-		}
-	`)
+	request := graphql.NewRequest(assets.Read("graphqls/aggregation/ServiceInstanceTopN.graphql"))
 	request.Var("serviceId", serviceID)
 	request.Var("name", name)
 	request.Var("topN", topN)
@@ -105,18 +73,7 @@ func ServiceInstanceTopN(ctx *cli.Context, serviceID, name string, topN int, dur
 func AllEndpointTopN(ctx *cli.Context, name string, topN int, duration schema.Duration, order schema.Order) []schema.TopNEntity {
 	var response map[string][]schema.TopNEntity
 
-	request := graphql.NewRequest(`
-		query ($name: String!, $topN: Int!, $duration: Duration!, $order: Order!) {
-			result: getAllEndpointTopN(
-				duration: $duration,
-				name: $name,
-				topN: $topN,
-				order: $order
-			) {
-				id name value
-			}
-		}
-	`)
+	request := graphql.NewRequest(assets.Read("graphqls/aggregation/AllEndpointTopN.graphql"))
 	request.Var("name", name)
 	request.Var("topN", topN)
 	request.Var("duration", duration)
@@ -130,19 +87,7 @@ func AllEndpointTopN(ctx *cli.Context, name string, topN int, duration schema.Du
 func EndpointTopN(ctx *cli.Context, serviceID, name string, topN int, duration schema.Duration, order schema.Order) []schema.TopNEntity {
 	var response map[string][]schema.TopNEntity
 
-	request := graphql.NewRequest(`
-		query ($serviceId: ID!, $name: String!, $topN: Int!, $duration: Duration!, $order: Order!) {
-			result: getEndpointTopN(
-				serviceId: $serviceId,
-				duration: $duration,
-				name: $name,
-				topN: $topN,
-				order: $order
-			) {
-				id name value
-			}
-		}
-	`)
+	request := graphql.NewRequest(assets.Read("graphqls/aggregation/EndpointTopN.graphql"))
 	request.Var("serviceId", serviceID)
 	request.Var("name", name)
 	request.Var("topN", topN)
