@@ -21,6 +21,8 @@ import (
 	"fmt"
 	"reflect"
 
+	"github.com/apache/skywalking-cli/display/graph/tree"
+
 	"github.com/apache/skywalking-cli/display/graph/heatmap"
 	"github.com/apache/skywalking-cli/graphql/schema"
 
@@ -28,24 +30,37 @@ import (
 	"github.com/apache/skywalking-cli/display/graph/linear"
 )
 
+type (
+	Thermodynamic      = schema.Thermodynamic
+	LinearMetrics      = map[string]float64
+	MultiLinearMetrics = []LinearMetrics
+	Trace              = schema.Trace
+)
+
+var (
+	ThermodynamicType      = reflect.TypeOf(Thermodynamic{})
+	LinearMetricsType      = reflect.TypeOf(LinearMetrics{})
+	MultiLinearMetricsType = reflect.TypeOf(MultiLinearMetrics{})
+	TraceType              = reflect.TypeOf(Trace{})
+)
+
 func Display(displayable *d.Displayable) error {
 	data := displayable.Data
 
-	if reflect.TypeOf(data) == reflect.TypeOf(schema.Thermodynamic{}) {
+	switch reflect.TypeOf(data) {
+	case ThermodynamicType:
 		return heatmap.Display(displayable)
+
+	case LinearMetricsType:
+		return linear.Display([]LinearMetrics{data.(LinearMetrics)})
+
+	case MultiLinearMetricsType:
+		return linear.Display(data.(MultiLinearMetrics))
+
+	case TraceType:
+		return tree.Display(tree.Adapt(data.(Trace)))
+
+	default:
+		return fmt.Errorf("type of %T is not supported to be displayed as ascii graph", reflect.TypeOf(data))
 	}
-
-	if reflect.TypeOf(data) == reflect.TypeOf(map[string]float64{}) {
-		kvs := []map[string]float64{data.(map[string]float64)}
-
-		return linear.Display(kvs)
-	}
-
-	if reflect.TypeOf(data) == reflect.TypeOf([]map[string]float64{}) {
-		kvs := data.([]map[string]float64)
-
-		return linear.Display(kvs)
-	}
-
-	return fmt.Errorf("type of %T is not supported to be displayed as ascii graph", reflect.TypeOf(data))
 }
