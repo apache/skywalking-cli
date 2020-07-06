@@ -31,7 +31,7 @@ import (
 func IntValues(ctx *cli.Context, condition schema.BatchMetricConditions, duration schema.Duration) schema.IntValues {
 	var response map[string]schema.IntValues
 
-	request := graphql.NewRequest(assets.Read("graphqls/metadata/IntValues.graphql"))
+	request := graphql.NewRequest(assets.Read("graphqls/metrics/IntValues.graphql"))
 
 	request.Var("metric", condition)
 	request.Var("duration", duration)
@@ -44,7 +44,7 @@ func IntValues(ctx *cli.Context, condition schema.BatchMetricConditions, duratio
 func LinearIntValues(ctx *cli.Context, condition schema.MetricCondition, duration schema.Duration) schema.IntValues {
 	var response map[string]schema.IntValues
 
-	request := graphql.NewRequest(assets.Read("graphqls/metadata/LinearIntValues.graphql"))
+	request := graphql.NewRequest(assets.Read("graphqls/metrics/LinearIntValues.graphql"))
 
 	request.Var("metric", condition)
 	request.Var("duration", duration)
@@ -57,7 +57,7 @@ func LinearIntValues(ctx *cli.Context, condition schema.MetricCondition, duratio
 func MultipleLinearIntValues(ctx *cli.Context, condition schema.MetricCondition, numOfLinear int, duration schema.Duration) []schema.IntValues {
 	var response map[string][]schema.IntValues
 
-	request := graphql.NewRequest(assets.Read("graphqls/metadata/MultipleLinearIntValues.graphql"))
+	request := graphql.NewRequest(assets.Read("graphqls/metrics/MultipleLinearIntValues.graphql"))
 
 	request.Var("metric", condition)
 	request.Var("numOfLinear", numOfLinear)
@@ -71,7 +71,7 @@ func MultipleLinearIntValues(ctx *cli.Context, condition schema.MetricCondition,
 func Thermodynamic(ctx *cli.Context, condition schema.MetricCondition, duration schema.Duration) schema.Thermodynamic {
 	var response map[string]schema.Thermodynamic
 
-	request := graphql.NewRequest(assets.Read("graphqls/metadata/Thermodynamic.graphql"))
+	request := graphql.NewRequest(assets.Read("graphqls/metrics/Thermodynamic.graphql"))
 
 	request.Var("metric", condition)
 	request.Var("duration", duration)
