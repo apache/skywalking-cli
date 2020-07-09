@@ -15,26 +15,25 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package utils
+package common
 
 import (
-	"time"
+	"github.com/machinebox/graphql"
+	"github.com/urfave/cli"
 
+	"github.com/apache/skywalking-cli/assets"
+	"github.com/apache/skywalking-cli/graphql/client"
 	"github.com/apache/skywalking-cli/graphql/schema"
 )
 
-// StepFormats is a mapping from schema.Step to its time format
-var StepFormats = map[schema.Step]string{
-	schema.StepSecond: "2006-01-02 150400",
-	schema.StepMinute: "2006-01-02 1504",
-	schema.StepHour:   "2006-01-02 15",
-	schema.StepDay:    "2006-01-02",
-}
+// CheckHealth intends to query the health status of OAP server
+func CheckHealth(ctx *cli.Context) schema.HealthStatus {
+	var response map[string]schema.HealthStatus
 
-// StepDuration is a mapping from schema.Step to its time.Duration
-var StepDuration = map[schema.Step]time.Duration{
-	schema.StepSecond: time.Second,
-	schema.StepMinute: time.Minute,
-	schema.StepHour:   time.Hour,
-	schema.StepDay:    time.Hour * 24,
+	request := graphql.NewRequest(assets.Read("graphqls/common/checkHealth.graphql"))
+
+	client.ExecuteQueryOrFail(ctx, request, &response)
+
+	return response["checkHealth"]
+
 }
