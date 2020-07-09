@@ -26,12 +26,11 @@ import (
 )
 
 var Command = cli.Command{
-	Name:  "checkHealth",
+	Name:    "checkHealth",
 	Aliases: []string{"ch"},
-	Usage: "Check the health status of OAP server",
+	Usage:   "Check the health status of OAP server",
 	Action: func(ctx *cli.Context) error {
 		healthStatus := common.CheckHealth(ctx)
 		return display.Display(ctx, &displayable.Displayable{Data: healthStatus})
 	},
 }
-
