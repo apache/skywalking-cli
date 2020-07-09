@@ -35,5 +35,4 @@ func CheckHealth(ctx *cli.Context) schema.HealthStatus {
 	client.ExecuteQueryOrFail(ctx, request, &response)
 
 	return response["checkHealth"]
-
 }
