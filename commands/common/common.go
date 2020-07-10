@@ -15,26 +15,22 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package utils
+package common
 
 import (
-	"time"
+	"github.com/urfave/cli"
 
-	"github.com/apache/skywalking-cli/graphql/schema"
+	"github.com/apache/skywalking-cli/display"
+	"github.com/apache/skywalking-cli/display/displayable"
+	"github.com/apache/skywalking-cli/graphql/common"
 )
 
-// StepFormats is a mapping from schema.Step to its time format
-var StepFormats = map[schema.Step]string{
-	schema.StepSecond: "2006-01-02 150400",
-	schema.StepMinute: "2006-01-02 1504",
-	schema.StepHour:   "2006-01-02 15",
-	schema.StepDay:    "2006-01-02",
-}
-
-// StepDuration is a mapping from schema.Step to its time.Duration
-var StepDuration = map[schema.Step]time.Duration{
-	schema.StepSecond: time.Second,
-	schema.StepMinute: time.Minute,
-	schema.StepHour:   time.Hour,
-	schema.StepDay:    time.Hour * 24,
+var Command = cli.Command{
+	Name:    "checkHealth",
+	Aliases: []string{"ch"},
+	Usage:   "Check the health status of OAP server",
+	Action: func(ctx *cli.Context) error {
+		healthStatus := common.CheckHealth(ctx)
+		return display.Display(ctx, &displayable.Displayable{Data: healthStatus})
+	},
 }
