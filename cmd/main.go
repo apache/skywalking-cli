@@ -23,8 +23,6 @@ import (
 
 	"github.com/apache/skywalking-cli/commands/trace"
 
-	"github.com/apache/skywalking-cli/commands/dashboard"
-
 	"github.com/apache/skywalking-cli/commands/metrics"
 
 	"github.com/apache/skywalking-cli/commands/endpoint"
@@ -89,7 +87,6 @@ func main() {
 		service.Command,
 		metrics.Command,
 		trace.Command,
-		dashboard.Command,
 	}
 
 	app.Before = interceptor.BeforeChain([]cli.BeforeFunc{
