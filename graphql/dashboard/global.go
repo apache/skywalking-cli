@@ -31,52 +31,28 @@ type GlobalMetrics struct {
 	SlowServices      []*schema.SelectedRecord `json:"slowServices"`
 	UnhealthyServices []*schema.SelectedRecord `json:"unhealthyServices"`
 	SlowEndpoints     []*schema.SelectedRecord `json:"slowEndpoints"`
-	ResponseLatency   []*schema.MetricsValues  `json:"responseLatency"`
-	HeatMap           schema.HeatMap           `json:"heatMap"`
 }
 
-func serviceLoad(ctx *cli.Context, duration schema.Duration) []*schema.SelectedRecord {
+type GlobalData struct {
+	Metrics         GlobalMetrics
+	ResponseLatency []*schema.MetricsValues `json:"responseLatency"`
+	HeatMap         schema.HeatMap          `json:"heatMap"`
+}
+
+func Metrics(ctx *cli.Context, duration schema.Duration) GlobalMetrics {
 	var response map[string][]*schema.SelectedRecord
 
-	request := graphql.NewRequest(assets.Read("graphqls/dashboard/serviceLoad.graphql"))
+	request := graphql.NewRequest(assets.Read("graphqls/dashboard/GlobalMetrics.graphql"))
 	request.Var("duration", duration)
 
 	client.ExecuteQueryOrFail(ctx, request, &response)
 
-	return response["result"]
-}
-
-func slowServices(ctx *cli.Context, duration schema.Duration) []*schema.SelectedRecord {
-	var response map[string][]*schema.SelectedRecord
-
-	request := graphql.NewRequest(assets.Read("graphqls/dashboard/slowServices.graphql"))
-	request.Var("duration", duration)
-
-	client.ExecuteQueryOrFail(ctx, request, &response)
-
-	return response["result"]
-}
-
-func unhealthyServices(ctx *cli.Context, duration schema.Duration) []*schema.SelectedRecord {
-	var response map[string][]*schema.SelectedRecord
-
-	request := graphql.NewRequest(assets.Read("graphqls/dashboard/UnhealthyServices.graphql"))
-	request.Var("duration", duration)
-
-	client.ExecuteQueryOrFail(ctx, request, &response)
-
-	return response["result"]
-}
-
-func slowEndpoints(ctx *cli.Context, duration schema.Duration) []*schema.SelectedRecord {
-	var response map[string][]*schema.SelectedRecord
-
-	request := graphql.NewRequest(assets.Read("graphqls/dashboard/SlowEndpoints.graphql"))
-	request.Var("duration", duration)
-
-	client.ExecuteQueryOrFail(ctx, request, &response)
-
-	return response["result"]
+	return GlobalMetrics{
+		ServiceLoad:       response["serviceLoad"],
+		SlowServices:      response["slowServices"],
+		UnhealthyServices: response["unhealthyServices"],
+		SlowEndpoints:     response["slowEndpoints"],
+	}
 }
 
 func responseLatency(ctx *cli.Context, duration schema.Duration) []*schema.MetricsValues {
@@ -101,15 +77,12 @@ func heatMap(ctx *cli.Context, duration schema.Duration) schema.HeatMap {
 	return response["result"]
 }
 
-func Global(ctx *cli.Context, duration schema.Duration) GlobalMetrics {
-	var globalMetrics GlobalMetrics
+func Global(ctx *cli.Context, duration schema.Duration) GlobalData {
+	var globalData GlobalData
 
-	globalMetrics.ServiceLoad = serviceLoad(ctx, duration)
-	globalMetrics.SlowServices = slowServices(ctx, duration)
-	globalMetrics.UnhealthyServices = unhealthyServices(ctx, duration)
-	globalMetrics.SlowEndpoints = slowEndpoints(ctx, duration)
-	globalMetrics.ResponseLatency = responseLatency(ctx, duration)
-	globalMetrics.HeatMap = heatMap(ctx, duration)
+	globalData.Metrics = Metrics(ctx, duration)
+	globalData.ResponseLatency = responseLatency(ctx, duration)
+	globalData.HeatMap = heatMap(ctx, duration)
 
-	return globalMetrics
+	return globalData
 }
