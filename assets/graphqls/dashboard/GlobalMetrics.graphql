@@ -16,12 +16,28 @@
 # under the License.
 
 query ($duration: Duration!) {
-    result: sortMetrics(
-        condition: {name: "service_cpm", parentService: null, normal: true, scope: Service, topN: 10, order: DES},
+    serviceLoad: sortMetrics(
+        condition: {name: "service_cpm", parentService: null, normal: true, scope: Service, topN: 5, order: DES},
         duration: $duration) {
         name
-        id
         value
-        refId
+    }
+    slowServices: sortMetrics(
+        condition: {name: "service_resp_time", parentService: null, normal: true, scope: Service, topN: 5, order: DES},
+        duration: $duration) {
+        name
+        value
+    }
+    unhealthyServices: sortMetrics(
+        condition: {name: "service_apdex", parentService: null, normal: true, scope: Service, topN: 5, order: ASC},
+        duration: $duration) {
+        name
+        value
+    }
+    slowEndpoints: sortMetrics(
+        condition: {name: "endpoint_avg", parentService: null, normal: true, scope: Endpoint, topN: 5, order: DES},
+        duration: $duration) {
+        name
+        value
     }
 }
