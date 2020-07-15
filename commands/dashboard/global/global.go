@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package dashboard
+package global
 
 import (
 	"github.com/urfave/cli"
@@ -34,8 +34,8 @@ import (
 var GlobalCommand = cli.Command{
 	Name:        "global",
 	ShortName:   "g",
-	Usage:       "display global metrics",
-	Description: "display global metrics",
+	Usage:       "Display global data",
+	Description: "Display global data",
 	Flags:       flags.DurationFlags,
 	Before: interceptor.BeforeChain([]cli.BeforeFunc{
 		interceptor.TimezoneInterceptor,
@@ -46,12 +46,12 @@ var GlobalCommand = cli.Command{
 		start := ctx.String("start")
 		step := ctx.Generic("step")
 
-		global := dashboard.Global(ctx, schema.Duration{
+		globalData := dashboard.Global(ctx, schema.Duration{
 			Start: start,
 			End:   end,
 			Step:  step.(*model.StepEnumValue).Selected,
 		})
 
-		return display.Display(ctx, &displayable.Displayable{Data: global})
+		return display.Display(ctx, &displayable.Displayable{Data: globalData})
 	},
 }
