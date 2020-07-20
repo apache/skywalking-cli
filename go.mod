@@ -13,5 +13,6 @@ require (
 	github.com/olekukonko/tablewriter v0.0.2
 	github.com/sirupsen/logrus v1.4.2
 	github.com/urfave/cli v1.22.1
+    google.golang.org/grpc v1.24.0
 	gopkg.in/yaml.v2 v2.2.4
 )

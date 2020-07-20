@@ -18,19 +18,50 @@
 package common
 
 import (
+	"fmt"
+
 	"github.com/urfave/cli"
 
-	"github.com/apache/skywalking-cli/display"
-	"github.com/apache/skywalking-cli/display/displayable"
 	"github.com/apache/skywalking-cli/graphql/common"
+	"github.com/apache/skywalking-cli/grpc"
 )
 
 var Command = cli.Command{
 	Name:    "checkHealth",
 	Aliases: []string{"ch"},
 	Usage:   "Check the health status of OAP server",
+	Flags: []cli.Flag{
+		cli.BoolTFlag{
+			Name:     "grpc",
+			Usage:    "Check gRPC by HealthCheck service",
+			Required: false,
+		},
+		cli.StringFlag{
+			Name:     "grpcAddr",
+			Usage:    "`host:port` to connect",
+			Value:    "127.0.0.1:11800",
+			Required: false,
+		},
+		cli.BoolFlag{
+			Name:     "grpcTLS",
+			Usage:    "use TLS for gRPC",
+			Required: false,
+		},
+	},
 	Action: func(ctx *cli.Context) error {
 		healthStatus := common.CheckHealth(ctx)
-		return display.Display(ctx, &displayable.Displayable{Data: healthStatus})
+		if healthStatus.Score != 0 {
+			return cli.NewExitError(healthStatus.Details, healthStatus.Score)
+		}
+		fmt.Println("OAP modules are healthy")
+		if !ctx.BoolT("grpc") {
+			return nil
+		}
+		retCode := grpc.HealthCheck(ctx.String("grpcAddr"), ctx.Bool("grpcTLS"))
+		if retCode != 0 {
+			return cli.NewExitError("gRPC: failed to check health", retCode)
+		}
+		fmt.Println("OAP gRPC is healthy")
+		return nil
 	},
 }
