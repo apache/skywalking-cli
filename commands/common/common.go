@@ -18,12 +18,11 @@
 package common
 
 import (
-	"fmt"
-
 	"github.com/urfave/cli"
 
 	"github.com/apache/skywalking-cli/graphql/common"
 	"github.com/apache/skywalking-cli/grpc"
+	"github.com/apache/skywalking-cli/logger"
 )
 
 var Command = cli.Command{
@@ -53,7 +52,7 @@ var Command = cli.Command{
 		if healthStatus.Score != 0 {
 			return cli.NewExitError(healthStatus.Details, healthStatus.Score)
 		}
-		fmt.Println("OAP modules are healthy")
+		logger.Log.Println("OAP modules are healthy")
 		if !ctx.BoolT("grpc") {
 			return nil
 		}
@@ -61,7 +60,7 @@ var Command = cli.Command{
 		if retCode != 0 {
 			return cli.NewExitError("gRPC: failed to check health", retCode)
 		}
-		fmt.Println("OAP gRPC is healthy")
+		logger.Log.Println("OAP gRPC is healthy")
 		return nil
 	},
 }

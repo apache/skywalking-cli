@@ -20,8 +20,9 @@ package grpc
 import (
 	"context"
 	"crypto/tls"
-	"fmt"
 	"time"
+
+	"github.com/apache/skywalking-cli/logger"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -31,20 +32,22 @@ import (
 )
 
 const (
+	Healthy = 0
 	ConnectionFailure = 1
 	RPCFailure = 2
 	Unhealthy = 3
 )
 
-func HealthCheck(addr string, enableTLS bool) (retCode int) {
-	retCode = 0
+func HealthCheck(addr string, enableTLS bool) int {
 	ctx := context.Background()
 
 	opts := []grpc.DialOption{
 		grpc.WithUserAgent("swctl_health_probe"),
 		grpc.WithBlock()}
 	if enableTLS {
-		creds := credentials.NewTLS(&tls.Config{InsecureSkipVerify: true})
+		creds := credentials.NewTLS(&tls.Config{
+			InsecureSkipVerify: true /* nosec */
+		})
 		opts = append(opts, grpc.WithTransportCredentials(creds))
 	} else {
 		opts = append(opts, grpc.WithInsecure())
@@ -54,12 +57,11 @@ func HealthCheck(addr string, enableTLS bool) (retCode int) {
 	conn, err := grpc.DialContext(dialCtx, addr, opts...)
 	if err != nil {
 		if err == context.DeadlineExceeded {
-			fmt.Printf("timeout: failed to connect service %q within 1 second", addr)
+			logger.Log.Printf("timeout: failed to connect service %q within 1 second", addr)
 		} else {
-			fmt.Printf("error: failed to connect service at %q: %+v", addr, err)
+			logger.Log.Printf("error: failed to connect service at %q: %+v", addr, err)
 		}
-		retCode = ConnectionFailure
-		return
+		return ConnectionFailure
 	}
 	defer conn.Close()
 
@@ -68,18 +70,16 @@ func HealthCheck(addr string, enableTLS bool) (retCode int) {
 	resp, err := healthpb.NewHealthClient(conn).Check(rpcCtx, &healthpb.HealthCheckRequest{Service: ""})
 	if err != nil {
 		if stat, ok := status.FromError(err); ok && stat.Code() == codes.DeadlineExceeded {
-			fmt.Printf("timeout: health request did not complete within 1 second")
+			logger.Log.Printf("timeout: health request did not complete within 1 second")
 		} else {
-			fmt.Printf("error: health request failed: %+v", err)
+			logger.Log.Printf("error: health request failed: %+v", err)
 		}
-		retCode = RPCFailure
-		return
+		return RPCFailure
 	}
 
 	if resp.GetStatus() != healthpb.HealthCheckResponse_SERVING {
-		fmt.Printf("OAP gRPC service is unhealthy %q", resp.GetStatus().String())
-		retCode = Unhealthy
-		return
+		logger.Log.Printf("OAP gRPC service is unhealthy %q", resp.GetStatus().String())
+		return Unhealthy
 	}
-	return
+	return Healthy
 }
