@@ -32,10 +32,10 @@ import (
 )
 
 const (
-	Healthy = 0
+	Healthy           = 0
 	ConnectionFailure = 1
-	RPCFailure = 2
-	Unhealthy = 3
+	RPCFailure        = 2
+	Unhealthy         = 3
 )
 
 func HealthCheck(addr string, enableTLS bool) int {
@@ -45,8 +45,9 @@ func HealthCheck(addr string, enableTLS bool) int {
 		grpc.WithUserAgent("swctl_health_probe"),
 		grpc.WithBlock()}
 	if enableTLS {
+		// #nosec
 		creds := credentials.NewTLS(&tls.Config{
-			InsecureSkipVerify: true, /* nosec */
+			InsecureSkipVerify: true,
 		})
 		opts = append(opts, grpc.WithTransportCredentials(creds))
 	} else {
