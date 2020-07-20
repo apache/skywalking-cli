@@ -46,7 +46,7 @@ func HealthCheck(addr string, enableTLS bool) int {
 		grpc.WithBlock()}
 	if enableTLS {
 		creds := credentials.NewTLS(&tls.Config{
-			InsecureSkipVerify: true /* nosec */
+			InsecureSkipVerify: true, /* nosec */
 		})
 		opts = append(opts, grpc.WithTransportCredentials(creds))
 	} else {
