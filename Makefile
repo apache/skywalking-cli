@@ -45,10 +45,10 @@ SHELL = /bin/bash
 all: clean license deps codegen lint test build
 
 tools:
-	$(GO_PACKR) -v || go get -u github.com/gobuffalo/packr/v2/...
+	$(GO_PACKR) -v || $(GO_GET) -u github.com/gobuffalo/packr/v2/...
 	$(GO_LINT) version || curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(GO_PATH)/bin v1.21.0
 	$(GO_LICENSER) -version || GO111MODULE=off $(GO_GET) -u github.com/elastic/go-licenser
-	$(GQL_GEN) version || go get -u github.com/99designs/gqlgen
+	$(GQL_GEN) version || $(GO_GET) -u github.com/99designs/gqlgen
 
 deps: tools
 	$(GO_GET) -v -t -d ./...
