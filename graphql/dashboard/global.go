@@ -34,12 +34,12 @@ type GlobalMetrics struct {
 }
 
 type GlobalData struct {
-	Metrics         GlobalMetrics
+	Metrics         *GlobalMetrics
 	ResponseLatency []*schema.MetricsValues `json:"responseLatency"`
 	HeatMap         schema.HeatMap          `json:"heatMap"`
 }
 
-func Metrics(ctx *cli.Context, duration schema.Duration) GlobalMetrics {
+func Metrics(ctx *cli.Context, duration schema.Duration) *GlobalMetrics {
 	var response map[string][]*schema.SelectedRecord
 
 	request := graphql.NewRequest(assets.Read("graphqls/dashboard/GlobalMetrics.graphql"))
@@ -47,7 +47,7 @@ func Metrics(ctx *cli.Context, duration schema.Duration) GlobalMetrics {
 
 	client.ExecuteQueryOrFail(ctx, request, &response)
 
-	return GlobalMetrics{
+	return &GlobalMetrics{
 		ServiceLoad:       response["serviceLoad"],
 		SlowServices:      response["slowServices"],
 		UnhealthyServices: response["unhealthyServices"],
