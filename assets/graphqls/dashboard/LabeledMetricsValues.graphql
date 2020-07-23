@@ -15,15 +15,13 @@
 # specific language governing permissions and limitations
 # under the License.
 
-query ($condition: MetricsCondition!, $duration: Duration!) {
-    result: readHeatMap(condition: $condition, duration: $duration) {
+query ($condition: MetricsCondition!, $label: [String!]!, $duration: Duration!) {
+    result: readLabeledMetricsValues(condition: $condition, labels: $label, duration: $duration) {
+        label
         values {
-            id
-            values
-        }
-        buckets {
-            min
-            max
+            values {
+                value
+            }
         }
     }
 }

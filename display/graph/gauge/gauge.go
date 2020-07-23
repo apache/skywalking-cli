@@ -45,7 +45,7 @@ type metricColumn struct {
 	gauges []*gauge.Gauge
 }
 
-func newMetricColumn(title string, column []*schema.SelectedRecord, isDec bool) (*metricColumn, error) {
+func newMetricColumn(column []*schema.SelectedRecord, config *dashboard.MetricConfig) (*metricColumn, error) {
 	var ret metricColumn
 	var maxValue int
 
@@ -53,18 +53,18 @@ func newMetricColumn(title string, column []*schema.SelectedRecord, isDec bool) 
 	if err != nil {
 		return nil, err
 	}
-	if err := t.Write(title, text.WriteCellOpts(cell.FgColor(cell.ColorRed))); err != nil {
+	if err := t.Write(config.Title, text.WriteCellOpts(cell.FgColor(cell.ColorRed))); err != nil {
 		return nil, err
 	}
 	ret.title = t
 
-	if isDec {
+	if config.Condition.Order == schema.OrderDes {
 		temp, err := strconv.Atoi(*(column[0].Value))
 		if err != nil {
 			return nil, err
 		}
 		maxValue = temp
-	} else {
+	} else if config.Condition.Order == schema.OrderAsc {
 		temp, err := strconv.Atoi(*(column[len(column)-1].Value))
 		if err != nil {
 			return nil, err
@@ -79,8 +79,12 @@ func newMetricColumn(title string, column []*schema.SelectedRecord, isDec bool) 
 			return nil, err
 		}
 
-		if !isDec {
-			strValue = fmt.Sprintf("%.4f", float64(v)/10000)
+		if config.AggregationNum != "" {
+			aggregationNum, convErr := strconv.Atoi(config.AggregationNum)
+			if convErr != nil {
+				return nil, convErr
+			}
+			strValue = fmt.Sprintf("%.4f", float64(v)/float64(aggregationNum))
 		}
 
 		g, err := gauge.New(
@@ -134,7 +138,7 @@ func layout(columns ...*metricColumn) ([]container.Option, error) {
 	return gridOpts, nil
 }
 
-func Display(metrics *dashboard.GlobalMetrics) error {
+func Display(metrics [][]*schema.SelectedRecord) error {
 	t, err := termbox.New()
 	if err != nil {
 		return err
@@ -151,29 +155,18 @@ func Display(metrics *dashboard.GlobalMetrics) error {
 
 	var columns []*metricColumn
 
-	col, err := newMetricColumn(" Service Load (calls/min) ", metrics.ServiceLoad, true)
+	configs, err := dashboard.LoadConfig("assets/config/Dashboard.Global.json")
 	if err != nil {
-		return err
+		return nil
 	}
-	columns = append(columns, col)
 
-	col, err = newMetricColumn("    Slow Services (ms)    ", metrics.SlowServices, true)
-	if err != nil {
-		return err
+	for i, config := range configs.Metrics {
+		col, innerErr := newMetricColumn(metrics[i], &config)
+		if innerErr != nil {
+			return innerErr
+		}
+		columns = append(columns, col)
 	}
-	columns = append(columns, col)
-
-	col, err = newMetricColumn("Un-Health Services (Apdex)", metrics.UnhealthyServices, false)
-	if err != nil {
-		return err
-	}
-	columns = append(columns, col)
-
-	col, err = newMetricColumn("    Slow Endpoints (ms)   ", metrics.SlowEndpoints, true)
-	if err != nil {
-		return err
-	}
-	columns = append(columns, col)
 
 	gridOpts, err := layout(columns...)
 	if err != nil {

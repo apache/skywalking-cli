@@ -15,16 +15,9 @@
 # specific language governing permissions and limitations
 # under the License.
 
-query ($duration: Duration!) {
-    result: readLabeledMetricsValues(
-        condition: {name: "all_percentile", entity: {scope: All, normal: true}},
-        labels: ["0","1","2","3","4"],
-        duration: $duration) {
-        label
-        values {
-            values {
-                value
-            }
-        }
+query ($condition:TopNCondition!, $duration: Duration!) {
+    result: sortMetrics(condition: $condition, duration: $duration) {
+        name
+        value
     }
 }

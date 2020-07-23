@@ -18,6 +18,10 @@
 package dashboard
 
 import (
+	"encoding/json"
+	"io/ioutil"
+	"os"
+
 	"github.com/machinebox/graphql"
 	"github.com/urfave/cli"
 
@@ -26,39 +30,72 @@ import (
 	"github.com/apache/skywalking-cli/graphql/schema"
 )
 
-type GlobalMetrics struct {
-	ServiceLoad       []*schema.SelectedRecord `json:"serviceLoad"`
-	SlowServices      []*schema.SelectedRecord `json:"slowServices"`
-	UnhealthyServices []*schema.SelectedRecord `json:"unhealthyServices"`
-	SlowEndpoints     []*schema.SelectedRecord `json:"slowEndpoints"`
+type MetricConfig struct {
+	Condition      schema.TopNCondition `json:"condition"`
+	Title          string               `json:"title"`
+	Aggregation    string               `json:"aggregation"`
+	AggregationNum string               `json:"aggregationNum"`
+}
+
+type ChartConfig struct {
+	Condition schema.MetricsCondition `json:"condition"`
+	Title     string                  `json:"title"`
+	Unit      string                  `json:"unit"`
+	Labels    string                  `json:"labels"`
+}
+
+type GlobalConfig struct {
+	Metrics         []MetricConfig `json:"metrics"`
+	ResponseLatency ChartConfig    `json:"responseLatency"`
+	HeatMap         ChartConfig    `json:"heatMap"`
 }
 
 type GlobalData struct {
-	Metrics         *GlobalMetrics
-	ResponseLatency []*schema.MetricsValues `json:"responseLatency"`
-	HeatMap         schema.HeatMap          `json:"heatMap"`
+	Metrics         [][]*schema.SelectedRecord `json:"metrics"`
+	ResponseLatency []*schema.MetricsValues    `json:"responseLatency"`
+	HeatMap         schema.HeatMap             `json:"heatMap"`
 }
 
-func Metrics(ctx *cli.Context, duration schema.Duration) *GlobalMetrics {
-	var response map[string][]*schema.SelectedRecord
+func LoadConfig(filename string) (*GlobalConfig, error) {
+	var config GlobalConfig
 
-	request := graphql.NewRequest(assets.Read("graphqls/dashboard/GlobalMetrics.graphql"))
-	request.Var("duration", duration)
-
-	client.ExecuteQueryOrFail(ctx, request, &response)
-
-	return &GlobalMetrics{
-		ServiceLoad:       response["serviceLoad"],
-		SlowServices:      response["slowServices"],
-		UnhealthyServices: response["unhealthyServices"],
-		SlowEndpoints:     response["slowEndpoints"],
+	jsonFile, err := os.Open(filename)
+	if err != nil {
+		return nil, err
 	}
+	defer jsonFile.Close()
+
+	byteValue, _ := ioutil.ReadAll(jsonFile)
+	if err := json.Unmarshal(byteValue, &config); err != nil {
+		return nil, err
+	}
+	return &config, nil
+}
+
+func Metrics(ctx *cli.Context, duration schema.Duration) [][]*schema.SelectedRecord {
+	var ret [][]*schema.SelectedRecord
+	configs, err := LoadConfig("assets/config/Dashboard.Global.json")
+	if err != nil {
+		return nil
+	}
+
+	for _, m := range configs.Metrics {
+		var response map[string][]*schema.SelectedRecord
+		request := graphql.NewRequest(assets.Read("graphqls/dashboard/SortMetrics.graphql"))
+		request.Var("condition", m.Condition)
+		request.Var("duration", duration)
+
+		client.ExecuteQueryOrFail(ctx, request, &response)
+		ret = append(ret, response["result"])
+	}
+
+	return ret
 }
 
 func responseLatency(ctx *cli.Context, duration schema.Duration) []*schema.MetricsValues {
 	var response map[string][]*schema.MetricsValues
 
-	request := graphql.NewRequest(assets.Read("graphqls/dashboard/ResponseLatency.graphql"))
+	request := graphql.NewRequest(assets.Read("graphqls/dashboard/LabeledMetricsValues.graphql"))
 	request.Var("duration", duration)
 
 	client.ExecuteQueryOrFail(ctx, request, &response)
@@ -77,12 +114,12 @@ func heatMap(ctx *cli.Context, duration schema.Duration) schema.HeatMap {
 	return response["result"]
 }
 
-func Global(ctx *cli.Context, duration schema.Duration) GlobalData {
+func Global(ctx *cli.Context, duration schema.Duration) *GlobalData {
 	var globalData GlobalData
 
 	globalData.Metrics = Metrics(ctx, duration)
 	globalData.ResponseLatency = responseLatency(ctx, duration)
 	globalData.HeatMap = heatMap(ctx, duration)
 
-	return globalData
+	return &globalData
 }
