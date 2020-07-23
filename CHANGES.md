@@ -2,6 +2,22 @@ Changes by Version
 ==================
 Release Notes.
 
+0.3.0
+------------------
+
+### Features
+
+- Add health check command
+- Add `trace` command
+
+### Bug Fixes
+
+- Fix wrong metrics graphql path
+
+### Chores
+
+- Move tools setup into Makefile to easy the setup work locally
+
 0.2.0
 ------------------
 
