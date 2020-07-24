@@ -45,10 +45,10 @@ SHELL = /bin/bash
 all: clean license deps codegen lint test build
 
 tools:
-	$(GO_PACKR) -v || go get -u github.com/gobuffalo/packr/v2/...
+	$(GO_PACKR) -v || $(GO_GET) -u github.com/gobuffalo/packr/v2/...
 	$(GO_LINT) version || curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(GO_PATH)/bin v1.21.0
 	$(GO_LICENSER) -version || GO111MODULE=off $(GO_GET) -u github.com/elastic/go-licenser
-	$(GQL_GEN) version || go get -u github.com/99designs/gqlgen
+	$(GQL_GEN) version || $(GO_GET) -u github.com/99designs/gqlgen
 
 deps: tools
 	$(GO_GET) -v -t -d ./...
@@ -80,7 +80,7 @@ license: clean tools
 	$(GO_LICENSER) -d -licensor='Apache Software Foundation (ASF)' .
 
 .PHONY: verify
-verify: clean lint test license
+verify: clean license lint test
 
 .PHONY: fix
 fix: tools
@@ -126,7 +126,7 @@ release-bin: build
 	-tar -zcvf $(RELEASE_BIN).tgz $(RELEASE_BIN)
 	-rm -rf $(RELEASE_BIN)
 
-release: verify license release-src release-bin
+release: verify release-src release-bin
 	gpg --batch --yes --armor --detach-sig $(RELEASE_SRC).tgz
 	shasum -a 512 $(RELEASE_SRC).tgz > $(RELEASE_SRC).tgz.sha512
 	gpg --batch --yes --armor --detach-sig $(RELEASE_BIN).tgz
