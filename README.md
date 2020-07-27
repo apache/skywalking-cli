@@ -263,6 +263,22 @@ Ascii Graph, like coloring in terminal, so please use `json`  or `yaml` instead.
 
 </details>
 
+### `dashboard`
+
+<details>
+
+<summary>dashboard global-metrics [--template=template]</summary>
+
+`dashboard global-metrics` displays global metrics in the form of a dashboard.
+
+| argument | description | default |
+| :--- | :--- | :--- |
+| `--template` | the template file to customize how to display information | `templates/Dashboard.Global.json` |
+
+You can imitate the content of [the default template file](example/Dashboard.Global.json) to customize the dashboard.
+
+</details>
+
 # Use Cases
 
 <details>
