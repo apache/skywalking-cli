@@ -32,7 +32,17 @@ import (
 var Metrics = cli.Command{
 	Name:  "global-metrics",
 	Usage: "Query global metrics",
-	Flags: flags.DurationFlags,
+	Flags: flags.Flags(
+		flags.DurationFlags,
+		[]cli.Flag{
+			cli.StringFlag{
+				Name:     "template",
+				Usage:    "load dashboard UI template",
+				Required: false,
+				Value:    dashboard.DefaultTemplatePath,
+			},
+		},
+	),
 	Before: interceptor.BeforeChain([]cli.BeforeFunc{
 		interceptor.TimezoneInterceptor,
 		interceptor.DurationInterceptor,

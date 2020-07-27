@@ -21,6 +21,8 @@ import (
 	"fmt"
 	"reflect"
 
+	"github.com/urfave/cli"
+
 	"github.com/apache/skywalking-cli/display/graph/gauge"
 
 	"github.com/apache/skywalking-cli/display/graph/tree"
@@ -48,7 +50,7 @@ var (
 	GlobalMetricsType      = reflect.TypeOf(GlobalMetrics{})
 )
 
-func Display(displayable *d.Displayable) error {
+func Display(ctx *cli.Context, displayable *d.Displayable) error {
 	data := displayable.Data
 
 	switch reflect.TypeOf(data) {
@@ -65,7 +67,7 @@ func Display(displayable *d.Displayable) error {
 		return tree.Display(tree.Adapt(data.(Trace)))
 
 	case GlobalMetricsType:
-		return gauge.Display(data.(GlobalMetrics))
+		return gauge.Display(ctx, data.(GlobalMetrics))
 
 	default:
 		return fmt.Errorf("type of %T is not supported to be displayed as ascii graph", reflect.TypeOf(data))

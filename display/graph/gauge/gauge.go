@@ -24,6 +24,8 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/urfave/cli"
+
 	"github.com/apache/skywalking-cli/graphql/dashboard"
 	"github.com/apache/skywalking-cli/graphql/schema"
 
@@ -45,7 +47,7 @@ type metricColumn struct {
 	gauges []*gauge.Gauge
 }
 
-func newMetricColumn(column []*schema.SelectedRecord, config *dashboard.MetricConfig) (*metricColumn, error) {
+func newMetricColumn(column []*schema.SelectedRecord, config *dashboard.MetricTemplate) (*metricColumn, error) {
 	var ret metricColumn
 	var maxValue int
 
@@ -109,26 +111,46 @@ func newMetricColumn(column []*schema.SelectedRecord, config *dashboard.MetricCo
 }
 
 func layout(columns ...*metricColumn) ([]container.Option, error) {
-	const GaugeNum = 6
+	var metricColumns []grid.Element
+	var columnWidthPerc int
+
+	// For the best display effect, the maximum number of columns that can be displayed
+	const MaxColumnNum = 4
+	// For the best display effect, the maximum number of gauges
+	// that can be displayed in each column
+	const MaxGaugeNum = 6
 	const TitleHeight = 10
 
-	gaugeHeight := math.Floor((100 - TitleHeight) / GaugeNum)
-	var metricColumns []grid.Element
+	// Number of columns to display, each column represents a global metric
+	// The number should be less than or equal to MaxColumnNum
+	columnNum := int(math.Min(MaxColumnNum, float64(len(columns))))
 
-	for _, c := range columns {
+	// columnWidthPerc should be in the range (0, 100)
+	if columnNum > 1 {
+		columnWidthPerc = 100 / columnNum
+	} else {
+		columnWidthPerc = 99
+	}
+
+	for i := 0; i < columnNum; i++ {
 		var column []grid.Element
-		column = append(column, grid.RowHeightPerc(TitleHeight, grid.Widget(c.title)))
+		column = append(column, grid.RowHeightPerc(TitleHeight, grid.Widget(columns[i].title)))
 
-		for i := 0; i < GaugeNum; i++ {
-			column = append(column, grid.RowHeightPerc(int(gaugeHeight), grid.Widget(c.gauges[i])))
+		// Number of gauge in a column, each gauge represents a service or endpoint
+		// The number should be less than or equal to MaxGaugeNum
+		gaugeNum := int(math.Min(MaxGaugeNum, float64(len(columns[i].gauges))))
+		gaugeHeight := int(math.Floor(float64(100-TitleHeight) / float64(gaugeNum)))
+
+		for j := 0; j < gaugeNum; j++ {
+			column = append(column, grid.RowHeightPerc(gaugeHeight, grid.Widget(columns[i].gauges[j])))
 		}
-		metricColumns = append(metricColumns, grid.ColWidthPerc(25, column...))
+		metricColumns = append(metricColumns, grid.ColWidthPerc(columnWidthPerc, column...))
 	}
 
 	builder := grid.New()
 	builder.Add(
 		grid.RowHeightPerc(10),
-		grid.RowHeightPerc(70, metricColumns...),
+		grid.RowHeightPerc(80, metricColumns...),
 	)
 
 	gridOpts, err := builder.Build()
@@ -138,7 +160,7 @@ func layout(columns ...*metricColumn) ([]container.Option, error) {
 	return gridOpts, nil
 }
 
-func Display(metrics [][]*schema.SelectedRecord) error {
+func Display(ctx *cli.Context, metrics [][]*schema.SelectedRecord) error {
 	t, err := termbox.New()
 	if err != nil {
 		return err
@@ -155,7 +177,7 @@ func Display(metrics [][]*schema.SelectedRecord) error {
 
 	var columns []*metricColumn
 
-	configs, err := dashboard.LoadConfig("assets/config/Dashboard.Global.json")
+	configs, err := dashboard.LoadTemplate(ctx.String("template"))
 	if err != nil {
 		return nil
 	}
@@ -183,14 +205,14 @@ func Display(metrics [][]*schema.SelectedRecord) error {
 		return err
 	}
 
-	ctx, cancel := context.WithCancel(context.Background())
+	con, cancel := context.WithCancel(context.Background())
 	quitter := func(keyboard *terminalapi.Keyboard) {
 		if strings.EqualFold(keyboard.Key.String(), "q") {
 			cancel()
 		}
 	}
 
-	err = termdash.Run(ctx, t, c, termdash.KeyboardSubscriber(quitter))
+	err = termdash.Run(con, t, c, termdash.KeyboardSubscriber(quitter))
 
 	return err
 }

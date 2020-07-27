@@ -51,7 +51,7 @@ func Display(ctx *cli.Context, displayable *d.Displayable) error {
 	case TABLE:
 		return table.Display(displayable)
 	case GRAPH:
-		return graph.Display(displayable)
+		return graph.Display(ctx, displayable)
 	default:
 		return fmt.Errorf("unsupported display style: %s", displayStyle)
 	}

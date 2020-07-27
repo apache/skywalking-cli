@@ -30,24 +30,24 @@ import (
 	"github.com/apache/skywalking-cli/graphql/schema"
 )
 
-type MetricConfig struct {
+type MetricTemplate struct {
 	Condition      schema.TopNCondition `json:"condition"`
 	Title          string               `json:"title"`
 	Aggregation    string               `json:"aggregation"`
 	AggregationNum string               `json:"aggregationNum"`
 }
 
-type ChartConfig struct {
+type ChartTemplate struct {
 	Condition schema.MetricsCondition `json:"condition"`
 	Title     string                  `json:"title"`
 	Unit      string                  `json:"unit"`
 	Labels    string                  `json:"labels"`
 }
 
-type GlobalConfig struct {
-	Metrics         []MetricConfig `json:"metrics"`
-	ResponseLatency ChartConfig    `json:"responseLatency"`
-	HeatMap         ChartConfig    `json:"heatMap"`
+type GlobalTemplate struct {
+	Metrics         []MetricTemplate `json:"metrics"`
+	ResponseLatency ChartTemplate    `json:"responseLatency"`
+	HeatMap         ChartTemplate    `json:"heatMap"`
 }
 
 type GlobalData struct {
@@ -56,16 +56,28 @@ type GlobalData struct {
 	HeatMap         schema.HeatMap             `json:"heatMap"`
 }
 
-func LoadConfig(filename string) (*GlobalConfig, error) {
-	var config GlobalConfig
+const DefaultTemplatePath = "templates/Dashboard.Global.json"
 
-	jsonFile, err := os.Open(filename)
-	if err != nil {
-		return nil, err
+func LoadTemplate(filename string) (*GlobalTemplate, error) {
+	var config GlobalTemplate
+	var byteValue []byte
+
+	if filename == DefaultTemplatePath {
+		jsonFile := assets.Read(filename)
+		byteValue = []byte(jsonFile)
+	} else {
+		jsonFile, err := os.Open(filename)
+		if err != nil {
+			return nil, err
+		}
+		defer jsonFile.Close()
+
+		byteValue, err = ioutil.ReadAll(jsonFile)
+		if err != nil {
+			return nil, err
+		}
 	}
-	defer jsonFile.Close()
 
-	byteValue, _ := ioutil.ReadAll(jsonFile)
 	if err := json.Unmarshal(byteValue, &config); err != nil {
 		return nil, err
 	}
@@ -74,7 +86,7 @@ func LoadConfig(filename string) (*GlobalConfig, error) {
 
 func Metrics(ctx *cli.Context, duration schema.Duration) [][]*schema.SelectedRecord {
 	var ret [][]*schema.SelectedRecord
-	configs, err := LoadConfig("assets/config/Dashboard.Global.json")
+	configs, err := LoadTemplate(ctx.String("template"))
 	if err != nil {
 		return nil
 	}
