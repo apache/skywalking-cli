@@ -24,6 +24,8 @@ import (
 	"github.com/apache/skywalking-cli/commands/common"
 	"github.com/apache/skywalking-cli/commands/trace"
 
+	"github.com/apache/skywalking-cli/commands/dashboard"
+
 	"github.com/apache/skywalking-cli/commands/metrics"
 
 	"github.com/apache/skywalking-cli/commands/endpoint"
@@ -89,6 +91,7 @@ func main() {
 		metrics.Command,
 		trace.Command,
 		common.Command,
+		dashboard.Command,
 	}
 
 	app.Before = interceptor.BeforeChain([]cli.BeforeFunc{

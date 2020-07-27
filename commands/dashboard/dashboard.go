@@ -15,44 +15,20 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package display
+package dashboard
 
 import (
-	"fmt"
-	"strings"
-
-	d "github.com/apache/skywalking-cli/display/displayable"
-
-	"github.com/apache/skywalking-cli/display/graph"
-
 	"github.com/urfave/cli"
 
-	"github.com/apache/skywalking-cli/display/json"
-	"github.com/apache/skywalking-cli/display/table"
-	"github.com/apache/skywalking-cli/display/yaml"
+	"github.com/apache/skywalking-cli/commands/dashboard/global"
 )
 
-const (
-	JSON  = "json"
-	YAML  = "yaml"
-	TABLE = "table"
-	GRAPH = "graph"
-)
-
-// Display the object in the style specified in flag --display
-func Display(ctx *cli.Context, displayable *d.Displayable) error {
-	displayStyle := ctx.GlobalString("display")
-
-	switch strings.ToLower(displayStyle) {
-	case JSON:
-		return json.Display(displayable)
-	case YAML:
-		return yaml.Display(displayable)
-	case TABLE:
-		return table.Display(displayable)
-	case GRAPH:
-		return graph.Display(ctx, displayable)
-	default:
-		return fmt.Errorf("unsupported display style: %s", displayStyle)
-	}
+var Command = cli.Command{
+	Name:      "dashboard",
+	ShortName: "db",
+	Usage:     "Dashboard related sub-command",
+	Subcommands: cli.Commands{
+		global.GlobalCommand,
+		global.Metrics,
+	},
 }

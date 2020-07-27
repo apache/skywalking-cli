@@ -21,6 +21,10 @@ import (
 	"fmt"
 	"reflect"
 
+	"github.com/urfave/cli"
+
+	"github.com/apache/skywalking-cli/display/graph/gauge"
+
 	"github.com/apache/skywalking-cli/display/graph/tree"
 
 	"github.com/apache/skywalking-cli/display/graph/heatmap"
@@ -35,6 +39,7 @@ type (
 	LinearMetrics      = map[string]float64
 	MultiLinearMetrics = []LinearMetrics
 	Trace              = schema.Trace
+	GlobalMetrics      = [][]*schema.SelectedRecord
 )
 
 var (
@@ -42,9 +47,10 @@ var (
 	LinearMetricsType      = reflect.TypeOf(LinearMetrics{})
 	MultiLinearMetricsType = reflect.TypeOf(MultiLinearMetrics{})
 	TraceType              = reflect.TypeOf(Trace{})
+	GlobalMetricsType      = reflect.TypeOf(GlobalMetrics{})
 )
 
-func Display(displayable *d.Displayable) error {
+func Display(ctx *cli.Context, displayable *d.Displayable) error {
 	data := displayable.Data
 
 	switch reflect.TypeOf(data) {
@@ -59,6 +65,9 @@ func Display(displayable *d.Displayable) error {
 
 	case TraceType:
 		return tree.Display(tree.Adapt(data.(Trace)))
+
+	case GlobalMetricsType:
+		return gauge.Display(ctx, data.(GlobalMetrics))
 
 	default:
 		return fmt.Errorf("type of %T is not supported to be displayed as ascii graph", reflect.TypeOf(data))
