@@ -36,7 +36,17 @@ var GlobalCommand = cli.Command{
 	ShortName:   "g",
 	Usage:       "Display global data",
 	Description: "Display global data",
-	Flags:       flags.DurationFlags,
+	Flags: flags.Flags(
+		flags.DurationFlags,
+		[]cli.Flag{
+			cli.StringFlag{
+				Name:     "template",
+				Usage:    "load dashboard UI template",
+				Required: false,
+				Value:    dashboard.DefaultTemplatePath,
+			},
+		},
+	),
 	Before: interceptor.BeforeChain([]cli.BeforeFunc{
 		interceptor.TimezoneInterceptor,
 		interceptor.DurationInterceptor,

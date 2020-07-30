@@ -21,6 +21,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"os"
+	"strings"
 
 	"github.com/machinebox/graphql"
 	"github.com/urfave/cli"
@@ -56,10 +57,18 @@ type GlobalData struct {
 	HeatMap         schema.HeatMap             `json:"heatMap"`
 }
 
+// Use singleton pattern to make sure to load template only once.
+var globalTemplate *GlobalTemplate
+
 const DefaultTemplatePath = "templates/Dashboard.Global.json"
 
+// LoadTemplate reads UI template from file.
 func LoadTemplate(filename string) (*GlobalTemplate, error) {
-	var config GlobalTemplate
+	if globalTemplate != nil {
+		return globalTemplate, nil
+	}
+
+	var t GlobalTemplate
 	var byteValue []byte
 
 	if filename == DefaultTemplatePath {
@@ -78,20 +87,22 @@ func LoadTemplate(filename string) (*GlobalTemplate, error) {
 		}
 	}
 
-	if err := json.Unmarshal(byteValue, &config); err != nil {
+	if err := json.Unmarshal(byteValue, &t); err != nil {
 		return nil, err
 	}
-	return &config, nil
+	globalTemplate = &t
+	return globalTemplate, nil
 }
 
 func Metrics(ctx *cli.Context, duration schema.Duration) [][]*schema.SelectedRecord {
 	var ret [][]*schema.SelectedRecord
-	configs, err := LoadTemplate(ctx.String("template"))
+
+	template, err := LoadTemplate(ctx.String("template"))
 	if err != nil {
 		return nil
 	}
 
-	for _, m := range configs.Metrics {
+	for _, m := range template.Metrics {
 		var response map[string][]*schema.SelectedRecord
 		request := graphql.NewRequest(assets.Read("graphqls/dashboard/SortMetrics.graphql"))
 		request.Var("condition", m.Condition)
@@ -107,8 +118,19 @@ func Metrics(ctx *cli.Context, duration schema.Duration) [][]*schema.SelectedRec
 func responseLatency(ctx *cli.Context, duration schema.Duration) []*schema.MetricsValues {
 	var response map[string][]*schema.MetricsValues
 
+	template, err := LoadTemplate(ctx.String("template"))
+	if err != nil {
+		return nil
+	}
+
+	// labels in the template file is string type,
+	// need to convert to string array for graphql query.
+	labels := strings.Split(template.ResponseLatency.Labels, ",")
+
 	request := graphql.NewRequest(assets.Read("graphqls/dashboard/LabeledMetricsValues.graphql"))
 	request.Var("duration", duration)
+	request.Var("condition", template.ResponseLatency.Condition)
+	request.Var("labels", labels)
 
 	client.ExecuteQueryOrFail(ctx, request, &response)
 
@@ -118,8 +140,14 @@ func responseLatency(ctx *cli.Context, duration schema.Duration) []*schema.Metri
 func heatMap(ctx *cli.Context, duration schema.Duration) schema.HeatMap {
 	var response map[string]schema.HeatMap
 
+	template, err := LoadTemplate(ctx.String("template"))
+	if err != nil {
+		return schema.HeatMap{}
+	}
+
 	request := graphql.NewRequest(assets.Read("graphqls/dashboard/HeatMap.graphql"))
 	request.Var("duration", duration)
+	request.Var("condition", template.HeatMap.Condition)
 
 	client.ExecuteQueryOrFail(ctx, request, &response)
 

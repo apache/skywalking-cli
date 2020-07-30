@@ -15,8 +15,8 @@
 # specific language governing permissions and limitations
 # under the License.
 
-query ($condition: MetricsCondition!, $label: [String!]!, $duration: Duration!) {
-    result: readLabeledMetricsValues(condition: $condition, labels: $label, duration: $duration) {
+query ($condition: MetricsCondition!, $labels: [String!]!, $duration: Duration!) {
+    result: readLabeledMetricsValues(condition: $condition, labels: $labels, duration: $duration) {
         label
         values {
             values {
