@@ -1,4 +1,9 @@
 {
+  "buttons": {
+    "texts": "Metrics, Response Latency",
+    "colorNumber": 220,
+    "height": 1
+  },
   "metrics": [
     {
       "condition": {

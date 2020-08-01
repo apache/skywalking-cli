@@ -42,13 +42,13 @@ import (
 
 const RootID = "root"
 
-type metricColumn struct {
+type MetricColumn struct {
 	title  *text.Text
 	gauges []*gauge.Gauge
 }
 
-func newMetricColumn(column []*schema.SelectedRecord, config *dashboard.MetricTemplate) (*metricColumn, error) {
-	var ret metricColumn
+func NewMetricColumn(column []*schema.SelectedRecord, config *dashboard.MetricTemplate) (*MetricColumn, error) {
+	var ret MetricColumn
 	var maxValue int
 
 	t, err := text.New()
@@ -110,7 +110,7 @@ func newMetricColumn(column []*schema.SelectedRecord, config *dashboard.MetricTe
 	return &ret, nil
 }
 
-func layout(columns ...*metricColumn) ([]container.Option, error) {
+func MetricColumnsElement(columns []*MetricColumn) []grid.Element {
 	var metricColumns []grid.Element
 	var columnWidthPerc int
 
@@ -147,10 +147,14 @@ func layout(columns ...*metricColumn) ([]container.Option, error) {
 		metricColumns = append(metricColumns, grid.ColWidthPerc(columnWidthPerc, column...))
 	}
 
+	return metricColumns
+}
+
+func layout(columns []grid.Element) ([]container.Option, error) {
 	builder := grid.New()
 	builder.Add(
 		grid.RowHeightPerc(10),
-		grid.RowHeightPerc(80, metricColumns...),
+		grid.RowHeightPerc(80, columns...),
 	)
 
 	gridOpts, err := builder.Build()
@@ -175,7 +179,7 @@ func Display(ctx *cli.Context, metrics [][]*schema.SelectedRecord) error {
 		return err
 	}
 
-	var columns []*metricColumn
+	var columns []*MetricColumn
 
 	configs, err := dashboard.LoadTemplate(ctx.String("template"))
 	if err != nil {
@@ -183,14 +187,14 @@ func Display(ctx *cli.Context, metrics [][]*schema.SelectedRecord) error {
 	}
 
 	for i, config := range configs.Metrics {
-		col, innerErr := newMetricColumn(metrics[i], &config)
+		col, innerErr := NewMetricColumn(metrics[i], &config)
 		if innerErr != nil {
 			return innerErr
 		}
 		columns = append(columns, col)
 	}
 
-	gridOpts, err := layout(columns...)
+	gridOpts, err := layout(MetricColumnsElement(columns))
 	if err != nil {
 		return err
 	}

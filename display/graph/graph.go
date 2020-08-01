@@ -23,9 +23,10 @@ import (
 
 	"github.com/urfave/cli"
 
+	db "github.com/apache/skywalking-cli/display/graph/dashboard"
 	"github.com/apache/skywalking-cli/display/graph/gauge"
-
 	"github.com/apache/skywalking-cli/display/graph/tree"
+	"github.com/apache/skywalking-cli/graphql/dashboard"
 
 	"github.com/apache/skywalking-cli/display/graph/heatmap"
 	"github.com/apache/skywalking-cli/graphql/schema"
@@ -40,6 +41,7 @@ type (
 	MultiLinearMetrics = []LinearMetrics
 	Trace              = schema.Trace
 	GlobalMetrics      = [][]*schema.SelectedRecord
+	GlobalData         = dashboard.GlobalData
 )
 
 var (
@@ -48,6 +50,7 @@ var (
 	MultiLinearMetricsType = reflect.TypeOf(MultiLinearMetrics{})
 	TraceType              = reflect.TypeOf(Trace{})
 	GlobalMetricsType      = reflect.TypeOf(GlobalMetrics{})
+	GlobalDataType         = reflect.TypeOf(&GlobalData{})
 )
 
 func Display(ctx *cli.Context, displayable *d.Displayable) error {
@@ -68,6 +71,9 @@ func Display(ctx *cli.Context, displayable *d.Displayable) error {
 
 	case GlobalMetricsType:
 		return gauge.Display(ctx, data.(GlobalMetrics))
+
+	case GlobalDataType:
+		return db.Display(ctx, data.(*GlobalData))
 
 	default:
 		return fmt.Errorf("type of %T is not supported to be displayed as ascii graph", reflect.TypeOf(data))

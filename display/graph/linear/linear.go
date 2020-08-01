@@ -35,7 +35,7 @@ import (
 
 const RootID = "root"
 
-func newLineChart(inputs map[string]float64) (lineChart *linechart.LineChart, err error) {
+func NewLineChart(inputs map[string]float64) (lineChart *linechart.LineChart, err error) {
 	index := 0
 
 	xLabels := map[int]string{}
@@ -109,7 +109,7 @@ func Display(inputs []map[string]float64) error {
 	var elements []*linechart.LineChart
 
 	for _, input := range inputs {
-		w, e := newLineChart(input)
+		w, e := NewLineChart(input)
 		if e != nil {
 			return e
 		}

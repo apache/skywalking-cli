@@ -21,6 +21,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/machinebox/graphql"
@@ -29,7 +30,14 @@ import (
 	"github.com/apache/skywalking-cli/assets"
 	"github.com/apache/skywalking-cli/graphql/client"
 	"github.com/apache/skywalking-cli/graphql/schema"
+	"github.com/apache/skywalking-cli/graphql/utils"
 )
+
+type ButtonTemplate struct {
+	Texts    string `json:"texts"`
+	ColorNum int    `json:"colorNumber"`
+	Height   int    `json:"height"`
+}
 
 type MetricTemplate struct {
 	Condition      schema.TopNCondition `json:"condition"`
@@ -46,6 +54,7 @@ type ChartTemplate struct {
 }
 
 type GlobalTemplate struct {
+	Buttons         ButtonTemplate   `json:"buttons"`
 	Metrics         []MetricTemplate `json:"metrics"`
 	ResponseLatency ChartTemplate    `json:"responseLatency"`
 	HeatMap         ChartTemplate    `json:"heatMap"`
@@ -53,7 +62,7 @@ type GlobalTemplate struct {
 
 type GlobalData struct {
 	Metrics         [][]*schema.SelectedRecord `json:"metrics"`
-	ResponseLatency []*schema.MetricsValues    `json:"responseLatency"`
+	ResponseLatency []map[string]float64       `json:"responseLatency"`
 	HeatMap         schema.HeatMap             `json:"heatMap"`
 }
 
@@ -115,7 +124,7 @@ func Metrics(ctx *cli.Context, duration schema.Duration) [][]*schema.SelectedRec
 	return ret
 }
 
-func responseLatency(ctx *cli.Context, duration schema.Duration) []*schema.MetricsValues {
+func responseLatency(ctx *cli.Context, duration schema.Duration) []map[string]float64 {
 	var response map[string][]*schema.MetricsValues
 
 	template, err := LoadTemplate(ctx.String("template"))
@@ -134,7 +143,18 @@ func responseLatency(ctx *cli.Context, duration schema.Duration) []*schema.Metri
 
 	client.ExecuteQueryOrFail(ctx, request, &response)
 
-	return response["result"]
+	// Convert metrics values to map type data.
+	responseLatency := response["result"]
+	reshaped := make([]map[string]float64, len(responseLatency))
+	for _, mvs := range responseLatency {
+		index, err := strconv.Atoi(*mvs.Label)
+		if err != nil {
+			return nil
+		}
+		reshaped[index] = utils.MetricsToMap(duration, *mvs.Values)
+	}
+
+	return reshaped
 }
 
 func heatMap(ctx *cli.Context, duration schema.Duration) schema.HeatMap {
