@@ -21,6 +21,7 @@ import (
 	"context"
 	"fmt"
 	"math"
+	"sort"
 	"strings"
 
 	"github.com/mum4k/termdash/linestyle"
@@ -41,9 +42,16 @@ func NewLineChart(inputs map[string]float64) (lineChart *linechart.LineChart, er
 	xLabels := map[int]string{}
 	yValues := make([]float64, len(inputs))
 
-	for xLabel, yValue := range inputs {
-		xLabels[index] = xLabel
-		yValues[index] = yValue
+	// The iteration order of map is uncertain, so the keys must be sorted explicitly.
+	var names []string
+	for name := range inputs {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+
+	for _, name := range names {
+		xLabels[index] = name
+		yValues[index] = inputs[name]
 		index++
 	}
 
@@ -56,7 +64,9 @@ func NewLineChart(inputs map[string]float64) (lineChart *linechart.LineChart, er
 	return lineChart, err
 }
 
-func layout(lineCharts ...*linechart.LineChart) ([]container.Option, error) {
+// LineChartElements is the part that separated from layout,
+// which can be reused by global dashboard.
+func LineChartElements(lineCharts []*linechart.LineChart) [][]grid.Element {
 	cols := maxSqrt(len(lineCharts))
 
 	rows := make([][]grid.Element, int(math.Ceil(float64(len(lineCharts))/float64(cols))))
@@ -81,6 +91,10 @@ func layout(lineCharts ...*linechart.LineChart) ([]container.Option, error) {
 		rows[r] = row
 	}
 
+	return rows
+}
+
+func layout(rows [][]grid.Element) ([]container.Option, error) {
 	builder := grid.New()
 
 	for _, row := range rows {
@@ -116,7 +130,7 @@ func Display(inputs []map[string]float64) error {
 		elements = append(elements, w)
 	}
 
-	gridOpts, err := layout(elements...)
+	gridOpts, err := layout(LineChartElements(elements))
 	if err != nil {
 		return err
 	}

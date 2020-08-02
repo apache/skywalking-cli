@@ -19,6 +19,7 @@ package dashboard
 
 import (
 	"context"
+	"math"
 	"strings"
 
 	"github.com/mattn/go-runewidth"
@@ -51,12 +52,6 @@ const (
 	// layoutLineChart focuses onto the line chart.
 	layoutLineChart
 )
-
-// layoutTypeNames maps layoutType values to human readable names.
-// var layoutTypeNames = map[int]layoutType{
-// 	0: layoutAll,
-// 	1: layoutLineChart,
-// }
 
 // widgets holds the widgets used by the dashboard.
 type widgets struct {
@@ -106,6 +101,8 @@ func newLayoutButtons(c *container.Container, w *widgets, template *dashboard.Bu
 
 // gridLayout prepares container options that represent the desired screen layout.
 func gridLayout(w *widgets, lt layoutType) ([]container.Option, error) {
+	const buttonRowHeight = 15
+
 	buttonColWidthPerc := 100 / len(w.buttons)
 	var buttonCols []grid.Element
 
@@ -114,7 +111,7 @@ func gridLayout(w *widgets, lt layoutType) ([]container.Option, error) {
 	}
 
 	rows := []grid.Element{
-		grid.RowHeightPerc(20, buttonCols...),
+		grid.RowHeightPerc(buttonRowHeight, buttonCols...),
 	}
 
 	switch lt {
@@ -124,14 +121,19 @@ func gridLayout(w *widgets, lt layoutType) ([]container.Option, error) {
 		)
 
 	case layoutLineChart:
-		rows = append(rows,
-			grid.RowHeightPerc(70),
-		)
+		lcElements := linear.LineChartElements(w.linears)
+		percentage := int(math.Min(99, float64((100-buttonRowHeight)/len(lcElements))))
+
+		for _, e := range lcElements {
+			rows = append(rows,
+				grid.RowHeightPerc(percentage, e...),
+			)
+		}
 	}
 
 	builder := grid.New()
 	builder.Add(
-		grid.RowHeightPerc(90, rows...),
+		grid.RowHeightPerc(99, rows...),
 	)
 	gridOpts, err := builder.Build()
 	if err != nil {

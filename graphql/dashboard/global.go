@@ -31,6 +31,7 @@ import (
 	"github.com/apache/skywalking-cli/graphql/client"
 	"github.com/apache/skywalking-cli/graphql/schema"
 	"github.com/apache/skywalking-cli/graphql/utils"
+	"github.com/apache/skywalking-cli/logger"
 )
 
 type ButtonTemplate struct {
@@ -147,8 +148,9 @@ func responseLatency(ctx *cli.Context, duration schema.Duration) []map[string]fl
 	responseLatency := response["result"]
 	reshaped := make([]map[string]float64, len(responseLatency))
 	for _, mvs := range responseLatency {
-		index, err := strconv.Atoi(*mvs.Label)
+		index, err := strconv.Atoi(strings.TrimSpace(*mvs.Label))
 		if err != nil {
+			logger.Log.Fatalln(err)
 			return nil
 		}
 		reshaped[index] = utils.MetricsToMap(duration, *mvs.Values)

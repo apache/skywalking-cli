@@ -110,6 +110,8 @@ func NewMetricColumn(column []*schema.SelectedRecord, config *dashboard.MetricTe
 	return &ret, nil
 }
 
+// MetricColumnsElement is the part that separated from layout,
+// which can be reused by global dashboard.
 func MetricColumnsElement(columns []*MetricColumn) []grid.Element {
 	var metricColumns []grid.Element
 	var columnWidthPerc int
