@@ -62,6 +62,9 @@ type widgets struct {
 	buttons []*button.Button
 }
 
+// linearTitles are titles of each line chart, load from the template file.
+var linearTitles []string
+
 // setLayout sets the specified layout.
 func setLayout(c *container.Container, w *widgets, lt layoutType) error {
 	gridOpts, err := gridLayout(w, lt)
@@ -75,15 +78,13 @@ func setLayout(c *container.Container, w *widgets, lt layoutType) error {
 func newLayoutButtons(c *container.Container, w *widgets, template *dashboard.ButtonTemplate) ([]*button.Button, error) {
 	var buttons []*button.Button
 
-	buttonTexts := strings.Split(template.Texts, ",")
-
 	opts := []button.Option{
-		button.WidthFor(longestString(buttonTexts)),
+		button.WidthFor(longestString(template.Texts)),
 		button.FillColor(cell.ColorNumber(template.ColorNum)),
 		button.Height(template.Height),
 	}
 
-	for i, text := range buttonTexts {
+	for i, text := range template.Texts {
 		// declare a local variable lt to avoid closure.
 		lt := layoutType(i)
 
@@ -121,7 +122,7 @@ func gridLayout(w *widgets, lt layoutType) ([]container.Option, error) {
 		)
 
 	case layoutLineChart:
-		lcElements := linear.LineChartElements(w.linears)
+		lcElements := linear.LineChartElements(w.linears, linearTitles)
 		percentage := int(math.Min(99, float64((100-buttonRowHeight)/len(lcElements))))
 
 		for _, e := range lcElements {
@@ -191,6 +192,7 @@ func Display(ctx *cli.Context, data *dashboard.GlobalData) error {
 	if err != nil {
 		return err
 	}
+	linearTitles = strings.Split(template.ResponseLatency.Labels, ", ")
 
 	w, err := newWidgets(data, template)
 	if err != nil {
