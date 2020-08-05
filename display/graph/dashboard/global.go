@@ -19,6 +19,7 @@ package dashboard
 
 import (
 	"context"
+	"fmt"
 	"math"
 	"strings"
 
@@ -46,12 +47,22 @@ const rootID = "root"
 type layoutType int
 
 const (
-	// layoutAll displays all the widgets.
-	layoutAll layoutType = iota
+	// layoutMetrics displays all the widgets.
+	layoutMetrics layoutType = iota
 
 	// layoutLineChart focuses onto the line chart.
 	layoutLineChart
+
+	// layoutHeatMap focuses onto the heat map.
+	layoutHeatMap
 )
+
+// strToLayoutType ensures the order of buttons is fixed.
+var strToLayoutType = map[string]layoutType{
+	"Metrics":         layoutMetrics,
+	"ResponseLatency": layoutLineChart,
+	"HeatMap":         layoutHeatMap,
+}
 
 // widgets holds the widgets used by the dashboard.
 type widgets struct {
@@ -84,9 +95,12 @@ func newLayoutButtons(c *container.Container, w *widgets, template *dashboard.Bu
 		button.Height(template.Height),
 	}
 
-	for i, text := range template.Texts {
+	for _, text := range template.Texts {
 		// declare a local variable lt to avoid closure.
-		lt := layoutType(i)
+		lt, ok := strToLayoutType[text]
+		if !ok {
+			return nil, fmt.Errorf("the %s is not supposed to be the button's text", text)
+		}
 
 		b, err := button.New(text, func() error {
 			return setLayout(c, w, lt)
@@ -116,7 +130,7 @@ func gridLayout(w *widgets, lt layoutType) ([]container.Option, error) {
 	}
 
 	switch lt {
-	case layoutAll:
+	case layoutMetrics:
 		rows = append(rows,
 			grid.RowHeightPerc(70, gauge.MetricColumnsElement(w.gauges)...),
 		)
@@ -204,7 +218,7 @@ func Display(ctx *cli.Context, data *dashboard.GlobalData) error {
 	}
 	w.buttons = lb
 
-	gridOpts, err := gridLayout(w, layoutAll)
+	gridOpts, err := gridLayout(w, layoutMetrics)
 	if err != nil {
 		return err
 	}
