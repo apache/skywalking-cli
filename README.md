@@ -279,6 +279,26 @@ You can imitate the content of [the default template file](example/Dashboard.Glo
 
 </details>
 
+</details>
+
+### `checkHealth`
+
+<details>
+
+<summary>checkHealth [--grpc=true/false] [--grpcAddr=host:port] [--grpcTLS=true/false]</summary>
+
+`dashboard global-metrics` displays global metrics in the form of a dashboard.
+
+| argument | description | default |
+| :--- | :--- | :--- |
+| `--grpc` | Enable/Disable check gRPC endpoint | `true` |
+| `--grpcAddr` | The address of gRPC endpoint | `127.0.0.1:11800` |
+| `--grpcTLS` | Enable/Disable TLS to access gRPC endpoint | `false` |
+
+*Notice: Once enable gRPC TLS, checkHealth command would ignore server's cert.
+
+</details>
+
 # Use Cases
 
 <details>
@@ -544,6 +564,30 @@ $ ./bin/swctl --debug --timezone="0" service ls
 ```
 
 `--timezone="+1200"` and `--timezone="-0900"` are also valid usage.
+
+</details>
+
+<details>
+
+<summary>Check whether OAP server is healthy</summary>
+
+if you want to check health status from GraphQL and the gRPC endpoint listening on 10.0.0.1:8843. 
+
+```shell
+$ ./bin/swctl checkHealth --grpcAddr=10.0.0.1:8843
+```
+
+If you only want to query GraphQL.
+
+```shell
+$ ./bin/swctl checkHealth --grpc=false
+```
+
+Once the gRPC endpoint of OAP encrypts communication by TLS.
+
+```shell
+$ ./bin/swctl checkHealth --grpcTLS=true
+```
 
 </details>
 
