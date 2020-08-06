@@ -19,6 +19,7 @@ package dashboard
 
 import (
 	"context"
+	"fmt"
 	"math"
 	"strings"
 
@@ -46,12 +47,22 @@ const rootID = "root"
 type layoutType int
 
 const (
-	// layoutAll displays all the widgets.
-	layoutAll layoutType = iota
+	// layoutMetrics displays all the widgets.
+	layoutMetrics layoutType = iota
 
 	// layoutLineChart focuses onto the line chart.
 	layoutLineChart
+
+	// layoutHeatMap focuses onto the heat map.
+	layoutHeatMap
 )
+
+// strToLayoutType ensures the order of buttons is fixed.
+var strToLayoutType = map[string]layoutType{
+	"Metrics":         layoutMetrics,
+	"ResponseLatency": layoutLineChart,
+	"HeatMap":         layoutHeatMap,
+}
 
 // widgets holds the widgets used by the dashboard.
 type widgets struct {
@@ -61,6 +72,9 @@ type widgets struct {
 	// buttons are used to change the layout.
 	buttons []*button.Button
 }
+
+// linearTitles are titles of each line chart, load from the template file.
+var linearTitles []string
 
 // setLayout sets the specified layout.
 func setLayout(c *container.Container, w *widgets, lt layoutType) error {
@@ -75,17 +89,18 @@ func setLayout(c *container.Container, w *widgets, lt layoutType) error {
 func newLayoutButtons(c *container.Container, w *widgets, template *dashboard.ButtonTemplate) ([]*button.Button, error) {
 	var buttons []*button.Button
 
-	buttonTexts := strings.Split(template.Texts, ",")
-
 	opts := []button.Option{
-		button.WidthFor(longestString(buttonTexts)),
+		button.WidthFor(longestString(template.Texts)),
 		button.FillColor(cell.ColorNumber(template.ColorNum)),
 		button.Height(template.Height),
 	}
 
-	for i, text := range buttonTexts {
+	for _, text := range template.Texts {
 		// declare a local variable lt to avoid closure.
-		lt := layoutType(i)
+		lt, ok := strToLayoutType[text]
+		if !ok {
+			return nil, fmt.Errorf("the %s is not supposed to be the button's text", text)
+		}
 
 		b, err := button.New(text, func() error {
 			return setLayout(c, w, lt)
@@ -115,13 +130,13 @@ func gridLayout(w *widgets, lt layoutType) ([]container.Option, error) {
 	}
 
 	switch lt {
-	case layoutAll:
+	case layoutMetrics:
 		rows = append(rows,
 			grid.RowHeightPerc(70, gauge.MetricColumnsElement(w.gauges)...),
 		)
 
 	case layoutLineChart:
-		lcElements := linear.LineChartElements(w.linears)
+		lcElements := linear.LineChartElements(w.linears, linearTitles)
 		percentage := int(math.Min(99, float64((100-buttonRowHeight)/len(lcElements))))
 
 		for _, e := range lcElements {
@@ -191,6 +206,7 @@ func Display(ctx *cli.Context, data *dashboard.GlobalData) error {
 	if err != nil {
 		return err
 	}
+	linearTitles = strings.Split(template.ResponseLatency.Labels, ", ")
 
 	w, err := newWidgets(data, template)
 	if err != nil {
@@ -202,7 +218,7 @@ func Display(ctx *cli.Context, data *dashboard.GlobalData) error {
 	}
 	w.buttons = lb
 
-	gridOpts, err := gridLayout(w, layoutAll)
+	gridOpts, err := gridLayout(w, layoutMetrics)
 	if err != nil {
 		return err
 	}

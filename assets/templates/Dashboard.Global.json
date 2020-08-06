@@ -1,6 +1,5 @@
 {
   "buttons": {
-    "texts": "Metrics, Response Latency",
     "colorNumber": 220,
     "height": 1
   },
@@ -56,7 +55,8 @@
         "normal": true
       }
     },
-    "labels": "0, 1, 2, 3, 4",
+    "labels": "P50, P75, P90, P95, P99",
+    "labelsIndex": "0, 1, 2, 3, 4",
     "title": "Global Response Latency",
     "unit": "percentile in ms"
   },

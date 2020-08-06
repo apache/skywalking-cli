@@ -35,9 +35,9 @@ import (
 )
 
 type ButtonTemplate struct {
-	Texts    string `json:"texts"`
-	ColorNum int    `json:"colorNumber"`
-	Height   int    `json:"height"`
+	Texts    []string `json:"texts"`
+	ColorNum int      `json:"colorNumber"`
+	Height   int      `json:"height"`
 }
 
 type MetricTemplate struct {
@@ -48,10 +48,11 @@ type MetricTemplate struct {
 }
 
 type ChartTemplate struct {
-	Condition schema.MetricsCondition `json:"condition"`
-	Title     string                  `json:"title"`
-	Unit      string                  `json:"unit"`
-	Labels    string                  `json:"labels"`
+	Condition   schema.MetricsCondition `json:"condition"`
+	Title       string                  `json:"title"`
+	Unit        string                  `json:"unit"`
+	Labels      string                  `json:"labels"`
+	LabelsIndex string                  `json:"labelsIndex"`
 }
 
 type GlobalTemplate struct {
@@ -72,13 +73,23 @@ var globalTemplate *GlobalTemplate
 
 const DefaultTemplatePath = "templates/Dashboard.Global.json"
 
+// newGlobalTemplate create a new GlobalTemplate and set default values for buttons' template.
+func newGlobalTemplate() GlobalTemplate {
+	return GlobalTemplate{
+		Buttons: ButtonTemplate{
+			ColorNum: 220,
+			Height:   1,
+		},
+	}
+}
+
 // LoadTemplate reads UI template from file.
 func LoadTemplate(filename string) (*GlobalTemplate, error) {
 	if globalTemplate != nil {
 		return globalTemplate, nil
 	}
 
-	var t GlobalTemplate
+	t := newGlobalTemplate()
 	var byteValue []byte
 
 	if filename == DefaultTemplatePath {
@@ -100,8 +111,29 @@ func LoadTemplate(filename string) (*GlobalTemplate, error) {
 	if err := json.Unmarshal(byteValue, &t); err != nil {
 		return nil, err
 	}
+	t.Buttons.Texts = getButtonTexts(byteValue)
+
 	globalTemplate = &t
 	return globalTemplate, nil
+}
+
+// getButtonTexts get keys in the template file,
+// which will be set as texts of buttons in the dashboard.
+func getButtonTexts(byteValue []byte) []string {
+	var ret []string
+
+	c := make(map[string]json.RawMessage)
+	err := json.Unmarshal(byteValue, &c)
+	if err != nil {
+		return nil
+	}
+
+	for s := range c {
+		if s != "buttons" {
+			ret = append(ret, strings.Title(s))
+		}
+	}
+	return ret
 }
 
 func Metrics(ctx *cli.Context, duration schema.Duration) [][]*schema.SelectedRecord {
@@ -109,6 +141,11 @@ func Metrics(ctx *cli.Context, duration schema.Duration) [][]*schema.SelectedRec
 
 	template, err := LoadTemplate(ctx.String("template"))
 	if err != nil {
+		return nil
+	}
+
+	// Check if there is a template of metrics.
+	if template.Metrics == nil {
 		return nil
 	}
 
@@ -133,14 +170,19 @@ func responseLatency(ctx *cli.Context, duration schema.Duration) []map[string]fl
 		return nil
 	}
 
-	// labels in the template file is string type,
-	// need to convert to string array for graphql query.
-	labels := strings.Split(template.ResponseLatency.Labels, ",")
+	// Check if there is a template of response latency.
+	if template.ResponseLatency == (ChartTemplate{}) {
+		return nil
+	}
+
+	// LabelsIndex in the template file is string type, like "0, 1, 2",
+	// need use ", " to split into string array for graphql query.
+	labelsIndex := strings.Split(template.ResponseLatency.LabelsIndex, ", ")
 
 	request := graphql.NewRequest(assets.Read("graphqls/dashboard/LabeledMetricsValues.graphql"))
 	request.Var("duration", duration)
 	request.Var("condition", template.ResponseLatency.Condition)
-	request.Var("labels", labels)
+	request.Var("labels", labelsIndex)
 
 	client.ExecuteQueryOrFail(ctx, request, &response)
 
@@ -164,6 +206,11 @@ func heatMap(ctx *cli.Context, duration schema.Duration) schema.HeatMap {
 
 	template, err := LoadTemplate(ctx.String("template"))
 	if err != nil {
+		return schema.HeatMap{}
+	}
+
+	// Check if there is a template of heat map.
+	if template.HeatMap == (ChartTemplate{}) {
 		return schema.HeatMap{}
 	}
 

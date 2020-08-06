@@ -66,7 +66,7 @@ func NewLineChart(inputs map[string]float64) (lineChart *linechart.LineChart, er
 
 // LineChartElements is the part that separated from layout,
 // which can be reused by global dashboard.
-func LineChartElements(lineCharts []*linechart.LineChart) [][]grid.Element {
+func LineChartElements(lineCharts []*linechart.LineChart, titles []string) [][]grid.Element {
 	cols := maxSqrt(len(lineCharts))
 
 	rows := make([][]grid.Element, int(math.Ceil(float64(len(lineCharts))/float64(cols))))
@@ -78,13 +78,21 @@ func LineChartElements(lineCharts []*linechart.LineChart) [][]grid.Element {
 			if r == len(rows)-1 {
 				percentage = int(math.Floor(float64(100) / float64(len(lineCharts)-r*cols)))
 			}
+
+			var title string
+			if titles == nil {
+				title = fmt.Sprintf("#%v", r*cols+c)
+			} else {
+				title = titles[r*cols+c]
+			}
+
 			row = append(row, grid.ColWidthPerc(
 				int(math.Min(99, float64(percentage))),
 				grid.Widget(
 					lineCharts[r*cols+c],
 					container.Border(linestyle.Light),
 					container.BorderTitleAlignCenter(),
-					container.BorderTitle(fmt.Sprintf("#%v", r*cols+c)),
+					container.BorderTitle(title),
 				),
 			))
 		}
@@ -130,7 +138,7 @@ func Display(inputs []map[string]float64) error {
 		elements = append(elements, w)
 	}
 
-	gridOpts, err := layout(LineChartElements(elements))
+	gridOpts, err := layout(LineChartElements(elements, nil))
 	if err != nil {
 		return err
 	}
