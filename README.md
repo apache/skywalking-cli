@@ -287,8 +287,6 @@ You can imitate the content of [the default template file](example/Dashboard.Glo
 
 <summary>checkHealth [--grpc=true/false] [--grpcAddr=host:port] [--grpcTLS=true/false]</summary>
 
-`dashboard global-metrics` displays global metrics in the form of a dashboard.
-
 | argument | description | default |
 | :--- | :--- | :--- |
 | `--grpc` | Enable/Disable check gRPC endpoint | `true` |
