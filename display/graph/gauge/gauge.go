@@ -141,7 +141,7 @@ func MetricColumnsElement(columns []*MetricColumn) []grid.Element {
 		// Number of gauge in a column, each gauge represents a service or endpoint
 		// The number should be less than or equal to MaxGaugeNum
 		gaugeNum := int(math.Min(MaxGaugeNum, float64(len(columns[i].gauges))))
-		gaugeHeight := int(math.Floor(float64(100-TitleHeight) / float64(gaugeNum)))
+		gaugeHeight := int(math.Floor(float64(99-TitleHeight) / float64(gaugeNum)))
 
 		for j := 0; j < gaugeNum; j++ {
 			column = append(column, grid.RowHeightPerc(gaugeHeight, grid.Widget(columns[i].gauges[j])))

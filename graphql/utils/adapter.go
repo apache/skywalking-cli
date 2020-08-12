@@ -43,3 +43,30 @@ func MetricsToMap(duration schema.Duration, intValues schema.IntValues) map[stri
 
 	return values
 }
+
+// HeatMapToMap converts a HeatMap into a map that uses time as key.
+func HeatMapToMap(hp *schema.HeatMap) map[string][]int64 {
+	ret := make(map[string][]int64)
+	for _, col := range hp.Values {
+		// col.id is a string represents date, like "202007292131",
+		// extracts its time part as key.
+		t := col.ID[8:10] + ":" + col.ID[10:12]
+
+		// Reverse the array.
+		for i, j := 0, len(col.Values)-1; i < j; i, j = i+1, j-1 {
+			col.Values[i], col.Values[j] = col.Values[j], col.Values[i]
+		}
+
+		ret[t] = col.Values
+	}
+	return ret
+}
+
+// BucketsToStrings extracts strings from buckets as a chart's labels.
+func BucketsToStrings(buckets []*schema.Bucket) []string {
+	var ret []string
+	for _, b := range buckets {
+		ret = append(ret, b.Min)
+	}
+	return ret
+}
