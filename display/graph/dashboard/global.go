@@ -23,6 +23,9 @@ import (
 	"math"
 	"strings"
 
+	"github.com/apache/skywalking-cli/graphql/utils"
+	"github.com/apache/skywalking-cli/lib/heatmap"
+
 	"github.com/mattn/go-runewidth"
 	"github.com/mum4k/termdash"
 	"github.com/mum4k/termdash/container/grid"
@@ -68,6 +71,7 @@ var strToLayoutType = map[string]layoutType{
 type widgets struct {
 	gauges  []*gauge.MetricColumn
 	linears []*linechart.LineChart
+	heatmap *heatmap.HeatMap
 
 	// buttons are used to change the layout.
 	buttons []*button.Button
@@ -144,6 +148,11 @@ func gridLayout(w *widgets, lt layoutType) ([]container.Option, error) {
 				grid.RowHeightPerc(percentage, e...),
 			)
 		}
+
+	case layoutHeatMap:
+		rows = append(rows,
+			grid.RowHeightPerc(99-buttonRowHeight, grid.Widget(w.heatmap)),
+		)
 	}
 
 	builder := grid.New()
@@ -180,9 +189,20 @@ func newWidgets(data *dashboard.GlobalData, template *dashboard.GlobalTemplate) 
 		linears = append(linears, l)
 	}
 
+	// Create a heat map.
+	hp, err := heatmap.NewHeatMap()
+	if err != nil {
+		return nil, err
+	}
+	hpColumns := utils.HeatMapToMap(&data.HeatMap)
+	yLabels := utils.BucketsToStrings(data.HeatMap.Buckets)
+	hp.SetColumns(hpColumns)
+	hp.SetYLabels(yLabels)
+
 	return &widgets{
 		gauges:  columns,
 		linears: linears,
+		heatmap: hp,
 	}, nil
 }
 
