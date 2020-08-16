@@ -297,6 +297,7 @@ You can imitate the content of [the default template file](example/Dashboard.Glo
 </details>
 
 
+
 ### `checkHealth`
 
 <details>
@@ -564,9 +565,11 @@ $ ./bin/swctl --display=graph metrics thermodynamic --name all_heatmap
 ```shell
 $ ./bin/swctl --display graph trace 1585375544413.464998031.46647
 ```
+
 </details>
 
 <details>
+
 <summary>Display the traces</summary>
 
 ```shell
