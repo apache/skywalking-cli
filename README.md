@@ -265,6 +265,8 @@ Ascii Graph, like coloring in terminal, so please use `json`  or `yaml` instead.
 
 ### `dashboard`
 
+#### `dashboard global-metrics`
+
 <details>
 
 <summary>dashboard global-metrics [--template=template]</summary>
@@ -273,11 +275,23 @@ Ascii Graph, like coloring in terminal, so please use `json`  or `yaml` instead.
 
 | argument | description | default |
 | :--- | :--- | :--- |
-| `--template` | the template file to customize how to display information | `templates/Dashboard.Global.json` |
+| `--template` | The template file to customize how to display information | `templates/Dashboard.Global.json` |
 
 You can imitate the content of [the default template file](example/Dashboard.Global.json) to customize the dashboard.
 
 </details>
+
+#### `dashboard global`
+
+<details>
+
+<summary>dashboard global [--template=template]</summary>
+
+`dashboard global` displays global metrics, global response latency and global heat map in the form of a dashboard.
+
+| argument | description | default |
+| :--- | :--- | :--- |
+| `--template` | The template file to customize how to display information | `templates/Dashboard.Global.json` |
 
 </details>
 
