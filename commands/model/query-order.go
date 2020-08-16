@@ -15,35 +15,38 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package trace
+package model
 
 import (
-	"github.com/machinebox/graphql"
-	"github.com/urfave/cli"
+	"fmt"
+	"strings"
 
-	"github.com/apache/skywalking-cli/assets"
-	"github.com/apache/skywalking-cli/graphql/client"
 	"github.com/apache/skywalking-cli/graphql/schema"
 )
 
-func Trace(ctx *cli.Context, traceID string) schema.Trace {
-	var response map[string]schema.Trace
-
-	request := graphql.NewRequest(assets.Read("graphqls/trace/Trace.graphql"))
-	request.Var("traceId", traceID)
-
-	client.ExecuteQueryOrFail(ctx, request, &response)
-
-	return response["result"]
+// QueryOrderEnumValue defines the values domain of --query-order option
+type QueryOrderEnumValue struct {
+	Enum      []schema.QueryOrder
+	StartTime schema.QueryOrder
+	Duration  schema.QueryOrder
 }
 
-func Traces(ctx *cli.Context, condition *schema.TraceQueryCondition) schema.TraceBrief {
-	var response map[string]schema.TraceBrief
+// Set the --order value, from raw string to QueryOrderEnumValue
+func (s *QueryOrderEnumValue) Set(value string) error {
+	for _, enum := range s.Enum {
+		if strings.EqualFold(enum.String(), value) {
+			s.Duration = enum
+			return nil
+		}
+	}
+	orders := make([]string, len(schema.AllQueryOrder))
+	for i, order := range schema.AllQueryOrder {
+		orders[i] = order.String()
+	}
+	return fmt.Errorf("allowed query orders are %s", strings.Join(orders, ", "))
+}
 
-	request := graphql.NewRequest(assets.Read("graphqls/trace/Traces.graphql"))
-	request.Var("condition", condition)
-
-	client.ExecuteQueryOrFail(ctx, request, &response)
-
-	return response["result"]
+// String representation of the query order
+func (s QueryOrderEnumValue) String() string {
+	return s.Duration.String()
 }
