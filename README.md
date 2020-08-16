@@ -263,6 +263,23 @@ Ascii Graph, like coloring in terminal, so please use `json`  or `yaml` instead.
 
 </details>
 
+### `trace ls`
+
+<details>
+
+<summary>trace ls</summary>
+
+| argument | description | default |
+| :--- | :--- | :--- |
+| `--trace-id` | the trace id whose spans are to displayed |  |
+| `--service-id` | the service id whose trace are to displayed |  |
+| `--service-instance-id` | the service instance id whose trace are to displayed |  |
+| `--tags` | Only tags defined in the core/default/searchableTagKeys are searchable. Check more details on the Configuration Vocabulary page | See [Configuration Vocabulary page](https://github.com/apache/skywalking/blob/master/docs/en/setup/backend/configuration-vocabulary.md) |
+| `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
+| `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
+
+</details>
+
 ### `dashboard`
 
 <details>
@@ -279,7 +296,6 @@ You can imitate the content of [the default template file](example/Dashboard.Glo
 
 </details>
 
-</details>
 
 ### `checkHealth`
 
@@ -547,6 +563,14 @@ $ ./bin/swctl --display=graph metrics thermodynamic --name all_heatmap
 
 ```shell
 $ ./bin/swctl --display graph trace 1585375544413.464998031.46647
+```
+</details>
+
+<details>
+<summary>Display the traces</summary>
+
+```shell
+$ ./bin/swctl --display graph trace ls --start='2020-08-13 1754' --end='2020-08-20 2020'  --tags='http.method=POST'
 ```
 
 </details>
