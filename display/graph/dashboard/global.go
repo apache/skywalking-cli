@@ -150,8 +150,15 @@ func gridLayout(w *widgets, lt layoutType) ([]container.Option, error) {
 		}
 
 	case layoutHeatMap:
+		const heatmapColWidth = 85
+
 		rows = append(rows,
-			grid.RowHeightPerc(99-buttonRowHeight, grid.Widget(w.heatmap)),
+			grid.RowHeightPerc(
+				99-buttonRowHeight,
+				grid.ColWidthPerc((99-heatmapColWidth)/2), // Use two empty cols to center the heatmap.
+				grid.ColWidthPerc(heatmapColWidth, grid.Widget(w.heatmap)),
+				grid.ColWidthPerc((99-heatmapColWidth)/2),
+			),
 		)
 	}
 
