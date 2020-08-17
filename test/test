@@ -1,0 +1,14 @@
+swctl-latest-darwin-amd64 --base-url http://122.112.182.72:8080/graphql --debug trace 6b848615-d2d5-4857-bae6-78c943d87f91
+swctl-latest-darwin-amd64 --base-url http://122.112.182.72:8080/graphql --debug --display graph trace 6b848615-d2d5-4857-bae6-78c943d87f91
+
+
+swctl-latest-darwin-amd64 --base-url http://122.112.182.72:8080/graphql --debug --display graph service ls
+
+go run main.go --base-url http://122.112.182.72:8080/graphql --debug --display graph trace ls
+
+
+go run main.go --base-url http://122.112.182.72:8080/graphql --display graph trace ls --service-id=bG9hZCBiYWxhbmNlcjEuc3lzdGVt.1 --start='2020-08-13 1754' --end='2020-08-20 2020' --service-instance-id='bG9hZCBiYWxhbmNlcjEuc3lzdGVt.1_bG9hZCBiYWxhbmNlcjEuc3lzdGVt' --tags='http.method=post'
+go run main.go --base-url http://122.112.182.72:8080/graphql --display graph trace ls --start='2020-08-13 1754' --end='2020-08-20 2020'  --tags='http.method=POST'
+
+
+--base-url http://122.112.182.72:8080/graphql --display graph trace ls --start='2020-08-13 1754' --end='2020-08-20 2020'  --tags='http.method=POST'

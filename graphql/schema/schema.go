@@ -43,6 +43,36 @@ type BatchMetricConditions struct {
 	Ids  []string `json:"ids"`
 }
 
+type BrowserErrorLog struct {
+	Service            string        `json:"service"`
+	ServiceVersion     string        `json:"serviceVersion"`
+	Time               int64         `json:"time"`
+	PagePath           string        `json:"pagePath"`
+	Category           ErrorCategory `json:"category"`
+	Grade              *string       `json:"grade"`
+	Message            *string       `json:"message"`
+	Line               *int          `json:"line"`
+	Col                *int          `json:"col"`
+	Stack              *string       `json:"stack"`
+	ErrorURL           *string       `json:"errorUrl"`
+	FirstReportedError bool          `json:"firstReportedError"`
+}
+
+type BrowserErrorLogQueryCondition struct {
+	ServiceID        *string        `json:"serviceId"`
+	ServiceVersionID *string        `json:"serviceVersionId"`
+	PagePathID       *string        `json:"pagePathId"`
+	PagePath         *string        `json:"pagePath"`
+	Category         *ErrorCategory `json:"category"`
+	QueryDuration    *Duration      `json:"queryDuration"`
+	Paging           *Pagination    `json:"paging"`
+}
+
+type BrowserErrorLogs struct {
+	Logs  []*BrowserErrorLog `json:"logs"`
+	Total int                `json:"total"`
+}
+
 type Bucket struct {
 	Min string `json:"min"`
 	Max string `json:"max"`
@@ -526,6 +556,57 @@ func (e *DetectPoint) UnmarshalGQL(v interface{}) error {
 }
 
 func (e DetectPoint) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type ErrorCategory string
+
+const (
+	ErrorCategoryAll      ErrorCategory = "ALL"
+	ErrorCategoryAjax     ErrorCategory = "AJAX"
+	ErrorCategoryResource ErrorCategory = "RESOURCE"
+	ErrorCategoryVue      ErrorCategory = "VUE"
+	ErrorCategoryPromise  ErrorCategory = "PROMISE"
+	ErrorCategoryJs       ErrorCategory = "JS"
+	ErrorCategoryUnknown  ErrorCategory = "UNKNOWN"
+)
+
+var AllErrorCategory = []ErrorCategory{
+	ErrorCategoryAll,
+	ErrorCategoryAjax,
+	ErrorCategoryResource,
+	ErrorCategoryVue,
+	ErrorCategoryPromise,
+	ErrorCategoryJs,
+	ErrorCategoryUnknown,
+}
+
+func (e ErrorCategory) IsValid() bool {
+	switch e {
+	case ErrorCategoryAll, ErrorCategoryAjax, ErrorCategoryResource, ErrorCategoryVue, ErrorCategoryPromise, ErrorCategoryJs, ErrorCategoryUnknown:
+		return true
+	}
+	return false
+}
+
+func (e ErrorCategory) String() string {
+	return string(e)
+}
+
+func (e *ErrorCategory) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = ErrorCategory(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid ErrorCategory", str)
+	}
+	return nil
+}
+
+func (e ErrorCategory) MarshalGQL(w io.Writer) {
 	fmt.Fprint(w, strconv.Quote(e.String()))
 }
 
