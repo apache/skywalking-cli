@@ -36,3 +36,14 @@ func Trace(ctx *cli.Context, traceID string) schema.Trace {
 
 	return response["result"]
 }
+
+func Traces(ctx *cli.Context, condition *schema.TraceQueryCondition) schema.TraceBrief {
+	var response map[string]schema.TraceBrief
+
+	request := graphql.NewRequest(assets.Read("graphqls/trace/Traces.graphql"))
+	request.Var("condition", condition)
+
+	client.ExecuteQueryOrFail(ctx, request, &response)
+
+	return response["result"]
+}

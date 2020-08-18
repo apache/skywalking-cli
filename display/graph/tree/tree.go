@@ -19,6 +19,7 @@ package tree
 
 import (
 	"fmt"
+	"strings"
 
 	ui "github.com/gizak/termui/v3"
 	"github.com/gizak/termui/v3/widgets"
@@ -34,7 +35,7 @@ type Node struct {
 
 var extra = make(map[*widgets.TreeNode]*Node)
 
-func Display(roots []*Node) error {
+func Display(roots []*Node, serviceNames []string) error {
 	if err := ui.Init(); err != nil {
 		logger.Log.Fatalf("failed to initialize termui: %v", err)
 	}
@@ -62,7 +63,7 @@ func Display(roots []*Node) error {
 	}
 	tree.WrapText = false
 	tree.SetNodes(nodes)
-	tree.Title = " Press ? to show help "
+	tree.Title = fmt.Sprintf("[ %s ]        [%s]", strings.Join(serviceNames, "->"), " Press ? to show help ")
 	tree.TitleStyle.Modifier = ui.ModifierBold
 	tree.TitleStyle.Fg = ui.ColorRed
 
@@ -78,7 +79,7 @@ func Display(roots []*Node) error {
 	help := widgets.NewParagraph()
 	help.WrapText = false
 	help.SetRect(x, 0, x, y)
-	help.Title = " Keymap "
+	help.Title = keymap
 	help.Text = `
 		[?          ](fg:red,mod:bold) Toggle this help
 		[k          ](fg:red,mod:bold) Scroll Up
@@ -164,7 +165,7 @@ func listenKeyboard(tree *widgets.Tree, detail, help *widgets.Paragraph) {
 		e := <-uiEvents
 
 		switch e.ID {
-		case "q", "<C-c>":
+		case "q", cc:
 			return
 		case "g":
 			if previousKey == "g" {
