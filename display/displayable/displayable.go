@@ -20,7 +20,8 @@ package displayable
 import "github.com/apache/skywalking-cli/graphql/schema"
 
 type Displayable struct {
-	Data     interface{}
-	Duration schema.Duration
-	Title    string
+	Data      interface{}
+	Condition interface{}
+	Duration  schema.Duration
+	Title     string
 }
