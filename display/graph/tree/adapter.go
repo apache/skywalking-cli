@@ -25,16 +25,19 @@ import (
 	"github.com/apache/skywalking-cli/util"
 )
 
-func Adapt(trace schema.Trace) []*Node {
+func Adapt(trace schema.Trace) (roots []*Node, serviceNames []string) {
 	all := make(map[string]*Node)
+	set := make(map[string]bool)
 
 	for _, span := range trace.Spans {
+		if !set[span.ServiceCode] {
+			serviceNames = append(serviceNames, span.ServiceCode)
+			set[span.ServiceCode] = true
+		}
 		all[id(span)] = node(span)
 	}
 
 	seen := make(map[string]bool)
-
-	var roots []*Node
 
 	for _, span := range trace.Spans {
 		if isRoot(span) {
@@ -63,7 +66,7 @@ func Adapt(trace schema.Trace) []*Node {
 		}
 	}
 
-	return roots
+	return roots, serviceNames
 }
 
 func isRoot(span *schema.Span) bool {

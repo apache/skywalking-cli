@@ -40,6 +40,7 @@ type (
 	LinearMetrics      = map[string]float64
 	MultiLinearMetrics = []LinearMetrics
 	Trace              = schema.Trace
+	TraceBrief         = schema.TraceBrief
 	GlobalMetrics      = [][]*schema.SelectedRecord
 	GlobalData         = dashboard.GlobalData
 )
@@ -49,6 +50,7 @@ var (
 	LinearMetricsType      = reflect.TypeOf(LinearMetrics{})
 	MultiLinearMetricsType = reflect.TypeOf(MultiLinearMetrics{})
 	TraceType              = reflect.TypeOf(Trace{})
+	TraceBriefType         = reflect.TypeOf(TraceBrief{})
 	GlobalMetricsType      = reflect.TypeOf(GlobalMetrics{})
 	GlobalDataType         = reflect.TypeOf(&GlobalData{})
 )
@@ -68,6 +70,9 @@ func Display(ctx *cli.Context, displayable *d.Displayable) error {
 
 	case TraceType:
 		return tree.Display(tree.Adapt(data.(Trace)))
+
+	case TraceBriefType:
+		return tree.DisplayList(ctx, displayable)
 
 	case GlobalMetricsType:
 		return gauge.Display(ctx, data.(GlobalMetrics))

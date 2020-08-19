@@ -17,13 +17,106 @@
 
 package trace
 
-import "github.com/urfave/cli"
+import (
+	"strings"
+
+	"github.com/apache/skywalking-cli/display/displayable"
+
+	"github.com/apache/skywalking-cli/commands/interceptor"
+
+	"github.com/urfave/cli"
+
+	"github.com/apache/skywalking-cli/commands/flags"
+	"github.com/apache/skywalking-cli/commands/model"
+	"github.com/apache/skywalking-cli/display"
+
+	"github.com/apache/skywalking-cli/graphql/schema"
+	"github.com/apache/skywalking-cli/graphql/trace"
+)
+
+const DefaultPageSize = 15
 
 var ListCommand = cli.Command{
 	Name:      "list",
 	ShortName: "ls",
 	Usage:     "query traces",
+	Flags: flags.Flags(
+		flags.DurationFlags,
+		[]cli.Flag{
+			cli.StringFlag{
+				Name:     "service-id",
+				Usage:    "service id",
+				Required: false,
+			},
+			cli.StringFlag{
+				Name:     "service-instance-id",
+				Usage:    "service instance id",
+				Required: false,
+			},
+			cli.StringFlag{
+				Name:     "trace-id",
+				Usage:    "trace id",
+				Required: false,
+			},
+			cli.StringFlag{
+				Name:     "tags",
+				Usage:    "key=value,key=value",
+				Required: false,
+			},
+		},
+	),
+	Before: interceptor.BeforeChain([]cli.BeforeFunc{
+		interceptor.TimezoneInterceptor,
+		interceptor.DurationInterceptor,
+	}),
 	Action: func(ctx *cli.Context) error {
-		return nil
+
+		start := ctx.String("start")
+		end := ctx.String("end")
+		step := ctx.Generic("step")
+
+		duration := schema.Duration{
+			Start: start,
+			End:   end,
+			Step:  step.(*model.StepEnumValue).Selected,
+		}
+		serviceID := ctx.String("service-id")
+		serviceInstanceID := ctx.String("service-instance-id")
+		traceID := ctx.String("trace-id")
+		tagStr := ctx.String("tags")
+		var tags []*schema.SpanTag = nil
+		if tagStr != "" {
+			tagArr := strings.Split(tagStr, ",")
+			for _, tag := range tagArr {
+				kv := strings.Split(tag, "=")
+				tags = append(tags, &schema.SpanTag{Key: kv[0], Value: &kv[1]})
+			}
+		}
+		pageNum := 1
+		needTotal := true
+
+		paging := schema.Pagination{
+			PageNum:   &pageNum,
+			PageSize:  DefaultPageSize,
+			NeedTotal: &needTotal,
+		}
+
+		condition := &schema.TraceQueryCondition{
+			ServiceID:         &serviceID,
+			ServiceInstanceID: &serviceInstanceID,
+			TraceID:           &traceID,
+			EndpointID:        nil,
+			EndpointName:      nil,
+			QueryDuration:     &duration,
+			MinTraceDuration:  nil,
+			MaxTraceDuration:  nil,
+			TraceState:        schema.TraceStateAll,
+			QueryOrder:        schema.QueryOrderByDuration,
+			Tags:              tags,
+			Paging:            &paging,
+		}
+		traces := trace.Traces(ctx, condition)
+
+		return display.Display(ctx, &displayable.Displayable{Data: traces, Condition: condition})
 	},
 }
