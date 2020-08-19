@@ -259,11 +259,11 @@ Ascii Graph, like coloring in terminal, so please use `json`  or `yaml` instead.
 
 | argument | description | default |
 | :--- | :--- | :--- |
-| `trace id` | the trace id whose spans are to displayed |  |
+| `trace id` | The trace id whose spans are to displayed |  |
 
 </details>
 
-### `trace ls`
+#### `trace ls`
 
 <details>
 
@@ -271,9 +271,9 @@ Ascii Graph, like coloring in terminal, so please use `json`  or `yaml` instead.
 
 | argument | description | default |
 | :--- | :--- | :--- |
-| `--trace-id` | the trace id whose spans are to displayed |  |
-| `--service-id` | the service id whose trace are to displayed |  |
-| `--service-instance-id` | the service instance id whose trace are to displayed |  |
+| `--trace-id` | The trace id whose spans are to displayed |  |
+| `--service-id` | The service id whose trace are to displayed |  |
+| `--service-instance-id` | The service instance id whose trace are to displayed |  |
 | `--tags` | Only tags defined in the core/default/searchableTagKeys are searchable. Check more details on the Configuration Vocabulary page | See [Configuration Vocabulary page](https://github.com/apache/skywalking/blob/master/docs/en/setup/backend/configuration-vocabulary.md) |
 | `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
 | `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
@@ -281,6 +281,8 @@ Ascii Graph, like coloring in terminal, so please use `json`  or `yaml` instead.
 </details>
 
 ### `dashboard`
+
+#### `dashboard global-metrics`
 
 <details>
 
@@ -290,13 +292,29 @@ Ascii Graph, like coloring in terminal, so please use `json`  or `yaml` instead.
 
 | argument | description | default |
 | :--- | :--- | :--- |
-| `--template` | the template file to customize how to display information | `templates/Dashboard.Global.json` |
+| `--template` | The template file to customize how to display information | `templates/Dashboard.Global.json` |
+| `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
+| `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
 
 You can imitate the content of [the default template file](example/Dashboard.Global.json) to customize the dashboard.
 
 </details>
 
+#### `dashboard global`
 
+<details>
+
+<summary>dashboard global [--template=template]</summary>
+
+`dashboard global` displays global metrics, global response latency and global heat map in the form of a dashboard.
+
+| argument | description | default |
+| :--- | :--- | :--- |
+| `--template` | The template file to customize how to display information | `templates/Dashboard.Global.json` |
+| `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
+| `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
+
+</details>
 
 ### `checkHealth`
 
