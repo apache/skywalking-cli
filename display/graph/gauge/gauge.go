@@ -60,6 +60,10 @@ func NewMetricColumn(column []*schema.SelectedRecord, config *dashboard.MetricTe
 	}
 	ret.title = t
 
+	if len(column) == 0 {
+		return nil, fmt.Errorf("the metrics data is empty, please check the GraphQL backend")
+	}
+
 	if config.Condition.Order == schema.OrderDes {
 		temp, err := strconv.Atoi(*(column[0].Value))
 		if err != nil {

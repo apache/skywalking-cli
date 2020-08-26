@@ -237,7 +237,7 @@ func Display(ctx *cli.Context, data *dashboard.GlobalData) error {
 
 	w, err := newWidgets(data, template)
 	if err != nil {
-		panic(err)
+		return err
 	}
 	lb, err := newLayoutButtons(c, w, &template.Buttons)
 	if err != nil {
