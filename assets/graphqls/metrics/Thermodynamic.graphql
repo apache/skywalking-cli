@@ -15,8 +15,15 @@
 # specific language governing permissions and limitations
 # under the License.
 
-query ($metric: MetricCondition!, $duration: Duration!) {
-    result: getThermodynamic(metric: $metric, duration: $duration) {
-        nodes axisYStep
+query ($condition: MetricsCondition!, $duration: Duration!) {
+    result: readHeatMap(condition: $condition, duration: $duration) {
+        values {
+            id
+            values
+        }
+        buckets {
+            min
+            max
+        }
     }
 }
