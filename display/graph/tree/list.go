@@ -71,8 +71,8 @@ func DisplayList(ctx *cli.Context, displayable *d.Displayable) error {
 		[<Right>    ](fg:red,mod:bold) tree activated
 		[K or <Up>  ](fg:red,mod:bold) list or tree Scroll Up
 		[j or <Down>](fg:red,mod:bold) list or tree Scroll Down
-		[<Ctr-b>    ](fg:red,mod:bold) list or tree Page Up
-		[<Ctr-f>    ](fg:red,mod:bold) list or tree Page Down
+		[<Ctr-b>    ](fg:red,mod:bold) list Page Up
+		[<Ctr-f>    ](fg:red,mod:bold) list Page Down
 		[p          ](fg:red,mod:bold) list Page Up
 		[n          ](fg:red,mod:bold) list Page Down
 		[<Home>     ](fg:red,mod:bold) list or tree Scroll to Top
@@ -141,6 +141,7 @@ func listenTracesKeyboard(list *widgets.List, tree *widgets.Tree, data schema.Tr
 				condition.Paging.PageNum = &pageNum
 				data = trace.Traces(ctx, condition)
 			}
+			tree.SelectedRow = 0
 		case "<C-f>", "n":
 			pageNum := *condition.Paging.PageNum
 			if pageNum < totalPages(data.Total) {
@@ -148,6 +149,7 @@ func listenTracesKeyboard(list *widgets.List, tree *widgets.Tree, data schema.Tr
 				condition.Paging.PageNum = &pageNum
 				data = trace.Traces(ctx, condition)
 			}
+			tree.SelectedRow = 0
 		case "<Right>":
 			listActive = false
 		case "<Left>":
