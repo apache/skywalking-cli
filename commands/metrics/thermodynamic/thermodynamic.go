@@ -31,9 +31,9 @@ import (
 )
 
 var Command = cli.Command{
-	Name:      "thermodynamic",
-	ShortName: "td",
-	Usage:     "Query thermodynamic metrics defined in backend OAL",
+	Name:    "thermodynamic",
+	Aliases: []string{"td", "heatmap", "hp"},
+	Usage:   "Query thermodynamic metrics defined in backend OAL",
 	Flags: flags.Flags(
 		flags.DurationFlags,
 		[]cli.Flag{

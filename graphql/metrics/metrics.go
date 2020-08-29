@@ -73,7 +73,7 @@ func Thermodynamic(ctx *cli.Context, condition schema.MetricsCondition, duration
 
 	request := graphql.NewRequest(assets.Read("graphqls/metrics/Thermodynamic.graphql"))
 
-	request.Var("metric", condition)
+	request.Var("condition", condition)
 	request.Var("duration", duration)
 
 	client.ExecuteQueryOrFail(ctx, request, &response)
