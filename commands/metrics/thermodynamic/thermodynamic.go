@@ -31,9 +31,9 @@ import (
 )
 
 var Command = cli.Command{
-	Name:      "thermodynamic",
-	ShortName: "td",
-	Usage:     "Query thermodynamic metrics defined in backend OAL",
+	Name:    "thermodynamic",
+	Aliases: []string{"td", "heatmap", "hp"},
+	Usage:   "Query thermodynamic metrics defined in backend OAL",
 	Flags: flags.Flags(
 		flags.DurationFlags,
 		[]cli.Flag{
@@ -42,10 +42,14 @@ var Command = cli.Command{
 				Usage:    "metrics `name`, which should be defined in OAL script",
 				Required: true,
 			},
-			cli.StringFlag{
-				Name:     "id",
-				Usage:    "metrics `id` if the metrics require one",
-				Required: false,
+			cli.GenericFlag{
+				Name:  "scope",
+				Usage: "the scope of the query, which follows the metrics `name`",
+				Value: &model.ScopeEnumValue{
+					Enum:     schema.AllScope,
+					Default:  schema.ScopeAll,
+					Selected: schema.ScopeAll,
+				},
 			},
 		},
 	),
@@ -58,12 +62,7 @@ var Command = cli.Command{
 		start := ctx.String("start")
 		step := ctx.Generic("step")
 		metricsName := ctx.String("name")
-
-		var id *string = nil
-		if ctx.String("id") != "" {
-			idString := ctx.String("id")
-			id = &idString
-		}
+		scope := ctx.Generic("scope").(*model.ScopeEnumValue).Selected
 
 		duration := schema.Duration{
 			Start: start,
@@ -71,9 +70,11 @@ var Command = cli.Command{
 			Step:  step.(*model.StepEnumValue).Selected,
 		}
 
-		metricsValues := metrics.Thermodynamic(ctx, schema.MetricCondition{
+		metricsValues := metrics.Thermodynamic(ctx, schema.MetricsCondition{
 			Name: metricsName,
-			ID:   id,
+			Entity: &schema.Entity{
+				Scope: scope,
+			},
 		}, duration)
 
 		return display.Display(ctx, &displayable.Displayable{
