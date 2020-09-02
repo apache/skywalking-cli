@@ -28,13 +28,16 @@ import (
 func Adapt(trace schema.Trace) (roots []*Node, serviceNames []string) {
 	all := make(map[string]*Node)
 	set := make(map[string]bool)
-
+	var traceID string
 	for _, span := range trace.Spans {
 		if !set[span.ServiceCode] {
 			serviceNames = append(serviceNames, span.ServiceCode)
 			set[span.ServiceCode] = true
 		}
 		all[id(span)] = node(span)
+		if traceID == "" {
+			traceID = span.TraceID
+		}
 	}
 
 	seen := make(map[string]bool)
@@ -44,8 +47,33 @@ func Adapt(trace schema.Trace) (roots []*Node, serviceNames []string) {
 			roots = append(roots, all[id(span)])
 			seen[id(span)] = true
 		}
+		for _, ref := range span.Refs {
+			if all[id0(ref)] == nil {
+				for i := 0; i <= ref.ParentSpanID; i++ {
+					if traceID != ref.TraceID {
+						continue
+					}
+					virtualSpan := virtualSpan(i, *ref)
+					if all[id(virtualSpan)] != nil {
+						continue
+					}
+					all[id(virtualSpan)] = node(virtualSpan)
+					if i == 0 {
+						roots = append(roots, all[id(virtualSpan)])
+						seen[id(virtualSpan)] = true
+					} else if all[id1(ref)] != nil {
+						all[id1(ref)].Children = append(all[id1(ref)].Children, all[id(virtualSpan)])
+						seen[id(virtualSpan)] = true
+					}
+				}
+			}
+		}
 	}
+	buildTree(all, seen, trace)
+	return roots, serviceNames
+}
 
+func buildTree(all map[string]*Node, seen map[string]bool, trace schema.Trace) {
 	for len(seen) < len(trace.Spans) {
 		for _, span := range trace.Spans {
 			if seen[id(span)] {
@@ -58,15 +86,38 @@ func Adapt(trace schema.Trace) (roots []*Node, serviceNames []string) {
 			}
 
 			for _, ref := range span.Refs {
-				if all[id0(ref)] != nil {
-					all[id0(ref)].Children = append(all[id0(ref)].Children, all[id(span)])
+				refData := all[id0(ref)]
+				if refData != nil {
+					refData.Children = append(refData.Children, all[id(span)])
 					seen[id(span)] = true
 				}
 			}
 		}
 	}
+}
 
-	return roots, serviceNames
+func virtualSpan(spanID int, ref schema.Ref) *schema.Span {
+	endpointName := fmt.Sprintf("VNode: %s", ref.ParentSegmentID)
+	component := fmt.Sprintf("VirtualNode: #%d", spanID)
+	peer := "No Peer"
+	fail := true
+	layer := "Broken"
+	span := schema.Span{
+		TraceID:      ref.TraceID,
+		SegmentID:    ref.ParentSegmentID,
+		SpanID:       spanID,
+		ParentSpanID: spanID - 1,
+		EndpointName: &endpointName,
+		ServiceCode:  "VirtualNode",
+		Type:         fmt.Sprintf("[Broken] %s", ref.Type),
+		Peer:         &peer,
+		Component:    &component,
+		IsError:      &fail,
+		Layer:        &layer,
+		Tags:         nil,
+		Logs:         nil,
+	}
+	return &span
 }
 
 func isRoot(span *schema.Span) bool {
@@ -83,6 +134,10 @@ func pid(span *schema.Span) string {
 
 func id0(ref *schema.Ref) string {
 	return fmt.Sprintf("%s:%s:%d", ref.TraceID, ref.ParentSegmentID, ref.ParentSpanID)
+}
+
+func id1(ref *schema.Ref) string {
+	return fmt.Sprintf("%s:%s:%d", ref.TraceID, ref.ParentSegmentID, ref.ParentSpanID-1)
 }
 
 func node(span *schema.Span) *Node {
