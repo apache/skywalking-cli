@@ -36,7 +36,7 @@ import (
 )
 
 type (
-	Thermodynamic      = schema.Thermodynamic
+	Thermodynamic      = schema.HeatMap
 	LinearMetrics      = map[string]float64
 	MultiLinearMetrics = []LinearMetrics
 	Trace              = schema.Trace
