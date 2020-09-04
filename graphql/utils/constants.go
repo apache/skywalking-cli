@@ -25,7 +25,7 @@ import (
 
 // StepFormats is a mapping from schema.Step to its time format
 var StepFormats = map[schema.Step]string{
-	schema.StepSecond: "2006-01-02 150400",
+	schema.StepSecond: "2006-01-02 150405",
 	schema.StepMinute: "2006-01-02 1504",
 	schema.StepHour:   "2006-01-02 15",
 	schema.StepDay:    "2006-01-02",
