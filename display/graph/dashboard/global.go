@@ -24,6 +24,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/apache/skywalking-cli/commands/interceptor"
+	"github.com/apache/skywalking-cli/graphql/schema"
+
 	"github.com/apache/skywalking-cli/graphql/utils"
 	"github.com/apache/skywalking-cli/lib/heatmap"
 
@@ -85,6 +88,9 @@ var linearTitles []string
 var template *dashboard.GlobalTemplate
 
 var allWidgets *widgets
+
+var initStartStr string
+var initEndStr string
 
 // setLayout sets the specified layout.
 func setLayout(c *container.Container, lt layoutType) error {
@@ -212,11 +218,9 @@ func newWidgets(data *dashboard.GlobalData) error {
 	hp.SetColumns(hpColumns)
 	hp.SetYLabels(yLabels)
 
-	allWidgets = &widgets{
-		gauges:  columns,
-		linears: linears,
-		heatmap: hp,
-	}
+	allWidgets.gauges = columns
+	allWidgets.linears = linears
+	allWidgets.heatmap = hp
 	return nil
 }
 
@@ -236,14 +240,20 @@ func Display(ctx *cli.Context, data *dashboard.GlobalData) error {
 		return err
 	}
 
-	template, err := dashboard.LoadTemplate(ctx.String("template"))
+	te, err := dashboard.LoadTemplate(ctx.String("template"))
 	if err != nil {
 		return err
 	}
+	template = te
 	linearTitles = strings.Split(template.ResponseLatency.Labels, ", ")
 
-	refreshInterval := time.Duration(ctx.Int("refresh")) * time.Second
-
+	// Initialization
+	allWidgets = &widgets{
+		gauges:  nil,
+		linears: nil,
+		heatmap: nil,
+		buttons: nil,
+	}
 	err = newWidgets(data)
 	if err != nil {
 		return err
@@ -270,6 +280,14 @@ func Display(ctx *cli.Context, data *dashboard.GlobalData) error {
 		}
 	}
 
+	refreshInterval := time.Duration(ctx.Int("refresh")) * time.Second
+	dt := utils.DurationType(ctx.String("durationType"))
+
+	// Only when users use the relative time, the duration will be adjusted to refresh.
+	if dt != utils.BothPresent {
+		go refresh(con, ctx, refreshInterval)
+	}
+
 	err = termdash.Run(con, t, c, termdash.KeyboardSubscriber(quitter), termdash.RedrawInterval(refreshInterval))
 
 	return err
@@ -285,4 +303,77 @@ func longestString(strs []string) (ret string) {
 		}
 	}
 	return
+}
+
+var cumulativeUnit = 0
+
+// refresh updates the duration and query the new data to update all of widgets, once every delay.
+func refresh(con context.Context, ctx *cli.Context, delay time.Duration) {
+	ticker := time.NewTicker(delay)
+	defer ticker.Stop()
+
+	initStartStr = ctx.String("start")
+	initEndStr = ctx.String("end")
+
+	for {
+		select {
+		case <-ticker.C:
+			cumulativeUnit += ctx.Int("refresh")
+			step, _, err := interceptor.TryParseTime(ctx.String("start"))
+			if err != nil {
+				return
+			}
+
+			if step == schema.StepMinute && cumulativeUnit >= 60 {
+
+			} else if step == schema.StepHour && cumulativeUnit >= 3600 {
+
+			} else if step == schema.StepDay && cumulativeUnit >= 86400 {
+
+			}
+
+			d, err := updateDuration(ctx, delay)
+			if err != nil {
+				return
+			}
+
+			gd := dashboard.Global(ctx, d)
+			err = newWidgets(gd)
+			if err != nil {
+				return
+			}
+		case <-con.Done():
+			return
+		}
+	}
+}
+
+func updateDuration(ctx *cli.Context, delay time.Duration) (schema.Duration, error) {
+	step, start, err := interceptor.TryParseTime(ctx.String("start"))
+	if err != nil {
+		return schema.Duration{}, err
+	}
+
+	_, end, err := interceptor.TryParseTime(ctx.String("end"))
+	if err != nil {
+		return schema.Duration{}, err
+	}
+
+	start = start.Add(delay)
+	end = end.Add(delay)
+
+	startStr := start.Format(utils.StepFormats[step])
+	endStr := end.Format(utils.StepFormats[step])
+
+	if err := ctx.Set("start", startStr); err != nil {
+		return schema.Duration{}, err
+	} else if err := ctx.Set("end", endStr); err != nil {
+		return schema.Duration{}, err
+	}
+
+	return schema.Duration{
+		Start: startStr,
+		End:   endStr,
+		Step:  schema.StepMinute,
+	}, nil
 }

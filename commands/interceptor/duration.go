@@ -29,7 +29,7 @@ import (
 	"github.com/apache/skywalking-cli/logger"
 )
 
-func tryParseTime(unparsed string) (schema.Step, time.Time, error) {
+func TryParseTime(unparsed string) (schema.Step, time.Time, error) {
 	var possibleError error = nil
 	for step, layout := range utils.StepFormats {
 		t, err := time.Parse(layout, unparsed)
@@ -48,13 +48,15 @@ func DurationInterceptor(ctx *cli.Context) error {
 	end := ctx.String("end")
 	timezone := ctx.GlobalString("timezone")
 
-	startTime, endTime, step := ParseDuration(start, end, timezone)
+	startTime, endTime, step, dt := ParseDuration(start, end, timezone)
 
 	if err := ctx.Set("start", startTime.Format(utils.StepFormats[step])); err != nil {
 		return err
 	} else if err := ctx.Set("end", endTime.Format(utils.StepFormats[step])); err != nil {
 		return err
 	} else if err := ctx.Set("step", step.String()); err != nil {
+		return err
+	} else if err := ctx.Set("durationType", dt.String()); err != nil {
 		return err
 	}
 	return nil
@@ -68,7 +70,7 @@ func DurationInterceptor(ctx *cli.Context) error {
 //   then: end := now + 30 units, where unit is the precision of `start`, (hours, minutes, etc.)
 // if --start is absent, --end is given,
 //   then: start := end - 30 units, where unit is the precision of `end`, (hours, minutes, etc.)
-func ParseDuration(start, end, timezone string) (startTime, endTime time.Time, step schema.Step) {
+func ParseDuration(start, end, timezone string) (startTime, endTime time.Time, step schema.Step, dt utils.DurationType) {
 	logger.Log.Debugln("Start time:", start, "end time:", end, "timezone:", timezone)
 
 	now := time.Now()
@@ -84,7 +86,7 @@ func ParseDuration(start, end, timezone string) (startTime, endTime time.Time, s
 
 	// both are absent
 	if start == "" && end == "" {
-		return now.Add(-30 * time.Minute), now, schema.StepMinute
+		return now.Add(-30 * time.Minute), now, schema.StepMinute, utils.BothAbsent
 	}
 
 	var err error
@@ -93,24 +95,24 @@ func ParseDuration(start, end, timezone string) (startTime, endTime time.Time, s
 	if len(start) > 0 && len(end) > 0 {
 		start, end = AlignPrecision(start, end)
 
-		if _, startTime, err = tryParseTime(start); err != nil {
+		if _, startTime, err = TryParseTime(start); err != nil {
 			logger.Log.Fatalln("Unsupported time format:", start, err)
 		}
-		if step, endTime, err = tryParseTime(end); err != nil {
+		if step, endTime, err = TryParseTime(end); err != nil {
 			logger.Log.Fatalln("Unsupported time format:", end, err)
 		}
 
-		return startTime, endTime, step
+		return startTime, endTime, step, utils.BothPresent
 	} else if end == "" { // end is absent
-		if step, startTime, err = tryParseTime(start); err != nil {
+		if step, startTime, err = TryParseTime(start); err != nil {
 			logger.Log.Fatalln("Unsupported time format:", start, err)
 		}
-		return startTime, startTime.Add(30 * utils.StepDuration[step]), step
+		return startTime, startTime.Add(30 * utils.StepDuration[step]), step, utils.EndAbsent
 	} else { // start is absent
-		if step, endTime, err = tryParseTime(end); err != nil {
+		if step, endTime, err = TryParseTime(end); err != nil {
 			logger.Log.Fatalln("Unsupported time format:", end, err)
 		}
-		return endTime.Add(-30 * utils.StepDuration[step]), endTime, step
+		return endTime.Add(-30 * utils.StepDuration[step]), endTime, step, utils.StartAbsent
 	}
 }
 
