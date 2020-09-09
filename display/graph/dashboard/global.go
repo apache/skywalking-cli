@@ -26,9 +26,8 @@ import (
 
 	"github.com/apache/skywalking-cli/commands/interceptor"
 	"github.com/apache/skywalking-cli/graphql/schema"
-
 	"github.com/apache/skywalking-cli/graphql/utils"
-	"github.com/apache/skywalking-cli/lib/heatmap"
+	lib "github.com/apache/skywalking-cli/lib/heatmap"
 
 	"github.com/mattn/go-runewidth"
 	"github.com/mum4k/termdash"
@@ -39,6 +38,7 @@ import (
 	"github.com/urfave/cli"
 
 	"github.com/apache/skywalking-cli/display/graph/gauge"
+	"github.com/apache/skywalking-cli/display/graph/heatmap"
 	"github.com/apache/skywalking-cli/display/graph/linear"
 	"github.com/apache/skywalking-cli/graphql/dashboard"
 
@@ -75,7 +75,7 @@ var strToLayoutType = map[string]layoutType{
 type widgets struct {
 	gauges  []*gauge.MetricColumn
 	linears []*linechart.LineChart
-	heatmap *heatmap.HeatMap
+	heatmap *lib.HeatMap
 
 	// buttons are used to change the layout.
 	buttons []*button.Button
@@ -91,6 +91,9 @@ var allWidgets *widgets
 
 var initStartStr string
 var initEndStr string
+
+var curStartTime time.Time
+var curEndTime time.Time
 
 // setLayout sets the specified layout.
 func setLayout(c *container.Container, lt layoutType) error {
@@ -209,14 +212,10 @@ func newWidgets(data *dashboard.GlobalData) error {
 	}
 
 	// Create a heat map.
-	hp, err := heatmap.NewHeatMap()
+	hp, err := heatmap.NewHeatMapWidget(data.HeatMap)
 	if err != nil {
 		return err
 	}
-	hpColumns := utils.HeatMapToMap(&data.HeatMap)
-	yLabels := utils.BucketsToStrings(data.HeatMap.Buckets)
-	hp.SetColumns(hpColumns)
-	hp.SetYLabels(yLabels)
 
 	allWidgets.gauges = columns
 	allWidgets.linears = linears
@@ -288,7 +287,7 @@ func Display(ctx *cli.Context, data *dashboard.GlobalData) error {
 		go refresh(con, ctx, refreshInterval)
 	}
 
-	err = termdash.Run(con, t, c, termdash.KeyboardSubscriber(quitter), termdash.RedrawInterval(refreshInterval))
+	err = termdash.Run(con, t, c, termdash.KeyboardSubscriber(quitter), termdash.RedrawInterval(5*time.Second))
 
 	return err
 }
@@ -305,8 +304,6 @@ func longestString(strs []string) (ret string) {
 	return
 }
 
-var cumulativeUnit = 0
-
 // refresh updates the duration and query the new data to update all of widgets, once every delay.
 func refresh(con context.Context, ctx *cli.Context, delay time.Duration) {
 	ticker := time.NewTicker(delay)
@@ -315,32 +312,30 @@ func refresh(con context.Context, ctx *cli.Context, delay time.Duration) {
 	initStartStr = ctx.String("start")
 	initEndStr = ctx.String("end")
 
+	_, start, err := interceptor.TryParseTime(initStartStr)
+	if err != nil {
+		return
+	}
+	_, end, err := interceptor.TryParseTime(initEndStr)
+	if err != nil {
+		return
+	}
+
+	curStartTime = start
+	curEndTime = end
+
 	for {
 		select {
 		case <-ticker.C:
-			cumulativeUnit += ctx.Int("refresh")
-			step, _, err := interceptor.TryParseTime(ctx.String("start"))
+			d, err := updateDuration(55 * time.Second)
 			if err != nil {
-				return
-			}
-
-			if step == schema.StepMinute && cumulativeUnit >= 60 {
-
-			} else if step == schema.StepHour && cumulativeUnit >= 3600 {
-
-			} else if step == schema.StepDay && cumulativeUnit >= 86400 {
-
-			}
-
-			d, err := updateDuration(ctx, delay)
-			if err != nil {
-				return
+				continue
 			}
 
 			gd := dashboard.Global(ctx, d)
 			err = newWidgets(gd)
 			if err != nil {
-				return
+				continue
 			}
 		case <-con.Done():
 			return
@@ -348,32 +343,27 @@ func refresh(con context.Context, ctx *cli.Context, delay time.Duration) {
 	}
 }
 
-func updateDuration(ctx *cli.Context, delay time.Duration) (schema.Duration, error) {
-	step, start, err := interceptor.TryParseTime(ctx.String("start"))
+func updateDuration(interval time.Duration) (schema.Duration, error) {
+	step, _, err := interceptor.TryParseTime(initStartStr)
 	if err != nil {
 		return schema.Duration{}, err
 	}
 
-	_, end, err := interceptor.TryParseTime(ctx.String("end"))
-	if err != nil {
-		return schema.Duration{}, err
+	curStartTime = curStartTime.Add(interval)
+	curEndTime = curEndTime.Add(interval)
+
+	curStartStr := curStartTime.Format(utils.StepFormats[step])
+	curEndStr := curEndTime.Format(utils.StepFormats[step])
+
+	if curStartStr == initStartStr && curEndStr == initEndStr {
+		return schema.Duration{}, fmt.Errorf("the duration does not update")
 	}
 
-	start = start.Add(delay)
-	end = end.Add(delay)
-
-	startStr := start.Format(utils.StepFormats[step])
-	endStr := end.Format(utils.StepFormats[step])
-
-	if err := ctx.Set("start", startStr); err != nil {
-		return schema.Duration{}, err
-	} else if err := ctx.Set("end", endStr); err != nil {
-		return schema.Duration{}, err
-	}
-
+	initStartStr = curStartStr
+	initEndStr = curEndStr
 	return schema.Duration{
-		Start: startStr,
-		End:   endStr,
-		Step:  schema.StepMinute,
+		Start: curStartStr,
+		End:   curEndStr,
+		Step:  step,
 	}, nil
 }
