@@ -327,22 +327,20 @@ func refresh(con context.Context, ctx *cli.Context, delay time.Duration) {
 	for {
 		select {
 		case <-ticker.C:
-			d, err := updateDuration(55 * time.Second)
+			_, err := updateDuration(55 * time.Second)
 			if err != nil {
 				continue
 			}
 
-			gd := dashboard.Global(ctx, d)
-			err = newWidgets(gd)
-			if err != nil {
-				continue
-			}
 		case <-con.Done():
 			return
 		}
 	}
 }
 
+// updateDuration will check if the duration changes after adding the interval.
+// If the duration doesn't change, an error will be returned, and the dashboard will not refresh.
+// Otherwise, a new duration will be returned, which is used to get the latest global data.
 func updateDuration(interval time.Duration) (schema.Duration, error) {
 	step, _, err := interceptor.TryParseTime(initStartStr)
 	if err != nil {
@@ -367,3 +365,17 @@ func updateDuration(interval time.Duration) (schema.Duration, error) {
 		Step:  step,
 	}, nil
 }
+
+func updateAllWidgets(data *dashboard.GlobalData) {
+	updateMetricColumns(data.Metrics)
+	updateLineCharts(data.ResponseLatency)
+	updateHeatMap(data.HeatMap)
+}
+
+func updateMetricColumns(data [][]*schema.SelectedRecord) {}
+
+func updateLineCharts(data []map[string]float64) {
+
+}
+
+func updateHeatMap(data schema.HeatMap) {}
