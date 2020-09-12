@@ -20,7 +20,6 @@ package gauge
 import (
 	"context"
 	"fmt"
-	"github.com/apache/skywalking-cli/util"
 	"math"
 	"strconv"
 	"strings"
@@ -29,6 +28,7 @@ import (
 
 	"github.com/apache/skywalking-cli/graphql/dashboard"
 	"github.com/apache/skywalking-cli/graphql/schema"
+	"github.com/apache/skywalking-cli/util"
 
 	"github.com/mum4k/termdash"
 	"github.com/mum4k/termdash/cell"
@@ -49,6 +49,7 @@ type MetricColumn struct {
 	aggregationNum int
 }
 
+// Update updates the MetricColumn's `Absolute` and `BorderTitle`.
 func (mc *MetricColumn) Update(data []*schema.SelectedRecord) error {
 	for i, item := range data {
 		strValue := *(item.Value)

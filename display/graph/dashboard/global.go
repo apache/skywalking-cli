@@ -327,11 +327,15 @@ func refresh(con context.Context, ctx *cli.Context, delay time.Duration) {
 	for {
 		select {
 		case <-ticker.C:
-			_, err := updateDuration(55 * time.Second)
+			d, err := updateDuration(55 * time.Second)
 			if err != nil {
 				continue
 			}
 
+			data := dashboard.Global(ctx, d)
+			if err := updateAllWidgets(data); err != nil {
+				continue
+			}
 		case <-con.Done():
 			return
 		}
@@ -366,16 +370,32 @@ func updateDuration(interval time.Duration) (schema.Duration, error) {
 	}, nil
 }
 
-func updateAllWidgets(data *dashboard.GlobalData) {
-	updateMetricColumns(data.Metrics)
-	updateLineCharts(data.ResponseLatency)
-	updateHeatMap(data.HeatMap)
+func updateAllWidgets(data *dashboard.GlobalData) error {
+	if err := updateMetricColumns(data.Metrics); err != nil {
+		return err
+	}
+	if err := updateLineCharts(data.ResponseLatency); err != nil {
+		return err
+	}
+	if err := updateHeatMap(data.HeatMap); err != nil {
+		return err
+	}
+	return nil
 }
 
-func updateMetricColumns(data [][]*schema.SelectedRecord) {}
-
-func updateLineCharts(data []map[string]float64) {
-
+func updateMetricColumns(data [][]*schema.SelectedRecord) error {
+	for i, mcData := range data {
+		if err := allWidgets.gauges[i].Update(mcData); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
-func updateHeatMap(data schema.HeatMap) {}
+func updateLineCharts(data []map[string]float64) error {
+	return nil
+}
+
+func updateHeatMap(data schema.HeatMap) error {
+	return nil
+}
