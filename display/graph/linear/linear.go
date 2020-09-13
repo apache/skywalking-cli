@@ -36,11 +36,28 @@ import (
 
 const RootID = "root"
 
+const defaultSeriesLabel = "linear"
+
 func NewLineChart(inputs map[string]float64) (lineChart *linechart.LineChart, err error) {
+	if lineChart, err = linechart.New(linechart.YAxisAdaptive()); err != nil {
+		return
+	}
+	if err = SetLineChartSeries(lineChart, inputs); err != nil {
+		return
+	}
+	return lineChart, err
+}
+
+func SetLineChartSeries(lc *linechart.LineChart, inputs map[string]float64) error {
+	xLabels, yValues := processInputs(inputs)
+	return lc.Series(defaultSeriesLabel, yValues, linechart.SeriesXLabels(xLabels))
+}
+
+func processInputs(inputs map[string]float64) (xLabels map[int]string, yValues []float64) {
 	index := 0
 
-	xLabels := map[int]string{}
-	yValues := make([]float64, len(inputs))
+	xLabels = map[int]string{}
+	yValues = make([]float64, len(inputs))
 
 	// The iteration order of map is uncertain, so the keys must be sorted explicitly.
 	var names []string
@@ -54,14 +71,7 @@ func NewLineChart(inputs map[string]float64) (lineChart *linechart.LineChart, er
 		yValues[index] = inputs[name]
 		index++
 	}
-
-	if lineChart, err = linechart.New(linechart.YAxisAdaptive()); err != nil {
-		return
-	}
-
-	err = lineChart.Series("graph-linear", yValues, linechart.SeriesXLabels(xLabels))
-
-	return lineChart, err
+	return
 }
 
 // LineChartElements is the part that separated from layout,

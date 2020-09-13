@@ -245,6 +245,7 @@ func Display(ctx *cli.Context, metrics [][]*schema.SelectedRecord) error {
 	return err
 }
 
+// findMaxValue finds the maximum value in the array of `schema.SelectedRecord`.
 func findMaxValue(column []*schema.SelectedRecord) (int, error) {
 	var ret int
 

@@ -44,11 +44,19 @@ func NewHeatMapWidget(data schema.HeatMap) (hp *heatmap.HeatMap, err error) {
 		return hp, err
 	}
 
-	hpColumns := utils.HeatMapToMap(&data)
-	yLabels := utils.BucketsToStrings(data.Buckets)
+	SetData(hp, data)
+	return
+}
+
+func SetData(hp *heatmap.HeatMap, data schema.HeatMap) {
+	hpColumns, yLabels := processData(data)
 	hp.SetColumns(hpColumns)
 	hp.SetYLabels(yLabels)
+}
 
+func processData(data schema.HeatMap) (hpColumns map[string][]int64, yLabels []string) {
+	hpColumns = utils.HeatMapToMap(&data)
+	yLabels = utils.BucketsToStrings(data.Buckets)
 	return
 }
 

@@ -230,6 +230,8 @@ func Display(ctx *cli.Context, data *dashboard.GlobalData) error {
 	}
 	defer t.Close()
 
+	const redrawInterval = 5 * time.Second
+
 	c, err := container.New(
 		t,
 		container.Border(linestyle.Light),
@@ -287,7 +289,7 @@ func Display(ctx *cli.Context, data *dashboard.GlobalData) error {
 		go refresh(con, ctx, refreshInterval)
 	}
 
-	err = termdash.Run(con, t, c, termdash.KeyboardSubscriber(quitter), termdash.RedrawInterval(5*time.Second))
+	err = termdash.Run(con, t, c, termdash.KeyboardSubscriber(quitter), termdash.RedrawInterval(redrawInterval))
 
 	return err
 }
@@ -305,8 +307,8 @@ func longestString(strs []string) (ret string) {
 }
 
 // refresh updates the duration and query the new data to update all of widgets, once every delay.
-func refresh(con context.Context, ctx *cli.Context, delay time.Duration) {
-	ticker := time.NewTicker(delay)
+func refresh(con context.Context, ctx *cli.Context, interval time.Duration) {
+	ticker := time.NewTicker(interval)
 	defer ticker.Stop()
 
 	initStartStr = ctx.String("start")
@@ -327,7 +329,7 @@ func refresh(con context.Context, ctx *cli.Context, delay time.Duration) {
 	for {
 		select {
 		case <-ticker.C:
-			d, err := updateDuration(55 * time.Second)
+			d, err := updateDuration(interval * 8)
 			if err != nil {
 				continue
 			}
@@ -370,32 +372,24 @@ func updateDuration(interval time.Duration) (schema.Duration, error) {
 	}, nil
 }
 
+// updateAllWidgets will update all of widgets' data to be displayed.
 func updateAllWidgets(data *dashboard.GlobalData) error {
-	if err := updateMetricColumns(data.Metrics); err != nil {
-		return err
-	}
-	if err := updateLineCharts(data.ResponseLatency); err != nil {
-		return err
-	}
-	if err := updateHeatMap(data.HeatMap); err != nil {
-		return err
-	}
-	return nil
-}
-
-func updateMetricColumns(data [][]*schema.SelectedRecord) error {
-	for i, mcData := range data {
+	// Update gauges
+	for i, mcData := range data.Metrics {
 		if err := allWidgets.gauges[i].Update(mcData); err != nil {
 			return err
 		}
 	}
-	return nil
-}
 
-func updateLineCharts(data []map[string]float64) error {
-	return nil
-}
+	// Update line charts.
+	for i, inputs := range data.ResponseLatency {
+		if err := linear.SetLineChartSeries(allWidgets.linears[i], inputs); err != nil {
+			return err
+		}
+	}
 
-func updateHeatMap(data schema.HeatMap) error {
+	// Update the heat map.
+	heatmap.SetData(allWidgets.heatmap, data.HeatMap)
+
 	return nil
 }

@@ -49,7 +49,7 @@ var GlobalCommand = cli.Command{
 				Name:     "refresh",
 				Usage:    "the auto refreshing interval (s)",
 				Required: false,
-				Value:    2,
+				Value:    6,
 			},
 		},
 	),

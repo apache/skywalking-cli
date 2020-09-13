@@ -311,6 +311,7 @@ You can imitate the content of [the default template file](example/Dashboard.Glo
 | argument | description | default |
 | :--- | :--- | :--- |
 | `--template` | The template file to customize how to display information | `templates/Dashboard.Global.json` |
+| `--refresh` | The interval of auto-refresh (s) | `6` |
 | `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
 | `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
 
