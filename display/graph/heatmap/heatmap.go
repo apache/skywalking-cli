@@ -54,6 +54,7 @@ func SetData(hp *heatmap.HeatMap, data schema.HeatMap) {
 	hp.SetYLabels(yLabels)
 }
 
+// processData converts data into hpColumns and yValues for the heat map.
 func processData(data schema.HeatMap) (hpColumns map[string][]int64, yLabels []string) {
 	hpColumns = utils.HeatMapToMap(&data)
 	yLabels = utils.BucketsToStrings(data.Buckets)

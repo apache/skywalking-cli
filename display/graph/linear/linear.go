@@ -53,6 +53,7 @@ func SetLineChartSeries(lc *linechart.LineChart, inputs map[string]float64) erro
 	return lc.Series(defaultSeriesLabel, yValues, linechart.SeriesXLabels(xLabels))
 }
 
+// processInputs converts inputs into xLabels and yValues for line charts.
 func processInputs(inputs map[string]float64) (xLabels map[int]string, yValues []float64) {
 	index := 0
 
