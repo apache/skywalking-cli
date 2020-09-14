@@ -230,8 +230,6 @@ func Display(ctx *cli.Context, data *dashboard.GlobalData) error {
 	}
 	defer t.Close()
 
-	const redrawInterval = 5 * time.Second
-
 	c, err := container.New(
 		t,
 		container.Border(linestyle.Light),
@@ -289,7 +287,7 @@ func Display(ctx *cli.Context, data *dashboard.GlobalData) error {
 		go refresh(con, ctx, refreshInterval)
 	}
 
-	err = termdash.Run(con, t, c, termdash.KeyboardSubscriber(quitter), termdash.RedrawInterval(redrawInterval))
+	err = termdash.Run(con, t, c, termdash.KeyboardSubscriber(quitter), termdash.RedrawInterval(refreshInterval))
 
 	return err
 }
@@ -329,7 +327,7 @@ func refresh(con context.Context, ctx *cli.Context, interval time.Duration) {
 	for {
 		select {
 		case <-ticker.C:
-			d, err := updateDuration(interval * 8)
+			d, err := updateDuration(interval)
 			if err != nil {
 				continue
 			}
