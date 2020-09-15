@@ -28,6 +28,7 @@ import (
 
 	"github.com/apache/skywalking-cli/graphql/dashboard"
 	"github.com/apache/skywalking-cli/graphql/schema"
+	"github.com/apache/skywalking-cli/util"
 
 	"github.com/mum4k/termdash"
 	"github.com/mum4k/termdash/cell"
@@ -43,13 +44,38 @@ import (
 const RootID = "root"
 
 type MetricColumn struct {
-	title  *text.Text
-	gauges []*gauge.Gauge
+	title          *text.Text
+	gauges         []*gauge.Gauge
+	aggregationNum int
+}
+
+// Update updates the MetricColumn's `Absolute` and `BorderTitle`.
+func (mc *MetricColumn) Update(data []*schema.SelectedRecord) error {
+	for i, item := range data {
+		strValue := *(item.Value)
+		v, err := strconv.Atoi(strValue)
+		if err != nil {
+			return err
+		}
+
+		if mc.aggregationNum != 0 {
+			strValue = fmt.Sprintf("%.4f", float64(v)/float64(mc.aggregationNum))
+		}
+
+		maxValue, err := findMaxValue(data)
+		if err != nil {
+			return err
+		}
+
+		if err := mc.gauges[i].Absolute(v, maxValue, gauge.BorderTitle("["+strValue+"]")); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func NewMetricColumn(column []*schema.SelectedRecord, config *dashboard.MetricTemplate) (*MetricColumn, error) {
 	var ret MetricColumn
-	var maxValue int
 
 	t, err := text.New()
 	if err != nil {
@@ -60,18 +86,8 @@ func NewMetricColumn(column []*schema.SelectedRecord, config *dashboard.MetricTe
 	}
 	ret.title = t
 
-	if config.Condition.Order == schema.OrderDes {
-		temp, err := strconv.Atoi(*(column[0].Value))
-		if err != nil {
-			return nil, err
-		}
-		maxValue = temp
-	} else if config.Condition.Order == schema.OrderAsc {
-		temp, err := strconv.Atoi(*(column[len(column)-1].Value))
-		if err != nil {
-			return nil, err
-		}
-		maxValue = temp
+	if len(column) == 0 {
+		return nil, fmt.Errorf("the metrics data is empty, please check the GraphQL backend")
 	}
 
 	for _, item := range column {
@@ -87,6 +103,7 @@ func NewMetricColumn(column []*schema.SelectedRecord, config *dashboard.MetricTe
 				return nil, convErr
 			}
 			strValue = fmt.Sprintf("%.4f", float64(v)/float64(aggregationNum))
+			ret.aggregationNum = aggregationNum
 		}
 
 		g, err := gauge.New(
@@ -97,6 +114,11 @@ func NewMetricColumn(column []*schema.SelectedRecord, config *dashboard.MetricTe
 			gauge.HideTextProgress(),
 			gauge.TextLabel(item.Name),
 		)
+		if err != nil {
+			return nil, err
+		}
+
+		maxValue, err := findMaxValue(column)
 		if err != nil {
 			return nil, err
 		}
@@ -221,4 +243,19 @@ func Display(ctx *cli.Context, metrics [][]*schema.SelectedRecord) error {
 	err = termdash.Run(con, t, c, termdash.KeyboardSubscriber(quitter))
 
 	return err
+}
+
+// findMaxValue finds the maximum value in the array of `schema.SelectedRecord`.
+func findMaxValue(column []*schema.SelectedRecord) (int, error) {
+	var ret int
+
+	for _, c := range column {
+		v, err := strconv.Atoi(*(c.Value))
+		if err != nil {
+			return ret, err
+		}
+		ret = util.MaxInt(ret, v)
+	}
+
+	return ret, nil
 }

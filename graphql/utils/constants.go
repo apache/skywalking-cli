@@ -38,3 +38,16 @@ var StepDuration = map[schema.Step]time.Duration{
 	schema.StepHour:   time.Hour,
 	schema.StepDay:    time.Hour * 24,
 }
+
+type DurationType string
+
+const (
+	BothAbsent  DurationType = "BothAbsent"
+	BothPresent DurationType = "BothPresent"
+	StartAbsent DurationType = "StartAbsent"
+	EndAbsent   DurationType = "EndAbsent"
+)
+
+func (dt DurationType) String() string {
+	return string(dt)
+}
