@@ -45,6 +45,12 @@ var GlobalCommand = cli.Command{
 				Required: false,
 				Value:    dashboard.DefaultTemplatePath,
 			},
+			cli.IntFlag{
+				Name:     "refresh",
+				Usage:    "the auto refreshing interval (s)",
+				Required: false,
+				Value:    6,
+			},
 		},
 	),
 	Before: interceptor.BeforeChain([]cli.BeforeFunc{

@@ -45,4 +45,8 @@ var DurationFlags = []cli.Flag{
 			Selected: schema.StepMinute,
 		},
 	},
+	cli.StringFlag{
+		Name:  "durationType",
+		Usage: "the type of duration",
+	},
 }

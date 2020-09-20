@@ -106,6 +106,12 @@ func (hp *HeatMap) SetColumns(values map[string][]int64) {
 	}
 	sort.Strings(names)
 
+	// Clear XLabels and columns.
+	if len(hp.XLabels) > 0 {
+		hp.XLabels = hp.XLabels[:0]
+	}
+	hp.columns = make(map[string]*columnValues)
+
 	for _, name := range names {
 		cv := newColumnValues(values[name])
 		hp.columns[name] = cv
@@ -123,8 +129,14 @@ func (hp *HeatMap) SetYLabels(labels []string) {
 	hp.mu.Lock()
 	defer hp.mu.Unlock()
 
+	// Clear YLabels.
+	if len(hp.YLabels) > 0 {
+		hp.YLabels = hp.YLabels[:0]
+	}
+
 	hp.YLabels = append(hp.YLabels, labels...)
 
+	// Reverse the array.
 	for i, j := 0, len(hp.YLabels)-1; i < j; i, j = i+1, j-1 {
 		hp.YLabels[i], hp.YLabels[j] = hp.YLabels[j], hp.YLabels[i]
 	}
