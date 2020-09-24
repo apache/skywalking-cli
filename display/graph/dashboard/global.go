@@ -106,7 +106,7 @@ func setLayout(c *container.Container, lt layoutType) error {
 
 // newLayoutButtons returns buttons that dynamically switch the layouts.
 func newLayoutButtons(c *container.Container) ([]*button.Button, error) {
-	var buttons []*button.Button
+	buttons := make([]*button.Button, len(strToLayoutType))
 
 	opts := []button.Option{
 		button.WidthFor(longestString(template.Buttons.Texts)),
@@ -127,7 +127,8 @@ func newLayoutButtons(c *container.Container) ([]*button.Button, error) {
 		if err != nil {
 			return nil, err
 		}
-		buttons = append(buttons, b)
+
+		buttons[int(lt)] = b
 	}
 
 	return buttons, nil

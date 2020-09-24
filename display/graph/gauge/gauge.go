@@ -52,6 +52,11 @@ type MetricColumn struct {
 // Update updates the MetricColumn's `Absolute` and `BorderTitle`.
 func (mc *MetricColumn) Update(data []*schema.SelectedRecord) error {
 	for i, item := range data {
+		// The number of `SelectedRecord` data may exceed the number of gauges in a `MetricColumn`.
+		if i >= len(mc.gauges) {
+			break
+		}
+
 		strValue := *(item.Value)
 		v, err := strconv.Atoi(strValue)
 		if err != nil {
