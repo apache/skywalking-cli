@@ -25,7 +25,7 @@ import (
 
 // StepFormats is a mapping from schema.Step to its time format
 var StepFormats = map[schema.Step]string{
-	schema.StepSecond: "2006-01-02 150400",
+	schema.StepSecond: "2006-01-02 150405",
 	schema.StepMinute: "2006-01-02 1504",
 	schema.StepHour:   "2006-01-02 15",
 	schema.StepDay:    "2006-01-02",
@@ -37,4 +37,17 @@ var StepDuration = map[schema.Step]time.Duration{
 	schema.StepMinute: time.Minute,
 	schema.StepHour:   time.Hour,
 	schema.StepDay:    time.Hour * 24,
+}
+
+type DurationType string
+
+const (
+	BothAbsent  DurationType = "BothAbsent"
+	BothPresent DurationType = "BothPresent"
+	StartAbsent DurationType = "StartAbsent"
+	EndAbsent   DurationType = "EndAbsent"
+)
+
+func (dt DurationType) String() string {
+	return string(dt)
 }

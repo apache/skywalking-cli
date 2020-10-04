@@ -33,8 +33,9 @@ import (
 )
 
 const DefaultPageSize = 15
-const keymap = " Keymap "
-const cc = "<C-c>"
+const KeyMap = " Keymap "
+const Detail = " Detail "
+const Quit = "<C-c>"
 
 func DisplayList(ctx *cli.Context, displayable *d.Displayable) error {
 	data := displayable.Data.(schema.TraceBrief)
@@ -48,59 +49,73 @@ func DisplayList(ctx *cli.Context, displayable *d.Displayable) error {
 	list.TitleStyle.Fg = ui.ColorRed
 	list.TextStyle = ui.NewStyle(ui.ColorYellow)
 	list.WrapText = false
-
+	list.SelectedRowStyle = ui.Style{
+		Fg:       ui.ColorBlack,
+		Bg:       ui.ColorWhite,
+		Modifier: ui.ModifierBold,
+	}
 	tree := widgets.NewTree()
 	tree.TextStyle = ui.NewStyle(ui.ColorYellow)
 	tree.WrapText = false
 	tree.TitleStyle.Fg = ui.ColorRed
+	tree.SelectedRowStyle = ui.Style{
+		Fg:       ui.ColorBlack,
+		Bg:       ui.ColorWhite,
+		Modifier: ui.ModifierBold,
+	}
 
 	help := widgets.NewParagraph()
 	help.WrapText = false
-	help.Title = keymap
-	help.Text = `[k          ](fg:red,mod:bold) Scroll Up
-		[<Up>       ](fg:red,mod:bold) Scroll Up
-		[j          ](fg:red,mod:bold) Scroll Down
-		[<Down>     ](fg:red,mod:bold) Scroll Down
+	help.Title = KeyMap
+	help.Text = `[<Left>     ](fg:red,mod:bold) list activated
+		[<Right>    ](fg:red,mod:bold) tree activated
+		[K or <Up>  ](fg:red,mod:bold) list or tree Scroll Up
+		[j or <Down>](fg:red,mod:bold) list or tree Scroll Down
 		[<Ctr-b>    ](fg:red,mod:bold) list Page Up
-		[<Ctr-f>    ](fg:red,mod:bold) list Page Down           
+		[<Ctr-f>    ](fg:red,mod:bold) list Page Down
 		[p          ](fg:red,mod:bold) list Page Up
 		[n          ](fg:red,mod:bold) list Page Down
-		[<Ctr-u>    ](fg:red,mod:bold) Scroll Half Page Up
-		[<Ctr-d>    ](fg:red,mod:bold) Scroll Half Page Down
-		[<Home>     ](fg:red,mod:bold) Scroll to Top
-		[<Enter>    ](fg:red,mod:bold) Show Trace
-		[<End>      ](fg:red,mod:bold) Scroll to Bottom
-		[q          ](fg:red,mod:bold) Quit
-		[<Ctr-c>    ](fg:red,mod:bold) Quit
+		[<Home>     ](fg:red,mod:bold) list or tree Scroll to Top
+		[<End>      ](fg:red,mod:bold) list or tree Scroll to Bottom
+		[q or <Ctr-c>](fg:red,mod:bold) Quit
         `
-	draw(list, tree, help, data, 0, ctx, condition)
-	listenTracesKeyboard(list, tree, data, ctx, help, condition)
+	detail := widgets.NewParagraph()
+	detail.Title = Detail
+	detail.WrapText = false
+
+	draw(list, tree, detail, help, data, ctx, condition)
+	listenTracesKeyboard(list, tree, data, ctx, detail, help, condition)
 
 	return nil
 }
 
-func draw(list *widgets.List, tree *widgets.Tree, help *widgets.Paragraph, data schema.TraceBrief, showIndex int,
+func draw(list *widgets.List, tree *widgets.Tree, detail, help *widgets.Paragraph, data schema.TraceBrief,
 	ctx *cli.Context, condition *schema.TraceQueryCondition) {
 	x, y := ui.TerminalDimensions()
 
 	if data.Total != 0 {
+		showIndex := list.SelectedRow
 		var traceID = data.Traces[showIndex].TraceIds[0]
 		list.Title = fmt.Sprintf("[ %d/%d  %s]", *condition.Paging.PageNum, totalPages(data.Total), traceID)
 		nodes, serviceNames := getNodeData(ctx, traceID)
 		tree.Title = fmt.Sprintf("[%s]", strings.Join(serviceNames, "->"))
 		tree.SetNodes(nodes)
 		list.Rows = rows(data, x/4)
+		selected := extra[tree.SelectedNode()]
+		detail.Text = selected.Detail
 	} else {
 		noData := "no data"
 		list.Title = noData
 		tree.Title = noData
+		detail.Title = noData
 	}
 
 	list.SetRect(0, 0, x, y)
-	tree.SetRect(x/4, 0, x, y)
-	help.SetRect(x-x/7, 0, x, y)
+	tree.SetRect(x/5, 0, x, y)
+	detail.SetRect(x-x/5, 0, x, y/2)
+	help.SetRect(x-x/5, y/2, x, y)
 	tree.ExpandAll()
-	ui.Render(list, tree, help)
+	ui.Render(list, tree, detail, help)
 }
 func totalPages(total int) int {
 	if total%DefaultPageSize == 0 {
@@ -110,14 +125,14 @@ func totalPages(total int) int {
 }
 
 func listenTracesKeyboard(list *widgets.List, tree *widgets.Tree, data schema.TraceBrief, ctx *cli.Context,
-	help *widgets.Paragraph, condition *schema.TraceQueryCondition) {
+	detail, help *widgets.Paragraph, condition *schema.TraceQueryCondition) {
 	uiEvents := ui.PollEvents()
+	listActive := true
 	for {
-		showIndex := 0
 		e := <-uiEvents
 
 		switch e.ID {
-		case "q", cc:
+		case "q", Quit:
 			return
 		case "<C-b>", "p":
 			pageNum := *condition.Paging.PageNum
@@ -126,6 +141,7 @@ func listenTracesKeyboard(list *widgets.List, tree *widgets.Tree, data schema.Tr
 				condition.Paging.PageNum = &pageNum
 				data = trace.Traces(ctx, condition)
 			}
+			tree.SelectedRow = 0
 		case "<C-f>", "n":
 			pageNum := *condition.Paging.PageNum
 			if pageNum < totalPages(data.Total) {
@@ -133,30 +149,53 @@ func listenTracesKeyboard(list *widgets.List, tree *widgets.Tree, data schema.Tr
 				condition.Paging.PageNum = &pageNum
 				data = trace.Traces(ctx, condition)
 			}
+			tree.SelectedRow = 0
+		case "<Right>":
+			listActive = false
+		case "<Left>":
+			listActive = true
 		default:
-			if action := listActions(e.ID, list); action != nil {
+			if action := listActions(e.ID, list, tree, listActive); action != nil {
 				action()
 			}
-			showIndex = list.SelectedRow
 		}
-		draw(list, tree, help, data, showIndex, ctx, condition)
+
+		draw(list, tree, detail, help, data, ctx, condition)
 	}
 }
-func listActions(key string, list *widgets.List) func() {
-	// mostly vim style
-	actions := map[string]func(){
-		"k":      list.ScrollUp,
-		"<Up>":   list.ScrollUp,
-		"j":      list.ScrollDown,
-		"<Down>": list.ScrollDown,
-		"<C-u>":  list.ScrollHalfPageUp,
-		"<C-d>":  list.ScrollHalfPageDown,
-		"<Home>": list.ScrollTop,
-		"G":      list.ScrollBottom,
-		"<End>":  list.ScrollBottom,
+
+func listActions(key string, list *widgets.List, tree *widgets.Tree, listActive bool) func() {
+	var f func()
+	switch key {
+	case "k", "<Up>":
+		if listActive {
+			f = list.ScrollUp
+			tree.SelectedRow = 0
+		} else {
+			f = tree.ScrollUp
+		}
+	case "j", "<Down>":
+		if listActive {
+			tree.SelectedRow = 0
+			f = list.ScrollDown
+		} else {
+			f = tree.ScrollDown
+		}
+	case "<Home>":
+		if listActive {
+			f = list.ScrollTop
+		} else {
+			f = tree.ScrollTop
+		}
+	case "<End>":
+		if listActive {
+			f = list.ScrollBottom
+		} else {
+			f = tree.ScrollBottom
+		}
 	}
 
-	return actions[key]
+	return f
 }
 
 func getNodeData(ctx *cli.Context, traceID string) (nodes []*widgets.TreeNode, serviceNames []string) {

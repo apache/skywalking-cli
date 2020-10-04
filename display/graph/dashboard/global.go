@@ -22,9 +22,12 @@ import (
 	"fmt"
 	"math"
 	"strings"
+	"time"
 
+	"github.com/apache/skywalking-cli/commands/interceptor"
+	"github.com/apache/skywalking-cli/graphql/schema"
 	"github.com/apache/skywalking-cli/graphql/utils"
-	"github.com/apache/skywalking-cli/lib/heatmap"
+	lib "github.com/apache/skywalking-cli/lib/heatmap"
 
 	"github.com/mattn/go-runewidth"
 	"github.com/mum4k/termdash"
@@ -35,6 +38,7 @@ import (
 	"github.com/urfave/cli"
 
 	"github.com/apache/skywalking-cli/display/graph/gauge"
+	"github.com/apache/skywalking-cli/display/graph/heatmap"
 	"github.com/apache/skywalking-cli/display/graph/linear"
 	"github.com/apache/skywalking-cli/graphql/dashboard"
 
@@ -71,7 +75,7 @@ var strToLayoutType = map[string]layoutType{
 type widgets struct {
 	gauges  []*gauge.MetricColumn
 	linears []*linechart.LineChart
-	heatmap *heatmap.HeatMap
+	heatmap *lib.HeatMap
 
 	// buttons are used to change the layout.
 	buttons []*button.Button
@@ -80,9 +84,20 @@ type widgets struct {
 // linearTitles are titles of each line chart, load from the template file.
 var linearTitles []string
 
+// template determines how the global dashboard is displayed.
+var template *dashboard.GlobalTemplate
+
+var allWidgets *widgets
+
+var initStartStr string
+var initEndStr string
+
+var curStartTime time.Time
+var curEndTime time.Time
+
 // setLayout sets the specified layout.
-func setLayout(c *container.Container, w *widgets, lt layoutType) error {
-	gridOpts, err := gridLayout(w, lt)
+func setLayout(c *container.Container, lt layoutType) error {
+	gridOpts, err := gridLayout(lt)
 	if err != nil {
 		return err
 	}
@@ -90,16 +105,16 @@ func setLayout(c *container.Container, w *widgets, lt layoutType) error {
 }
 
 // newLayoutButtons returns buttons that dynamically switch the layouts.
-func newLayoutButtons(c *container.Container, w *widgets, template *dashboard.ButtonTemplate) ([]*button.Button, error) {
-	var buttons []*button.Button
+func newLayoutButtons(c *container.Container) ([]*button.Button, error) {
+	buttons := make([]*button.Button, len(strToLayoutType))
 
 	opts := []button.Option{
-		button.WidthFor(longestString(template.Texts)),
-		button.FillColor(cell.ColorNumber(template.ColorNum)),
-		button.Height(template.Height),
+		button.WidthFor(longestString(template.Buttons.Texts)),
+		button.FillColor(cell.ColorNumber(template.Buttons.ColorNum)),
+		button.Height(template.Buttons.Height),
 	}
 
-	for _, text := range template.Texts {
+	for _, text := range template.Buttons.Texts {
 		// declare a local variable lt to avoid closure.
 		lt, ok := strToLayoutType[text]
 		if !ok {
@@ -107,25 +122,26 @@ func newLayoutButtons(c *container.Container, w *widgets, template *dashboard.Bu
 		}
 
 		b, err := button.New(text, func() error {
-			return setLayout(c, w, lt)
+			return setLayout(c, lt)
 		}, opts...)
 		if err != nil {
 			return nil, err
 		}
-		buttons = append(buttons, b)
+
+		buttons[int(lt)] = b
 	}
 
 	return buttons, nil
 }
 
 // gridLayout prepares container options that represent the desired screen layout.
-func gridLayout(w *widgets, lt layoutType) ([]container.Option, error) {
+func gridLayout(lt layoutType) ([]container.Option, error) {
 	const buttonRowHeight = 15
 
-	buttonColWidthPerc := 100 / len(w.buttons)
+	buttonColWidthPerc := 100 / len(allWidgets.buttons)
 	var buttonCols []grid.Element
 
-	for _, b := range w.buttons {
+	for _, b := range allWidgets.buttons {
 		buttonCols = append(buttonCols, grid.ColWidthPerc(buttonColWidthPerc, grid.Widget(b)))
 	}
 
@@ -136,11 +152,11 @@ func gridLayout(w *widgets, lt layoutType) ([]container.Option, error) {
 	switch lt {
 	case layoutMetrics:
 		rows = append(rows,
-			grid.RowHeightPerc(70, gauge.MetricColumnsElement(w.gauges)...),
+			grid.RowHeightPerc(70, gauge.MetricColumnsElement(allWidgets.gauges)...),
 		)
 
 	case layoutLineChart:
-		lcElements := linear.LineChartElements(w.linears, linearTitles)
+		lcElements := linear.LineChartElements(allWidgets.linears, linearTitles)
 		percentage := int(math.Min(99, float64((100-buttonRowHeight)/len(lcElements))))
 
 		for _, e := range lcElements {
@@ -156,7 +172,7 @@ func gridLayout(w *widgets, lt layoutType) ([]container.Option, error) {
 			grid.RowHeightPerc(
 				99-buttonRowHeight,
 				grid.ColWidthPerc((99-heatmapColWidth)/2), // Use two empty cols to center the heatmap.
-				grid.ColWidthPerc(heatmapColWidth, grid.Widget(w.heatmap)),
+				grid.ColWidthPerc(heatmapColWidth, grid.Widget(allWidgets.heatmap)),
 				grid.ColWidthPerc((99-heatmapColWidth)/2),
 			),
 		)
@@ -174,7 +190,7 @@ func gridLayout(w *widgets, lt layoutType) ([]container.Option, error) {
 }
 
 // newWidgets creates all widgets used by the dashboard.
-func newWidgets(data *dashboard.GlobalData, template *dashboard.GlobalTemplate) (*widgets, error) {
+func newWidgets(data *dashboard.GlobalData) error {
 	var columns []*gauge.MetricColumn
 	var linears []*linechart.LineChart
 
@@ -182,7 +198,7 @@ func newWidgets(data *dashboard.GlobalData, template *dashboard.GlobalTemplate) 
 	for i, t := range template.Metrics {
 		col, err := gauge.NewMetricColumn(data.Metrics[i], &t)
 		if err != nil {
-			return nil, err
+			return err
 		}
 		columns = append(columns, col)
 	}
@@ -191,26 +207,21 @@ func newWidgets(data *dashboard.GlobalData, template *dashboard.GlobalTemplate) 
 	for _, input := range data.ResponseLatency {
 		l, err := linear.NewLineChart(input)
 		if err != nil {
-			return nil, err
+			return err
 		}
 		linears = append(linears, l)
 	}
 
 	// Create a heat map.
-	hp, err := heatmap.NewHeatMap()
+	hp, err := heatmap.NewHeatMapWidget(data.HeatMap)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	hpColumns := utils.HeatMapToMap(&data.HeatMap)
-	yLabels := utils.BucketsToStrings(data.HeatMap.Buckets)
-	hp.SetColumns(hpColumns)
-	hp.SetYLabels(yLabels)
 
-	return &widgets{
-		gauges:  columns,
-		linears: linears,
-		heatmap: hp,
-	}, nil
+	allWidgets.gauges = columns
+	allWidgets.linears = linears
+	allWidgets.heatmap = hp
+	return nil
 }
 
 func Display(ctx *cli.Context, data *dashboard.GlobalData) error {
@@ -229,23 +240,31 @@ func Display(ctx *cli.Context, data *dashboard.GlobalData) error {
 		return err
 	}
 
-	template, err := dashboard.LoadTemplate(ctx.String("template"))
+	te, err := dashboard.LoadTemplate(ctx.String("template"))
 	if err != nil {
 		return err
 	}
+	template = te
 	linearTitles = strings.Split(template.ResponseLatency.Labels, ", ")
 
-	w, err := newWidgets(data, template)
-	if err != nil {
-		panic(err)
+	// Initialization
+	allWidgets = &widgets{
+		gauges:  nil,
+		linears: nil,
+		heatmap: nil,
+		buttons: nil,
 	}
-	lb, err := newLayoutButtons(c, w, &template.Buttons)
+	err = newWidgets(data)
 	if err != nil {
 		return err
 	}
-	w.buttons = lb
+	lb, err := newLayoutButtons(c)
+	if err != nil {
+		return err
+	}
+	allWidgets.buttons = lb
 
-	gridOpts, err := gridLayout(w, layoutMetrics)
+	gridOpts, err := gridLayout(layoutMetrics)
 	if err != nil {
 		return err
 	}
@@ -261,7 +280,15 @@ func Display(ctx *cli.Context, data *dashboard.GlobalData) error {
 		}
 	}
 
-	err = termdash.Run(con, t, c, termdash.KeyboardSubscriber(quitter))
+	refreshInterval := time.Duration(ctx.Int("refresh")) * time.Second
+	dt := utils.DurationType(ctx.String("durationType"))
+
+	// Only when users use the relative time, the duration will be adjusted to refresh.
+	if dt != utils.BothPresent {
+		go refresh(con, ctx, refreshInterval)
+	}
+
+	err = termdash.Run(con, t, c, termdash.KeyboardSubscriber(quitter), termdash.RedrawInterval(refreshInterval))
 
 	return err
 }
@@ -276,4 +303,92 @@ func longestString(strs []string) (ret string) {
 		}
 	}
 	return
+}
+
+// refresh updates the duration and query the new data to update all of widgets, once every delay.
+func refresh(con context.Context, ctx *cli.Context, interval time.Duration) {
+	ticker := time.NewTicker(interval)
+	defer ticker.Stop()
+
+	initStartStr = ctx.String("start")
+	initEndStr = ctx.String("end")
+
+	_, start, err := interceptor.TryParseTime(initStartStr)
+	if err != nil {
+		return
+	}
+	_, end, err := interceptor.TryParseTime(initEndStr)
+	if err != nil {
+		return
+	}
+
+	curStartTime = start
+	curEndTime = end
+
+	for {
+		select {
+		case <-ticker.C:
+			d, err := updateDuration(interval)
+			if err != nil {
+				continue
+			}
+
+			data := dashboard.Global(ctx, d)
+			if err := updateAllWidgets(data); err != nil {
+				continue
+			}
+		case <-con.Done():
+			return
+		}
+	}
+}
+
+// updateDuration will check if the duration changes after adding the interval.
+// If the duration doesn't change, an error will be returned, and the dashboard will not refresh.
+// Otherwise, a new duration will be returned, which is used to get the latest global data.
+func updateDuration(interval time.Duration) (schema.Duration, error) {
+	step, _, err := interceptor.TryParseTime(initStartStr)
+	if err != nil {
+		return schema.Duration{}, err
+	}
+
+	curStartTime = curStartTime.Add(interval)
+	curEndTime = curEndTime.Add(interval)
+
+	curStartStr := curStartTime.Format(utils.StepFormats[step])
+	curEndStr := curEndTime.Format(utils.StepFormats[step])
+
+	if curStartStr == initStartStr && curEndStr == initEndStr {
+		return schema.Duration{}, fmt.Errorf("the duration does not update")
+	}
+
+	initStartStr = curStartStr
+	initEndStr = curEndStr
+	return schema.Duration{
+		Start: curStartStr,
+		End:   curEndStr,
+		Step:  step,
+	}, nil
+}
+
+// updateAllWidgets will update all of widgets' data to be displayed.
+func updateAllWidgets(data *dashboard.GlobalData) error {
+	// Update gauges
+	for i, mcData := range data.Metrics {
+		if err := allWidgets.gauges[i].Update(mcData); err != nil {
+			return err
+		}
+	}
+
+	// Update line charts.
+	for i, inputs := range data.ResponseLatency {
+		if err := linear.SetLineChartSeries(allWidgets.linears[i], inputs); err != nil {
+			return err
+		}
+	}
+
+	// Update the heat map.
+	heatmap.SetData(allWidgets.heatmap, data.HeatMap)
+
+	return nil
 }

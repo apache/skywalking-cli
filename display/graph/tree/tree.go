@@ -72,14 +72,14 @@ func Display(roots []*Node, serviceNames []string) error {
 	tree.SetRect(0, 0, x, y)
 
 	detail := widgets.NewParagraph()
-	detail.Title = " Detail "
+	detail.Title = Detail
 	detail.WrapText = false
 	detail.SetRect(x, 0, x, y)
 
 	help := widgets.NewParagraph()
 	help.WrapText = false
 	help.SetRect(x, 0, x, y)
-	help.Title = keymap
+	help.Title = KeyMap
 	help.Text = `
 		[?          ](fg:red,mod:bold) Toggle this help
 		[k          ](fg:red,mod:bold) Scroll Up
@@ -165,7 +165,7 @@ func listenKeyboard(tree *widgets.Tree, detail, help *widgets.Paragraph) {
 		e := <-uiEvents
 
 		switch e.ID {
-		case "q", cc:
+		case "q", Quit:
 			return
 		case "g":
 			if previousKey == "g" {

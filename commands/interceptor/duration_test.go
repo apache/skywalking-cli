@@ -82,7 +82,7 @@ func TestParseDuration(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gotStartTime, gotEndTime, gotStep := ParseDuration(tt.args.start, tt.args.end, "")
+			gotStartTime, gotEndTime, gotStep, _ := ParseDuration(tt.args.start, tt.args.end, "")
 			current := gotStartTime.Truncate(time.Minute).Format(timeFormat)
 			spec := tt.wantedStartTime.Truncate(time.Minute).Format(timeFormat)
 			if !reflect.DeepEqual(current, spec) {

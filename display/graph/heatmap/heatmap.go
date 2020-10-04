@@ -18,97 +18,108 @@
 package heatmap
 
 import (
+	"context"
 	"fmt"
-	"math"
-	"time"
+	"strings"
 
-	"github.com/apache/skywalking-cli/graphql/utils"
-	"github.com/apache/skywalking-cli/util"
-
-	ui "github.com/gizak/termui/v3"
+	"github.com/mum4k/termdash"
+	"github.com/mum4k/termdash/container"
+	"github.com/mum4k/termdash/container/grid"
+	"github.com/mum4k/termdash/linestyle"
+	"github.com/mum4k/termdash/terminal/termbox"
+	"github.com/mum4k/termdash/terminal/terminalapi"
+	"github.com/mum4k/termdash/widgetapi"
 
 	d "github.com/apache/skywalking-cli/display/displayable"
 	"github.com/apache/skywalking-cli/graphql/schema"
-	"github.com/apache/skywalking-cli/lib"
+	"github.com/apache/skywalking-cli/graphql/utils"
+	"github.com/apache/skywalking-cli/lib/heatmap"
 )
 
-func Display(displayable *d.Displayable) error {
-	data := displayable.Data.(schema.Thermodynamic)
+const rootID = "root"
 
-	nodes := data.Nodes
-	duration := displayable.Duration
-
-	rows, cols, min, max := statistics(nodes)
-
-	if err := ui.Init(); err != nil {
-		return err
-	}
-	defer ui.Close()
-
-	termW, _ := ui.TerminalDimensions()
-
-	hm := lib.NewHeatMap()
-	hm.Title = fmt.Sprintf(" %s ", displayable.Title)
-	hm.XLabels = make([]string, rows)
-	hm.YLabels = make([]string, cols)
-	for i := 0; i < rows; i++ {
-		step := utils.StepDuration[duration.Step]
-		format := utils.StepFormats[duration.Step]
-		startTime, err := time.Parse(format, duration.Start)
-
-		if err != nil {
-			return err
-		}
-
-		hm.XLabels[i] = startTime.Add(time.Duration(i) * step).Format("15:04")
-	}
-	for i := 0; i < cols; i++ {
-		hm.YLabels[i] = fmt.Sprintf("%4d", i*data.AxisYStep)
+func NewHeatMapWidget(data schema.HeatMap) (hp *heatmap.HeatMap, err error) {
+	hp, err = heatmap.NewHeatMap()
+	if err != nil {
+		return hp, err
 	}
 
-	hm.Data = make([][]float64, rows)
-	hm.CellColors = make([][]ui.Color, rows)
-	hm.NumStyles = make([][]ui.Style, rows)
-	for row := 0; row < rows; row++ {
-		hm.Data[row] = make([]float64, cols)
-		hm.CellColors[row] = make([]ui.Color, cols)
-		hm.NumStyles[row] = make([]ui.Style, cols)
-	}
-
-	scale := max - min
-	for _, node := range nodes {
-		color := ui.Color(255 - (float64(*node[2])/scale)*23)
-		hm.Data[*node[0]][*node[1]] = float64(*node[2])
-		hm.CellColors[*node[0]][*node[1]] = color
-		hm.NumStyles[*node[0]][*node[1]] = ui.Style{Fg: ui.ColorMagenta}
-	}
-
-	hm.Formatter = nil
-	hm.XLabelStyles = []ui.Style{{Fg: ui.ColorWhite}}
-	hm.CellGap = 0
-	hm.CellWidth = int(float64(termW) / float64(rows))
-	realWidth := (hm.CellWidth+hm.CellGap)*(rows+1) - hm.CellGap + 5
-	hm.SetRect(int(float64(termW-realWidth)/2), 2, realWidth, cols+5)
-
-	ui.Render(hm)
-
-	events := ui.PollEvents()
-	for e := <-events; e.ID != "q" && e.ID != "<C-c>"; e = <-events {
-	}
-	return nil
+	SetData(hp, data)
+	return
 }
 
-func statistics(nodes [][]*int) (rows, cols int, min, max float64) {
-	min = math.MaxFloat64
+func SetData(hp *heatmap.HeatMap, data schema.HeatMap) {
+	hpColumns, yLabels := processData(data)
+	hp.SetColumns(hpColumns)
+	hp.SetYLabels(yLabels)
+}
 
-	for _, node := range nodes {
-		rows = util.MaxInt(rows, *node[0])
-		cols = util.MaxInt(cols, *node[1])
-		max = math.Max(max, float64(*node[2]))
-		min = math.Min(min, float64(*node[2]))
+// processData converts data into hpColumns and yValues for the heat map.
+func processData(data schema.HeatMap) (hpColumns map[string][]int64, yLabels []string) {
+	hpColumns = utils.HeatMapToMap(&data)
+	yLabels = utils.BucketsToStrings(data.Buckets)
+	return
+}
+
+// layout controls where and how the heat map widget is placed.
+// Here uses the grid layout to center the widget horizontally and vertically.
+func layout(hp widgetapi.Widget) ([]container.Option, error) {
+	const hpColWidthPerc = 85
+	const hpRowHeightPerc = 80
+
+	builder := grid.New()
+	builder.Add(
+		grid.ColWidthPerc((99-hpColWidthPerc)/2), // Use two empty cols to center the heatmap.
+		grid.ColWidthPerc(hpColWidthPerc,
+			grid.RowHeightPerc((99-hpRowHeightPerc)/2), // Use two empty rows to center the heatmap.
+			grid.RowHeightPerc(hpRowHeightPerc, grid.Widget(hp)),
+			grid.RowHeightPerc((99-hpRowHeightPerc)/2),
+		),
+		grid.ColWidthPerc((99-hpColWidthPerc)/2),
+	)
+	return builder.Build()
+}
+
+func Display(displayable *d.Displayable) error {
+	t, err := termbox.New(termbox.ColorMode(terminalapi.ColorMode256))
+	if err != nil {
+		return err
+	}
+	defer t.Close()
+
+	title := fmt.Sprintf("[%s]-PRESS Q TO QUIT", displayable.Title)
+	c, err := container.New(
+		t,
+		container.Border(linestyle.Light),
+		container.BorderTitle(title),
+		container.ID(rootID))
+	if err != nil {
+		return err
 	}
 
-	rows++
-	cols++
-	return
+	data := displayable.Data.(schema.HeatMap)
+	hp, err := NewHeatMapWidget(data)
+	if err != nil {
+		return err
+	}
+
+	gridOpts, err := layout(hp)
+	if err != nil {
+		return fmt.Errorf("builder.Build => %v", err)
+	}
+
+	if e := c.Update(rootID, gridOpts...); e != nil {
+		return e
+	}
+
+	con, cancel := context.WithCancel(context.Background())
+	quitter := func(keyboard *terminalapi.Keyboard) {
+		if strings.EqualFold(keyboard.Key.String(), "q") {
+			cancel()
+		}
+	}
+
+	err = termdash.Run(con, t, c, termdash.KeyboardSubscriber(quitter))
+
+	return err
 }

@@ -15,38 +15,38 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package flags
+package model
 
 import (
-	"github.com/urfave/cli"
+	"fmt"
+	"strings"
 
-	"github.com/apache/skywalking-cli/commands/model"
 	"github.com/apache/skywalking-cli/graphql/schema"
 )
 
-// DurationFlags are common flags that involves a duration, composed
-// by a start time, an end time, and a step, which is commonly used
-// in most of the commands
-var DurationFlags = []cli.Flag{
-	cli.StringFlag{
-		Name:  "start",
-		Usage: "query start `TIME`",
-	},
-	cli.StringFlag{
-		Name:  "end",
-		Usage: "query end `TIME`",
-	},
-	cli.GenericFlag{
-		Name:   "step",
-		Hidden: true,
-		Value: &model.StepEnumValue{
-			Enum:     schema.AllStep,
-			Default:  schema.StepMinute,
-			Selected: schema.StepMinute,
-		},
-	},
-	cli.StringFlag{
-		Name:  "durationType",
-		Usage: "the type of duration",
-	},
+// ScopeEnumValue defines the values domain of --scope option
+type ScopeEnumValue struct {
+	Enum     []schema.Scope
+	Default  schema.Scope
+	Selected schema.Scope
+}
+
+// Set the --scope value, from raw string to ScopeEnumValue
+func (s *ScopeEnumValue) Set(value string) error {
+	for _, enum := range s.Enum {
+		if strings.EqualFold(enum.String(), value) {
+			s.Selected = enum
+			return nil
+		}
+	}
+	scopes := make([]string, len(schema.AllScope))
+	for i, scope := range schema.AllScope {
+		scopes[i] = scope.String()
+	}
+	return fmt.Errorf("allowed scopes are %s", strings.Join(scopes, ", "))
+}
+
+// String representation of the scope
+func (s ScopeEnumValue) String() string {
+	return s.Selected.String()
 }
