@@ -622,6 +622,16 @@ $ ./bin/swctl --display graph db g
 
 <details>
 
+<summary>Display the global dashboard with a customized template</summary>
+
+```shell
+$ ./bin/swctl --display graph db g --template my-global-template.yml
+```
+
+</details>
+
+<details>
+
 <summary>Automatically convert to server side timezone</summary>
 
 if your backend nodes are deployed in docker and the timezone is UTC, you may not want to convert your timezone to UTC every time you type a command, `--timezone` comes to your rescue.
