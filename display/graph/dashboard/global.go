@@ -118,7 +118,7 @@ func newLayoutButtons(c *container.Container) ([]*button.Button, error) {
 		// declare a local variable lt to avoid closure.
 		lt, ok := strToLayoutType[text]
 		if !ok {
-			return nil, fmt.Errorf("the %s is not supposed to be the button's text", text)
+			return nil, fmt.Errorf("the '%s' is not supposed to be the button's text", text)
 		}
 
 		b, err := button.New(text, func() error {

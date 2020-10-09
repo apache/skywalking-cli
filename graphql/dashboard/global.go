@@ -18,13 +18,12 @@
 package dashboard
 
 import (
-	"encoding/json"
-	"io/ioutil"
-	"os"
+	"bytes"
 	"strconv"
 	"strings"
 
 	"github.com/machinebox/graphql"
+	"github.com/spf13/viper"
 	"github.com/urfave/cli"
 
 	"github.com/apache/skywalking-cli/assets"
@@ -32,34 +31,36 @@ import (
 	"github.com/apache/skywalking-cli/graphql/schema"
 	"github.com/apache/skywalking-cli/graphql/utils"
 	"github.com/apache/skywalking-cli/logger"
+
+	"gopkg.in/yaml.v2"
 )
 
 type ButtonTemplate struct {
-	Texts    []string `json:"texts"`
-	ColorNum int      `json:"colorNumber"`
-	Height   int      `json:"height"`
+	Texts    []string `mapstructure:"texts"`
+	ColorNum int      `mapstructure:"colorNumber"`
+	Height   int      `mapstructure:"height"`
 }
 
 type MetricTemplate struct {
-	Condition      schema.TopNCondition `json:"condition"`
-	Title          string               `json:"title"`
-	Aggregation    string               `json:"aggregation"`
-	AggregationNum string               `json:"aggregationNum"`
+	Condition      schema.TopNCondition `mapstructure:"condition"`
+	Title          string               `mapstructure:"title"`
+	Aggregation    string               `mapstructure:"aggregation"`
+	AggregationNum string               `mapstructure:"aggregationNum"`
 }
 
 type ChartTemplate struct {
-	Condition   schema.MetricsCondition `json:"condition"`
-	Title       string                  `json:"title"`
-	Unit        string                  `json:"unit"`
-	Labels      string                  `json:"labels"`
-	LabelsIndex string                  `json:"labelsIndex"`
+	Condition   schema.MetricsCondition `mapstructure:"condition"`
+	Title       string                  `mapstructure:"title"`
+	Unit        string                  `mapstructure:"unit"`
+	Labels      string                  `mapstructure:"labels"`
+	LabelsIndex string                  `mapstructure:"labelsIndex"`
 }
 
 type GlobalTemplate struct {
-	Buttons         ButtonTemplate   `json:"buttons"`
-	Metrics         []MetricTemplate `json:"metrics"`
-	ResponseLatency ChartTemplate    `json:"responseLatency"`
-	HeatMap         ChartTemplate    `json:"heatMap"`
+	Buttons         ButtonTemplate   `mapstructure:"buttons"`
+	Metrics         []MetricTemplate `mapstructure:"metrics"`
+	ResponseLatency ChartTemplate    `mapstructure:"responseLatency"`
+	HeatMap         ChartTemplate    `mapstructure:"heatMap"`
 }
 
 type GlobalData struct {
@@ -71,7 +72,8 @@ type GlobalData struct {
 // Use singleton pattern to make sure to load template only once.
 var globalTemplate *GlobalTemplate
 
-const DefaultTemplatePath = "templates/Dashboard.Global.json"
+const templateType = "yml"
+const DefaultTemplatePath = "templates/dashboard/global.yml"
 
 // newGlobalTemplate create a new GlobalTemplate and set default values for buttons' template.
 func newGlobalTemplate() GlobalTemplate {
@@ -89,51 +91,52 @@ func LoadTemplate(filename string) (*GlobalTemplate, error) {
 		return globalTemplate, nil
 	}
 
-	t := newGlobalTemplate()
 	var byteValue []byte
+	gt := newGlobalTemplate()
+	viper.SetConfigType(templateType)
 
 	if filename == DefaultTemplatePath {
-		jsonFile := assets.Read(filename)
-		byteValue = []byte(jsonFile)
-	} else {
-		jsonFile, err := os.Open(filename)
-		if err != nil {
+		byteValue = []byte(assets.Read(filename))
+		if err := viper.ReadConfig(bytes.NewReader(byteValue)); err != nil {
 			return nil, err
 		}
-		defer jsonFile.Close()
-
-		byteValue, err = ioutil.ReadAll(jsonFile)
-		if err != nil {
+	} else {
+		viper.SetConfigFile(filename)
+		if err := viper.ReadInConfig(); err != nil {
 			return nil, err
 		}
 	}
 
-	if err := json.Unmarshal(byteValue, &t); err != nil {
+	if err := viper.Unmarshal(&gt); err != nil {
 		return nil, err
 	}
-	t.Buttons.Texts = getButtonTexts(byteValue)
 
-	globalTemplate = &t
+	texts, err := getButtonTexts(byteValue)
+	if err != nil {
+		return nil, err
+	}
+	gt.Buttons.Texts = texts
+
+	globalTemplate = &gt
 	return globalTemplate, nil
 }
 
 // getButtonTexts get keys in the template file,
 // which will be set as texts of buttons in the dashboard.
-func getButtonTexts(byteValue []byte) []string {
+func getButtonTexts(byteValue []byte) ([]string, error) {
 	var ret []string
 
-	c := make(map[string]json.RawMessage)
-	err := json.Unmarshal(byteValue, &c)
-	if err != nil {
-		return nil
+	c := make(map[string]interface{})
+	if err := yaml.Unmarshal(byteValue, &c); err != nil {
+		return nil, err
 	}
 
 	for s := range c {
-		if s != "buttons" {
+		if s != "style" {
 			ret = append(ret, strings.Title(s))
 		}
 	}
-	return ret
+	return ret, nil
 }
 
 func Metrics(ctx *cli.Context, duration schema.Duration) [][]*schema.SelectedRecord {
