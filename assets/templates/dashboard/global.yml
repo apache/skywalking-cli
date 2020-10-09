@@ -27,66 +27,66 @@ style:
   titleColor: 9
   gaugeColor: 13
 
-items:
-  # The global metrics, there are four kinds of metrics displaying by default.
-  # Each metric will occupy one column to display.
-  # Similarly, you can delete or comment corresponding whole configuration to change the metrics to be displayed.
-  - metrics:
-      - condition:
-          name: "service_cpm"
-          normal: true
-          scope: "Service"
-          # You can modify `topN` to change the amount of results to be displayed, the same below.
-          topN: 10
-          # You can modify `order` to `ASC` to display the results in ascending order, the same below.
-          order: "DES"
-        title: " Service Load (calls/min) "
+# The global metrics, there are four kinds of metrics displaying by default.
+# Each metric will occupy one column to display.
+# Similarly, you can delete or comment corresponding whole configuration to change the metrics to be displayed.
+metrics:
+  - condition:
+      name: "service_cpm"
+      normal: true
+      scope: "Service"
+      # You can modify `topN` to change the amount of results to be displayed, the same below.
+      topN: 10
+      # You can modify `order` to `ASC` to display the results in ascending order, the same below.
+      order: "DES"
+    title: " Service Load (calls/min) "
 
-      - condition:
-          name: "service_resp_time"
-          normal: true
-          scope: "Service"
-          topN: 10
-          order: "DES"
-        title: "    Slow Services (ms)    "
+  - condition:
+      name: "service_resp_time"
+      normal: true
+      scope: "Service"
+      topN: 10
+      order: "DES"
+    title: "    Slow Services (ms)    "
 
-      - condition:
-          name: "service_apdex"
-          normal: true
-          scope: "Service"
-          topN: 10
-          order: "ASC"
-        title: "Un-Health Services (Apdex)"
-        # The returned apdex data is integer, need to be converted into a number between 0 and 1.
-        aggregation: "/"
-        aggregationNum: 10000
+  - condition:
+      name: "service_apdex"
+      normal: true
+      scope: "Service"
+      topN: 10
+      order: "ASC"
+    title: "Un-Health Services (Apdex)"
+    # The returned apdex data is integer, like '3115',
+    # need to be converted into a number between 0 and 1.
+    aggregation: "/"
+    aggregationNum: 10000
 
-      - condition:
-          name: "endpoint_avg"
-          normal: true
-          scope: "Endpoint"
-          topN: 10
-          order: "DES"
-        title: "    Slow Endpoints (ms)   "
+  - condition:
+      name: "endpoint_avg"
+      normal: true
+      scope: "Endpoint"
+      topN: 10
+      order: "DES"
+    title: "    Slow Endpoints (ms)   "
 
-  # Global response latency.
-  - responseLatency:
-      condition:
-        name: "all_percentile"
-        entity:
-          scope: "All"
-          normal: true
-      labels: "P50, P75, P90, P95, P99"
-      labelsIndex: "0, 1, 2, 3, 4"
-      title: "Global Response Latency"
-      unit: "percentile in ms"
+# Global response latency.
+responseLatency:
+  condition:
+    name: "all_percentile"
+    entity:
+      scope: "All"
+      normal: true
+  labels: "P50, P75, P90, P95, P99"
+  labelsIndex: "0, 1, 2, 3, 4"
+  title: "Global Response Latency"
+  unit: "percentile in ms"
 
-  # Global heat map.
-  - heatMap:
-      condition:
-        name: "all_heatmap"
-        entity:
-          scope: "All"
-          normal: true
-      title: "Global Heatmap"
-      unit: "ms"
+# Global heat map.
+heatMap:
+  condition:
+    name: "all_heatmap"
+    entity:
+      scope: "All"
+      normal: true
+  title: "Global Heatmap"
+  unit: "ms"

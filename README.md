@@ -296,7 +296,7 @@ Ascii Graph, like coloring in terminal, so please use `json`  or `yaml` instead.
 | `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
 | `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
 
-You can imitate the content of [the default template file](example/Dashboard.Global.json) to customize the dashboard.
+You can imitate the content of [the default template file](example/global.yml) to customize the dashboard.
 
 </details>
 
@@ -310,10 +310,12 @@ You can imitate the content of [the default template file](example/Dashboard.Glo
 
 | argument | description | default |
 | :--- | :--- | :--- |
-| `--template` | The template file to customize how to display information | `templates/Dashboard.Global.json` |
+| `--template` | The template file to customize how to display information | `templates/dashboard/global.yml` |
 | `--refresh` | The interval of auto-refresh (s). When `start` and `end` are both present, auto-refresh is disabled. | `6` |
 | `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
 | `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
+
+You can imitate the content of [the default template file](example/global.yml) to customize the dashboard.
 
 </details>
 

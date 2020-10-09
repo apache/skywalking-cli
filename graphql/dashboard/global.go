@@ -19,6 +19,7 @@ package dashboard
 
 import (
 	"bytes"
+	"io/ioutil"
 	"strconv"
 	"strings"
 
@@ -85,37 +86,37 @@ func newGlobalTemplate() GlobalTemplate {
 	}
 }
 
-// LoadTemplate reads UI template from file.
+// LoadTemplate reads UI template from yaml file.
 func LoadTemplate(filename string) (*GlobalTemplate, error) {
 	if globalTemplate != nil {
 		return globalTemplate, nil
 	}
 
-	var byteValue []byte
 	gt := newGlobalTemplate()
 	viper.SetConfigType(templateType)
 
+	var err error
+	var byteValue []byte
 	if filename == DefaultTemplatePath {
 		byteValue = []byte(assets.Read(filename))
-		if err := viper.ReadConfig(bytes.NewReader(byteValue)); err != nil {
-			return nil, err
-		}
 	} else {
-		viper.SetConfigFile(filename)
-		if err := viper.ReadInConfig(); err != nil {
+		byteValue, err = ioutil.ReadFile(filename)
+		if err != nil {
 			return nil, err
 		}
 	}
 
-	if err := viper.Unmarshal(&gt); err != nil {
-		return nil, err
-	}
-
-	texts, err := getButtonTexts(byteValue)
+	gt.Buttons.Texts, err = getButtonTexts(byteValue)
 	if err != nil {
 		return nil, err
 	}
-	gt.Buttons.Texts = texts
+
+	if err := viper.ReadConfig(bytes.NewReader(byteValue)); err != nil {
+		return nil, err
+	}
+	if err := viper.Unmarshal(&gt); err != nil {
+		return nil, err
+	}
 
 	globalTemplate = &gt
 	return globalTemplate, nil

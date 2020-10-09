@@ -12,6 +12,7 @@ require (
 	github.com/mum4k/termdash v0.12.1
 	github.com/olekukonko/tablewriter v0.0.2
 	github.com/sirupsen/logrus v1.6.0
+	github.com/spf13/viper v1.4.0
 	github.com/urfave/cli v1.22.1
 	google.golang.org/grpc v1.24.0
 	gopkg.in/yaml.v2 v2.3.0
