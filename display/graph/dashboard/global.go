@@ -108,8 +108,13 @@ func setLayout(c *container.Container, lt layoutType) error {
 func newLayoutButtons(c *container.Container) ([]*button.Button, error) {
 	buttons := make([]*button.Button, len(strToLayoutType))
 
+	ls := longestString(template.Buttons.Texts)
+	if ls == "" {
+		return nil, fmt.Errorf("failed to parse texts of buttons")
+	}
+
 	opts := []button.Option{
-		button.WidthFor(longestString(template.Buttons.Texts)),
+		button.WidthFor(ls),
 		button.FillColor(cell.ColorNumber(template.Buttons.ColorNum)),
 		button.Height(template.Buttons.Height),
 	}
@@ -118,7 +123,7 @@ func newLayoutButtons(c *container.Container) ([]*button.Button, error) {
 		// declare a local variable lt to avoid closure.
 		lt, ok := strToLayoutType[text]
 		if !ok {
-			return nil, fmt.Errorf("the %s is not supposed to be the button's text", text)
+			return nil, fmt.Errorf("the '%s' is not supposed to be the button's text", text)
 		}
 
 		b, err := button.New(text, func() error {
@@ -138,11 +143,13 @@ func newLayoutButtons(c *container.Container) ([]*button.Button, error) {
 func gridLayout(lt layoutType) ([]container.Option, error) {
 	const buttonRowHeight = 15
 
-	buttonColWidthPerc := 100 / len(allWidgets.buttons)
+	buttonColWidthPerc := 99 / len(allWidgets.buttons)
 	var buttonCols []grid.Element
 
 	for _, b := range allWidgets.buttons {
-		buttonCols = append(buttonCols, grid.ColWidthPerc(buttonColWidthPerc, grid.Widget(b)))
+		if b != nil {
+			buttonCols = append(buttonCols, grid.ColWidthPerc(buttonColWidthPerc, grid.Widget(b)))
+		}
 	}
 
 	rows := []grid.Element{
