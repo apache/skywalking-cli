@@ -136,10 +136,6 @@ Voting will start now and will remain open for at least 72 hours, all PMC member
 [ ] +0 No opinion.
 [ ] -1 Do not release this package because....
 
-Please take part in the vote process.
-
-Everyone could vote (though may be no-binding), but make sure to check the list [1].
-
 Thanks.
 
 [1] https://github.com/apache/skywalking/blob/master/docs/en/guides/How-to-release.md#vote-check
@@ -190,6 +186,7 @@ Vote result should follow these:
     # ....
     # enter your apache password
     # ....
+    ```
 ```
     
 1. Refer to the previous [PR](https://github.com/apache/skywalking-website/pull/118), update news and links on the website. There are seven files need to modify.
@@ -198,7 +195,7 @@ Vote result should follow these:
 
 1. Send ANNOUNCE email to `dev@skywalking.apache.org` and `announce@apache.org`, the sender should use his/her Apache email account. You can get the permlink of vote thread at [here](https://lists.apache.org/list.html?dev@skywalking.apache.org).
 
-```text
+​```text
 Subject: [ANNOUNCEMENT] Apache SkyWalking CLI $VERSION Released
 
 Content:
@@ -207,7 +204,7 @@ Hi the SkyWalking Community
 
 On behalf of the SkyWalking Team, I’m glad to announce that SkyWalking CLI $VERSION is now released.
 
-SkyWalking CLI: A command line interface for SkyWalking.
+SkyWalking CLI: A Command Line Interface for Apache SkyWalking https://skywalking.apache.org/
 
 SkyWalking: APM (application performance monitor) tool for distributed systems, especially designed for microservices, cloud native and container-based (Docker, Kubernetes, Mesos) architectures.
 
