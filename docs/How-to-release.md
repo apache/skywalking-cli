@@ -4,7 +4,7 @@ This documentation guides the release manager to release the SkyWalking CLI in t
 
 ## Prerequisites
 
-1. Clear all milestone issues from [skywalking-cli](https://github.com/apache/skywalking-cli/milestones) and [skywalking](https://github.com/apache/skywalking/milestones), create a new one if needed.
+1. Close(if finished, or move to next milestone otherwise) all issues in the current milestone from [skywalking-cli](https://github.com/apache/skywalking-cli/milestones) and [skywalking](https://github.com/apache/skywalking/milestones), create a new milestone if needed.
 2. Update [CHANGES.md](../CHANGES.md).
 
 
@@ -14,7 +14,7 @@ This documentation guides the release manager to release the SkyWalking CLI in t
 
 1. Log in [id.apache.org](https://id.apache.org/) and submit your key fingerprint.
 
-1. Add your GPG public key into [SkyWalking GPG KEYS](https://dist.apache.org/repos/dist/release/skywalking/KEYS) file, **you can do this only if you are a PMC member**.  You can ask a PMC member for help. **DO NOT override the existed `KEYS` file.**
+1. Add your GPG public key into [SkyWalking GPG KEYS](https://dist.apache.org/repos/dist/release/skywalking/KEYS) file, **you can do this only if you are a PMC member**.  You can ask a PMC member for help. **DO NOT override the existed `KEYS` file content, only append your key at the end of the file.**
 
 
 ## Build and sign the source code package
@@ -205,7 +205,7 @@ Content:
 
 Hi the SkyWalking Community
 
-On behalf of the SkyWalking CLI Team, I’m glad to announce that SkyWalking CLI $VERSION is now released.
+On behalf of the SkyWalking Team, I’m glad to announce that SkyWalking CLI $VERSION is now released.
 
 SkyWalking CLI: A command line interface for SkyWalking.
 
