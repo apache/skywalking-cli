@@ -226,6 +226,7 @@ The text of each license is also included at licenses/LICENSE-[project].txt.
 	gizak (termui) v3: https://github.com/gizak/termui MIT
 	mattn (go-runewidth) v3: https://github.com/mattn/go-runewidth MIT
 	gobuffalo (packr) v2: https://github.com/gobuffalo/packr MIT
+	spf13 (viper) 1.4.0: https://github.com/spf13/viper MIT
 
 ========================================================================
 BSD licenses

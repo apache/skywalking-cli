@@ -2,6 +2,20 @@ Changes by Version
 ==================
 Release Notes.
 
+0.4.0
+------------------
+
+### Features
+
+- Add `dashboard global` command with auto-refresh
+- Add `dashboard global-metrics` command
+- Add traces search
+- Refactor `metrics thermodynamic` command to adopt the new query protocol
+
+### Bug Fixes
+
+- Fix wrong golang standard time
+
 0.3.0
 ------------------
 
