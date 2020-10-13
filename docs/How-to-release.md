@@ -187,39 +187,39 @@ Vote result should follow these:
     # enter your apache password
     # ....
     ```
-```
-    
+
 1. Refer to the previous [PR](https://github.com/apache/skywalking-website/pull/118), update news and links on the website. There are seven files need to modify.
 
 1. Update [Github release page](https://github.com/apache/skywalking-cli/releases), follow the previous convention.
 
 1. Send ANNOUNCE email to `dev@skywalking.apache.org` and `announce@apache.org`, the sender should use his/her Apache email account. You can get the permlink of vote thread at [here](https://lists.apache.org/list.html?dev@skywalking.apache.org).
 
-​```text
-Subject: [ANNOUNCEMENT] Apache SkyWalking CLI $VERSION Released
+    ```
+    Subject: [ANNOUNCEMENT] Apache SkyWalking CLI $VERSION Released
 
-Content:
+    Content:
 
-Hi the SkyWalking Community
+    Hi the SkyWalking Community
 
-On behalf of the SkyWalking Team, I’m glad to announce that SkyWalking CLI $VERSION is now released.
+    On behalf of the SkyWalking Team, I’m glad to announce that SkyWalking CLI $VERSION is now released.
 
-SkyWalking CLI: A Command Line Interface for Apache SkyWalking https://skywalking.apache.org/
+    SkyWalking CLI: A Command Line Interface for Apache SkyWalking.
 
-SkyWalking: APM (application performance monitor) tool for distributed systems, especially designed for microservices, cloud native and container-based (Docker, Kubernetes, Mesos) architectures.
+    SkyWalking: APM (application performance monitor) tool for distributed systems, especially designed for microservices, cloud native and container-based (Docker, Kubernetes, Mesos) architectures.
 
-Vote Thread: $VOTE_THREAD_PERMALINK
+    Vote Thread: $VOTE_THREAD_PERMALINK
 
-Download Links: http://skywalking.apache.org/downloads/
+    Download Links: http://skywalking.apache.org/downloads/
 
-Release Notes : https://github.com/apache/skywalking-cli/blob/$VERSION/CHANGES.md
+    Release Notes : https://github.com/apache/skywalking-cli/blob/$VERSION/CHANGES.md
 
-Website: http://skywalking.apache.org/
+    Website: http://skywalking.apache.org/
 
-SkyWalking CLI Resources:
-- Issue: https://github.com/apache/skywalking/issues
-- Mailing list: dev@skywalkiing.apache.org
-- Documents: https://github.com/apache/skywalking-cli/blob/$VERSION/README.md
+    SkyWalking CLI Resources:
+    - Issue: https://github.com/apache/skywalking/issues
+    - Mailing list: dev@skywalkiing.apache.org
+    - Documents: https://github.com/apache/skywalking-cli/blob/$VERSION/README.md
 
-The Apache SkyWalking Team
-```
+    The Apache SkyWalking Team
+    ```
+
