@@ -175,7 +175,6 @@ Vote result should follow these:
    I’ll continue the release process.
    ```
 
-
 ## Publish release
 
 1. Move source codes tar balls and distributions to `https://dist.apache.org/repos/dist/release/skywalking/`, **you can do this only if you are a PMC member**.
@@ -222,4 +221,5 @@ Vote result should follow these:
 
     The Apache SkyWalking Team
     ```
-
+    
+    
