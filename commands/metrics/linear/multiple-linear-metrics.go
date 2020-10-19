@@ -18,6 +18,7 @@
 package linear
 
 import (
+	"fmt"
 	"github.com/urfave/cli"
 
 	"github.com/apache/skywalking-cli/display/displayable"
@@ -43,11 +44,6 @@ var Multiple = cli.Command{
 				Usage:    "metrics `NAME`, such as `all_percentile`",
 				Required: true,
 			},
-			cli.StringFlag{
-				Name:     "id",
-				Usage:    "`ID`, the related id if the metrics requires one",
-				Required: false,
-			},
 			cli.IntFlag{
 				Name:     "num",
 				Usage:    "`num`, the number of linear metrics to query, (default: 5)",
@@ -67,10 +63,9 @@ var Multiple = cli.Command{
 		metricsName := ctx.String("name")
 		numOfLinear := ctx.Int("num")
 
-		var id *string = nil
-
-		if idString := ctx.String("id"); idString != "" {
-			id = &idString
+		var labels []string
+		for i := 0; i < numOfLinear; i++ {
+			labels = append(labels, fmt.Sprintf("%d", i))
 		}
 
 		duration := schema.Duration{
@@ -79,17 +74,14 @@ var Multiple = cli.Command{
 			Step:  step.(*model.StepEnumValue).Selected,
 		}
 
-		values := metrics.MultipleLinearIntValues(ctx, schema.MetricCondition{
+		metricsValuesArray := metrics.MultipleLinearIntValues(ctx, schema.MetricsCondition{
 			Name: metricsName,
-			ID:   id,
-		}, numOfLinear, duration)
+			Entity: &schema.Entity{
+				Scope: schema.ScopeAll,
+			},
+		}, labels, duration)
 
-		reshaped := make([]map[string]float64, len(values))
-
-		for index, value := range values {
-			reshaped[index] = utils.MetricsToMap(duration, value)
-		}
-
+		reshaped := utils.MetricsValuesArrayToMap(duration, metricsValuesArray)
 		return display.Display(ctx, &displayable.Displayable{Data: reshaped})
 	},
 }

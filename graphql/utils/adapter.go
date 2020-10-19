@@ -18,17 +18,32 @@
 package utils
 
 import (
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/apache/skywalking-cli/graphql/schema"
 	"github.com/apache/skywalking-cli/logger"
 )
 
-type IntValues schema.IntValues
+// MetricsValuesArrayToMap converts Array of MetricsValues into a map that uses time as key.
+func MetricsValuesArrayToMap(duration schema.Duration, mvArray []schema.MetricsValues) []map[string]float64 {
+	ret := make([]map[string]float64, len(mvArray))
+	for _, mvs := range mvArray {
+		index, err := strconv.Atoi(strings.TrimSpace(*mvs.Label))
+		if err != nil {
+			logger.Log.Fatalln(err)
+			return nil
+		}
+		ret[index] = MetricsValuesToMap(duration, mvs)
+	}
+	return ret
+}
 
-func MetricsToMap(duration schema.Duration, intValues schema.IntValues) map[string]float64 {
-	kvInts := intValues.Values
-	values := map[string]float64{}
+// MetricsValuesToMap converts MetricsValues into a map that uses time as key.
+func MetricsValuesToMap(duration schema.Duration, metricsValues schema.MetricsValues) map[string]float64 {
+	kvInts := metricsValues.Values.Values
+	ret := map[string]float64{}
 	format := StepFormats[duration.Step]
 	startTime, err := time.Parse(format, duration.Start)
 
@@ -38,10 +53,10 @@ func MetricsToMap(duration schema.Duration, intValues schema.IntValues) map[stri
 
 	step := StepDuration[duration.Step]
 	for idx, value := range kvInts {
-		values[startTime.Add(time.Duration(idx)*step).Format(format)] = float64(value.Value)
+		ret[startTime.Add(time.Duration(idx)*step).Format(format)] = float64(value.Value)
 	}
 
-	return values
+	return ret
 }
 
 // HeatMapToMap converts a HeatMap into a map that uses time as key.

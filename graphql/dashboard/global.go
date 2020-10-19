@@ -19,8 +19,8 @@ package dashboard
 
 import (
 	"bytes"
+	"github.com/apache/skywalking-cli/graphql/metrics"
 	"io/ioutil"
-	"strconv"
 	"strings"
 
 	"github.com/machinebox/graphql"
@@ -31,8 +31,6 @@ import (
 	"github.com/apache/skywalking-cli/graphql/client"
 	"github.com/apache/skywalking-cli/graphql/schema"
 	"github.com/apache/skywalking-cli/graphql/utils"
-	"github.com/apache/skywalking-cli/logger"
-
 	"gopkg.in/yaml.v2"
 )
 
@@ -167,8 +165,6 @@ func Metrics(ctx *cli.Context, duration schema.Duration) [][]*schema.SelectedRec
 }
 
 func responseLatency(ctx *cli.Context, duration schema.Duration) []map[string]float64 {
-	var response map[string][]*schema.MetricsValues
-
 	template, err := LoadTemplate(ctx.String("template"))
 	if err != nil {
 		return nil
@@ -183,31 +179,13 @@ func responseLatency(ctx *cli.Context, duration schema.Duration) []map[string]fl
 	// need use ", " to split into string array for graphql query.
 	labelsIndex := strings.Split(template.ResponseLatency.LabelsIndex, ", ")
 
-	request := graphql.NewRequest(assets.Read("graphqls/dashboard/LabeledMetricsValues.graphql"))
-	request.Var("duration", duration)
-	request.Var("condition", template.ResponseLatency.Condition)
-	request.Var("labels", labelsIndex)
-
-	client.ExecuteQueryOrFail(ctx, request, &response)
+	responseLatency := metrics.MultipleLinearIntValues(ctx, template.ResponseLatency.Condition, labelsIndex, duration)
 
 	// Convert metrics values to map type data.
-	responseLatency := response["result"]
-	reshaped := make([]map[string]float64, len(responseLatency))
-	for _, mvs := range responseLatency {
-		index, err := strconv.Atoi(strings.TrimSpace(*mvs.Label))
-		if err != nil {
-			logger.Log.Fatalln(err)
-			return nil
-		}
-		reshaped[index] = utils.MetricsToMap(duration, *mvs.Values)
-	}
-
-	return reshaped
+	return utils.MetricsValuesArrayToMap(duration, responseLatency)
 }
 
 func heatMap(ctx *cli.Context, duration schema.Duration) schema.HeatMap {
-	var response map[string]schema.HeatMap
-
 	template, err := LoadTemplate(ctx.String("template"))
 	if err != nil {
 		return schema.HeatMap{}
@@ -218,13 +196,7 @@ func heatMap(ctx *cli.Context, duration schema.Duration) schema.HeatMap {
 		return schema.HeatMap{}
 	}
 
-	request := graphql.NewRequest(assets.Read("graphqls/dashboard/HeatMap.graphql"))
-	request.Var("duration", duration)
-	request.Var("condition", template.HeatMap.Condition)
-
-	client.ExecuteQueryOrFail(ctx, request, &response)
-
-	return response["result"]
+	return metrics.Thermodynamic(ctx, template.HeatMap.Condition, duration)
 }
 
 func Global(ctx *cli.Context, duration schema.Duration) *GlobalData {

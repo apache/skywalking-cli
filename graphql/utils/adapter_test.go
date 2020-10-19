@@ -69,8 +69,8 @@ func TestMetricsToMap(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := MetricsToMap(tt.args.duration, tt.args.intValues); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("MetricsToMap() = %v, want %v", got, tt.want)
+			if got := MetricsValuesToMap(tt.args.duration, tt.args.intValues); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("MetricsValuesToMap() = %v, want %v", got, tt.want)
 			}
 		})
 	}
