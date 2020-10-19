@@ -19,6 +19,7 @@ package linear
 
 import (
 	"fmt"
+
 	"github.com/urfave/cli"
 
 	"github.com/apache/skywalking-cli/display/displayable"

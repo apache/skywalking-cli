@@ -19,7 +19,6 @@ package dashboard
 
 import (
 	"bytes"
-	"github.com/apache/skywalking-cli/graphql/metrics"
 	"io/ioutil"
 	"strings"
 
@@ -27,11 +26,13 @@ import (
 	"github.com/spf13/viper"
 	"github.com/urfave/cli"
 
+	"gopkg.in/yaml.v2"
+
 	"github.com/apache/skywalking-cli/assets"
 	"github.com/apache/skywalking-cli/graphql/client"
+	"github.com/apache/skywalking-cli/graphql/metrics"
 	"github.com/apache/skywalking-cli/graphql/schema"
 	"github.com/apache/skywalking-cli/graphql/utils"
-	"gopkg.in/yaml.v2"
 )
 
 type ButtonTemplate struct {
