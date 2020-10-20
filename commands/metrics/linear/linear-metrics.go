@@ -49,7 +49,7 @@ var Single = cli.Command{
 					Default:  schema.ScopeAll,
 					Selected: schema.ScopeAll,
 				},
-				Required: true,
+				Required: false,
 			},
 		},
 	),
