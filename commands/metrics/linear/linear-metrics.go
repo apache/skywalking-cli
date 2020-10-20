@@ -18,18 +18,16 @@
 package linear
 
 import (
-	"github.com/urfave/cli"
-
-	"github.com/apache/skywalking-cli/display/displayable"
-
-	"github.com/apache/skywalking-cli/graphql/metrics"
-	"github.com/apache/skywalking-cli/graphql/utils"
-
 	"github.com/apache/skywalking-cli/commands/flags"
 	"github.com/apache/skywalking-cli/commands/interceptor"
 	"github.com/apache/skywalking-cli/commands/model"
 	"github.com/apache/skywalking-cli/display"
+	"github.com/apache/skywalking-cli/display/displayable"
+	"github.com/apache/skywalking-cli/graphql/metrics"
 	"github.com/apache/skywalking-cli/graphql/schema"
+	"github.com/apache/skywalking-cli/graphql/utils"
+
+	"github.com/urfave/cli"
 )
 
 var Single = cli.Command{

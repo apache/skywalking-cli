@@ -20,18 +20,16 @@ package linear
 import (
 	"fmt"
 
-	"github.com/urfave/cli"
-
-	"github.com/apache/skywalking-cli/display/displayable"
-
-	"github.com/apache/skywalking-cli/graphql/metrics"
-	"github.com/apache/skywalking-cli/graphql/utils"
-
 	"github.com/apache/skywalking-cli/commands/flags"
 	"github.com/apache/skywalking-cli/commands/interceptor"
 	"github.com/apache/skywalking-cli/commands/model"
 	"github.com/apache/skywalking-cli/display"
+	"github.com/apache/skywalking-cli/display/displayable"
+	"github.com/apache/skywalking-cli/graphql/metrics"
 	"github.com/apache/skywalking-cli/graphql/schema"
+	"github.com/apache/skywalking-cli/graphql/utils"
+
+	"github.com/urfave/cli"
 )
 
 var Multiple = cli.Command{
@@ -63,6 +61,10 @@ var Multiple = cli.Command{
 		step := ctx.Generic("step")
 		metricsName := ctx.String("name")
 		numOfLinear := ctx.Int("num")
+
+		if numOfLinear > 5 || numOfLinear < 1 {
+			numOfLinear = 5
+		}
 
 		var labels []string
 		for i := 0; i < numOfLinear; i++ {
