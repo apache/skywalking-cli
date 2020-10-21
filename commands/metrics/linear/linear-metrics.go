@@ -18,18 +18,16 @@
 package linear
 
 import (
-	"github.com/urfave/cli"
-
-	"github.com/apache/skywalking-cli/display/displayable"
-
-	"github.com/apache/skywalking-cli/graphql/metrics"
-	"github.com/apache/skywalking-cli/graphql/utils"
-
 	"github.com/apache/skywalking-cli/commands/flags"
 	"github.com/apache/skywalking-cli/commands/interceptor"
 	"github.com/apache/skywalking-cli/commands/model"
 	"github.com/apache/skywalking-cli/display"
+	"github.com/apache/skywalking-cli/display/displayable"
+	"github.com/apache/skywalking-cli/graphql/metrics"
 	"github.com/apache/skywalking-cli/graphql/schema"
+	"github.com/apache/skywalking-cli/graphql/utils"
+
+	"github.com/urfave/cli"
 )
 
 var Single = cli.Command{
@@ -43,9 +41,14 @@ var Single = cli.Command{
 				Usage:    "metrics `NAME`, such as `all_p99`",
 				Required: true,
 			},
-			cli.StringFlag{
-				Name:     "id",
-				Usage:    "`ID`, the related id if the metrics requires one",
+			cli.GenericFlag{
+				Name:  "scope",
+				Usage: "the scope of the query, which follows the metrics `name`",
+				Value: &model.ScopeEnumValue{
+					Enum:     schema.AllScope,
+					Default:  schema.ScopeAll,
+					Selected: schema.ScopeAll,
+				},
 				Required: false,
 			},
 		},
@@ -59,12 +62,7 @@ var Single = cli.Command{
 		start := ctx.String("start")
 		step := ctx.Generic("step")
 		metricsName := ctx.String("name")
-
-		var id *string = nil
-
-		if idString := ctx.String("id"); idString != "" {
-			id = &idString
-		}
+		scope := ctx.Generic("scope").(*model.ScopeEnumValue).Selected
 
 		duration := schema.Duration{
 			Start: start,
@@ -72,11 +70,13 @@ var Single = cli.Command{
 			Step:  step.(*model.StepEnumValue).Selected,
 		}
 
-		metricsValues := metrics.LinearIntValues(ctx, schema.MetricCondition{
+		metricsValues := metrics.LinearIntValues(ctx, schema.MetricsCondition{
 			Name: metricsName,
-			ID:   id,
+			Entity: &schema.Entity{
+				Scope: scope,
+			},
 		}, duration)
 
-		return display.Display(ctx, &displayable.Displayable{Data: utils.MetricsToMap(duration, metricsValues)})
+		return display.Display(ctx, &displayable.Displayable{Data: utils.MetricsValuesToMap(duration, metricsValues)})
 	},
 }

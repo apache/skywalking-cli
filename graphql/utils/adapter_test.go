@@ -26,8 +26,8 @@ import (
 
 func TestMetricsToMap(t *testing.T) {
 	type args struct {
-		duration  schema.Duration
-		intValues schema.IntValues
+		duration      schema.Duration
+		metricsValues schema.MetricsValues
 	}
 	tests := []struct {
 		name string
@@ -42,16 +42,18 @@ func TestMetricsToMap(t *testing.T) {
 					End:   "2020-01-01 0007",
 					Step:  schema.StepMinute,
 				},
-				intValues: schema.IntValues{
-					Values: []*schema.KVInt{
-						{Value: 0},
-						{Value: 1},
-						{Value: 2},
-						{Value: 3},
-						{Value: 4},
-						{Value: 5},
-						{Value: 6},
-						{Value: 7},
+				metricsValues: schema.MetricsValues{
+					Values: &schema.IntValues{
+						Values: []*schema.KVInt{
+							{Value: 0},
+							{Value: 1},
+							{Value: 2},
+							{Value: 3},
+							{Value: 4},
+							{Value: 5},
+							{Value: 6},
+							{Value: 7},
+						},
 					},
 				},
 			},
@@ -69,8 +71,8 @@ func TestMetricsToMap(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := MetricsToMap(tt.args.duration, tt.args.intValues); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("MetricsToMap() = %v, want %v", got, tt.want)
+			if got := MetricsValuesToMap(tt.args.duration, tt.args.metricsValues); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("MetricsValuesToMap() = %v, want %v", got, tt.want)
 			}
 		})
 	}

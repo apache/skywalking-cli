@@ -24,14 +24,15 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/mum4k/termdash/linestyle"
-
 	"github.com/mum4k/termdash"
 	"github.com/mum4k/termdash/container"
 	"github.com/mum4k/termdash/container/grid"
+	"github.com/mum4k/termdash/linestyle"
 	"github.com/mum4k/termdash/terminal/termbox"
 	"github.com/mum4k/termdash/terminal/terminalapi"
 	"github.com/mum4k/termdash/widgets/linechart"
+
+	"github.com/urfave/cli"
 )
 
 const RootID = "root"
@@ -124,7 +125,7 @@ func layout(rows [][]grid.Element) ([]container.Option, error) {
 	return builder.Build()
 }
 
-func Display(inputs []map[string]float64) error {
+func Display(cliCtx *cli.Context, inputs []map[string]float64, titles []string) error {
 	t, err := termbox.New()
 	if err != nil {
 		return err
@@ -149,7 +150,7 @@ func Display(inputs []map[string]float64) error {
 		elements = append(elements, w)
 	}
 
-	gridOpts, err := layout(LineChartElements(elements, nil))
+	gridOpts, err := layout(LineChartElements(elements, titles))
 	if err != nil {
 		return err
 	}
@@ -157,7 +158,8 @@ func Display(inputs []map[string]float64) error {
 	err = c.Update(RootID, append(
 		gridOpts,
 		container.Border(linestyle.Light),
-		container.BorderTitle("PRESS Q TO QUIT"))...,
+		container.BorderTitle(fmt.Sprintf("[%s]-PRESS Q TO QUIT", cliCtx.String("name"))),
+		container.BorderTitleAlignLeft())...,
 	)
 
 	if err != nil {

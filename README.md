@@ -26,7 +26,7 @@ git submodule update
 make
 ```
 
-and copy the `./bin/swctl-latest-(darwin|linux|windows)-amd64` to your `PATH` directory according to your OS,
+Then copy the `./bin/swctl-latest-(darwin|linux|windows)-amd64` to your `PATH` directory according to your OS,
 usually `/usr/bin/` or `/usr/local/bin`, or you can copy it to any directory you like,
 and add that directory to `PATH`, we recommend you to rename the `swctl-latest-(darwin|linux|windows)-amd64` to `swctl`.
 
@@ -160,12 +160,12 @@ Ascii Graph, like coloring in terminal, so please use `json`  or `yaml` instead.
 
 <details>
 
-<summary>metrics linear [--start=start-time] [--end=end-time] --name=metrics-name [--id=entity-id]</summary>
+<summary>metrics linear [--start=start-time] [--end=end-time] --name=metrics-name [--scope=scope-of-metrics]</summary>
 
 | option | description | default |
 | :--- | :--- | :--- |
-| `--name` | Metrics name, defined in [OAL](https://github.com/apache/skywalking/blob/master/oap-server/server-bootstrap/src/main/resources/official_analysis.oal), such as `all_p99`, etc. |
-| `--id` | the related id if the metrics requires one, e.g. for metrics `service_p99`, the service `id` is required, use `--id` to specify the service id, the same for `instance`, `endpoint`, etc. |
+| `--name` | Metrics name, defined in [OAL](https://github.com/apache/skywalking/blob/master/oap-server/server-bootstrap/src/main/resources/oal/core.oal), such as `all_p99`, etc. |
+| `--scope` | The scope of metrics, which is consistent with `--name`, such as `All`, `Service`, `ServiceInstance`, `Endpoint`, `ServiceRelation`, `ServiceInstanceRelation` and `EndpointRelation`. |`All`|
 | `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
 | `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
 
@@ -175,15 +175,14 @@ Ascii Graph, like coloring in terminal, so please use `json`  or `yaml` instead.
 
 <details>
 
-<summary>metrics multiple-linear [--start=start-time] [--end=end-time] --name=metrics-name [--id=entity-id] [--num=number-of-linear-metrics]</summary>
+<summary>metrics multiple-linear [--start=start-time] [--end=end-time] --name=metrics-name [--num=number-of-linear-metrics]</summary>
 
 | option | description | default |
 | :--- | :--- | :--- |
-| `--name` | Metrics name, defined in [OAL](https://github.com/apache/skywalking/blob/master/oap-server/server-bootstrap/src/main/resources/official_analysis.oal), such as `all_p99`, etc. |
-| `--id` | the related id if the metrics requires one, e.g. for metrics `service_p99`, the service `id` is required, use `--id` to specify the service id, the same for `instance`, `endpoint`, etc. |
+| `--name` | Metrics name, defined in [OAL](https://github.com/apache/skywalking/blob/master/oap-server/server-bootstrap/src/main/resources/oal/core.oal), such as `all_p99`, etc. |
+| `--num` | Number of the linear metrics to fetch | `5` |
 | `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
 | `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
-| `--num` | Number of the linear metrics to fetch | `5` |
 
 </details>
 
@@ -195,7 +194,7 @@ Ascii Graph, like coloring in terminal, so please use `json`  or `yaml` instead.
 
 | option | description | default |
 | :--- | :--- | :--- |
-| `--name` | Metrics name, defined in [OAL](https://github.com/apache/skywalking/blob/master/oap-server/server-bootstrap/src/main/resources/official_analysis.oal), such as `service_sla`, etc. |
+| `--name` | Metrics name, defined in [OAL](https://github.com/apache/skywalking/blob/master/oap-server/server-bootstrap/src/main/resources/oal/core.oal), such as `service_sla`, etc. |
 | `--ids` | IDs that are required by the metric type, such as service IDs for `service_sla` |
 | `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
 | `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
@@ -210,7 +209,7 @@ Ascii Graph, like coloring in terminal, so please use `json`  or `yaml` instead.
 
 | option | description | default |
 | :--- | :--- | :--- |
-| `--name` | Metrics name, defined in [OAL](https://github.com/apache/skywalking/blob/master/oap-server/server-bootstrap/src/main/resources/official_analysis.oal), such as `service_sla`, etc. |
+| `--name` | Metrics name, defined in [OAL](https://github.com/apache/skywalking/blob/master/oap-server/server-bootstrap/src/main/resources/oal/core.oal), such as `service_sla`, etc. |
 | `--service-id` | service ID that are required by the metric type, such as service IDs for `service_sla` |
 | `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
 | `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
@@ -226,24 +225,8 @@ Ascii Graph, like coloring in terminal, so please use `json`  or `yaml` instead.
 
 | option | description | default |
 | :--- | :--- | :--- |
-| `--name` | Metrics name, defined in [OAL](https://github.com/apache/skywalking/blob/master/oap-server/server-bootstrap/src/main/resources/official_analysis.oal), such as `service_sla`, etc. |
-| `--scope` | The scope of metrics, which is consistent with `--name`, such as `All`, `Service`, etc. |`All`|
-| `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
-| `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
-
-</details>
-
-<details>
-
-<summary>instance search [--start=start-time] [--end=end-time] [--regex=instance-name-regex] [--service-id=service-id] [--service-name=service-name]</summary>
-
-`instance search` filter the instance in the time range of `[start, end]` and given --regex --service-id or --service-name.
-
-| option | description | default |
-| :--- | :--- | :--- |
-| `--regex` | Query regex of instance name|  |
-| `--service-id` | Query by service id (priority over `--service-name`)|  |
-| `--service-name` | Query by service name if `service-id` is absent |  |
+| `--name` | Metrics name, defined in [OAL](https://github.com/apache/skywalking/blob/master/oap-server/server-bootstrap/src/main/resources/oal/core.oal), such as `service_sla`, etc. |
+| `--scope` | The scope of metrics, which is consistent with `--name`, such as `All`, `Service`, `ServiceInstance`, `Endpoint`, `ServiceRelation`, `ServiceInstanceRelation` and `EndpointRelation`. |`All`|
 | `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
 | `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
 
@@ -392,10 +375,8 @@ otherwise,
 
 <summary>Query a linear metrics graph for an instance</summary>
 
-If you have already got the `id` of the instance:
-
 ```shell
-$ ./bin/swctl --display=graph metrics linear --name=service_instance_resp_time --id 5
+$ ./bin/swctl --display=graph metrics linear --name=service_instance_resp_time --scope ServiceInstance
 ┌─────────────────────────────────────────────────────────────────────────────────Press q to quit──────────────────────────────────────────────────────────────────────────────────┐
 │                                                                                                                                                                                  │
 │                                                                                                                                                                                  │

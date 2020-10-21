@@ -20,19 +20,18 @@ package graph
 import (
 	"fmt"
 	"reflect"
+	"strings"
 
 	"github.com/urfave/cli"
 
+	d "github.com/apache/skywalking-cli/display/displayable"
 	db "github.com/apache/skywalking-cli/display/graph/dashboard"
 	"github.com/apache/skywalking-cli/display/graph/gauge"
+	"github.com/apache/skywalking-cli/display/graph/heatmap"
+	"github.com/apache/skywalking-cli/display/graph/linear"
 	"github.com/apache/skywalking-cli/display/graph/tree"
 	"github.com/apache/skywalking-cli/graphql/dashboard"
-
-	"github.com/apache/skywalking-cli/display/graph/heatmap"
 	"github.com/apache/skywalking-cli/graphql/schema"
-
-	d "github.com/apache/skywalking-cli/display/displayable"
-	"github.com/apache/skywalking-cli/display/graph/linear"
 )
 
 type (
@@ -55,6 +54,8 @@ var (
 	GlobalDataType         = reflect.TypeOf(&GlobalData{})
 )
 
+const multipleLinearTitles = "P50, P75, P90, P95, P99"
+
 func Display(ctx *cli.Context, displayable *d.Displayable) error {
 	data := displayable.Data
 
@@ -63,10 +64,12 @@ func Display(ctx *cli.Context, displayable *d.Displayable) error {
 		return heatmap.Display(displayable)
 
 	case LinearMetricsType:
-		return linear.Display([]LinearMetrics{data.(LinearMetrics)})
+		return linear.Display(ctx, []LinearMetrics{data.(LinearMetrics)}, nil)
 
 	case MultiLinearMetricsType:
-		return linear.Display(data.(MultiLinearMetrics))
+		inputs := data.(MultiLinearMetrics)
+		titles := strings.Split(multipleLinearTitles, ", ")[:len(inputs)]
+		return linear.Display(ctx, inputs, titles)
 
 	case TraceType:
 		return tree.Display(tree.Adapt(data.(Trace)))

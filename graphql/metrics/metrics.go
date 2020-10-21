@@ -41,12 +41,12 @@ func IntValues(ctx *cli.Context, condition schema.BatchMetricConditions, duratio
 	return response["result"]
 }
 
-func LinearIntValues(ctx *cli.Context, condition schema.MetricCondition, duration schema.Duration) schema.IntValues {
-	var response map[string]schema.IntValues
+func LinearIntValues(ctx *cli.Context, condition schema.MetricsCondition, duration schema.Duration) schema.MetricsValues {
+	var response map[string]schema.MetricsValues
 
-	request := graphql.NewRequest(assets.Read("graphqls/metrics/LinearIntValues.graphql"))
+	request := graphql.NewRequest(assets.Read("graphqls/metrics/MetricsValues.graphql"))
 
-	request.Var("metric", condition)
+	request.Var("condition", condition)
 	request.Var("duration", duration)
 
 	client.ExecuteQueryOrFail(ctx, request, &response)
@@ -54,14 +54,14 @@ func LinearIntValues(ctx *cli.Context, condition schema.MetricCondition, duratio
 	return response["result"]
 }
 
-func MultipleLinearIntValues(ctx *cli.Context, condition schema.MetricCondition, numOfLinear int, duration schema.Duration) []schema.IntValues {
-	var response map[string][]schema.IntValues
+func MultipleLinearIntValues(ctx *cli.Context, condition schema.MetricsCondition, labels []string, duration schema.Duration) []schema.MetricsValues {
+	var response map[string][]schema.MetricsValues
 
-	request := graphql.NewRequest(assets.Read("graphqls/metrics/MultipleLinearIntValues.graphql"))
+	request := graphql.NewRequest(assets.Read("graphqls/metrics/LabeledMetricsValues.graphql"))
 
-	request.Var("metric", condition)
-	request.Var("numOfLinear", numOfLinear)
 	request.Var("duration", duration)
+	request.Var("condition", condition)
+	request.Var("labels", labels)
 
 	client.ExecuteQueryOrFail(ctx, request, &response)
 
@@ -71,7 +71,7 @@ func MultipleLinearIntValues(ctx *cli.Context, condition schema.MetricCondition,
 func Thermodynamic(ctx *cli.Context, condition schema.MetricsCondition, duration schema.Duration) schema.HeatMap {
 	var response map[string]schema.HeatMap
 
-	request := graphql.NewRequest(assets.Read("graphqls/metrics/Thermodynamic.graphql"))
+	request := graphql.NewRequest(assets.Read("graphqls/metrics/HeatMap.graphql"))
 
 	request.Var("condition", condition)
 	request.Var("duration", duration)

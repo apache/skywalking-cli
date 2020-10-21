@@ -15,8 +15,13 @@
 # specific language governing permissions and limitations
 # under the License.
 
-query ($metric: MetricCondition!, $numOfLinear: Int!, $duration: Duration!) {
-    result: getMultipleLinearIntValues(metric: $metric, numOfLinear: $numOfLinear, duration: $duration) {
-        values { value }
+query ($condition: MetricsCondition!, $duration: Duration!) {
+    result: readMetricsValues(condition: $condition, duration: $duration) {
+        label
+        values {
+            values {
+                value
+            }
+        }
     }
 }
