@@ -28,12 +28,12 @@ import (
 	"github.com/apache/skywalking-cli/graphql/schema"
 )
 
-func IntValues(ctx *cli.Context, condition schema.BatchMetricConditions, duration schema.Duration) schema.IntValues {
-	var response map[string]schema.IntValues
+func IntValues(ctx *cli.Context, condition schema.MetricsCondition, duration schema.Duration) int {
+	var response map[string]int
 
-	request := graphql.NewRequest(assets.Read("graphqls/metrics/IntValues.graphql"))
+	request := graphql.NewRequest(assets.Read("graphqls/metrics/MetricsValue.graphql"))
 
-	request.Var("metric", condition)
+	request.Var("condition", condition)
 	request.Var("duration", duration)
 
 	client.ExecuteQueryOrFail(ctx, request, &response)

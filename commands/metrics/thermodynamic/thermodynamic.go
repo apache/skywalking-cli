@@ -36,22 +36,7 @@ var Command = cli.Command{
 	Usage:   "Query thermodynamic metrics defined in backend OAL",
 	Flags: flags.Flags(
 		flags.DurationFlags,
-		[]cli.Flag{
-			cli.StringFlag{
-				Name:     "name",
-				Usage:    "metrics `name`, which should be defined in OAL script",
-				Required: true,
-			},
-			cli.GenericFlag{
-				Name:  "scope",
-				Usage: "the scope of the query, which follows the metrics `name`",
-				Value: &model.ScopeEnumValue{
-					Enum:     schema.AllScope,
-					Default:  schema.ScopeAll,
-					Selected: schema.ScopeAll,
-				},
-			},
-		},
+		flags.MetricsFlags,
 	),
 	Before: interceptor.BeforeChain([]cli.BeforeFunc{
 		interceptor.TimezoneInterceptor,

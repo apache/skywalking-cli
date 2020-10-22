@@ -18,19 +18,15 @@
 package single
 
 import (
-	"strings"
-
-	"github.com/apache/skywalking-cli/display/displayable"
-
-	"github.com/apache/skywalking-cli/graphql/metrics"
-
-	"github.com/urfave/cli"
-
 	"github.com/apache/skywalking-cli/commands/flags"
 	"github.com/apache/skywalking-cli/commands/interceptor"
 	"github.com/apache/skywalking-cli/commands/model"
 	"github.com/apache/skywalking-cli/display"
+	"github.com/apache/skywalking-cli/display/displayable"
+	"github.com/apache/skywalking-cli/graphql/metrics"
 	"github.com/apache/skywalking-cli/graphql/schema"
+
+	"github.com/urfave/cli"
 )
 
 var Command = cli.Command{
@@ -38,18 +34,7 @@ var Command = cli.Command{
 	Usage: "Query single metrics defined in backend OAL",
 	Flags: flags.Flags(
 		flags.DurationFlags,
-		[]cli.Flag{
-			cli.StringFlag{
-				Name:     "name",
-				Usage:    "metrics `NAME`, which should be defined in OAL script",
-				Required: true,
-			},
-			cli.StringSliceFlag{
-				Name:     "ids",
-				Usage:    "`IDs`, IDs that are required by the given metric type",
-				Required: false,
-			},
-		},
+		flags.MetricsFlags,
 	),
 	Before: interceptor.BeforeChain([]cli.BeforeFunc{
 		interceptor.TimezoneInterceptor,
@@ -60,23 +45,25 @@ var Command = cli.Command{
 		start := ctx.String("start")
 		step := ctx.Generic("step")
 		metricsName := ctx.String("name")
-		idsString := ctx.StringSlice("ids")
+		serviceName := ctx.String("service")
+		normal := true
+		scope := ctx.Generic("scope").(*model.ScopeEnumValue).Selected
 
-		var ids []string
-
-		for _, id := range idsString {
-			ids = append(ids, strings.Split(id, ",")...)
-		}
-
-		metricsValues := metrics.IntValues(ctx, schema.BatchMetricConditions{
-			Name: metricsName,
-			Ids:  ids,
-		}, schema.Duration{
+		duration := schema.Duration{
 			Start: start,
 			End:   end,
 			Step:  step.(*model.StepEnumValue).Selected,
-		})
+		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: metricsValues.Values})
+		metricsValue := metrics.IntValues(ctx, schema.MetricsCondition{
+			Name: metricsName,
+			Entity: &schema.Entity{
+				Scope:       scope,
+				ServiceName: &serviceName,
+				Normal:      &normal,
+			},
+		}, duration)
+
+		return display.Display(ctx, &displayable.Displayable{Data: metricsValue})
 	},
 }

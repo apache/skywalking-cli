@@ -35,23 +35,7 @@ var Single = cli.Command{
 	Usage: "Query linear metrics defined in backend OAL",
 	Flags: flags.Flags(
 		flags.DurationFlags,
-		[]cli.Flag{
-			cli.StringFlag{
-				Name:     "name",
-				Usage:    "metrics `NAME`, such as `all_p99`",
-				Required: true,
-			},
-			cli.GenericFlag{
-				Name:  "scope",
-				Usage: "the scope of the query, which follows the metrics `name`",
-				Value: &model.ScopeEnumValue{
-					Enum:     schema.AllScope,
-					Default:  schema.ScopeAll,
-					Selected: schema.ScopeAll,
-				},
-				Required: false,
-			},
-		},
+		flags.MetricsFlags,
 	),
 	Before: interceptor.BeforeChain([]cli.BeforeFunc{
 		interceptor.TimezoneInterceptor,
@@ -62,6 +46,8 @@ var Single = cli.Command{
 		start := ctx.String("start")
 		step := ctx.Generic("step")
 		metricsName := ctx.String("name")
+		serviceName := ctx.String("service")
+		normal := true
 		scope := ctx.Generic("scope").(*model.ScopeEnumValue).Selected
 
 		duration := schema.Duration{
@@ -73,7 +59,9 @@ var Single = cli.Command{
 		metricsValues := metrics.LinearIntValues(ctx, schema.MetricsCondition{
 			Name: metricsName,
 			Entity: &schema.Entity{
-				Scope: scope,
+				Scope:       scope,
+				ServiceName: &serviceName,
+				Normal:      &normal,
 			},
 		}, duration)
 

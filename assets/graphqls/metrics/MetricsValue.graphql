@@ -15,8 +15,6 @@
 # specific language governing permissions and limitations
 # under the License.
 
-query ($metric: BatchMetricConditions!, $duration: Duration!) {
-    result: getValues(metric: $metric, duration: $duration) {
-        values { id value }
-    }
+query ($condition: MetricsCondition!, $duration: Duration!) {
+    result: readMetricsValue(condition: $condition, duration: $duration)
 }
