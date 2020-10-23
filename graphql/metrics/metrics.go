@@ -18,14 +18,12 @@
 package metrics
 
 import (
+	"github.com/apache/skywalking-cli/assets"
+	"github.com/apache/skywalking-cli/graphql/client"
+	"github.com/apache/skywalking-cli/graphql/schema"
+
 	"github.com/machinebox/graphql"
 	"github.com/urfave/cli"
-
-	"github.com/apache/skywalking-cli/assets"
-
-	"github.com/apache/skywalking-cli/graphql/client"
-
-	"github.com/apache/skywalking-cli/graphql/schema"
 )
 
 func IntValues(ctx *cli.Context, condition schema.MetricsCondition, duration schema.Duration) int {
@@ -73,6 +71,18 @@ func Thermodynamic(ctx *cli.Context, condition schema.MetricsCondition, duration
 
 	request := graphql.NewRequest(assets.Read("graphqls/metrics/HeatMap.graphql"))
 
+	request.Var("condition", condition)
+	request.Var("duration", duration)
+
+	client.ExecuteQueryOrFail(ctx, request, &response)
+
+	return response["result"]
+}
+
+func SortMetrics(ctx *cli.Context, condition schema.TopNCondition, duration schema.Duration) []*schema.SelectedRecord {
+	var response map[string][]*schema.SelectedRecord
+
+	request := graphql.NewRequest(assets.Read("graphqls/metrics/SortMetrics.graphql"))
 	request.Var("condition", condition)
 	request.Var("duration", duration)
 

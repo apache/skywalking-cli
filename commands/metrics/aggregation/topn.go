@@ -20,19 +20,16 @@ package aggregation
 import (
 	"fmt"
 	"strconv"
-	"strings"
-
-	"github.com/apache/skywalking-cli/display/displayable"
-
-	"github.com/apache/skywalking-cli/commands/interceptor"
-
-	"github.com/urfave/cli"
 
 	"github.com/apache/skywalking-cli/commands/flags"
+	"github.com/apache/skywalking-cli/commands/interceptor"
 	"github.com/apache/skywalking-cli/commands/model"
 	"github.com/apache/skywalking-cli/display"
-	"github.com/apache/skywalking-cli/graphql/aggregation"
+	"github.com/apache/skywalking-cli/display/displayable"
+	"github.com/apache/skywalking-cli/graphql/metrics"
 	"github.com/apache/skywalking-cli/graphql/schema"
+
+	"github.com/urfave/cli"
 )
 
 var TopN = cli.Command{
@@ -41,12 +38,8 @@ var TopN = cli.Command{
 	ArgsUsage: "<n>",
 	Flags: flags.Flags(
 		flags.DurationFlags,
+		flags.MetricsFlags,
 		[]cli.Flag{
-			cli.StringFlag{
-				Name:     "name",
-				Usage:    "`metrics name`, which should be defined in OAL script",
-				Required: true,
-			},
 			cli.GenericFlag{
 				Name:  "order",
 				Usage: "the `order` by which the top entities are sorted",
@@ -56,11 +49,6 @@ var TopN = cli.Command{
 					Selected: schema.OrderDes,
 				},
 			},
-			cli.StringFlag{
-				Name:     "service-id",
-				Usage:    "the `service id` whose instances/endpoints are to be fetch, if applicable",
-				Required: false,
-			},
 		},
 	),
 	Before: interceptor.BeforeChain([]cli.BeforeFunc{
@@ -68,13 +56,14 @@ var TopN = cli.Command{
 		interceptor.DurationInterceptor,
 	}),
 	Action: func(ctx *cli.Context) error {
-		name := ctx.String("name")
 		start := ctx.String("start")
 		end := ctx.String("end")
 		step := ctx.Generic("step").(*model.StepEnumValue).Selected
-		order := ctx.Generic("order").(*model.OrderEnumValue).Selected
-		serviceID := ctx.String("service-id")
 
+		metricsName := ctx.String("name")
+		normal := true
+		scope := ctx.Generic("scope").(*model.ScopeEnumValue).Selected
+		order := ctx.Generic("order").(*model.OrderEnumValue).Selected
 		topN := 5
 
 		if ctx.NArg() > 0 {
@@ -91,23 +80,13 @@ var TopN = cli.Command{
 			Step:  step,
 		}
 
-		var metricsValues []schema.TopNEntity
-
-		if strings.HasPrefix(name, "service_instance") {
-			if serviceID == "" {
-				metricsValues = aggregation.AllServiceInstanceTopN(ctx, name, topN, duration, order)
-			} else {
-				metricsValues = aggregation.ServiceInstanceTopN(ctx, serviceID, name, topN, duration, order)
-			}
-		} else if strings.HasPrefix(name, "endpoint_") {
-			if serviceID == "" {
-				metricsValues = aggregation.AllEndpointTopN(ctx, name, topN, duration, order)
-			} else {
-				metricsValues = aggregation.EndpointTopN(ctx, serviceID, name, topN, duration, order)
-			}
-		} else if strings.HasPrefix(name, "service_") {
-			metricsValues = aggregation.ServiceTopN(ctx, name, topN, duration, order)
-		}
+		metricsValues := metrics.SortMetrics(ctx, schema.TopNCondition{
+			Name:   metricsName,
+			Normal: &normal,
+			Scope:  &scope,
+			TopN:   topN,
+			Order:  order,
+		}, duration)
 
 		return display.Display(ctx, &displayable.Displayable{Data: metricsValues})
 	},
