@@ -19,6 +19,8 @@ package aggregation
 
 import (
 	"fmt"
+	"strconv"
+
 	"github.com/apache/skywalking-cli/commands/flags"
 	"github.com/apache/skywalking-cli/commands/interceptor"
 	"github.com/apache/skywalking-cli/commands/model"
@@ -26,7 +28,6 @@ import (
 	"github.com/apache/skywalking-cli/display/displayable"
 	"github.com/apache/skywalking-cli/graphql/metrics"
 	"github.com/apache/skywalking-cli/graphql/schema"
-	"strconv"
 
 	"github.com/urfave/cli"
 )

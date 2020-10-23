@@ -160,11 +160,12 @@ Ascii Graph, like coloring in terminal, so please use `json`  or `yaml` instead.
 
 <details>
 
-<summary>metrics linear [--start=start-time] [--end=end-time] --name=metrics-name</summary>
+<summary>metrics linear [--start=start-time] [--end=end-time] --name=metrics-name --service=service-name</summary>
 
 | option | description | default |
 | :--- | :--- | :--- |
 | `--name` | Metrics name, defined in [OAL](https://github.com/apache/skywalking/blob/master/oap-server/server-bootstrap/src/main/resources/oal/core.oal). |
+| `--service` | The name of the service, when metrics' scope is `All`, no service name is required |
 | `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
 | `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
 
@@ -174,11 +175,12 @@ Ascii Graph, like coloring in terminal, so please use `json`  or `yaml` instead.
 
 <details>
 
-<summary>metrics multiple-linear [--start=start-time] [--end=end-time] --name=metrics-name [--num=number-of-linear-metrics]</summary>
+<summary>metrics multiple-linear [--start=start-time] [--end=end-time] --name=metrics-name --service=service-name [--num=number-of-linear-metrics]</summary>
 
 | option | description | default |
 | :--- | :--- | :--- |
 | `--name` | Metrics name, defined in [OAL](https://github.com/apache/skywalking/blob/master/oap-server/server-bootstrap/src/main/resources/oal/core.oal), such as `all_percentile`, etc. |
+| `--service` | The name of the service, when scope is `All`, no name is required |
 | `--num` | Number of the linear metrics to fetch | `5` |
 | `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
 | `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
@@ -189,12 +191,12 @@ Ascii Graph, like coloring in terminal, so please use `json`  or `yaml` instead.
 
 <details>
 
-<summary>metrics single [--start=start-time] [--end=end-time] --name=metrics-name [--service=service-name]</summary>
+<summary>metrics single [--start=start-time] [--end=end-time] --name=metrics-name --service=service-name</summary>
 
 | option | description | default |
 | :--- | :--- | :--- |
 | `--name` | Metrics name, defined in [OAL](https://github.com/apache/skywalking/blob/master/oap-server/server-bootstrap/src/main/resources/oal/core.oal), such as `service_sla`, etc. |
-| `--service` | The name of the service, when scope is 'All', no name is required |
+| `--service` | The name of the service, when scope is `All`, no name is required |
 | `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
 | `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
 
