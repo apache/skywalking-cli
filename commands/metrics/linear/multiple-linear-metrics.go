@@ -55,11 +55,12 @@ var Multiple = cli.Command{
 		end := ctx.String("end")
 		start := ctx.String("start")
 		step := ctx.Generic("step")
+
 		metricsName := ctx.String("name")
 		serviceName := ctx.String("service")
 		normal := true
 		numOfLinear := ctx.Int("num")
-		scope := ctx.Generic("scope").(*model.ScopeEnumValue).Selected
+		scope := interceptor.ParseScope(metricsName)
 
 		if numOfLinear > 5 || numOfLinear < 1 {
 			numOfLinear = 5

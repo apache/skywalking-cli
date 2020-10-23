@@ -15,23 +15,31 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package flags
+package interceptor
 
 import (
-	"github.com/urfave/cli"
+	"strings"
+
+	"github.com/apache/skywalking-cli/graphql/schema"
 )
 
-// MetricsFlags can be reused in all metrics commands.
-var MetricsFlags = []cli.Flag{
-	cli.StringFlag{
-		Name:     "name",
-		Usage:    "metrics `name`, which should be defined in OAL script",
-		Required: true,
-	},
-	cli.StringFlag{
-		Name:     "service",
-		Usage:    "the name of the service, when scope is 'All', no name is required",
-		Value:    "",
-		Required: false,
-	},
+// ParseScope defines the scope according to name's prefix.
+func ParseScope(name string) schema.Scope {
+	ret := schema.ScopeAll
+
+	if strings.HasPrefix(name, "service_") {
+		ret = schema.ScopeService
+	} else if strings.HasPrefix(name, "service_relation") {
+		ret = schema.ScopeServiceRelation
+	} else if strings.HasPrefix(name, "service_instance_relation") {
+		ret = schema.ScopeServiceInstanceRelation
+	} else if strings.HasPrefix(name, "service_instance") {
+		ret = schema.ScopeServiceInstance
+	} else if strings.HasPrefix(name, "endpoint_") {
+		ret = schema.ScopeEndpoint
+	} else if strings.HasPrefix(name, "endpoint_relation") {
+		ret = schema.ScopeEndpointRelation
+	}
+
+	return ret
 }

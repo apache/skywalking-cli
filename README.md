@@ -160,12 +160,11 @@ Ascii Graph, like coloring in terminal, so please use `json`  or `yaml` instead.
 
 <details>
 
-<summary>metrics linear [--start=start-time] [--end=end-time] --name=metrics-name [--scope=scope-of-metrics]</summary>
+<summary>metrics linear [--start=start-time] [--end=end-time] --name=metrics-name</summary>
 
 | option | description | default |
 | :--- | :--- | :--- |
-| `--name` | Metrics name, defined in [OAL](https://github.com/apache/skywalking/blob/master/oap-server/server-bootstrap/src/main/resources/oal/core.oal), such as `all_p99`, etc. |
-| `--scope` | The scope of metrics, which is consistent with `--name`, such as `All`, `Service`, `ServiceInstance`, `Endpoint`, `ServiceRelation`, `ServiceInstanceRelation` and `EndpointRelation`. |`All`|
+| `--name` | Metrics name, defined in [OAL](https://github.com/apache/skywalking/blob/master/oap-server/server-bootstrap/src/main/resources/oal/core.oal). |
 | `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
 | `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
 
@@ -179,7 +178,7 @@ Ascii Graph, like coloring in terminal, so please use `json`  or `yaml` instead.
 
 | option | description | default |
 | :--- | :--- | :--- |
-| `--name` | Metrics name, defined in [OAL](https://github.com/apache/skywalking/blob/master/oap-server/server-bootstrap/src/main/resources/oal/core.oal), such as `all_p99`, etc. |
+| `--name` | Metrics name, defined in [OAL](https://github.com/apache/skywalking/blob/master/oap-server/server-bootstrap/src/main/resources/oal/core.oal), such as `all_percentile`, etc. |
 | `--num` | Number of the linear metrics to fetch | `5` |
 | `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
 | `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
@@ -190,12 +189,12 @@ Ascii Graph, like coloring in terminal, so please use `json`  or `yaml` instead.
 
 <details>
 
-<summary>metrics single [--start=start-time] [--end=end-time] --name=metrics-name [--ids=entity-ids]</summary>
+<summary>metrics single [--start=start-time] [--end=end-time] --name=metrics-name [--service=service-name]</summary>
 
 | option | description | default |
 | :--- | :--- | :--- |
 | `--name` | Metrics name, defined in [OAL](https://github.com/apache/skywalking/blob/master/oap-server/server-bootstrap/src/main/resources/oal/core.oal), such as `service_sla`, etc. |
-| `--ids` | IDs that are required by the metric type, such as service IDs for `service_sla` |
+| `--service` | The name of the service, when scope is 'All', no name is required |
 | `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
 | `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
 
@@ -205,15 +204,15 @@ Ascii Graph, like coloring in terminal, so please use `json`  or `yaml` instead.
 
 <details>
 
-<summary>metrics top 3 [--start=start-time] [--end=end-time] --name endpoint_sla [--service-id 3]</summary>
+<summary>metrics top 5 [--start=start-time] [--end=end-time] --name=metrics-name [--order=DES]</summary>
 
 | option | description | default |
 | :--- | :--- | :--- |
+| arguments | The first argument is the number of top entities | `5` |
 | `--name` | Metrics name, defined in [OAL](https://github.com/apache/skywalking/blob/master/oap-server/server-bootstrap/src/main/resources/oal/core.oal), such as `service_sla`, etc. |
-| `--service-id` | service ID that are required by the metric type, such as service IDs for `service_sla` |
+| `--order` | The order of metrics, `DES` or `ASC`. |`DES`|
 | `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
 | `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
-| arguments | the first argument is the number of top entities | `3` |
 
 </details>
 
@@ -221,12 +220,11 @@ Ascii Graph, like coloring in terminal, so please use `json`  or `yaml` instead.
 
 <details>
 
-<summary>metrics thermodynamic --name=thermodynamic name [--scope=scope-of-metrics]</summary>
+<summary>metrics thermodynamic --name=metrics-name</summary>
 
 | option | description | default |
 | :--- | :--- | :--- |
-| `--name` | Metrics name, defined in [OAL](https://github.com/apache/skywalking/blob/master/oap-server/server-bootstrap/src/main/resources/oal/core.oal), such as `service_sla`, etc. |
-| `--scope` | The scope of metrics, which is consistent with `--name`, such as `All`, `Service`, `ServiceInstance`, `Endpoint`, `ServiceRelation`, `ServiceInstanceRelation` and `EndpointRelation`. |`All`|
+| `--name` | Metrics name, defined in [OAL](https://github.com/apache/skywalking/blob/master/oap-server/server-bootstrap/src/main/resources/oal/core.oal), such as `all_heatmap`, etc. |
 | `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
 | `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
 
@@ -376,7 +374,7 @@ otherwise,
 <summary>Query a linear metrics graph for an instance</summary>
 
 ```shell
-$ ./bin/swctl --display=graph metrics linear --name=service_instance_resp_time --scope ServiceInstance
+$ ./bin/swctl --display=graph metrics linear --name=service_instance_resp_time
 ┌─────────────────────────────────────────────────────────────────────────────────Press q to quit──────────────────────────────────────────────────────────────────────────────────┐
 │                                                                                                                                                                                  │
 │                                                                                                                                                                                  │
@@ -517,30 +515,30 @@ $ ./bin/swctl --display=graph --debug metrics multiple-linear --name all_percent
 <summary>Query the top 5 services whose sla is largest</summary>
 
 ```shell
-$ ./bin/swctl metrics top 5 --name service_sla        
-[{"name":"projectB","id":"2","value":10000},{"name":"projectC","id":"3","value":10000},{"name":"projectA","id":"4","value":10000},{"name":"projectD","id":"5","value":10000}]
+$ ./bin/swctl metrics top 5 --name service_sla
+[{"name":"load balancer1.system","id":"","value":"10000","refId":null},{"name":"load balancer2.system","id":"","value":"10000","refId":null},{"name":"projectB.business-zone","id":"","value":"10000","refId":null},{"name":"projectC.business-zone","id":"","value":"10000","refId":null},{"name":"projectD.business-zone","id":"","value":"10000","refId":null}]
 ```
 
 </details>
 
 <details>
 
-<summary>Query the top 5 instances whose sla is largest, of service (id = 3)</summary>
+<summary>Query the top 5 instances whose sla is largest</summary>
 
 ```shell
-$ ./bin/swctl metrics top 5 --name service_instance_sla --service-id 3        
-[{"name":"projectC-pid:30335@skywalking-server-0002","id":"13","value":10000},{"name":"projectC-pid:22037@skywalking-server-0001","id":"2","value":10000}]
+$ ./bin/swctl metrics top 5 --name service_instance_sla     
+[{"name":"load balancer1.system - load balancer1.system","id":"","value":"10000","refId":null},{"name":"load balancer2.system - load balancer2.system","id":"","value":"10000","refId":null},{"name":"projectA.business-zone - eb38c5efeb874734a7b17de780685c55@192.168.252.12","id":"","value":"10000","refId":null},{"name":"projectB.business-zone - 4e72bad0f2c14381a5657eaaca7f33ba@192.168.252.12","id":"","value":"10000","refId":null},{"name":"projectB.business-zone - 6e0e2e1cc63145859a21fc7bf7f18d2e@192.168.252.13","id":"","value":"10000","refId":null}]
 ```
 
 </details>
 
 <details>
 
-<summary>Query the top 5 endpoints whose sla is largest, of service (id = 3)</summary>
+<summary>Query the top 5 endpoints whose sla is largest</summary>
 
 ```shell
-$ ./bin/swctl metrics top 5 --name endpoint_sla --service-id 3        
-[{"name":"/projectC/{value}","id":"4","value":10000}]
+$ ./bin/swctl metrics top 5 --name endpoint_sla  
+[{"name":"load balancer1.system - /projectA/test","id":"","value":"10000","refId":null},{"name":"load balancer1.system - /","id":"","value":"10000","refId":null},{"name":"load balancer2.system - /projectA/test","id":"","value":"10000","refId":null},{"name":"load balancer2.system - /","id":"","value":"10000","refId":null},{"name":"projectA.business-zone - /projectA/{name}","id":"","value":"10000","refId":null}]
 ```
 
 </details>

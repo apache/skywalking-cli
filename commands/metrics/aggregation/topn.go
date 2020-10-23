@@ -19,8 +19,6 @@ package aggregation
 
 import (
 	"fmt"
-	"strconv"
-
 	"github.com/apache/skywalking-cli/commands/flags"
 	"github.com/apache/skywalking-cli/commands/interceptor"
 	"github.com/apache/skywalking-cli/commands/model"
@@ -28,6 +26,7 @@ import (
 	"github.com/apache/skywalking-cli/display/displayable"
 	"github.com/apache/skywalking-cli/graphql/metrics"
 	"github.com/apache/skywalking-cli/graphql/schema"
+	"strconv"
 
 	"github.com/urfave/cli"
 )
@@ -62,7 +61,7 @@ var TopN = cli.Command{
 
 		metricsName := ctx.String("name")
 		normal := true
-		scope := ctx.Generic("scope").(*model.ScopeEnumValue).Selected
+		scope := interceptor.ParseScope(metricsName)
 		order := ctx.Generic("order").(*model.OrderEnumValue).Selected
 		topN := 5
 

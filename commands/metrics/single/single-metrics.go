@@ -44,10 +44,11 @@ var Command = cli.Command{
 		end := ctx.String("end")
 		start := ctx.String("start")
 		step := ctx.Generic("step")
+
 		metricsName := ctx.String("name")
 		serviceName := ctx.String("service")
 		normal := true
-		scope := ctx.Generic("scope").(*model.ScopeEnumValue).Selected
+		scope := interceptor.ParseScope(metricsName)
 
 		duration := schema.Duration{
 			Start: start,
