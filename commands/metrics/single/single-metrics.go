@@ -56,7 +56,7 @@ var Command = cli.Command{
 			return fmt.Errorf("the name of service should be specified")
 		}
 		if scope == schema.ScopeAll {
-			return fmt.Errorf("this command cannot be used to query All scope metrics")
+			return fmt.Errorf("this command cannot be used to query `All` scope metrics")
 		}
 
 		duration := schema.Duration{

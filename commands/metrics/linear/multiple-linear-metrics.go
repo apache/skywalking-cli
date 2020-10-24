@@ -62,6 +62,10 @@ var Multiple = cli.Command{
 		numOfLinear := ctx.Int("num")
 		scope := interceptor.ParseScope(metricsName)
 
+		if serviceName == "" && scope != schema.ScopeAll {
+			return fmt.Errorf("the name of service should be specified when metrics' scope is not `All`")
+		}
+
 		if numOfLinear > 5 || numOfLinear < 1 {
 			numOfLinear = 5
 		}

@@ -53,8 +53,11 @@ var Single = cli.Command{
 		normal := true
 		scope := interceptor.ParseScope(metricsName)
 
+		if serviceName == "" {
+			return fmt.Errorf("the name of service should be specified")
+		}
 		if scope == schema.ScopeAll {
-			return fmt.Errorf("this command cannot be used to query All scope metrics")
+			return fmt.Errorf("this command cannot be used to query `All` scope metrics")
 		}
 
 		duration := schema.Duration{
@@ -66,9 +69,10 @@ var Single = cli.Command{
 		metricsValues := metrics.LinearIntValues(ctx, schema.MetricsCondition{
 			Name: metricsName,
 			Entity: &schema.Entity{
-				Scope:       scope,
-				ServiceName: &serviceName,
-				Normal:      &normal,
+				Scope:               scope,
+				ServiceName:         &serviceName,
+				Normal:              &normal,
+				ServiceInstanceName: &serviceName,
 			},
 		}, duration)
 
