@@ -21,7 +21,7 @@ import (
 	"github.com/urfave/cli"
 )
 
-// MetricsFlags can be reused in all metrics commands.
+// MetricsFlags can be reused in several metrics commands.
 var MetricsFlags = []cli.Flag{
 	cli.StringFlag{
 		Name:     "name",
@@ -30,7 +30,7 @@ var MetricsFlags = []cli.Flag{
 	},
 	cli.StringFlag{
 		Name:     "service",
-		Usage:    "the name of the service, when scope is 'All', no name is required",
+		Usage:    "the name of the service",
 		Value:    "",
 		Required: false,
 	},

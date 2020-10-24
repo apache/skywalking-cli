@@ -18,6 +18,8 @@
 package single
 
 import (
+	"fmt"
+
 	"github.com/apache/skywalking-cli/commands/flags"
 	"github.com/apache/skywalking-cli/commands/interceptor"
 	"github.com/apache/skywalking-cli/commands/model"
@@ -49,6 +51,13 @@ var Command = cli.Command{
 		serviceName := ctx.String("service")
 		normal := true
 		scope := interceptor.ParseScope(metricsName)
+
+		if serviceName == "" {
+			return fmt.Errorf("the name of service should be specified")
+		}
+		if scope == schema.ScopeAll {
+			return fmt.Errorf("this command cannot be used to query All scope metrics")
+		}
 
 		duration := schema.Duration{
 			Start: start,

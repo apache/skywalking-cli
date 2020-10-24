@@ -18,6 +18,8 @@
 package linear
 
 import (
+	"fmt"
+
 	"github.com/apache/skywalking-cli/commands/flags"
 	"github.com/apache/skywalking-cli/commands/interceptor"
 	"github.com/apache/skywalking-cli/commands/model"
@@ -50,6 +52,10 @@ var Single = cli.Command{
 		serviceName := ctx.String("service")
 		normal := true
 		scope := interceptor.ParseScope(metricsName)
+
+		if scope == schema.ScopeAll {
+			return fmt.Errorf("this command cannot be used to query All scope metrics")
+		}
 
 		duration := schema.Duration{
 			Start: start,

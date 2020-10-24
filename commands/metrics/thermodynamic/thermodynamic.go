@@ -18,16 +18,15 @@
 package thermodynamic
 
 import (
-	"github.com/urfave/cli"
-
-	"github.com/apache/skywalking-cli/display/displayable"
-
 	"github.com/apache/skywalking-cli/commands/flags"
 	"github.com/apache/skywalking-cli/commands/interceptor"
 	"github.com/apache/skywalking-cli/commands/model"
 	"github.com/apache/skywalking-cli/display"
+	"github.com/apache/skywalking-cli/display/displayable"
 	"github.com/apache/skywalking-cli/graphql/metrics"
 	"github.com/apache/skywalking-cli/graphql/schema"
+
+	"github.com/urfave/cli"
 )
 
 var Command = cli.Command{
@@ -36,7 +35,14 @@ var Command = cli.Command{
 	Usage:   "Query thermodynamic metrics defined in backend OAL",
 	Flags: flags.Flags(
 		flags.DurationFlags,
-		flags.MetricsFlags,
+		[]cli.Flag{
+			cli.StringFlag{
+				Name:     "name",
+				Usage:    "metrics `name`, which should be defined in OAL script",
+				Value:    "all_heatmap",
+				Required: false,
+			},
+		},
 	),
 	Before: interceptor.BeforeChain([]cli.BeforeFunc{
 		interceptor.TimezoneInterceptor,

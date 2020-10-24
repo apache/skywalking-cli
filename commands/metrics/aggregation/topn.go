@@ -65,6 +65,7 @@ var TopN = cli.Command{
 		scope := interceptor.ParseScope(metricsName)
 		order := ctx.Generic("order").(*model.OrderEnumValue).Selected
 		topN := 5
+		parentService := ctx.String("service")
 
 		if ctx.NArg() > 0 {
 			nn, err := strconv.Atoi(ctx.Args().First())
@@ -81,11 +82,12 @@ var TopN = cli.Command{
 		}
 
 		metricsValues := metrics.SortMetrics(ctx, schema.TopNCondition{
-			Name:   metricsName,
-			Normal: &normal,
-			Scope:  &scope,
-			TopN:   topN,
-			Order:  order,
+			Name:          metricsName,
+			ParentService: &parentService,
+			Normal:        &normal,
+			Scope:         &scope,
+			TopN:          topN,
+			Order:         order,
 		}, duration)
 
 		return display.Display(ctx, &displayable.Displayable{Data: metricsValues})

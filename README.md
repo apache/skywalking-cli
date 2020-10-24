@@ -160,12 +160,12 @@ Ascii Graph, like coloring in terminal, so please use `json`  or `yaml` instead.
 
 <details>
 
-<summary>metrics linear [--start=start-time] [--end=end-time] --name=metrics-name --service=service-name</summary>
+<summary>metrics linear [--start=start-time] [--end=end-time] --name=metrics-name [--service=service-name]</summary>
 
 | option | description | default |
 | :--- | :--- | :--- |
 | `--name` | Metrics name, defined in [OAL](https://github.com/apache/skywalking/blob/master/oap-server/server-bootstrap/src/main/resources/oal/core.oal). |
-| `--service` | The name of the service, when metrics' scope is `All`, no service name is required |
+| `--service` | The name of the service. | "" |
 | `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
 | `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
 
@@ -175,12 +175,12 @@ Ascii Graph, like coloring in terminal, so please use `json`  or `yaml` instead.
 
 <details>
 
-<summary>metrics multiple-linear [--start=start-time] [--end=end-time] --name=metrics-name --service=service-name [--num=number-of-linear-metrics]</summary>
+<summary>metrics multiple-linear [--start=start-time] [--end=end-time] --name=metrics-name [--service=service-name] [--num=number-of-linear-metrics]</summary>
 
 | option | description | default |
 | :--- | :--- | :--- |
-| `--name` | Metrics name, defined in [OAL](https://github.com/apache/skywalking/blob/master/oap-server/server-bootstrap/src/main/resources/oal/core.oal), such as `all_percentile`, etc. |
-| `--service` | The name of the service, when scope is `All`, no name is required |
+| `--name` | Metrics name that ends with `_percentile`, defined in [OAL](https://github.com/apache/skywalking/blob/master/oap-server/server-bootstrap/src/main/resources/oal/core.oal), such as `all_percentile`, etc. |
+| `--service` | The name of the service, when scope is `All`, no name is required. | "" |
 | `--num` | Number of the linear metrics to fetch | `5` |
 | `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
 | `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
@@ -196,7 +196,7 @@ Ascii Graph, like coloring in terminal, so please use `json`  or `yaml` instead.
 | option | description | default |
 | :--- | :--- | :--- |
 | `--name` | Metrics name, defined in [OAL](https://github.com/apache/skywalking/blob/master/oap-server/server-bootstrap/src/main/resources/oal/core.oal), such as `service_sla`, etc. |
-| `--service` | The name of the service, when scope is `All`, no name is required |
+| `--service` | The name of the service. | "" |
 | `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
 | `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
 
@@ -206,12 +206,13 @@ Ascii Graph, like coloring in terminal, so please use `json`  or `yaml` instead.
 
 <details>
 
-<summary>metrics top 5 [--start=start-time] [--end=end-time] --name=metrics-name [--order=DES]</summary>
+<summary>metrics top 5 [--start=start-time] [--end=end-time] --name=metrics-name [--service=parent-service] [--order=DES]</summary>
 
 | option | description | default |
 | :--- | :--- | :--- |
 | arguments | The first argument is the number of top entities | `5` |
 | `--name` | Metrics name, defined in [OAL](https://github.com/apache/skywalking/blob/master/oap-server/server-bootstrap/src/main/resources/oal/core.oal), such as `service_sla`, etc. |
+| `--service` | The name of the parent service, could be null if query the global top N. | "" |
 | `--order` | The order of metrics, `DES` or `ASC`. |`DES`|
 | `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
 | `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
@@ -222,11 +223,11 @@ Ascii Graph, like coloring in terminal, so please use `json`  or `yaml` instead.
 
 <details>
 
-<summary>metrics thermodynamic --name=metrics-name</summary>
+<summary>metrics thermodynamic [-name=metrics-name]</summary>
 
 | option | description | default |
 | :--- | :--- | :--- |
-| `--name` | Metrics name, defined in [OAL](https://github.com/apache/skywalking/blob/master/oap-server/server-bootstrap/src/main/resources/oal/core.oal), such as `all_heatmap`, etc. |
+| `--name` | Metrics name that ends with `_heatmap`, defined in [OAL](https://github.com/apache/skywalking/blob/master/oap-server/server-bootstrap/src/main/resources/oal/core.oal), such as `all_heatmap`, etc. | `all_heatmap` |
 | `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
 | `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
 
