@@ -18,6 +18,8 @@
 package linear
 
 import (
+	"fmt"
+
 	"github.com/apache/skywalking-cli/commands/flags"
 	"github.com/apache/skywalking-cli/commands/interceptor"
 	"github.com/apache/skywalking-cli/commands/model"
@@ -35,23 +37,7 @@ var Single = cli.Command{
 	Usage: "Query linear metrics defined in backend OAL",
 	Flags: flags.Flags(
 		flags.DurationFlags,
-		[]cli.Flag{
-			cli.StringFlag{
-				Name:     "name",
-				Usage:    "metrics `NAME`, such as `all_p99`",
-				Required: true,
-			},
-			cli.GenericFlag{
-				Name:  "scope",
-				Usage: "the scope of the query, which follows the metrics `name`",
-				Value: &model.ScopeEnumValue{
-					Enum:     schema.AllScope,
-					Default:  schema.ScopeAll,
-					Selected: schema.ScopeAll,
-				},
-				Required: false,
-			},
-		},
+		flags.MetricsFlags,
 	),
 	Before: interceptor.BeforeChain([]cli.BeforeFunc{
 		interceptor.TimezoneInterceptor,
@@ -61,8 +47,18 @@ var Single = cli.Command{
 		end := ctx.String("end")
 		start := ctx.String("start")
 		step := ctx.Generic("step")
+
 		metricsName := ctx.String("name")
-		scope := ctx.Generic("scope").(*model.ScopeEnumValue).Selected
+		serviceName := ctx.String("service")
+		normal := true
+		scope := interceptor.ParseScope(metricsName)
+
+		if serviceName == "" {
+			return fmt.Errorf("the name of service should be specified")
+		}
+		if scope == schema.ScopeAll {
+			return fmt.Errorf("this command cannot be used to query `All` scope metrics")
+		}
 
 		duration := schema.Duration{
 			Start: start,
@@ -73,7 +69,10 @@ var Single = cli.Command{
 		metricsValues := metrics.LinearIntValues(ctx, schema.MetricsCondition{
 			Name: metricsName,
 			Entity: &schema.Entity{
-				Scope: scope,
+				Scope:               scope,
+				ServiceName:         &serviceName,
+				Normal:              &normal,
+				ServiceInstanceName: &serviceName,
 			},
 		}, duration)
 

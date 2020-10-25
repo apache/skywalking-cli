@@ -22,14 +22,12 @@ import (
 	"io/ioutil"
 	"strings"
 
-	"github.com/machinebox/graphql"
 	"github.com/spf13/viper"
 	"github.com/urfave/cli"
 
 	"gopkg.in/yaml.v2"
 
 	"github.com/apache/skywalking-cli/assets"
-	"github.com/apache/skywalking-cli/graphql/client"
 	"github.com/apache/skywalking-cli/graphql/metrics"
 	"github.com/apache/skywalking-cli/graphql/schema"
 	"github.com/apache/skywalking-cli/graphql/utils"
@@ -153,13 +151,7 @@ func Metrics(ctx *cli.Context, duration schema.Duration) [][]*schema.SelectedRec
 	}
 
 	for _, m := range template.Metrics {
-		var response map[string][]*schema.SelectedRecord
-		request := graphql.NewRequest(assets.Read("graphqls/dashboard/SortMetrics.graphql"))
-		request.Var("condition", m.Condition)
-		request.Var("duration", duration)
-
-		client.ExecuteQueryOrFail(ctx, request, &response)
-		ret = append(ret, response["result"])
+		ret = append(ret, metrics.SortMetrics(ctx, m.Condition, duration))
 	}
 
 	return ret

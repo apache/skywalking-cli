@@ -18,16 +18,15 @@
 package thermodynamic
 
 import (
-	"github.com/urfave/cli"
-
-	"github.com/apache/skywalking-cli/display/displayable"
-
 	"github.com/apache/skywalking-cli/commands/flags"
 	"github.com/apache/skywalking-cli/commands/interceptor"
 	"github.com/apache/skywalking-cli/commands/model"
 	"github.com/apache/skywalking-cli/display"
+	"github.com/apache/skywalking-cli/display/displayable"
 	"github.com/apache/skywalking-cli/graphql/metrics"
 	"github.com/apache/skywalking-cli/graphql/schema"
+
+	"github.com/urfave/cli"
 )
 
 var Command = cli.Command{
@@ -40,16 +39,8 @@ var Command = cli.Command{
 			cli.StringFlag{
 				Name:     "name",
 				Usage:    "metrics `name`, which should be defined in OAL script",
-				Required: true,
-			},
-			cli.GenericFlag{
-				Name:  "scope",
-				Usage: "the scope of the query, which follows the metrics `name`",
-				Value: &model.ScopeEnumValue{
-					Enum:     schema.AllScope,
-					Default:  schema.ScopeAll,
-					Selected: schema.ScopeAll,
-				},
+				Value:    "all_heatmap",
+				Required: false,
 			},
 		},
 	),
@@ -61,8 +52,9 @@ var Command = cli.Command{
 		end := ctx.String("end")
 		start := ctx.String("start")
 		step := ctx.Generic("step")
+
 		metricsName := ctx.String("name")
-		scope := ctx.Generic("scope").(*model.ScopeEnumValue).Selected
+		scope := interceptor.ParseScope(metricsName)
 
 		duration := schema.Duration{
 			Start: start,

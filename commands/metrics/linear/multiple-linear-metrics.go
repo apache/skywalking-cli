@@ -37,12 +37,8 @@ var Multiple = cli.Command{
 	Usage: "Query multiple linear metrics defined in backend OAL",
 	Flags: flags.Flags(
 		flags.DurationFlags,
+		flags.MetricsFlags,
 		[]cli.Flag{
-			cli.StringFlag{
-				Name:     "name",
-				Usage:    "metrics `NAME`, such as `all_percentile`",
-				Required: true,
-			},
 			cli.IntFlag{
 				Name:     "num",
 				Usage:    "`num`, the number of linear metrics to query, (default: 5)",
@@ -59,8 +55,16 @@ var Multiple = cli.Command{
 		end := ctx.String("end")
 		start := ctx.String("start")
 		step := ctx.Generic("step")
+
 		metricsName := ctx.String("name")
+		serviceName := ctx.String("service")
+		normal := true
 		numOfLinear := ctx.Int("num")
+		scope := interceptor.ParseScope(metricsName)
+
+		if serviceName == "" && scope != schema.ScopeAll {
+			return fmt.Errorf("the name of service should be specified when metrics' scope is not `All`")
+		}
 
 		if numOfLinear > 5 || numOfLinear < 1 {
 			numOfLinear = 5
@@ -80,7 +84,9 @@ var Multiple = cli.Command{
 		metricsValuesArray := metrics.MultipleLinearIntValues(ctx, schema.MetricsCondition{
 			Name: metricsName,
 			Entity: &schema.Entity{
-				Scope: schema.ScopeAll,
+				Scope:       scope,
+				ServiceName: &serviceName,
+				Normal:      &normal,
 			},
 		}, labels, duration)
 

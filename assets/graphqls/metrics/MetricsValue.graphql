@@ -15,13 +15,6 @@
 # specific language governing permissions and limitations
 # under the License.
 
-query ($name: String!, $topN: Int!, $duration: Duration!, $order: Order!) {
-    result: getAllServiceInstanceTopN(
-        duration: $duration,
-        name: $name,
-        topN: $topN,
-        order: $order
-    ) {
-        id name value
-    }
+query ($condition: MetricsCondition!, $duration: Duration!) {
+    result: readMetricsValue(condition: $condition, duration: $duration)
 }
