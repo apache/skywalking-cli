@@ -380,7 +380,7 @@ otherwise,
 $ ./bin/swctl --display=graph metrics linear --name=service_instance_resp_time --service "load balancer1.system"
 ```
 
-![](./docs/screenshots/metrics-linear.png)
+![](http://skywalking.apache.org/screenshots/cli/metrics-linear.png)
 
 otherwise
 
@@ -419,7 +419,7 @@ $ ./bin/swctl service ls projectC | jq '.[0].id' | xargs ./bin/swctl endpoint ls
 $ ./bin/swctl --display=graph --debug metrics multiple-linear --name all_percentile
 ```
 
-![](./docs/screenshots/metrics-multiple-linear.png)
+![](http://skywalking.apache.org/screenshots/cli/metrics-multiple-linear.png)
 
 </details>
 
@@ -469,7 +469,7 @@ $ ./bin/swctl metrics thermodynamic
 $ ./bin/swctl --display=graph metrics thermodynamic
 ```
 
-![heatmap](./docs/screenshots/heatmap.png)
+![heatmap](http://skywalking.apache.org/screenshots/cli/heatmap.png)
 
 </details>
 
@@ -481,7 +481,7 @@ $ ./bin/swctl --display=graph metrics thermodynamic
 $ ./bin/swctl --display graph trace 07841b21-c8ed-4ace-851f-5cf0a635dc9f
 ```
 
-![](./docs/screenshots/trace.png)
+![](http://skywalking.apache.org/screenshots/cli/trace.png)
 
 </details>
 
@@ -493,7 +493,7 @@ $ ./bin/swctl --display graph trace 07841b21-c8ed-4ace-851f-5cf0a635dc9f
 $ ./bin/swctl --display graph trace ls
 ```
 
-![](./docs/screenshots/trace-ls.png)
+![](http://skywalking.apache.org/screenshots/cli/trace-ls.png)
 
 </details>
 
@@ -505,11 +505,11 @@ $ ./bin/swctl --display graph trace ls
 $ ./bin/swctl --display graph db g
 ```
 
-![](./docs/screenshots/dashboard-1.png)
+![](http://skywalking.apache.org/screenshots/cli/dashboard-1.png)
 
-![](./docs/screenshots/dashboard-2.png)
+![](http://skywalking.apache.org/screenshots/cli/dashboard-2.png)
 
-![](./docs/screenshots/dashboard-3.png)
+![](http://skywalking.apache.org/screenshots/cli/dashboard-3.png)
 
 </details>
 
@@ -521,7 +521,7 @@ $ ./bin/swctl --display graph db g
 $ ./bin/swctl --display graph db g --template my-global-template.yml
 ```
 
-![dashboard-customize](./docs/screenshots/dashboard-customize.png)
+![dashboard-customize](http://skywalking.apache.org/screenshots/cli/dashboard-customize.png)
 
 </details>
 
