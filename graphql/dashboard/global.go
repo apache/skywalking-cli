@@ -21,6 +21,7 @@ import (
 	"bytes"
 	"io/ioutil"
 	"strings"
+	"sync"
 
 	"github.com/spf13/viper"
 	"github.com/urfave/cli"
@@ -194,10 +195,36 @@ func heatMap(ctx *cli.Context, duration schema.Duration) schema.HeatMap {
 
 func Global(ctx *cli.Context, duration schema.Duration) *GlobalData {
 	var globalData GlobalData
+	var wg sync.WaitGroup
 
-	globalData.Metrics = Metrics(ctx, duration)
-	globalData.ResponseLatency = responseLatency(ctx, duration)
-	globalData.HeatMap = heatMap(ctx, duration)
+	_, err := LoadTemplate(ctx.String("template"))
+	if err != nil {
+		return nil
+	}
+	wg.Add(3)
+
+	var m [][]*schema.SelectedRecord
+	go func() {
+		m = Metrics(ctx, duration)
+		wg.Done()
+	}()
+
+	var rl []map[string]float64
+	go func() {
+		rl = responseLatency(ctx, duration)
+		wg.Done()
+	}()
+
+	var hm schema.HeatMap
+	go func() {
+		hm = heatMap(ctx, duration)
+		wg.Done()
+	}()
+
+	wg.Wait()
+	globalData.Metrics = m
+	globalData.ResponseLatency = rl
+	globalData.HeatMap = hm
 
 	return &globalData
 }
