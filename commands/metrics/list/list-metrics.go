@@ -15,29 +15,30 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package metrics
+package list
 
 import (
 	"github.com/urfave/cli"
 
-	"github.com/apache/skywalking-cli/commands/metrics/aggregation"
-	"github.com/apache/skywalking-cli/commands/metrics/list"
-
-	"github.com/apache/skywalking-cli/commands/metrics/thermodynamic"
-
-	"github.com/apache/skywalking-cli/commands/metrics/linear"
-	"github.com/apache/skywalking-cli/commands/metrics/single"
+	"github.com/apache/skywalking-cli/display"
+	"github.com/apache/skywalking-cli/display/displayable"
+	"github.com/apache/skywalking-cli/graphql/metrics"
 )
 
 var Command = cli.Command{
-	Name:  "metrics",
-	Usage: "Query metrics defined in backend OAL",
-	Subcommands: cli.Commands{
-		single.Command,
-		linear.Single,
-		linear.Multiple,
-		thermodynamic.Command,
-		aggregation.TopN,
-		list.Command,
+	Name:  "list",
+	Usage: "List metrics that could be queried",
+	Flags: []cli.Flag{
+		cli.StringFlag{
+			Name:  "regex",
+			Usage: "filter metrics with regex",
+		},
+	},
+	Action: func(ctx *cli.Context) error {
+		regex := ctx.String("regex")
+
+		metricsValue := metrics.ListMetrics(ctx, regex)
+
+		return display.Display(ctx, &displayable.Displayable{Data: metricsValue})
 	},
 }
