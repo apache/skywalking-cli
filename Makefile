@@ -137,8 +137,8 @@ release: verify release-src release-bin
 check-codegen: codegen
 	$(MAKE) clean
 	mkdir -p /tmp/swctl
-	git diff >/tmp/swctl/check.diff 2>&1
 	@go mod tidy &> /dev/null
+	git diff >/tmp/swctl/check.diff 2>&1
 	@if [ ! -z "`git status -s`" ]; then \
 		echo "Following files are not consistent with CI:"; \
 		git status -s; \
