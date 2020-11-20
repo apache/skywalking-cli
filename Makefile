@@ -35,6 +35,7 @@ GO_PACKR = $(GO_PATH)/bin/packr2
 GO_BUILD_FLAGS = -v
 GO_BUILD_LDFLAGS = -X main.version=$(VERSION)
 GQL_GEN = $(GO_PATH)/bin/gqlgen
+SCHEMA_PATH = graphql/schema/schema.go
 
 PLATFORMS := windows linux darwin
 os = $(word 1, $@)
@@ -57,6 +58,10 @@ codegen: clean tools
 	echo 'scalar Long' > query-protocol/schema.graphqls
 	$(GQL_GEN) generate
 	-rm -rf generated.go
+	cp hack/boilerplate.go.txt schema.go.tmp
+	#echo "\n" >>schema.go.tmp
+	cat $(SCHEMA_PATH) >> schema.go.tmp
+	mv schema.go.tmp $(SCHEMA_PATH)
 	cd assets && GO111MODULE=on $(GO_PACKR) -v && cd ..
 
 .PHONY: $(PLATFORMS)
@@ -96,7 +101,6 @@ clean: tools
 	-rm -rf bin
 	-rm -rf coverage.txt
 	-rm -rf query-protocol/schema.graphqls
-	-rm -rf graphql/schema/schema.go
 	-rm -rf *.tgz
 	-rm -rf *.tgz
 	-rm -rf *.asc
@@ -131,3 +135,15 @@ release: verify release-src release-bin
 	shasum -a 512 $(RELEASE_SRC).tgz > $(RELEASE_SRC).tgz.sha512
 	gpg --batch --yes --armor --detach-sig $(RELEASE_BIN).tgz
 	shasum -a 512 $(RELEASE_BIN).tgz > $(RELEASE_BIN).tgz.sha512
+
+## Check that the status is consistent with CI.
+check-codegen: codegen
+	$(MAKE) clean
+	mkdir -p /tmp/swctl
+	git diff >/tmp/swctl/check.diff 2>&1
+	@go mod tidy &> /dev/null
+	@if [ ! -z "`git status -s`" ]; then \
+		echo "Following files are not consistent with CI:"; \
+		git status -s; \
+		exit 1; \
+	fi

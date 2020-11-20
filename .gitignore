@@ -1,7 +1,6 @@
 .idea
 bin
 coverage.txt
-graphql/schema/schema.go
 .DS_Store
 *-packr.go
 packrd

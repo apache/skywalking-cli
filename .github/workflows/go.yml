@@ -37,6 +37,9 @@ jobs:
         uses: actions/checkout@v2
         with:
           submodules: true
+          
+      - name: Check code generation
+        run: make check-codegen
 
       - name: Check License
         run: make license
