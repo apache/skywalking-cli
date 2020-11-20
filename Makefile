@@ -58,11 +58,12 @@ codegen: clean tools
 	echo 'scalar Long' > query-protocol/schema.graphqls
 	$(GQL_GEN) generate
 	-rm -rf generated.go
-	cp hack/boilerplate.go.txt schema.go.tmp
-	#echo "\n" >>schema.go.tmp
-	cat $(SCHEMA_PATH) >> schema.go.tmp
-	mv schema.go.tmp $(SCHEMA_PATH)
-	cd assets && GO111MODULE=on $(GO_PACKR) -v && cd ..
+	-cp hack/boilerplate.go.txt schema.go.tmp
+	-cat $(SCHEMA_PATH) >> schema.go.tmp
+	-mv schema.go.tmp $(SCHEMA_PATH)
+	-cd assets && GO111MODULE=on $(GO_PACKR) -v && cd ..
+	-rm query-protocol/schema.graphqls
+	@go mod tidy &> /dev/null
 
 .PHONY: $(PLATFORMS)
 $(PLATFORMS):
