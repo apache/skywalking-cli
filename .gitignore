@@ -2,5 +2,3 @@
 bin
 coverage.txt
 .DS_Store
-*-packr.go
-packrd

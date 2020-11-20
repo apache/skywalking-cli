@@ -35,7 +35,6 @@ GO_PACKR = $(GO_PATH)/bin/packr2
 GO_BUILD_FLAGS = -v
 GO_BUILD_LDFLAGS = -X main.version=$(VERSION)
 GQL_GEN = $(GO_PATH)/bin/gqlgen
-SCHEMA_PATH = graphql/schema/schema.go
 
 PLATFORMS := windows linux darwin
 os = $(word 1, $@)
@@ -58,10 +57,11 @@ codegen: clean tools
 	echo 'scalar Long' > query-protocol/schema.graphqls
 	$(GQL_GEN) generate
 	-rm -rf generated.go
-	-cp hack/boilerplate.go.txt schema.go.tmp
-	-cat $(SCHEMA_PATH) >> schema.go.tmp
-	-mv schema.go.tmp $(SCHEMA_PATH)
-	-cd assets && GO111MODULE=on $(GO_PACKR) -v && cd ..
+	-hack/build-header.sh graphql/schema/schema.go
+	-cd assets && $(GO_PACKR) clean && GO111MODULE=on $(GO_PACKR) -v \
+		&& ../hack/build-header.sh assets-packr.go \
+		&& ../hack/build-header.sh packrd/packed-packr.go \
+		&& cd ..
 	-rm query-protocol/schema.graphqls
 	@go mod tidy &> /dev/null
 
@@ -106,7 +106,6 @@ clean: tools
 	-rm -rf *.tgz
 	-rm -rf *.asc
 	-rm -rf *.sha512
-	cd assets && $(GO_PACKR) clean
 
 release-src: clean
 	-tar -zcvf $(RELEASE_SRC).tgz \
@@ -116,10 +115,7 @@ release-src: clean
 	--exclude .DS_Store \
 	--exclude .github \
 	--exclude $(RELEASE_SRC).tgz \
-	--exclude graphql/schema/schema.go \
 	--exclude query-protocol/schema.graphqls \
-	--exclude assets/packrd \
-	--exclude assets/*-packr.go \
 	.
 
 release-bin: build
