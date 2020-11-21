@@ -48,6 +48,7 @@ SHELL = /bin/bash
 all: clean license deps codegen lint test build
 
 tools:
+	mkdir -p $(GO_PATH)/bin
 	$(GO_BINDATA) -v || curl --location --output $(GO_BINDATA) https://github.com/kevinburke/go-bindata/releases/download/$(GOBINDATA_VERSION)/go-bindata-$(OSNAME)-amd64 \
 		&& chmod +x $(GO_BINDATA)
 	$(GO_LINT) version || curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(GO_PATH)/bin v1.21.0
