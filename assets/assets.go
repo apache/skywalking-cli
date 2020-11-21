@@ -18,14 +18,12 @@
 package assets
 
 import (
-	"github.com/gobuffalo/packr/v2"
-
 	"github.com/apache/skywalking-cli/logger"
 )
 
 // Read reads all content from a file under assets, which is packed in to the binary
 func Read(filename string) string {
-	content, err := packr.New("assets", ".").FindString(filename)
+	content, err := AssetString(filename)
 	if err != nil {
 		logger.Log.Fatalln("failed to read asset: ", filename, err)
 	}

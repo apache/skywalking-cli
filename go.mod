@@ -3,9 +3,8 @@ module github.com/apache/skywalking-cli
 go 1.13
 
 require (
+	github.com/cpuguy83/go-md2man/v2 v2.0.0 // indirect
 	github.com/gizak/termui/v3 v3.1.0
-	github.com/gobuffalo/packr/v2 v2.8.1
-	github.com/karrick/godirwalk v1.16.1 // indirect
 	github.com/machinebox/graphql v0.2.2
 	github.com/matryer/is v1.4.0 // indirect
 	github.com/mattn/go-runewidth v0.0.9
@@ -13,15 +12,13 @@ require (
 	github.com/mum4k/termdash v0.12.1
 	github.com/olekukonko/tablewriter v0.0.2
 	github.com/pkg/errors v0.9.1 // indirect
-	github.com/rogpeppe/go-internal v1.6.2 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/sirupsen/logrus v1.7.0
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/spf13/viper v1.7.0
+	github.com/stretchr/testify v1.5.1 // indirect
 	github.com/urfave/cli v1.22.1
-	golang.org/x/crypto v0.0.0-20201117144127-c1f2f97bffc9 // indirect
 	golang.org/x/net v0.0.0-20201021035429-f5854403a974 // indirect
-	golang.org/x/sync v0.0.0-20201020160332-67f06af15bc9 // indirect
 	golang.org/x/sys v0.0.0-20201119102817-f84b799fce68 // indirect
 	google.golang.org/grpc v1.24.0
 	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect

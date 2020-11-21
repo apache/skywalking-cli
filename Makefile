@@ -31,7 +31,10 @@ GO_GET = $(GO) get
 GO_TEST = $(GO) test
 GO_LINT = $(GO_PATH)/bin/golangci-lint
 GO_LICENSER = $(GO_PATH)/bin/go-licenser
-GO_PACKR = $(GO_PATH)/bin/packr2
+ARCH := $(shell uname)
+OSNAME := $(if $(findstring Darwin,$(ARCH)),darwin,linux)
+GOBINDATA_VERSION := v3.21.0
+GO_BINDATA = $(GO_PATH)/bin/go-bindata
 GO_BUILD_FLAGS = -v
 GO_BUILD_LDFLAGS = -X main.version=$(VERSION)
 GQL_GEN = $(GO_PATH)/bin/gqlgen
@@ -45,7 +48,8 @@ SHELL = /bin/bash
 all: clean license deps codegen lint test build
 
 tools:
-	$(GO_PACKR) -v || $(GO_GET) -u github.com/gobuffalo/packr/v2/...
+	$(GO_BINDATA) -v || curl --location --output $(GO_BINDATA) https://github.com/kevinburke/go-bindata/releases/download/$(GOBINDATA_VERSION)/go-bindata-$(OSNAME)-amd64 \
+		&& chmod +x $(GO_BINDATA)
 	$(GO_LINT) version || curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(GO_PATH)/bin v1.21.0
 	$(GO_LICENSER) -version || GO111MODULE=off $(GO_GET) -u github.com/elastic/go-licenser
 	$(GQL_GEN) version || $(GO_GET) -u github.com/99designs/gqlgen
@@ -53,16 +57,22 @@ tools:
 deps: tools
 	$(GO_GET) -v -t -d ./...
 
-codegen: clean tools
+.PHONY: assets
+assets: tools
+	cd assets \
+		&& $(GO_BINDATA) --nocompress --nometadata --pkg assets --ignore '.*\.go' \
+			-o "assets.gen.go" ./... \
+		&& ../hack/build-header.sh assets.gen.go \
+		&& cd ..
+
+gqlgen: tools
 	echo 'scalar Long' > query-protocol/schema.graphqls
 	$(GQL_GEN) generate
 	-rm -rf generated.go
 	-hack/build-header.sh graphql/schema/schema.go
-	-cd assets && $(GO_PACKR) clean && GO111MODULE=on $(GO_PACKR) -v \
-		&& ../hack/build-header.sh assets-packr.go \
-		&& ../hack/build-header.sh packrd/packed-packr.go \
-		&& cd ..
 	-rm query-protocol/schema.graphqls
+	
+codegen: clean assets gqlgen
 	@go mod tidy &> /dev/null
 
 .PHONY: $(PLATFORMS)
