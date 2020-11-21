@@ -37,6 +37,15 @@ jobs:
         uses: actions/checkout@v2
         with:
           submodules: true
+          
+      - name: Check code generation
+        run: make check-codegen
+        
+      - uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: check-diff
+          path: /tmp/swctl/check.diff
 
       - name: Check License
         run: make license
