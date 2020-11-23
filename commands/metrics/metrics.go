@@ -21,6 +21,7 @@ import (
 	"github.com/urfave/cli"
 
 	"github.com/apache/skywalking-cli/commands/metrics/aggregation"
+	"github.com/apache/skywalking-cli/commands/metrics/list"
 
 	"github.com/apache/skywalking-cli/commands/metrics/thermodynamic"
 
@@ -37,5 +38,6 @@ var Command = cli.Command{
 		linear.Multiple,
 		thermodynamic.Command,
 		aggregation.TopN,
+		list.Command,
 	},
 }

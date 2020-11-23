@@ -15,17 +15,30 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package assets
+package list
 
 import (
-	"github.com/apache/skywalking-cli/logger"
+	"github.com/urfave/cli"
+
+	"github.com/apache/skywalking-cli/display"
+	"github.com/apache/skywalking-cli/display/displayable"
+	"github.com/apache/skywalking-cli/graphql/metrics"
 )
 
-// Read reads all content from a file under assets, which is packed in to the binary
-func Read(filename string) string {
-	content, err := AssetString(filename)
-	if err != nil {
-		logger.Log.Fatalln("failed to read asset: ", filename, err)
-	}
-	return content
+var Command = cli.Command{
+	Name:  "list",
+	Usage: "List metrics that could be queried",
+	Flags: []cli.Flag{
+		cli.StringFlag{
+			Name:  "regex",
+			Usage: "filter metrics with regex",
+		},
+	},
+	Action: func(ctx *cli.Context) error {
+		regex := ctx.String("regex")
+
+		metricsValue := metrics.ListMetrics(ctx, regex)
+
+		return display.Display(ctx, &displayable.Displayable{Data: metricsValue})
+	},
 }

@@ -90,3 +90,13 @@ func SortMetrics(ctx *cli.Context, condition schema.TopNCondition, duration sche
 
 	return response["result"]
 }
+
+func ListMetrics(ctx *cli.Context, regex string) []*schema.MetricDefinition {
+	var response map[string][]*schema.MetricDefinition
+	request := graphql.NewRequest(assets.Read("graphqls/metrics/ListMetrics.graphql"))
+	request.Var("regex", regex)
+
+	client.ExecuteQueryOrFail(ctx, request, &response)
+
+	return response["result"]
+}

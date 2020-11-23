@@ -233,6 +233,18 @@ Ascii Graph, like coloring in terminal, so please use `json`  or `yaml` instead.
 
 </details>
 
+#### `metrics list`
+
+<details>
+
+<summary>metrics list [--regex=regular-expression]</summary>
+
+| option | description | default |
+| :--- | :--- | :--- |
+| `--regex` | Filter metrics with a regular expression | "" |
+
+</details>
+
 ### `trace`
 
 <details>
