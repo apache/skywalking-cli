@@ -1,4 +1,4 @@
-# Apache SkyWalking CLI release guide
+# Apache SkyWalking CLI Release Guide
 
 This documentation guides the release manager to release the SkyWalking CLI in the Apache Way, and also helps people to check the release for vote.
 
@@ -27,7 +27,7 @@ git push --tags
 make clean && make release
 ```
 
-The `skywalking-cli-${VERSION}-bin.tgz`, `skywalking-cli-${VERSION}-src.tgz`, and their corresponding `asc`, `sha512`. **In total, six files should be automatically generated in the directory.**
+**In total, six files should be automatically generated in the directory**:  `skywalking-cli-${VERSION}-bin.tgz`, `skywalking-cli-${VERSION}-src.tgz`, and their corresponding `asc`, `sha512` files.
 
 ## Upload to Apache svn
 
@@ -43,7 +43,7 @@ cd skywalking/cli && svn add "$VERSION" && svn commit -m "Draft Apache SkyWalkin
 
 ## Make the internal announcement
 
-Send an announcement email to dev@ mailing list.
+Send an announcement email to dev@ mailing list, **please check all links before sending the email**.
 
 ```text
 Subject: [ANNOUNCEMENT] SkyWalking CLi $VERSION test build available
@@ -57,7 +57,7 @@ account if a quality vote is called for this build.
 
 Release notes:
 
- * https://github.com/apache/skywalking-cli/blob/v$VERSION/CHANGES.md
+ * https://github.com/apache/skywalking-cli/blob/$VERSION/CHANGES.md
 
 Release Candidate:
 
@@ -80,7 +80,7 @@ Keys to verify the Release Candidate :
 
 Guide to build the release from source :
 
- * https://github.com/apache/skywalking-cli/blob/v$VERSION/docs/How-to-release.md
+ * https://github.com/apache/skywalking-cli/blob/$VERSION/docs/How-to-release.md
 
 A vote regarding the quality of this test build will be initiated
 within the next couple of days.
@@ -93,7 +93,7 @@ Based on that, PMC will decide whether to start a vote or not.
 
 ## Call for vote in dev@ mailing list
 
-Call for vote in `dev@skywalking.apache.org`
+Call for vote in `dev@skywalking.apache.org`, **please check all links before sending the email**.
 
 ```text
 Subject: [VOTE] Release Apache SkyWalking CLI version $VERSION
@@ -105,14 +105,14 @@ This is a call for vote to release Apache SkyWalking CLI version $VERSION.
 
 Release notes:
 
- * https://github.com/apache/skywalking-cli/blob/v$VERSION/CHANGES.md
+ * https://github.com/apache/skywalking-cli/blob/$VERSION/CHANGES.md
 
 Release Candidate:
 
  * https://dist.apache.org/repos/dist/dev/skywalking/cli/$VERSION
  * sha512 checksums
-   - sha512xxxxyyyzzz apache-skywalking-cli-src-x.x.x.tgz
-   - sha512xxxxyyyzzz apache-skywalking-cli-bin-x.x.x.tgz
+   - sha512xxxxyyyzzz skywalking-cli-x.x.x-src.tgz
+   - sha512xxxxyyyzzz skywalking-cli-x.x.x-bin.tgz
 
 Release Tag :
 
@@ -128,7 +128,7 @@ Keys to verify the Release Candidate :
 
 Guide to build the release from source :
 
- * https://github.com/apache/skywalking-cli/blob/v$VERSION/docs/How-to-release.md
+ * https://github.com/apache/skywalking-cli/blob/$VERSION/docs/How-to-release.md
 
 Voting will start now and will remain open for at least 72 hours, all PMC members are required to give their votes.
 
@@ -147,12 +147,13 @@ All PMC members and committers should check these before voting +1:
 
 1. Features test.
 1. All artifacts in staging repository are published with `.asc`, `.md5`, and `sha` files.
-1. Source codes and distribution packages (`apache-skywalking-cli-{src,bin}-$VERSION.tgz`)
+1. Source codes and distribution packages (`skywalking-cli-$VERSION-{src,bin}.tgz`)
 are in `https://dist.apache.org/repos/dist/dev/skywalking/cli/$VERSION` with `.asc`, `.sha512`.
 1. `LICENSE` and `NOTICE` are in source codes and distribution package.
-1. Check `shasum -c apache-skywalking-cli-{src,bin}-$VERSION.tgz.sha512`.
+1. Check `shasum -c skywalking-cli-$VERSION-{src,bin}.tgz.sha512`.
+1. Check `gpg --verify skywalking-cli-$VERSION-{src,bin}.tgz.asc skywalking-cli-$VERSION-{src,bin}.tgz`.
 1. Build distribution from source code package by following this [the build guide](#build-and-sign-the-source-code-package).
-1. Licenses check, `make license.`
+1. Licenses check, `make license`.
 
 Vote result should follow these:
 
@@ -165,14 +166,18 @@ Vote result should follow these:
    ```
    [RESULT][VOTE] Release Apache SkyWalking CLI version $VERSION
    
-   3 days passed, we’ve got ($NUMBER) +1 bindings:
-   xxx
-   xxx
+   3 days passed, we’ve got ($NUMBER) +1 bindings (and ... +1 non-bindings):
+   
+   (list names)
+   +1 bindings:
    xxx
    ...
-   (list names)
+      
+   +1 non-bindings:
+   xxx
+   ...
     
-   I’ll continue the release process.
+   Thank you for voting, I’ll continue the release process.
    ```
 
 ## Publish release
@@ -182,16 +187,13 @@ Vote result should follow these:
     ```shell
     export SVN_EDITOR=vim
     svn mv https://dist.apache.org/repos/dist/dev/skywalking/cli/$VERSION https://dist.apache.org/repos/dist/release/skywalking/cli
-    # ....
-    # enter your apache password
-    # ....
     ```
-
+    
 1. Refer to the previous [PR](https://github.com/apache/skywalking-website/pull/118), update news and links on the website. There are seven files need to modify.
 
 1. Update [Github release page](https://github.com/apache/skywalking-cli/releases), follow the previous convention.
 
-1. Send ANNOUNCE email to `dev@skywalking.apache.org` and `announce@apache.org`, the sender should use his/her Apache email account. You can get the permlink of vote thread at [here](https://lists.apache.org/list.html?dev@skywalking.apache.org).
+1. Send ANNOUNCE email to `dev@skywalking.apache.org` and `announce@apache.org`, the sender should use his/her Apache email account, **please check all links before sending the email**.
 
     ```
     Subject: [ANNOUNCEMENT] Apache SkyWalking CLI $VERSION Released
@@ -206,8 +208,6 @@ Vote result should follow these:
 
     SkyWalking: APM (application performance monitor) tool for distributed systems, especially designed for microservices, cloud native and container-based (Docker, Kubernetes, Mesos) architectures.
 
-    Vote Thread: $VOTE_THREAD_PERMALINK
-
     Download Links: http://skywalking.apache.org/downloads/
 
     Release Notes : https://github.com/apache/skywalking-cli/blob/$VERSION/CHANGES.md
@@ -215,11 +215,11 @@ Vote result should follow these:
     Website: http://skywalking.apache.org/
 
     SkyWalking CLI Resources:
-    - Issue: https://github.com/apache/skywalking/issues
-    - Mailing list: dev@skywalkiing.apache.org
+- Issue: https://github.com/apache/skywalking/issues
+    - Mailing list: dev@skywalking.apache.org
     - Documents: https://github.com/apache/skywalking-cli/blob/$VERSION/README.md
-
+    
     The Apache SkyWalking Team
-    ```
+```
     
     
