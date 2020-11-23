@@ -185,6 +185,7 @@ Vote result should follow these:
 1. Move source codes tar balls and distributions to `https://dist.apache.org/repos/dist/release/skywalking/`, **you can do this only if you are a PMC member**.
 
     ```shell
+    export SVN_EDITOR=vim
     svn mv https://dist.apache.org/repos/dist/dev/skywalking/cli/$VERSION https://dist.apache.org/repos/dist/release/skywalking/cli
     ```
     
