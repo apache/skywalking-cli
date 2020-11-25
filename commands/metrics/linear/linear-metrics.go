@@ -50,7 +50,9 @@ var Single = cli.Command{
 
 		metricsName := ctx.String("name")
 		serviceName := ctx.String("service")
-		normal := true
+		normal := ctx.BoolT("isNormal")
+		instanceName := ctx.String("instance")
+		endpointName := ctx.String("endpoint")
 		scope := interceptor.ParseScope(metricsName)
 
 		if serviceName == "" {
@@ -72,7 +74,8 @@ var Single = cli.Command{
 				Scope:               scope,
 				ServiceName:         &serviceName,
 				Normal:              &normal,
-				ServiceInstanceName: &serviceName,
+				ServiceInstanceName: &instanceName,
+				EndpointName:        &endpointName,
 			},
 		}, duration)
 

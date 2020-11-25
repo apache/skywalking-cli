@@ -34,4 +34,21 @@ var MetricsFlags = []cli.Flag{
 		Value:    "",
 		Required: false,
 	},
+	cli.StringFlag{
+		Name:     "instance",
+		Usage:    "the name of service instance",
+		Value:    "",
+		Required: false,
+	},
+	cli.StringFlag{
+		Name:     "endpoint",
+		Usage:    "the name of endpoint",
+		Value:    "",
+		Required: false,
+	},
+	cli.BoolTFlag{
+		Name:     "isNormal",
+		Usage:    "set the service to normal or unnormal",
+		Required: false,
+	},
 }

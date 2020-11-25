@@ -160,12 +160,15 @@ Ascii Graph, like coloring in terminal, so please use `json`  or `yaml` instead.
 
 <details>
 
-<summary>metrics linear [--start=start-time] [--end=end-time] --name=metrics-name --service=service-name</summary>
+<summary>metrics linear [--start=start-time] [--end=end-time] --name=metrics-name --service=service-name [--instance=instance-name] [--endpoint=endpoint-name] [--isNormal=true/false]</summary>
 
 | option | description | default |
 | :--- | :--- | :--- |
 | `--name` | Metrics name, defined in [OAL](https://github.com/apache/skywalking/blob/master/oap-server/server-bootstrap/src/main/resources/oal/core.oal). |
 | `--service` | The name of the service. | "" |
+| `--instance` | The name of the service instance. | "" |
+| `--endpoint` | The name of the endpoint. | "" |
+| `--isNormal` | Set the service to normal or unnormal. | `true` |
 | `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
 | `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
 
@@ -175,13 +178,16 @@ Ascii Graph, like coloring in terminal, so please use `json`  or `yaml` instead.
 
 <details>
 
-<summary>metrics multiple-linear [--start=start-time] [--end=end-time] --name=metrics-name [--service=service-name] [--num=number-of-linear-metrics]</summary>
+<summary>metrics multiple-linear [--start=start-time] [--end=end-time] --name=metrics-name [--service=service-name] [--num=number-of-linear-metrics] [--instance=instance-name] [--endpoint=endpoint-name] [--isNormal=true/false]</summary>
 
 | option | description | default |
 | :--- | :--- | :--- |
 | `--name` | Metrics name that ends with `_percentile`, defined in [OAL](https://github.com/apache/skywalking/blob/master/oap-server/server-bootstrap/src/main/resources/oal/core.oal), such as `all_percentile`, etc. |
 | `--service` | The name of the service, when scope is `All`, no name is required. | "" |
-| `--num` | Number of the linear metrics to fetch | `5` |
+| `--labels` | The labels you need to query | `0,1,2,3,4` |
+| `--instance` | The name of the service instance. | "" |
+| `--endpoint` | The name of the endpoint. | "" |
+| `--isNormal` | Set the service to normal or unnormal. | `true` |
 | `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
 | `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
 
@@ -191,12 +197,15 @@ Ascii Graph, like coloring in terminal, so please use `json`  or `yaml` instead.
 
 <details>
 
-<summary>metrics single [--start=start-time] [--end=end-time] --name=metrics-name --service=service-name</summary>
+<summary>metrics single [--start=start-time] [--end=end-time] --name=metrics-name --service=service-name [--instance=instance-name] [--endpoint=endpoint-name] [--isNormal=true/false]</summary>
 
 | option | description | default |
 | :--- | :--- | :--- |
 | `--name` | Metrics name, defined in [OAL](https://github.com/apache/skywalking/blob/master/oap-server/server-bootstrap/src/main/resources/oal/core.oal), such as `service_sla`, etc. |
 | `--service` | The name of the service. | "" |
+| `--instance` | The name of the service instance. | "" |
+| `--endpoint` | The name of the endpoint. | "" |
+| `--isNormal` | Set the service to normal or unnormal. | `true` |
 | `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
 | `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
 
@@ -206,7 +215,7 @@ Ascii Graph, like coloring in terminal, so please use `json`  or `yaml` instead.
 
 <details>
 
-<summary>metrics top 5 [--start=start-time] [--end=end-time] --name=metrics-name [--service=parent-service] [--order=DES]</summary>
+<summary>metrics top 5 [--start=start-time] [--end=end-time] --name=metrics-name [--service=parent-service] [--order=DES] [--isNormal=true/false]</summary>
 
 | option | description | default |
 | :--- | :--- | :--- |
@@ -214,6 +223,7 @@ Ascii Graph, like coloring in terminal, so please use `json`  or `yaml` instead.
 | `--name` | Metrics name, defined in [OAL](https://github.com/apache/skywalking/blob/master/oap-server/server-bootstrap/src/main/resources/oal/core.oal), such as `service_sla`, etc. |
 | `--service` | The name of the parent service, could be null if query the global top N. | "" |
 | `--order` | The order of metrics, `DES` or `ASC`. |`DES`|
+| `--isNormal` | Set the service to normal or unnormal. | `true` |
 | `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
 | `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
 
@@ -389,7 +399,7 @@ otherwise,
 <summary>Query a linear metrics graph for an instance</summary>
 
 ```shell
-$ ./bin/swctl --display=graph metrics linear --name=service_instance_resp_time --service "load balancer1.system"
+$ ./bin/swctl --display=graph metrics linear --name=service_instance_resp_time --service "projectC.business-zone" --instance "5ca1e1be91064db6880abac4648667ff@192.168.252.13"
 ```
 
 ![](http://skywalking.apache.org/screenshots/cli/metrics-linear.png)
@@ -407,19 +417,34 @@ $ ./bin/swctl instance ls --service-name=projectC | jq '.[] | select(.name == "p
 <summary>Query a single metrics value for a specific endpoint</summary>
 
 ```shell
-$ ./bin/swctl service ls projectC | jq '.[0].id' | xargs ./bin/swctl endpoint ls --service-id | jq '.[] | [.id] | join(",")' | xargs ./bin/swctl metrics single --name endpoint_cpm --ids
-[{"id":"22","value":116}]
+export SERVICE_NAME=projectC.business-zone
+export ENDPOINT=/projectC/{value}
+export METRICS_NAME=endpoint_cpm
+./bin/swctl metrics single --name ${METRICS_NAME} --service ${SERVICE_NAME} --endpoint ${ENDPOINT}
+```
+
+Result:
+
+```
+23
 ```
 
 </details>
 
 <details>
 
-<summary>Query metrics single values for all endpoints of service of id 3</summary>
+<summary>Query metrics single values for all endpoints of service `projectC.business-zone`</summary>
 
 ```shell
-$ ./bin/swctl service ls projectC | jq '.[0].id' | xargs ./bin/swctl endpoint ls --service-id | jq '.[] | [.id] | join(",")' | xargs ./bin/swctl metrics single --name endpoint_cpm --end='2019-12-02 2137' --ids
-[{"id":"3","value":116}]
+export SERVICE_NAME=projectC.business-zone
+export METRICS_NAME=endpoint_cpm
+./bin/swctl endpoint ls --service-id=$(./bin/swctl service ls "$SERVICE_NAME" | jq -r '.[0].id') | jq -r '.[].name' | xargs ./bin/swctl metrics single --name "${METRICS_NAME}" --service "${SERVICE_NAME}" --endpoint
+```
+
+Result:
+
+```
+23
 ```
 
 </details>

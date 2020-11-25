@@ -26,8 +26,9 @@ import (
 )
 
 var Command = cli.Command{
-	Name:  "list",
-	Usage: "List metrics that could be queried",
+	Name:      "list",
+	ShortName: "ls",
+	Usage:     "List metrics that could be queried",
 	Flags: []cli.Flag{
 		cli.StringFlag{
 			Name:  "regex",

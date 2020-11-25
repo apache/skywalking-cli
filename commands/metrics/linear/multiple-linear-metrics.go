@@ -19,6 +19,7 @@ package linear
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/apache/skywalking-cli/commands/flags"
 	"github.com/apache/skywalking-cli/commands/interceptor"
@@ -39,11 +40,11 @@ var Multiple = cli.Command{
 		flags.DurationFlags,
 		flags.MetricsFlags,
 		[]cli.Flag{
-			cli.IntFlag{
-				Name:     "num",
-				Usage:    "`num`, the number of linear metrics to query, (default: 5)",
+			cli.StringFlag{
+				Name:     "labels",
+				Usage:    "the labels you need to query",
 				Required: false,
-				Value:    5,
+				Value:    "0,1,2,3,4",
 			},
 		},
 	),
@@ -58,21 +59,14 @@ var Multiple = cli.Command{
 
 		metricsName := ctx.String("name")
 		serviceName := ctx.String("service")
-		normal := true
-		numOfLinear := ctx.Int("num")
+		normal := ctx.BoolT("isNormal")
+		instanceName := ctx.String("instance")
+		endpointName := ctx.String("endpoint")
+		labels := ctx.String("labels")
 		scope := interceptor.ParseScope(metricsName)
 
 		if serviceName == "" && scope != schema.ScopeAll {
 			return fmt.Errorf("the name of service should be specified when metrics' scope is not `All`")
-		}
-
-		if numOfLinear > 5 || numOfLinear < 1 {
-			numOfLinear = 5
-		}
-
-		var labels []string
-		for i := 0; i < numOfLinear; i++ {
-			labels = append(labels, fmt.Sprintf("%d", i))
 		}
 
 		duration := schema.Duration{
@@ -84,11 +78,13 @@ var Multiple = cli.Command{
 		metricsValuesArray := metrics.MultipleLinearIntValues(ctx, schema.MetricsCondition{
 			Name: metricsName,
 			Entity: &schema.Entity{
-				Scope:       scope,
-				ServiceName: &serviceName,
-				Normal:      &normal,
+				Scope:               scope,
+				ServiceName:         &serviceName,
+				Normal:              &normal,
+				ServiceInstanceName: &instanceName,
+				EndpointName:        &endpointName,
 			},
-		}, labels, duration)
+		}, strings.Split(labels, ","), duration)
 
 		reshaped := utils.MetricsValuesArrayToMap(duration, metricsValuesArray)
 		return display.Display(ctx, &displayable.Displayable{Data: reshaped})
