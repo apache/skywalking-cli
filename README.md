@@ -160,12 +160,15 @@ Ascii Graph, like coloring in terminal, so please use `json`  or `yaml` instead.
 
 <details>
 
-<summary>metrics linear [--start=start-time] [--end=end-time] --name=metrics-name --service=service-name</summary>
+<summary>metrics linear [--start=start-time] [--end=end-time] --name=metrics-name --service=service-name [--instance=instance-name] [--endpoint=endpoint-name] [--unnormal]</summary>
 
 | option | description | default |
 | :--- | :--- | :--- |
 | `--name` | Metrics name, defined in [OAL](https://github.com/apache/skywalking/blob/master/oap-server/server-bootstrap/src/main/resources/oal/core.oal). |
 | `--service` | The name of the service. | "" |
+| `--instance` | The name of the service instance. | "" |
+| `--endpoint` | The name of the endpoint. | "" |
+| `--unnormal` | Set the service to unnormal or conjectural. | `false` |
 | `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
 | `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
 
@@ -175,13 +178,16 @@ Ascii Graph, like coloring in terminal, so please use `json`  or `yaml` instead.
 
 <details>
 
-<summary>metrics multiple-linear [--start=start-time] [--end=end-time] --name=metrics-name [--service=service-name] [--num=number-of-linear-metrics]</summary>
+<summary>metrics multiple-linear [--start=start-time] [--end=end-time] --name=metrics-name [--service=service-name] [--num=number-of-linear-metrics] [--instance=instance-name] [--endpoint=endpoint-name] [--unnormal]</summary>
 
 | option | description | default |
 | :--- | :--- | :--- |
 | `--name` | Metrics name that ends with `_percentile`, defined in [OAL](https://github.com/apache/skywalking/blob/master/oap-server/server-bootstrap/src/main/resources/oal/core.oal), such as `all_percentile`, etc. |
 | `--service` | The name of the service, when scope is `All`, no name is required. | "" |
 | `--num` | Number of the linear metrics to fetch | `5` |
+| `--instance` | The name of the service instance. | "" |
+| `--endpoint` | The name of the endpoint. | "" |
+| `--unnormal` | Set the service to unnormal or conjectural. | `false` |
 | `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
 | `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
 
@@ -191,12 +197,15 @@ Ascii Graph, like coloring in terminal, so please use `json`  or `yaml` instead.
 
 <details>
 
-<summary>metrics single [--start=start-time] [--end=end-time] --name=metrics-name --service=service-name</summary>
+<summary>metrics single [--start=start-time] [--end=end-time] --name=metrics-name --service=service-name [--instance=instance-name] [--endpoint=endpoint-name] [--unnormal]</summary>
 
 | option | description | default |
 | :--- | :--- | :--- |
 | `--name` | Metrics name, defined in [OAL](https://github.com/apache/skywalking/blob/master/oap-server/server-bootstrap/src/main/resources/oal/core.oal), such as `service_sla`, etc. |
 | `--service` | The name of the service. | "" |
+| `--instance` | The name of the service instance. | "" |
+| `--endpoint` | The name of the endpoint. | "" |
+| `--unnormal` | Set the service to unnormal or conjectural. | `false` |
 | `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
 | `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
 
@@ -206,7 +215,7 @@ Ascii Graph, like coloring in terminal, so please use `json`  or `yaml` instead.
 
 <details>
 
-<summary>metrics top 5 [--start=start-time] [--end=end-time] --name=metrics-name [--service=parent-service] [--order=DES]</summary>
+<summary>metrics top 5 [--start=start-time] [--end=end-time] --name=metrics-name [--service=parent-service] [--order=DES] [--unnormal]</summary>
 
 | option | description | default |
 | :--- | :--- | :--- |
@@ -214,6 +223,7 @@ Ascii Graph, like coloring in terminal, so please use `json`  or `yaml` instead.
 | `--name` | Metrics name, defined in [OAL](https://github.com/apache/skywalking/blob/master/oap-server/server-bootstrap/src/main/resources/oal/core.oal), such as `service_sla`, etc. |
 | `--service` | The name of the parent service, could be null if query the global top N. | "" |
 | `--order` | The order of metrics, `DES` or `ASC`. |`DES`|
+| `--unnormal` | Set the service to unnormal or conjectural. | `false` |
 | `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
 | `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
 
@@ -389,7 +399,7 @@ otherwise,
 <summary>Query a linear metrics graph for an instance</summary>
 
 ```shell
-$ ./bin/swctl --display=graph metrics linear --name=service_instance_resp_time --service "load balancer1.system"
+$ ./bin/swctl --display=graph metrics linear --name=service_instance_cpm --service "projectC.business-zone" --instance "5ca1e1be91064db6880abac4648667ff@192.168.252.13"
 ```
 
 ![](http://skywalking.apache.org/screenshots/cli/metrics-linear.png)

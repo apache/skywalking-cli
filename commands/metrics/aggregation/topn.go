@@ -61,7 +61,7 @@ var TopN = cli.Command{
 		step := ctx.Generic("step").(*model.StepEnumValue).Selected
 
 		metricsName := ctx.String("name")
-		normal := true
+		normal := !ctx.Bool("unnoraml")
 		scope := interceptor.ParseScope(metricsName)
 		order := ctx.Generic("order").(*model.OrderEnumValue).Selected
 		topN := 5

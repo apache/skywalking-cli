@@ -215,11 +215,9 @@ Vote result should follow these:
     Website: http://skywalking.apache.org/
 
     SkyWalking CLI Resources:
-- Issue: https://github.com/apache/skywalking/issues
+    - Issue: https://github.com/apache/skywalking/issues
     - Mailing list: dev@skywalking.apache.org
     - Documents: https://github.com/apache/skywalking-cli/blob/$VERSION/README.md
     
     The Apache SkyWalking Team
-```
-    
-    
+    ```
