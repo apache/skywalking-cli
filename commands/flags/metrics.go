@@ -34,4 +34,21 @@ var MetricsFlags = []cli.Flag{
 		Value:    "",
 		Required: false,
 	},
+	cli.StringFlag{
+		Name:     "instance",
+		Usage:    "the name of service instance",
+		Value:    "",
+		Required: false,
+	},
+	cli.StringFlag{
+		Name:     "endpoint",
+		Usage:    "the name of endpoint",
+		Value:    "",
+		Required: false,
+	},
+	cli.BoolFlag{
+		Name:     "unnoraml",
+		Usage:    "the service is conjectural",
+		Required: false,
+	},
 }

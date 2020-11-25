@@ -49,7 +49,9 @@ var Command = cli.Command{
 
 		metricsName := ctx.String("name")
 		serviceName := ctx.String("service")
-		normal := true
+		normal := !ctx.Bool("unnoraml")
+		instanceName := ctx.String("instance")
+		endpointName := ctx.String("endpoint")
 		scope := interceptor.ParseScope(metricsName)
 
 		if serviceName == "" {
@@ -68,9 +70,11 @@ var Command = cli.Command{
 		metricsValue := metrics.IntValues(ctx, schema.MetricsCondition{
 			Name: metricsName,
 			Entity: &schema.Entity{
-				Scope:       scope,
-				ServiceName: &serviceName,
-				Normal:      &normal,
+				Scope:               scope,
+				ServiceName:         &serviceName,
+				Normal:              &normal,
+				ServiceInstanceName: &instanceName,
+				EndpointName:        &endpointName,
 			},
 		}, duration)
 

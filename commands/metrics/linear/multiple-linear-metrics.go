@@ -58,7 +58,9 @@ var Multiple = cli.Command{
 
 		metricsName := ctx.String("name")
 		serviceName := ctx.String("service")
-		normal := true
+		normal := !ctx.Bool("unnoraml")
+		instanceName := ctx.String("instance")
+		endpointName := ctx.String("endpoint")
 		numOfLinear := ctx.Int("num")
 		scope := interceptor.ParseScope(metricsName)
 
@@ -84,9 +86,11 @@ var Multiple = cli.Command{
 		metricsValuesArray := metrics.MultipleLinearIntValues(ctx, schema.MetricsCondition{
 			Name: metricsName,
 			Entity: &schema.Entity{
-				Scope:       scope,
-				ServiceName: &serviceName,
-				Normal:      &normal,
+				Scope:               scope,
+				ServiceName:         &serviceName,
+				Normal:              &normal,
+				ServiceInstanceName: &instanceName,
+				EndpointName:        &endpointName,
 			},
 		}, labels, duration)
 
