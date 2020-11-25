@@ -33,7 +33,7 @@ func ParseScope(name string) schema.Scope {
 		ret = schema.ScopeServiceInstanceRelation
 	} else if strings.HasPrefix(name, "service_instance") {
 		ret = schema.ScopeServiceInstance
-	} else if strings.HasPrefix(name, "service_") {
+	} else if strings.HasPrefix(name, "service_") || strings.HasPrefix(name, "database_") {
 		ret = schema.ScopeService
 	} else if strings.HasPrefix(name, "endpoint_relation") {
 		ret = schema.ScopeEndpointRelation

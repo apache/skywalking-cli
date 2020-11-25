@@ -184,7 +184,7 @@ Ascii Graph, like coloring in terminal, so please use `json`  or `yaml` instead.
 | :--- | :--- | :--- |
 | `--name` | Metrics name that ends with `_percentile`, defined in [OAL](https://github.com/apache/skywalking/blob/master/oap-server/server-bootstrap/src/main/resources/oal/core.oal), such as `all_percentile`, etc. |
 | `--service` | The name of the service, when scope is `All`, no name is required. | "" |
-| `--num` | Number of the linear metrics to fetch | `5` |
+| `--labels` | The labels you need to query | `0,1,2,3,4` |
 | `--instance` | The name of the service instance. | "" |
 | `--endpoint` | The name of the endpoint. | "" |
 | `--isNormal` | Set the service to normal or unnormal. | `true` |
