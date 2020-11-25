@@ -49,7 +49,7 @@ var Command = cli.Command{
 
 		metricsName := ctx.String("name")
 		serviceName := ctx.String("service")
-		normal := !ctx.Bool("unnoraml")
+		normal := !ctx.Bool("unnormal")
 		instanceName := ctx.String("instance")
 		endpointName := ctx.String("endpoint")
 		scope := interceptor.ParseScope(metricsName)
