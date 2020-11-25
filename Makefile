@@ -53,7 +53,7 @@ tools:
 		&& chmod +x $(GO_BINDATA)
 	$(GO_LINT) version || curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(GO_PATH)/bin v1.21.0
 	$(GO_LICENSER) -version || GO111MODULE=off $(GO_GET) -u github.com/elastic/go-licenser
-	$(GQL_GEN) version || $(GO_GET) -u github.com/99designs/gqlgen
+	$(GQL_GEN) version || GO111MODULE=off $(GO_GET) -u github.com/99designs/gqlgen
 
 deps: tools
 	$(GO_GET) -v -t -d ./...
