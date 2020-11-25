@@ -439,6 +439,11 @@ Result:
 export SERVICE_NAME=projectC.business-zone
 export METRICS_NAME=endpoint_cpm
 ./bin/swctl endpoint ls --service-id=$(./bin/swctl service ls "$SERVICE_NAME" | jq -r '.[0].id') | jq -r '.[].name' | xargs ./bin/swctl metrics single --name "${METRICS_NAME}" --service "${SERVICE_NAME}" --endpoint
+```
+
+Result:
+
+```
 23
 ```
 
