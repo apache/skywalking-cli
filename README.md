@@ -160,7 +160,7 @@ Ascii Graph, like coloring in terminal, so please use `json`  or `yaml` instead.
 
 <details>
 
-<summary>metrics linear [--start=start-time] [--end=end-time] --name=metrics-name --service=service-name [--instance=instance-name] [--endpoint=endpoint-name] [--unnormal]</summary>
+<summary>metrics linear [--start=start-time] [--end=end-time] --name=metrics-name --service=service-name [--instance=instance-name] [--endpoint=endpoint-name] [--isNormal=true/false]</summary>
 
 | option | description | default |
 | :--- | :--- | :--- |
@@ -168,7 +168,7 @@ Ascii Graph, like coloring in terminal, so please use `json`  or `yaml` instead.
 | `--service` | The name of the service. | "" |
 | `--instance` | The name of the service instance. | "" |
 | `--endpoint` | The name of the endpoint. | "" |
-| `--unnormal` | Set the service to unnormal or conjectural. | `false` |
+| `--isNormal` | Set the service to normal or unnormal. | `true` |
 | `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
 | `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
 
@@ -178,7 +178,7 @@ Ascii Graph, like coloring in terminal, so please use `json`  or `yaml` instead.
 
 <details>
 
-<summary>metrics multiple-linear [--start=start-time] [--end=end-time] --name=metrics-name [--service=service-name] [--num=number-of-linear-metrics] [--instance=instance-name] [--endpoint=endpoint-name] [--unnormal]</summary>
+<summary>metrics multiple-linear [--start=start-time] [--end=end-time] --name=metrics-name [--service=service-name] [--num=number-of-linear-metrics] [--instance=instance-name] [--endpoint=endpoint-name] [--isNormal=true/false]</summary>
 
 | option | description | default |
 | :--- | :--- | :--- |
@@ -187,7 +187,7 @@ Ascii Graph, like coloring in terminal, so please use `json`  or `yaml` instead.
 | `--num` | Number of the linear metrics to fetch | `5` |
 | `--instance` | The name of the service instance. | "" |
 | `--endpoint` | The name of the endpoint. | "" |
-| `--unnormal` | Set the service to unnormal or conjectural. | `false` |
+| `--isNormal` | Set the service to normal or unnormal. | `true` |
 | `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
 | `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
 
@@ -197,7 +197,7 @@ Ascii Graph, like coloring in terminal, so please use `json`  or `yaml` instead.
 
 <details>
 
-<summary>metrics single [--start=start-time] [--end=end-time] --name=metrics-name --service=service-name [--instance=instance-name] [--endpoint=endpoint-name] [--unnormal]</summary>
+<summary>metrics single [--start=start-time] [--end=end-time] --name=metrics-name --service=service-name [--instance=instance-name] [--endpoint=endpoint-name] [--isNormal=true/false]</summary>
 
 | option | description | default |
 | :--- | :--- | :--- |
@@ -205,7 +205,7 @@ Ascii Graph, like coloring in terminal, so please use `json`  or `yaml` instead.
 | `--service` | The name of the service. | "" |
 | `--instance` | The name of the service instance. | "" |
 | `--endpoint` | The name of the endpoint. | "" |
-| `--unnormal` | Set the service to unnormal or conjectural. | `false` |
+| `--isNormal` | Set the service to normal or unnormal. | `true` |
 | `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
 | `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
 
@@ -215,7 +215,7 @@ Ascii Graph, like coloring in terminal, so please use `json`  or `yaml` instead.
 
 <details>
 
-<summary>metrics top 5 [--start=start-time] [--end=end-time] --name=metrics-name [--service=parent-service] [--order=DES] [--unnormal]</summary>
+<summary>metrics top 5 [--start=start-time] [--end=end-time] --name=metrics-name [--service=parent-service] [--order=DES] [--isNormal=true/false]</summary>
 
 | option | description | default |
 | :--- | :--- | :--- |
@@ -223,7 +223,7 @@ Ascii Graph, like coloring in terminal, so please use `json`  or `yaml` instead.
 | `--name` | Metrics name, defined in [OAL](https://github.com/apache/skywalking/blob/master/oap-server/server-bootstrap/src/main/resources/oal/core.oal), such as `service_sla`, etc. |
 | `--service` | The name of the parent service, could be null if query the global top N. | "" |
 | `--order` | The order of metrics, `DES` or `ASC`. |`DES`|
-| `--unnormal` | Set the service to unnormal or conjectural. | `false` |
+| `--isNormal` | Set the service to normal or unnormal. | `true` |
 | `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
 | `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
 
@@ -399,7 +399,7 @@ otherwise,
 <summary>Query a linear metrics graph for an instance</summary>
 
 ```shell
-$ ./bin/swctl --display=graph metrics linear --name=service_instance_cpm --service "projectC.business-zone" --instance "5ca1e1be91064db6880abac4648667ff@192.168.252.13"
+$ ./bin/swctl --display=graph metrics linear --name=service_instance_resp_time --service "projectC.business-zone" --instance "5ca1e1be91064db6880abac4648667ff@192.168.252.13"
 ```
 
 ![](http://skywalking.apache.org/screenshots/cli/metrics-linear.png)

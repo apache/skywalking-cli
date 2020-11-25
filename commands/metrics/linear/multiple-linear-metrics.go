@@ -58,7 +58,7 @@ var Multiple = cli.Command{
 
 		metricsName := ctx.String("name")
 		serviceName := ctx.String("service")
-		normal := !ctx.Bool("unnormal")
+		normal := ctx.BoolT("isNormal")
 		instanceName := ctx.String("instance")
 		endpointName := ctx.String("endpoint")
 		numOfLinear := ctx.Int("num")

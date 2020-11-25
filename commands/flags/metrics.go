@@ -46,9 +46,9 @@ var MetricsFlags = []cli.Flag{
 		Value:    "",
 		Required: false,
 	},
-	cli.BoolFlag{
-		Name:     "unnormal",
-		Usage:    "set the service to unnormal or conjectural",
+	cli.BoolTFlag{
+		Name:     "isNormal",
+		Usage:    "set the service to normal or unnormal",
 		Required: false,
 	},
 }
