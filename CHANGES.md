@@ -2,6 +2,27 @@ Changes by Version
 ==================
 Release Notes.
 
+0.5.0
+------------------
+
+### Features
+
+- Use template files in yaml format instead
+- Refactor `metrics` command to adopt metrics-v2 protocol
+- Use goroutine to speed up `dashboard global` command
+- Add `metrics list` command
+
+### Bug Fixes
+
+- Add flags of instance, endpoint and normal for `metrics` command
+- Fix the problem of unable to query database metrics
+
+### Chores
+
+- Update release guide doc
+- Add screenshots for use cases in `README.md`
+- Introduce generated codes into codebase
+
 0.4.0
 ------------------
 
@@ -53,12 +74,12 @@ Release Notes.
 0.1.0
 ------------------
 
-#### Features
+### Features
 - Add command `swctl service` to list services
 - Add command `swctl instance` and `swctl search` to list and search instances of service.
 - Add command `swctl endpoint` to list endpoints of service.
 - Add command `swctl linear-metrics` to query linear metrics and plot the metrics in Ascii Graph mode.
 - Add command `swctl single-metrics` to query single-value metrics.
 
-#### Chores
+### Chores
 - Set up GitHub actions to check code styles, licenses, and tests.
