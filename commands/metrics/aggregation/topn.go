@@ -49,15 +49,6 @@ var TopN = cli.Command{
 					Selected: schema.OrderDes,
 				},
 			},
-			cli.GenericFlag{
-				Name:  "scope",
-				Usage: "the scope of the metrics entity",
-				Value: &model.ScopeEnumValue{
-					Enum:     schema.AllScope,
-					Default:  schema.ScopeService,
-					Selected: schema.ScopeService,
-				},
-			},
 		},
 	),
 	Before: interceptor.BeforeChain([]cli.BeforeFunc{

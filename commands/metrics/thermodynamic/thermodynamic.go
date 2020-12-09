@@ -35,14 +35,8 @@ var Command = cli.Command{
 	Usage:   "Query thermodynamic metrics defined in backend OAL",
 	Flags: flags.Flags(
 		flags.DurationFlags,
-		[]cli.Flag{
-			cli.StringFlag{
-				Name:     "name",
-				Usage:    "metrics `name`, which should be defined in OAL script",
-				Value:    "all_heatmap",
-				Required: false,
-			},
-		},
+		flags.MetricsFlags,
+		flags.EntityFlags,
 	),
 	Before: interceptor.BeforeChain([]cli.BeforeFunc{
 		interceptor.TimezoneInterceptor,
@@ -54,7 +48,7 @@ var Command = cli.Command{
 		step := ctx.Generic("step")
 
 		metricsName := ctx.String("name")
-		scope := interceptor.ParseScope(metricsName)
+		entity := interceptor.ParseEntity(ctx)
 
 		duration := schema.Duration{
 			Start: start,
@@ -63,10 +57,8 @@ var Command = cli.Command{
 		}
 
 		metricsValues := metrics.Thermodynamic(ctx, schema.MetricsCondition{
-			Name: metricsName,
-			Entity: &schema.Entity{
-				Scope: scope,
-			},
+			Name:   metricsName,
+			Entity: entity,
 		}, duration)
 
 		return display.Display(ctx, &displayable.Displayable{

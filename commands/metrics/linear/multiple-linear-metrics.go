@@ -39,6 +39,7 @@ var Multiple = cli.Command{
 	Flags: flags.Flags(
 		flags.DurationFlags,
 		flags.MetricsFlags,
+		flags.EntityFlags,
 		[]cli.Flag{
 			cli.StringFlag{
 				Name:     "labels",
@@ -58,14 +59,10 @@ var Multiple = cli.Command{
 		step := ctx.Generic("step")
 
 		metricsName := ctx.String("name")
-		serviceName := ctx.String("service")
-		normal := ctx.BoolT("isNormal")
-		instanceName := ctx.String("instance")
-		endpointName := ctx.String("endpoint")
 		labels := ctx.String("labels")
-		scope := interceptor.ParseScope(metricsName)
+		entity := interceptor.ParseEntity(ctx)
 
-		if serviceName == "" && scope != schema.ScopeAll {
+		if *entity.ServiceName == "" && entity.Scope != schema.ScopeAll {
 			return fmt.Errorf("the name of service should be specified when metrics' scope is not `All`")
 		}
 
@@ -76,14 +73,8 @@ var Multiple = cli.Command{
 		}
 
 		metricsValuesArray := metrics.MultipleLinearIntValues(ctx, schema.MetricsCondition{
-			Name: metricsName,
-			Entity: &schema.Entity{
-				Scope:               scope,
-				ServiceName:         &serviceName,
-				Normal:              &normal,
-				ServiceInstanceName: &instanceName,
-				EndpointName:        &endpointName,
-			},
+			Name:   metricsName,
+			Entity: interceptor.ParseEntity(ctx),
 		}, strings.Split(labels, ","), duration)
 
 		reshaped := utils.MetricsValuesArrayToMap(duration, metricsValuesArray)

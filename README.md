@@ -160,7 +160,7 @@ Ascii Graph, like coloring in terminal, so please use `json`  or `yaml` instead.
 
 <details>
 
-<summary>metrics linear [--start=start-time] [--end=end-time] --name=metrics-name --service=service-name [--instance=instance-name] [--endpoint=endpoint-name] [--isNormal=true/false]</summary>
+<summary>metrics linear [--start=start-time] [--end=end-time] --name=metrics-name [--service=service-name] [--instance=instance-name] [--endpoint=endpoint-name] [--isNormal=true/false] [--destService=dest-service-name] [--destInstance=dest-instance-name] [--destEndpoint=dest-endpoint-name] [--isDestNormal=true/false]</summary>
 
 | option | description | default |
 | :--- | :--- | :--- |
@@ -169,6 +169,10 @@ Ascii Graph, like coloring in terminal, so please use `json`  or `yaml` instead.
 | `--instance` | The name of the service instance. | "" |
 | `--endpoint` | The name of the endpoint. | "" |
 | `--isNormal` | Set the service to normal or unnormal. | `true` |
+| `--destService` | The name of the destination service. | "" |
+| `--destInstance` | The name of the destination instance. | "" |
+| `--destEndpoint` | The name of the destination endpoint. | "" |
+| `--isDestNormal` | Set the destination service to normal or unnormal. | `true` |
 | `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
 | `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
 
@@ -178,7 +182,7 @@ Ascii Graph, like coloring in terminal, so please use `json`  or `yaml` instead.
 
 <details>
 
-<summary>metrics multiple-linear [--start=start-time] [--end=end-time] --name=metrics-name [--service=service-name] [--num=number-of-linear-metrics] [--instance=instance-name] [--endpoint=endpoint-name] [--isNormal=true/false]</summary>
+<summary>metrics multiple-linear [--start=start-time] [--end=end-time] --name=metrics-name [--service=service-name] [--num=number-of-linear-metrics] [--instance=instance-name] [--endpoint=endpoint-name] [--isNormal=true/false] [--destService=dest-service-name] [--destInstance=dest-instance-name] [--destEndpoint=dest-endpoint-name] [--isDestNormal=true/false]</summary>
 
 | option | description | default |
 | :--- | :--- | :--- |
@@ -188,6 +192,10 @@ Ascii Graph, like coloring in terminal, so please use `json`  or `yaml` instead.
 | `--instance` | The name of the service instance. | "" |
 | `--endpoint` | The name of the endpoint. | "" |
 | `--isNormal` | Set the service to normal or unnormal. | `true` |
+| `--destService` | The name of the destination service. | "" |
+| `--destInstance` | The name of the destination instance. | "" |
+| `--destEndpoint` | The name of the destination endpoint. | "" |
+| `--isDestNormal` | Set the destination service to normal or unnormal. | `true` |
 | `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
 | `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
 
@@ -197,7 +205,7 @@ Ascii Graph, like coloring in terminal, so please use `json`  or `yaml` instead.
 
 <details>
 
-<summary>metrics single [--start=start-time] [--end=end-time] --name=metrics-name --service=service-name [--instance=instance-name] [--endpoint=endpoint-name] [--isNormal=true/false]</summary>
+<summary>metrics single [--start=start-time] [--end=end-time] --name=metrics-name --service=service-name [--instance=instance-name] [--endpoint=endpoint-name] [--isNormal=true/false] [--destService=dest-service-name] [--destInstance=dest-instance-name] [--destEndpoint=dest-endpoint-name] [--isDestNormal=true/false]</summary>
 
 | option | description | default |
 | :--- | :--- | :--- |
@@ -206,6 +214,10 @@ Ascii Graph, like coloring in terminal, so please use `json`  or `yaml` instead.
 | `--instance` | The name of the service instance. | "" |
 | `--endpoint` | The name of the endpoint. | "" |
 | `--isNormal` | Set the service to normal or unnormal. | `true` |
+| `--destService` | The name of the destination service. | "" |
+| `--destInstance` | The name of the destination instance. | "" |
+| `--destEndpoint` | The name of the destination endpoint. | "" |
+| `--isDestNormal` | Set the destination service to normal or unnormal. | `true` |
 | `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
 | `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
 
@@ -234,11 +246,15 @@ Ascii Graph, like coloring in terminal, so please use `json`  or `yaml` instead.
 
 <details>
 
-<summary>metrics thermodynamic [--name=metrics-name]</summary>
+<summary>metrics thermodynamic [--name=metrics-name] [--destService=dest-service-name] [--destInstance=dest-instance-name] [--destEndpoint=dest-endpoint-name] [--isDestNormal=true/false]</summary>
 
 | option | description | default |
 | :--- | :--- | :--- |
 | `--name` | Metrics name that ends with `_heatmap`, defined in [OAL](https://github.com/apache/skywalking/blob/master/oap-server/server-bootstrap/src/main/resources/oal/core.oal), such as `all_heatmap`, etc. | `all_heatmap` |
+| `--destService` | The name of the destination service. | "" |
+| `--destInstance` | The name of the destination instance. | "" |
+| `--destEndpoint` | The name of the destination endpoint. | "" |
+| `--isDestNormal` | Set the destination service to normal or unnormal. | `true` |
 | `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
 | `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
 
