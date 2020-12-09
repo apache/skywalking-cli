@@ -34,8 +34,7 @@ func ParseEntity(ctx *cli.Context) *schema.Entity {
 	destInstance := ctx.String("destServiceInstance")
 	destEndpoint := ctx.String("destEndpoint")
 
-	return &schema.Entity{
-		Scope:                   parseScope(ctx),
+	entity := &schema.Entity{
 		ServiceName:             &service,
 		Normal:                  &normal,
 		ServiceInstanceName:     &instance,
@@ -45,25 +44,28 @@ func ParseEntity(ctx *cli.Context) *schema.Entity {
 		DestServiceInstanceName: &destInstance,
 		DestEndpointName:        &destEndpoint,
 	}
+	entity.Scope = parseScope(entity)
+
+	return entity
 }
 
 // parseScope defines the scope based on the input parameters.
-func parseScope(ctx *cli.Context) schema.Scope {
-	ret := schema.ScopeAll
+func parseScope(entity *schema.Entity) schema.Scope {
+	scope := schema.ScopeAll
 
-	if ctx.String("destEndpoint") != "" {
-		ret = schema.ScopeEndpointRelation
-	} else if ctx.String("destInstance") != "" {
-		ret = schema.ScopeServiceInstanceRelation
-	} else if ctx.String("destService") != "" {
-		ret = schema.ScopeServiceRelation
-	} else if ctx.String("endpointName") != "" {
-		ret = schema.ScopeEndpoint
-	} else if ctx.String("instanceName") != "" {
-		ret = schema.ScopeServiceInstance
-	} else if ctx.String("serviceName") != "" {
-		ret = schema.ScopeService
+	if *entity.DestEndpointName != "" {
+		scope = schema.ScopeEndpointRelation
+	} else if *entity.DestServiceInstanceName != "" {
+		scope = schema.ScopeServiceInstanceRelation
+	} else if *entity.DestServiceName != "" {
+		scope = schema.ScopeServiceRelation
+	} else if *entity.EndpointName != "" {
+		scope = schema.ScopeEndpoint
+	} else if *entity.ServiceInstanceName != "" {
+		scope = schema.ScopeServiceInstance
+	} else if *entity.ServiceName != "" {
+		scope = schema.ScopeService
 	}
 
-	return ret
+	return scope
 }
