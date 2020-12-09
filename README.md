@@ -215,7 +215,7 @@ Ascii Graph, like coloring in terminal, so please use `json`  or `yaml` instead.
 
 <details>
 
-<summary>metrics top 5 [--start=start-time] [--end=end-time] --name=metrics-name [--service=parent-service] [--order=DES] [--isNormal=true/false]</summary>
+<summary>metrics top 5 [--start=start-time] [--end=end-time] --name=metrics-name [--service=parent-service] [--order=DES] [--scope=Service/ServiceInstance/Endpoint] [--isNormal=true/false]</summary>
 
 | option | description | default |
 | :--- | :--- | :--- |
@@ -223,6 +223,7 @@ Ascii Graph, like coloring in terminal, so please use `json`  or `yaml` instead.
 | `--name` | Metrics name, defined in [OAL](https://github.com/apache/skywalking/blob/master/oap-server/server-bootstrap/src/main/resources/oal/core.oal), such as `service_sla`, etc. |
 | `--service` | The name of the parent service, could be null if query the global top N. | "" |
 | `--order` | The order of metrics, `DES` or `ASC`. |`DES`|
+| `--scope` | The scope of the metrics entity, only accept `Service`/`ServiceInstance`/`Endpoint`, ignore others due to those are pointless. |`Service`|
 | `--isNormal` | Set the service to normal or unnormal. | `true` |
 | `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
 | `--end` | See [Common options](#common-options) | See [Common options](#common-options) |

@@ -49,6 +49,15 @@ var TopN = cli.Command{
 					Selected: schema.OrderDes,
 				},
 			},
+			cli.GenericFlag{
+				Name:  "scope",
+				Usage: "the scope of the metrics entity",
+				Value: &model.ScopeEnumValue{
+					Enum:     schema.AllScope,
+					Default:  schema.ScopeService,
+					Selected: schema.ScopeService,
+				},
+			},
 		},
 	),
 	Before: interceptor.BeforeChain([]cli.BeforeFunc{
@@ -62,7 +71,7 @@ var TopN = cli.Command{
 
 		metricsName := ctx.String("name")
 		normal := ctx.BoolT("isNormal")
-		scope := interceptor.ParseScope(metricsName)
+		scope := ctx.Generic("scope").(*model.ScopeEnumValue).Selected
 		order := ctx.Generic("order").(*model.OrderEnumValue).Selected
 		topN := 5
 		parentService := ctx.String("service")
