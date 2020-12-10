@@ -18,37 +18,44 @@
 package flags
 
 import (
-	"github.com/apache/skywalking-cli/commands/model"
-	"github.com/apache/skywalking-cli/graphql/schema"
-
 	"github.com/urfave/cli"
 )
 
-// MetricsFlags can be reused in metrics commands.
-var MetricsFlags = []cli.Flag{
+// EntityFlags are attributes of Entity in the metrics v2 protocol.
+var EntityFlags = []cli.Flag{
 	cli.StringFlag{
-		Name:     "name",
-		Usage:    "metrics `name`, which should be defined in OAL script",
-		Required: true,
+		Name:     "instance",
+		Usage:    "the name of the service instance",
+		Value:    "",
+		Required: false,
 	},
 	cli.StringFlag{
-		Name:     "service",
-		Usage:    "the name of the service",
+		Name:     "endpoint",
+		Usage:    "the name of the endpoint",
+		Value:    "",
+		Required: false,
+	},
+	cli.StringFlag{
+		Name:     "destService",
+		Usage:    "the name of the destination endpoint",
 		Value:    "",
 		Required: false,
 	},
 	cli.BoolTFlag{
-		Name:     "isNormal",
-		Usage:    "set the service to normal or unnormal",
+		Name:     "isDestNormal",
+		Usage:    "set the destination service to normal or unnormal",
 		Required: false,
 	},
-	cli.GenericFlag{
-		Name:  "scope",
-		Usage: "the scope of the metrics entity",
-		Value: &model.ScopeEnumValue{
-			Enum:     schema.AllScope,
-			Default:  schema.ScopeService,
-			Selected: schema.ScopeService,
-		},
+	cli.StringFlag{
+		Name:     "destInstance",
+		Usage:    "the name of the destination endpoint",
+		Value:    "",
+		Required: false,
+	},
+	cli.StringFlag{
+		Name:     "destEndpoint",
+		Usage:    "the name of the destination endpoint",
+		Value:    "",
+		Required: false,
 	},
 }

@@ -18,8 +18,6 @@
 package linear
 
 import (
-	"fmt"
-
 	"github.com/apache/skywalking-cli/commands/flags"
 	"github.com/apache/skywalking-cli/commands/interceptor"
 	"github.com/apache/skywalking-cli/commands/model"
@@ -38,6 +36,7 @@ var Single = cli.Command{
 	Flags: flags.Flags(
 		flags.DurationFlags,
 		flags.MetricsFlags,
+		flags.EntityFlags,
 	),
 	Before: interceptor.BeforeChain([]cli.BeforeFunc{
 		interceptor.TimezoneInterceptor,
@@ -49,18 +48,7 @@ var Single = cli.Command{
 		step := ctx.Generic("step")
 
 		metricsName := ctx.String("name")
-		serviceName := ctx.String("service")
-		normal := ctx.BoolT("isNormal")
-		instanceName := ctx.String("instance")
-		endpointName := ctx.String("endpoint")
-		scope := interceptor.ParseScope(metricsName)
-
-		if serviceName == "" {
-			return fmt.Errorf("the name of service should be specified")
-		}
-		if scope == schema.ScopeAll {
-			return fmt.Errorf("this command cannot be used to query `All` scope metrics")
-		}
+		entity := interceptor.ParseEntity(ctx)
 
 		duration := schema.Duration{
 			Start: start,
@@ -69,14 +57,8 @@ var Single = cli.Command{
 		}
 
 		metricsValues := metrics.LinearIntValues(ctx, schema.MetricsCondition{
-			Name: metricsName,
-			Entity: &schema.Entity{
-				Scope:               scope,
-				ServiceName:         &serviceName,
-				Normal:              &normal,
-				ServiceInstanceName: &instanceName,
-				EndpointName:        &endpointName,
-			},
+			Name:   metricsName,
+			Entity: entity,
 		}, duration)
 
 		return display.Display(ctx, &displayable.Displayable{Data: utils.MetricsValuesToMap(duration, metricsValues)})

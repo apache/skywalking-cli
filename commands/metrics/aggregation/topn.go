@@ -62,7 +62,7 @@ var TopN = cli.Command{
 
 		metricsName := ctx.String("name")
 		normal := ctx.BoolT("isNormal")
-		scope := interceptor.ParseScope(metricsName)
+		scope := ctx.Generic("scope").(*model.ScopeEnumValue).Selected
 		order := ctx.Generic("order").(*model.OrderEnumValue).Selected
 		topN := 5
 		parentService := ctx.String("service")
