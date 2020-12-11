@@ -155,3 +155,10 @@ check-codegen: codegen
 		git status -s; \
 		exit 1; \
 	fi
+
+.PHONY: test-commands
+test-commands:
+	@docker container stop oap
+	@docker container prune -f
+	@docker run --name oap -p 12800:12800 -d -e SW_HEALTH_CHECKER=default -e SW_TELEMETRY=prometheus apache/skywalking-oap-server:latest
+	@sh test/test.sh
