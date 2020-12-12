@@ -85,7 +85,7 @@ $(PLATFORMS):
 lint: codegen tools
 	$(GO_LINT) run -v ./...
 
-.PHONE: test
+.PHONY: test
 test: clean codegen lint
 	$(GO_TEST) ./... -coverprofile=coverage.txt -covermode=atomic
 

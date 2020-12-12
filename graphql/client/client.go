@@ -19,6 +19,7 @@ package client
 
 import (
 	"context"
+	"encoding/base64"
 
 	"github.com/machinebox/graphql"
 	"github.com/urfave/cli"
@@ -36,6 +37,16 @@ func newClient(cliCtx *cli.Context) (client *graphql.Client) {
 
 // ExecuteQuery executes the `request` and parse to the `response`, returning `error` if there is any.
 func ExecuteQuery(cliCtx *cli.Context, request *graphql.Request, response interface{}) error {
+	username := cliCtx.GlobalString("username")
+	password := cliCtx.GlobalString("password")
+	authorization := cliCtx.GlobalString("authorization")
+	if authorization == "" && username != "" && password != "" {
+		authorization = "Basic " + base64.StdEncoding.EncodeToString([]byte(username+":"+password))
+	}
+	if authorization != "" {
+		request.Header.Set("Authorization", authorization)
+	}
+
 	client := newClient(cliCtx)
 	ctx := context.Background()
 	err := client.Run(ctx, request, response)

@@ -66,6 +66,24 @@ func main() {
 			Value:    "http://127.0.0.1:12800/graphql",
 		}),
 		altsrc.NewStringFlag(cli.StringFlag{
+			Name:     "username",
+			Required: false,
+			Usage:    "username of basic authorization",
+			Value:    "",
+		}),
+		altsrc.NewStringFlag(cli.StringFlag{
+			Name:     "password",
+			Required: false,
+			Usage:    "password of basic authorization",
+			Value:    "",
+		}),
+		altsrc.NewStringFlag(cli.StringFlag{
+			Name:     "authorization",
+			Required: false,
+			Usage:    "authorization to the OAP backend",
+			Value:    "",
+		}),
+		altsrc.NewStringFlag(cli.StringFlag{
 			Name:     "timezone",
 			Required: false,
 			Hidden:   true,
