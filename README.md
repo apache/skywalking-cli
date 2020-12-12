@@ -85,6 +85,9 @@ This section covers all the available commands in SkyWalking CLI and their usage
 | `--config` | from where the default options values will be loaded | `~/.skywalking.yml` |
 | `--debug` | enable debug mode, will print more detailed information at runtime | `false` |
 | `--base-url` | base url of GraphQL backend | `http://127.0.0.1:12800/graphql` |
+| `--username` | username of `Basic` authorization | `` |
+| `--password` | password of `Basic` authorization | `` |
+| `--authorization` | authorization header, can be something like `Basic base64<username:password>` or `Bearer jwt-token`, if `authorization` is set, `username` and `password` are ignored | `` |
 | `--display` | display style when printing the query result, supported styles are: `json`, `yaml`, `table`, `graph` | `json` |
 
 Note that not all display styles (except for `json` and `yaml`) are supported in all commands due to data formats incompatibilities and the limits of
