@@ -97,7 +97,7 @@ func main() {
 		altsrc.NewStringFlag(cli.StringFlag{
 			Name:     "display",
 			Required: false,
-			Usage:    "display `style` of the result, supported styles are: json, yaml, table",
+			Usage:    "display `style` of the result, supported styles are: json, yaml, table, graph",
 			Value:    "json",
 		}),
 	}
