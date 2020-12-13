@@ -36,17 +36,11 @@ while ! ${swctl} ch > /dev/null 2>&1; do
   retries=$(($retries+1))
 done;
 
-if ! ${swctl} metrics ls > /dev/null 2>&1; then
-  exit 1
-fi
+${swctl} metrics ls > /dev/null 2>&1
 
-if ! ${swctl} service ls > /dev/null 2>&1; then
-  exit 1
-fi
+${swctl} service ls > /dev/null 2>&1
 
-if ! ${swctl} endpoint ls --service-id="test" > /dev/null 2>&1; then
-  exit 1
-fi
+${swctl} endpoint ls --service-id="test" > /dev/null 2>&1
 
 SERVICE_SCOPE_METRICS=(
   service_resp_time
@@ -56,33 +50,19 @@ SERVICE_SCOPE_METRICS=(
 )
 
 for metrics in "${SERVICE_SCOPE_METRICS[@]}"; do
-  if ! ${swctl} metrics linear --name="$metrics" --service="test" > /dev/null 2>&1; then
-    exit 1
-  fi
+  ${swctl} metrics linear --name="$metrics" --service="test" > /dev/null 2>&1
 
-  if ! ${swctl} metrics single --name="$metrics" --service="test" > /dev/null 2>&1; then
-    exit 1
-  fi
+  ${swctl} metrics single --name="$metrics" --service="test" > /dev/null 2>&1
 
-  if ! ${swctl} metrics top 3 --name="$metrics" > /dev/null 2>&1; then
-    exit 1
-  fi
+  ${swctl} metrics top 3 --name="$metrics" > /dev/null 2>&1
 done
 
-if ! ${swctl} metrics multiple-linear --name="all_percentile" > /dev/null 2>&1; then
-  exit 1
-fi
+${swctl} metrics multiple-linear --name="all_percentile" > /dev/null 2>&1
 
 # Test `metrics thermodynamic`
-if ! ${swctl} metrics hp --name="all_heatmap" >/dev/null 2>&1; then
-  exit 1
-fi
+${swctl} metrics hp --name="all_heatmap" >/dev/null 2>&1
 
-if ! ${swctl} trace ls >/dev/null 2>&1; then
-  exit 1
-fi
+${swctl} trace ls >/dev/null 2>&1
 
 # Test `dashboard global`
-if ! ${swctl} db g >/dev/null 2>&1; then
-  exit 1
-fi
+${swctl} db g >/dev/null 2>&1

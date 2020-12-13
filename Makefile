@@ -163,4 +163,6 @@ test-commands:
 		docker container prune -f; \
 		docker run --name oap -p 12800:12800 -p 11800:11800 -d -e SW_HEALTH_CHECKER=default -e SW_TELEMETRY=prometheus apache/skywalking-oap-server:latest; \
 	fi
-	./test/test.sh
+	./test/test_commands.sh
+	@docker container stop oap
+	@docker container prune -f
