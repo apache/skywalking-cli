@@ -24,7 +24,7 @@ fi
 swctl="bin/swctl-latest-${os}-amd64"
 
 # Check whether OAP server is healthy.
-if ! ${swctl} ch --grpc=false > /dev/null 2>&1; then
+if ! ${swctl} ch > /dev/null 2>&1; then
   echo "OAP server is not healthy"
   exit 1
 fi
@@ -37,32 +37,45 @@ if ! ${swctl} service ls > /dev/null 2>&1; then
   exit 1
 fi
 
-if ! ${swctl} metrics linear --name="database_access_resp_time" --service="test" > /dev/null 2>&1; then
+if ! ${swctl} endpoint ls --service-id="test" > /dev/null 2>&1; then
   exit 1
 fi
+
+SERVICE_SCOPE_METRICS=(
+  service_resp_time
+  service_sla
+  service_cpm
+  service_apdex
+)
+
+for metrics in "${SERVICE_SCOPE_METRICS[@]}"; do
+  if ! ${swctl} metrics linear --name="$metrics" --service="test" > /dev/null 2>&1; then
+    exit 1
+  fi
+
+  if ! ${swctl} metrics single --name="$metrics" --service="test" > /dev/null 2>&1; then
+    exit 1
+  fi
+
+  if ! ${swctl} metrics top 3 --name="$metrics" > /dev/null 2>&1; then
+    exit 1
+  fi
+done
 
 if ! ${swctl} metrics multiple-linear --name="all_percentile" > /dev/null 2>&1; then
   exit 1
 fi
 
 # Test `metrics thermodynamic`
-if ! ${swctl} metrics hp --name="all_heatmap" > /dev/null 2>&1; then
+if ! ${swctl} metrics hp --name="all_heatmap" >/dev/null 2>&1; then
   exit 1
 fi
 
-if ! ${swctl} metrics single --name="service_resp_time" --service="test" > /dev/null 2>&1; then
-  exit 1
-fi
-
-if ! ${swctl} metrics top 5 --name="service_resp_time" > /dev/null 2>&1; then
-  exit 1
-fi
-
-if ! ${swctl} trace ls > /dev/null 2>&1; then
+if ! ${swctl} trace ls >/dev/null 2>&1; then
   exit 1
 fi
 
 # Test `dashboard global`
-if ! ${swctl} db g > /dev/null 2>&1; then
+if ! ${swctl} db g >/dev/null 2>&1; then
   exit 1
 fi
