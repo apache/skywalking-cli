@@ -21,13 +21,20 @@ else
   os="linux"
 fi
 
-swctl="bin/swctl-latest-${os}-amd64"
+swctl="bin/swctl-latest-${os}-amd64 --base-url=http://localhost:12800/graphql"
 
+retries=1
+max_retries=10
 # Check whether OAP server is healthy.
-if ! ${swctl} ch > /dev/null 2>&1; then
-  echo "OAP server is not healthy"
-  exit 1
-fi
+while ! ${swctl} ch > /dev/null 2>&1; do
+  if [[ $retries -ge $max_retries ]]; then
+    echo "OAP server is not healthy after $retries retires, will exit now"
+    exit 1
+  fi
+  echo "OAP server is not healthy, retrying [$retries/$max_retries] ..."
+  sleep 3
+  retries=$(($retries+1))
+done;
 
 if ! ${swctl} metrics ls > /dev/null 2>&1; then
   exit 1
