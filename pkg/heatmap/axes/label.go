@@ -108,7 +108,7 @@ func xLabels(yEnd image.Point, graphWidth int, stringLabels []string, cellWidth 
 
 // paddedLabelLength calculates the length of the padded label and
 // the column index corresponding to the label.
-// For examples, the longest label's length is 5, like '12:34', and the cell's width is 3.
+// For example, the longest label's length is 5, like '12:34', and the cell's width is 3.
 // So in order to better display, every three cells will display a label,
 // the label belongs to the middle column of the three columns,
 // and the padded length is 3*3, which is 9.
