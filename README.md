@@ -322,7 +322,7 @@ Ascii Graph, like coloring in terminal, so please use `json`  or `yaml` instead.
 | `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
 | `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
 
-You can imitate the content of [the default template file](example/global.yml) to customize the dashboard.
+You can imitate the content of [the default template file](examples/global.yml) to customize the dashboard.
 
 </details>
 
@@ -341,7 +341,7 @@ You can imitate the content of [the default template file](example/global.yml) t
 | `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
 | `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
 
-You can imitate the content of [the default template file](example/global.yml) to customize the dashboard.
+You can imitate the content of [the default template file](examples/global.yml) to customize the dashboard.
 
 </details>
 

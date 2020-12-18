@@ -15,17 +15,30 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package assets
+package util
 
 import (
+	"os/user"
+	"strings"
+
 	"github.com/apache/skywalking-cli/internal/logger"
 )
 
-// Read reads all content from a file under assets, which is packed in to the binary
-func Read(filename string) string {
-	content, err := AssetString(filename)
-	if err != nil {
-		logger.Log.Fatalln("failed to read asset: ", filename, err)
+// UserHomeDir returns the current user's home directory absolute path,
+// which is usually represented as `~` in most shells
+func UserHomeDir() string {
+	if currentUser, err := user.Current(); err != nil {
+		logger.Log.Warnln("Cannot obtain user home directory")
+	} else {
+		return currentUser.HomeDir
 	}
-	return content
+	return ""
+}
+
+// ExpandFilePath expands the leading `~` to absolute path
+func ExpandFilePath(path string) string {
+	if strings.HasPrefix(path, "~") {
+		return strings.Replace(path, "~", UserHomeDir(), 1)
+	}
+	return path
 }

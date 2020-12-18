@@ -15,17 +15,40 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package assets
+package instance
 
 import (
+	"github.com/urfave/cli"
+
+	"github.com/apache/skywalking-cli/pkg/graphql/metadata"
+
 	"github.com/apache/skywalking-cli/internal/logger"
 )
 
-// Read reads all content from a file under assets, which is packed in to the binary
-func Read(filename string) string {
-	content, err := AssetString(filename)
-	if err != nil {
-		logger.Log.Fatalln("failed to read asset: ", filename, err)
+var Command = cli.Command{
+	Name:      "instance",
+	ShortName: "i",
+	Usage:     "Instance related sub-command",
+	Subcommands: cli.Commands{
+		ListCommand,
+		SearchCommand,
+	},
+}
+
+func verifyAndSwitchServiceParameter(ctx *cli.Context) string {
+	serviceID := ctx.String("service-id")
+	serviceName := ctx.String("service-name")
+
+	if serviceID == "" && serviceName == "" {
+		logger.Log.Fatalf("flags \"service-id, service-name\" must set one")
 	}
-	return content
+
+	if serviceID == "" && serviceName != "" {
+		service, err := metadata.SearchService(ctx, serviceName)
+		if err != nil {
+			logger.Log.Fatalln(err)
+		}
+		serviceID = service.ID
+	}
+	return serviceID
 }

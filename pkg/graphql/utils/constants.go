@@ -15,17 +15,38 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package assets
+package utils
 
 import (
-	"github.com/apache/skywalking-cli/internal/logger"
+	"github.com/apache/skywalking-cli/api"
+	"time"
 )
 
-// Read reads all content from a file under assets, which is packed in to the binary
-func Read(filename string) string {
-	content, err := AssetString(filename)
-	if err != nil {
-		logger.Log.Fatalln("failed to read asset: ", filename, err)
-	}
-	return content
+// StepFormats is a mapping from schema.Step to its time format
+var StepFormats = map[api.Step]string{
+	api.StepSecond: "2006-01-02 150405",
+	api.StepMinute: "2006-01-02 1504",
+	api.StepHour:   "2006-01-02 15",
+	api.StepDay:    "2006-01-02",
+}
+
+// StepDuration is a mapping from schema.Step to its time.Duration
+var StepDuration = map[api.Step]time.Duration{
+	api.StepSecond: time.Second,
+	api.StepMinute: time.Minute,
+	api.StepHour:   time.Hour,
+	api.StepDay:    time.Hour * 24,
+}
+
+type DurationType string
+
+const (
+	BothAbsent  DurationType = "BothAbsent"
+	BothPresent DurationType = "BothPresent"
+	StartAbsent DurationType = "StartAbsent"
+	EndAbsent   DurationType = "EndAbsent"
+)
+
+func (dt DurationType) String() string {
+	return string(dt)
 }

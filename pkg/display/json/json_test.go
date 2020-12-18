@@ -15,17 +15,29 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package assets
+package json
 
 import (
-	"github.com/apache/skywalking-cli/internal/logger"
+	"github.com/apache/skywalking-cli/api"
+	"testing"
+
+	d "github.com/apache/skywalking-cli/pkg/display/displayable"
 )
 
-// Read reads all content from a file under assets, which is packed in to the binary
-func Read(filename string) string {
-	content, err := AssetString(filename)
-	if err != nil {
-		logger.Log.Fatalln("failed to read asset: ", filename, err)
+func TestJsonDisplay(t *testing.T) {
+	var result []api.Service
+	display(t, result)
+	result = make([]api.Service, 0)
+	display(t, result)
+	result = append(result, api.Service{
+		ID:   "1",
+		Name: "json",
+	})
+	display(t, result)
+}
+
+func display(t *testing.T, result []api.Service) {
+	if err := Display(&d.Displayable{Data: result}); err != nil {
+		t.Error(err)
 	}
-	return content
 }

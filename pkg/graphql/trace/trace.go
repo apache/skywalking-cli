@@ -15,17 +15,35 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package assets
+package trace
 
 import (
-	"github.com/apache/skywalking-cli/internal/logger"
+	"github.com/apache/skywalking-cli/api"
+	"github.com/machinebox/graphql"
+	"github.com/urfave/cli"
+
+	"github.com/apache/skywalking-cli/assets"
+	"github.com/apache/skywalking-cli/pkg/graphql/client"
 )
 
-// Read reads all content from a file under assets, which is packed in to the binary
-func Read(filename string) string {
-	content, err := AssetString(filename)
-	if err != nil {
-		logger.Log.Fatalln("failed to read asset: ", filename, err)
-	}
-	return content
+func Trace(ctx *cli.Context, traceID string) api.Trace {
+	var response map[string]api.Trace
+
+	request := graphql.NewRequest(assets.Read("graphqls/trace/Trace.graphql"))
+	request.Var("traceId", traceID)
+
+	client.ExecuteQueryOrFail(ctx, request, &response)
+
+	return response["result"]
+}
+
+func Traces(ctx *cli.Context, condition *api.TraceQueryCondition) api.TraceBrief {
+	var response map[string]api.TraceBrief
+
+	request := graphql.NewRequest(assets.Read("graphqls/trace/Traces.graphql"))
+	request.Var("condition", condition)
+
+	client.ExecuteQueryOrFail(ctx, request, &response)
+
+	return response["result"]
 }

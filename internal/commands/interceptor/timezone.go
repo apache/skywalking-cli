@@ -15,17 +15,37 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package assets
+package interceptor
 
 import (
+	"strconv"
+
+	"github.com/urfave/cli"
+
 	"github.com/apache/skywalking-cli/internal/logger"
+	"github.com/apache/skywalking-cli/pkg/graphql/metadata"
 )
 
-// Read reads all content from a file under assets, which is packed in to the binary
-func Read(filename string) string {
-	content, err := AssetString(filename)
-	if err != nil {
-		logger.Log.Fatalln("failed to read asset: ", filename, err)
+// TimezoneInterceptor sets the server timezone if the server supports the API,
+// otherwise, sets to local timezone
+func TimezoneInterceptor(ctx *cli.Context) error {
+	// If there is timezone given by the user in command line, use it directly
+	if ctx.GlobalString("timezone") != "" {
+		return nil
 	}
-	return content
+
+	serverTimeInfo, err := metadata.ServerTimeInfo(ctx)
+
+	if err != nil {
+		logger.Log.Debugf("Failed to get server time info: %v\n", err)
+		return nil
+	}
+
+	if timezone := serverTimeInfo.Timezone; timezone != nil {
+		if _, err := strconv.Atoi(*timezone); err == nil {
+			return ctx.GlobalSet("timezone", *timezone)
+		}
+	}
+
+	return nil
 }

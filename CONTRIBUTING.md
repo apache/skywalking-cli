@@ -47,17 +47,17 @@ make
 ```
 
 ## Writing a new command
-All commands files locate in directory [`commands`](commands), and an individual directory for each second-level command,
-an individual `go` file for each third-level command, for example, there is a directory [`service`](commands/service) for command `swctl service`, 
-and a [`list.go`](commands/service/list.go) file for `swctl service list` command.
+All commands files locate in directory [`commands`](internal/commands), and an individual directory for each second-level command,
+an individual `go` file for each third-level command, for example, there is a directory [`service`](internal/commands/service) for command `swctl service`, 
+and a [`list.go`](internal/commands/service/list.go) file for `swctl service list` command.
 
 Determine what entity your command will operate on, and put your command `go` file into that directory, or create one if it doesn't exist,
 for example, if you want to create a command to `list` all the `instance`s of a service, create a directory `commands/instance`,
 and a `go` file `commands/instance/list.go`.
 
 ## Reusing common options
-There're some [common options](#common-options) that can be shared by multiple commands, check [`commands/flags`](commands/flags)
-to get all the shared options, and reuse them when possible, an example shares the options is [`commands/service/list.go`](commands/service/list.go#L35)
+There're some [common options](#common-options) that can be shared by multiple commands, check [`commands/flags`](internal/flags)
+to get all the shared options, and reuse them when possible, an example shares the options is [`commands/service/list.go`](internal/commands/service/list.go#L35)
 
 ## Linting your codes
 We have some rules for the code style and please lint your codes locally before opening a pull request

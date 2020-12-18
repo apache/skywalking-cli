@@ -15,17 +15,37 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package assets
+package model
 
 import (
-	"github.com/apache/skywalking-cli/internal/logger"
+	"fmt"
+	"github.com/apache/skywalking-cli/api"
+	"strings"
 )
 
-// Read reads all content from a file under assets, which is packed in to the binary
-func Read(filename string) string {
-	content, err := AssetString(filename)
-	if err != nil {
-		logger.Log.Fatalln("failed to read asset: ", filename, err)
+// StepEnumValue defines the values domain of --step option
+type StepEnumValue struct {
+	Enum     []api.Step
+	Default  api.Step
+	Selected api.Step
+}
+
+// Set the --step value, from raw string to StepEnumValue
+func (s *StepEnumValue) Set(value string) error {
+	for _, enum := range s.Enum {
+		if strings.EqualFold(enum.String(), value) {
+			s.Selected = enum
+			return nil
+		}
 	}
-	return content
+	steps := make([]string, len(api.AllStep))
+	for i, step := range api.AllStep {
+		steps[i] = step.String()
+	}
+	return fmt.Errorf("allowed steps are %s", strings.Join(steps, ", "))
+}
+
+// String representation of the step
+func (s StepEnumValue) String() string {
+	return s.Selected.String()
 }
