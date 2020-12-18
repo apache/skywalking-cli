@@ -22,7 +22,7 @@ import (
 	"github.com/urfave/cli"
 
 	"github.com/apache/skywalking-cli/internal/logger"
-	"github.com/apache/skywalking-cli/pkg/graphql/healthcheck"
+	hc "github.com/apache/skywalking-cli/pkg/graphql/healthcheck"
 )
 
 var Command = cli.Command{
@@ -48,7 +48,7 @@ var Command = cli.Command{
 		},
 	},
 	Action: func(ctx *cli.Context) error {
-		healthStatus := healthcheck.CheckHealth(ctx)
+		healthStatus := hc.CheckHealth(ctx)
 		if healthStatus.Score != 0 {
 			return cli.NewExitError(healthStatus.Details, healthStatus.Score)
 		}
