@@ -30,7 +30,7 @@ import (
 func CheckHealth(ctx *cli.Context) api.HealthStatus {
 	var response map[string]api.HealthStatus
 
-	request := graphql.NewRequest(assets.Read("graphqls/healthcheck/checkHealth.graphql"))
+	request := graphql.NewRequest(assets.Read("graphqls/healthcheck/healthcheck.graphql"))
 
 	client.ExecuteQueryOrFail(ctx, request, &response)
 
