@@ -82,7 +82,7 @@ This section covers all the available commands in SkyWalking CLI and their usage
 
 | option | description | default |
 | :--- | :--- | :--- |
-| `--config` | from where the default options values will be loaded | `~/.skywalking.yml` |
+| `--config` | from where the default options values will be loaded | `~/.skywalking.yml`, example can be found [here](examples/.skywalking.yaml) |
 | `--debug` | enable debug mode, will print more detailed information at runtime | `false` |
 | `--base-url` | base url of GraphQL backend | `http://127.0.0.1:12800/graphql` |
 | `--username` | username of `Basic` authorization | `` |
