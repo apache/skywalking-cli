@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package common
+package healthcheck
 
 import (
 	"github.com/apache/skywalking-cli/api"
