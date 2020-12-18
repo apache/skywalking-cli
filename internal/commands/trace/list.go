@@ -19,6 +19,7 @@ package trace
 
 import (
 	"github.com/apache/skywalking-cli/api"
+	"github.com/apache/skywalking-cli/internal/logger"
 	"strings"
 
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
@@ -115,7 +116,11 @@ var ListCommand = cli.Command{
 			Tags:              tags,
 			Paging:            &paging,
 		}
-		traces := trace.Traces(ctx, condition)
+		traces, err := trace.Traces(ctx, condition)
+
+		if err != nil {
+			logger.Log.Fatalln(err)
+		}
 
 		return display.Display(ctx, &displayable.Displayable{Data: traces, Condition: condition})
 	},

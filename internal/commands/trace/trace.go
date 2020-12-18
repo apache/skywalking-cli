@@ -19,6 +19,7 @@ package trace
 
 import (
 	"fmt"
+	"github.com/apache/skywalking-cli/internal/logger"
 
 	"github.com/urfave/cli"
 
@@ -37,7 +38,11 @@ var Command = cli.Command{
 			return fmt.Errorf("command trace without sub command requires 1 trace id as argument")
 		}
 
-		trace := trace.Trace(ctx, ctx.Args().First())
+		trace, err := trace.Trace(ctx, ctx.Args().First())
+
+		if err != nil {
+			logger.Log.Fatalln(err)
+		}
 
 		return display.Display(ctx, &displayable.Displayable{Data: trace})
 	},

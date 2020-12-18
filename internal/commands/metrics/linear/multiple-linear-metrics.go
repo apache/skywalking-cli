@@ -20,6 +20,7 @@ package linear
 import (
 	"fmt"
 	"github.com/apache/skywalking-cli/api"
+	"github.com/apache/skywalking-cli/internal/logger"
 	"strings"
 
 	"github.com/apache/skywalking-cli/internal/commands/interceptor"
@@ -72,10 +73,14 @@ var Multiple = cli.Command{
 			Step:  step.(*model.StepEnumValue).Selected,
 		}
 
-		metricsValuesArray := metrics.MultipleLinearIntValues(ctx, api.MetricsCondition{
+		metricsValuesArray, err := metrics.MultipleLinearIntValues(ctx, api.MetricsCondition{
 			Name:   metricsName,
 			Entity: interceptor.ParseEntity(ctx),
 		}, strings.Split(labels, ","), duration)
+
+		if err != nil {
+			logger.Log.Fatalln(err)
+		}
 
 		reshaped := utils.MetricsValuesArrayToMap(duration, metricsValuesArray)
 		return display.Display(ctx, &displayable.Displayable{Data: reshaped})

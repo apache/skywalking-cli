@@ -20,6 +20,7 @@ package aggregation
 import (
 	"fmt"
 	"github.com/apache/skywalking-cli/api"
+	"github.com/apache/skywalking-cli/internal/logger"
 	"strconv"
 
 	"github.com/apache/skywalking-cli/internal/commands/interceptor"
@@ -80,7 +81,7 @@ var TopN = cli.Command{
 			Step:  step,
 		}
 
-		metricsValues := metrics.SortMetrics(ctx, api.TopNCondition{
+		metricsValues, err := metrics.SortMetrics(ctx, api.TopNCondition{
 			Name:          metricsName,
 			ParentService: &parentService,
 			Normal:        &normal,
@@ -88,6 +89,10 @@ var TopN = cli.Command{
 			TopN:          topN,
 			Order:         order,
 		}, duration)
+
+		if err != nil {
+			logger.Log.Fatalln(err)
+		}
 
 		return display.Display(ctx, &displayable.Displayable{Data: metricsValues})
 	},

@@ -21,6 +21,7 @@ import (
 	"github.com/apache/skywalking-cli/api"
 	"github.com/apache/skywalking-cli/internal/commands/interceptor"
 	"github.com/apache/skywalking-cli/internal/flags"
+	"github.com/apache/skywalking-cli/internal/logger"
 	"github.com/apache/skywalking-cli/internal/model"
 	"github.com/apache/skywalking-cli/pkg/display"
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
@@ -54,10 +55,14 @@ var Command = cli.Command{
 			Step:  step.(*model.StepEnumValue).Selected,
 		}
 
-		metricsValue := metrics.IntValues(ctx, api.MetricsCondition{
+		metricsValue, err := metrics.IntValues(ctx, api.MetricsCondition{
 			Name:   metricsName,
 			Entity: entity,
 		}, duration)
+
+		if err != nil {
+			logger.Log.Fatalln(err)
+		}
 
 		return display.Display(ctx, &displayable.Displayable{Data: metricsValue})
 	},

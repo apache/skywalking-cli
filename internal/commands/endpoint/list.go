@@ -18,6 +18,7 @@
 package endpoint
 
 import (
+	"github.com/apache/skywalking-cli/internal/logger"
 	"github.com/urfave/cli"
 
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
@@ -56,7 +57,11 @@ var ListCommand = cli.Command{
 		limit := ctx.Int("limit")
 		keyword := ctx.String("keyword")
 
-		endpoints := metadata.SearchEndpoints(ctx, serviceID, keyword, limit)
+		endpoints, err := metadata.SearchEndpoints(ctx, serviceID, keyword, limit)
+
+		if err != nil {
+			logger.Log.Fatalln(err)
+		}
 
 		return display.Display(ctx, &displayable.Displayable{Data: endpoints})
 	},

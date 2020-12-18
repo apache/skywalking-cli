@@ -128,6 +128,7 @@ func listenTracesKeyboard(list *widgets.List, tree *widgets.Tree, data api.Trace
 	detail, help *widgets.Paragraph, condition *api.TraceQueryCondition) {
 	uiEvents := ui.PollEvents()
 	listActive := true
+	var err error
 	for {
 		e := <-uiEvents
 
@@ -139,7 +140,10 @@ func listenTracesKeyboard(list *widgets.List, tree *widgets.Tree, data api.Trace
 			if pageNum != 1 {
 				pageNum--
 				condition.Paging.PageNum = &pageNum
-				data = trace.Traces(ctx, condition)
+				data, err = trace.Traces(ctx, condition)
+				if err != nil {
+					logger.Log.Fatalln(err)
+				}
 			}
 			tree.SelectedRow = 0
 		case "<C-f>", "n":
@@ -147,7 +151,10 @@ func listenTracesKeyboard(list *widgets.List, tree *widgets.Tree, data api.Trace
 			if pageNum < totalPages(data.Total) {
 				pageNum++
 				condition.Paging.PageNum = &pageNum
-				data = trace.Traces(ctx, condition)
+				data, err = trace.Traces(ctx, condition)
+				if err != nil {
+					logger.Log.Fatalln(err)
+				}
 			}
 			tree.SelectedRow = 0
 		case "<Right>":
@@ -199,7 +206,12 @@ func listActions(key string, list *widgets.List, tree *widgets.Tree, listActive 
 }
 
 func getNodeData(ctx *cli.Context, traceID string) (nodes []*widgets.TreeNode, serviceNames []string) {
-	data := trace.Trace(ctx, traceID)
+	data, err := trace.Trace(ctx, traceID)
+
+	if err != nil {
+		logger.Log.Fatalln(err)
+	}
+
 	var roots []*Node
 	roots, serviceNames = Adapt(data)
 

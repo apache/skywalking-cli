@@ -340,7 +340,11 @@ func refresh(con context.Context, ctx *cli.Context, interval time.Duration) {
 				continue
 			}
 
-			data := dashboard.Global(ctx, d)
+			data, err := dashboard.Global(ctx, d)
+			if err != nil {
+				continue
+			}
+
 			if err := updateAllWidgets(data); err != nil {
 				continue
 			}

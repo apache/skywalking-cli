@@ -19,6 +19,7 @@ package global
 
 import (
 	"github.com/apache/skywalking-cli/api"
+	"github.com/apache/skywalking-cli/internal/logger"
 	"github.com/urfave/cli"
 
 	"github.com/apache/skywalking-cli/internal/model"
@@ -61,11 +62,15 @@ var GlobalCommand = cli.Command{
 		start := ctx.String("start")
 		step := ctx.Generic("step")
 
-		globalData := dashboard.Global(ctx, api.Duration{
+		globalData, err := dashboard.Global(ctx, api.Duration{
 			Start: start,
 			End:   end,
 			Step:  step.(*model.StepEnumValue).Selected,
 		})
+
+		if err != nil {
+			logger.Log.Fatalln(err)
+		}
 
 		return display.Display(ctx, &displayable.Displayable{Data: globalData})
 	},

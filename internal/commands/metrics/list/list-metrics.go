@@ -18,6 +18,7 @@
 package list
 
 import (
+	"github.com/apache/skywalking-cli/internal/logger"
 	"github.com/urfave/cli"
 
 	"github.com/apache/skywalking-cli/pkg/display"
@@ -38,7 +39,11 @@ var Command = cli.Command{
 	Action: func(ctx *cli.Context) error {
 		regex := ctx.String("regex")
 
-		metricsValue := metrics.ListMetrics(ctx, regex)
+		metricsValue, err := metrics.ListMetrics(ctx, regex)
+
+		if err != nil {
+			logger.Log.Fatalln(err)
+		}
 
 		return display.Display(ctx, &displayable.Displayable{Data: metricsValue})
 	},

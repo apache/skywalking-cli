@@ -20,6 +20,7 @@ package dashboard
 import (
 	"bytes"
 	"github.com/apache/skywalking-cli/api"
+	"github.com/apache/skywalking-cli/internal/logger"
 	"io/ioutil"
 	"strings"
 	"sync"
@@ -138,24 +139,28 @@ func getButtonTexts(byteValue []byte) ([]string, error) {
 	return ret, nil
 }
 
-func Metrics(ctx *cli.Context, duration api.Duration) [][]*api.SelectedRecord {
+func Metrics(ctx *cli.Context, duration api.Duration) ([][]*api.SelectedRecord, error) {
 	var ret [][]*api.SelectedRecord
 
 	template, err := LoadTemplate(ctx.String("template"))
 	if err != nil {
-		return nil
+		return nil, nil
 	}
 
 	// Check if there is a template of metrics.
 	if template.Metrics == nil {
-		return nil
+		return nil, nil
 	}
 
 	for _, m := range template.Metrics {
-		ret = append(ret, metrics.SortMetrics(ctx, m.Condition, duration))
+		sortMetrics, err := metrics.SortMetrics(ctx, m.Condition, duration)
+		if err != nil {
+			return nil, err
+		}
+		ret = append(ret, sortMetrics)
 	}
 
-	return ret
+	return ret, nil
 }
 
 func responseLatency(ctx *cli.Context, duration api.Duration) []map[string]float64 {
@@ -173,39 +178,49 @@ func responseLatency(ctx *cli.Context, duration api.Duration) []map[string]float
 	// need use ", " to split into string array for graphql query.
 	labelsIndex := strings.Split(template.ResponseLatency.LabelsIndex, ", ")
 
-	responseLatency := metrics.MultipleLinearIntValues(ctx, template.ResponseLatency.Condition, labelsIndex, duration)
+	responseLatency, err := metrics.MultipleLinearIntValues(ctx, template.ResponseLatency.Condition, labelsIndex, duration)
+
+	if err != nil {
+		logger.Log.Fatalln(err)
+	}
 
 	// Convert metrics values to map type data.
 	return utils.MetricsValuesArrayToMap(duration, responseLatency)
 }
 
-func heatMap(ctx *cli.Context, duration api.Duration) api.HeatMap {
+func heatMap(ctx *cli.Context, duration api.Duration) (api.HeatMap, error) {
 	template, err := LoadTemplate(ctx.String("template"))
 	if err != nil {
-		return api.HeatMap{}
+		return api.HeatMap{}, nil
 	}
 
 	// Check if there is a template of heat map.
 	if template.HeatMap == (ChartTemplate{}) {
-		return api.HeatMap{}
+		return api.HeatMap{}, nil
 	}
 
 	return metrics.Thermodynamic(ctx, template.HeatMap.Condition, duration)
 }
 
-func Global(ctx *cli.Context, duration api.Duration) *GlobalData {
+func Global(ctx *cli.Context, duration api.Duration) (*GlobalData, error) {
 	// Load template to `globalTemplate`, so the subsequent three calls can ues it directly.
 	_, err := LoadTemplate(ctx.String("template"))
 	if err != nil {
-		return nil
+		return nil, nil
 	}
+
+	errors := make(chan error)
+	done := make(chan bool)
 
 	// Use three goroutines to enable concurrent execution of three graphql queries.
 	var wg sync.WaitGroup
 	wg.Add(3)
 	var m [][]*api.SelectedRecord
 	go func() {
-		m = Metrics(ctx, duration)
+		m, err = Metrics(ctx, duration)
+		if err != nil {
+			errors <- err
+		}
 		wg.Done()
 	}()
 	var rl []map[string]float64
@@ -215,15 +230,30 @@ func Global(ctx *cli.Context, duration api.Duration) *GlobalData {
 	}()
 	var hm api.HeatMap
 	go func() {
-		hm = heatMap(ctx, duration)
+		hm, err = heatMap(ctx, duration)
+		if err != nil {
+			errors <- err
+		}
 		wg.Done()
 	}()
-	wg.Wait()
+
+	go func() {
+		wg.Wait()
+		close(done)
+	}()
+
+	select {
+	case <-done:
+		break
+	case err := <-errors:
+		close(errors)
+		return nil, err
+	}
 
 	var globalData GlobalData
 	globalData.Metrics = m
 	globalData.ResponseLatency = rl
 	globalData.HeatMap = hm
 
-	return &globalData
+	return &globalData, nil
 }

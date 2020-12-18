@@ -19,6 +19,7 @@ package instance
 
 import (
 	"github.com/apache/skywalking-cli/api"
+	"github.com/apache/skywalking-cli/internal/logger"
 	"regexp"
 
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
@@ -50,11 +51,15 @@ var SearchCommand = cli.Command{
 
 		regex := ctx.String("regex")
 
-		instances := metadata.Instances(ctx, serviceID, api.Duration{
+		instances, err := metadata.Instances(ctx, serviceID, api.Duration{
 			Start: start,
 			End:   end,
 			Step:  step.(*model.StepEnumValue).Selected,
 		})
+
+		if err != nil {
+			logger.Log.Fatalln(err)
+		}
 
 		var result []api.ServiceInstance
 		if len(instances) > 0 {

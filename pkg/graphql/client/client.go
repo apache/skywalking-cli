@@ -52,10 +52,3 @@ func ExecuteQuery(cliCtx *cli.Context, request *graphql.Request, response interf
 	err := client.Run(ctx, request, response)
 	return err
 }
-
-// ExecuteQuery executes the `request` and parse to the `response`, panic if there is any `error`.
-func ExecuteQueryOrFail(cliCtx *cli.Context, request *graphql.Request, response interface{}) {
-	if err := ExecuteQuery(cliCtx, request, response); err != nil {
-		logger.Log.Fatalln(err)
-	}
-}

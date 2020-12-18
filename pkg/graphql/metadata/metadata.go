@@ -29,14 +29,15 @@ import (
 	"github.com/apache/skywalking-cli/pkg/graphql/client"
 )
 
-func AllServices(cliCtx *cli.Context, duration api.Duration) []api.Service {
+func AllServices(cliCtx *cli.Context, duration api.Duration) ([]api.Service, error) {
 	var response map[string][]api.Service
 
 	request := graphql.NewRequest(assets.Read("graphqls/metadata/AllServices.graphql"))
 	request.Var("duration", duration)
 
-	client.ExecuteQueryOrFail(cliCtx, request, &response)
-	return response["result"]
+	err := client.ExecuteQuery(cliCtx, request, &response)
+
+	return response["result"], err
 }
 
 func SearchService(cliCtx *cli.Context, serviceCode string) (service api.Service, err error) {
@@ -45,7 +46,7 @@ func SearchService(cliCtx *cli.Context, serviceCode string) (service api.Service
 	request := graphql.NewRequest(assets.Read("graphqls/metadata/SearchService.graphql"))
 	request.Var("serviceCode", serviceCode)
 
-	client.ExecuteQueryOrFail(cliCtx, request, &response)
+	err = client.ExecuteQuery(cliCtx, request, &response)
 
 	service = response["result"]
 
@@ -53,10 +54,10 @@ func SearchService(cliCtx *cli.Context, serviceCode string) (service api.Service
 		return service, fmt.Errorf("no such service [%s]", serviceCode)
 	}
 
-	return service, nil
+	return service, err
 }
 
-func SearchEndpoints(cliCtx *cli.Context, serviceID, keyword string, limit int) []api.Endpoint {
+func SearchEndpoints(cliCtx *cli.Context, serviceID, keyword string, limit int) ([]api.Endpoint, error) {
 	var response map[string][]api.Endpoint
 
 	request := graphql.NewRequest(assets.Read("graphqls/metadata/SearchEndpoints.graphql"))
@@ -64,21 +65,21 @@ func SearchEndpoints(cliCtx *cli.Context, serviceID, keyword string, limit int) 
 	request.Var("keyword", keyword)
 	request.Var("limit", limit)
 
-	client.ExecuteQueryOrFail(cliCtx, request, &response)
+	err := client.ExecuteQuery(cliCtx, request, &response)
 
-	return response["result"]
+	return response["result"], err
 }
 
-func Instances(cliCtx *cli.Context, serviceID string, duration api.Duration) []api.ServiceInstance {
+func Instances(cliCtx *cli.Context, serviceID string, duration api.Duration) ([]api.ServiceInstance, error) {
 	var response map[string][]api.ServiceInstance
 
 	request := graphql.NewRequest(assets.Read("graphqls/metadata/Instances.graphql"))
 	request.Var("serviceId", serviceID)
 	request.Var("duration", duration)
 
-	client.ExecuteQueryOrFail(cliCtx, request, &response)
+	err := client.ExecuteQuery(cliCtx, request, &response)
 
-	return response["result"]
+	return response["result"], err
 }
 
 func ServerTimeInfo(cliCtx *cli.Context) (api.TimeInfo, error) {

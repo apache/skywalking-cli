@@ -27,12 +27,12 @@ import (
 )
 
 // CheckHealth intends to query the health status of OAP server
-func CheckHealth(ctx *cli.Context) api.HealthStatus {
+func CheckHealth(ctx *cli.Context) (api.HealthStatus, error) {
 	var response map[string]api.HealthStatus
 
 	request := graphql.NewRequest(assets.Read("graphqls/healthcheck/healthcheck.graphql"))
 
-	client.ExecuteQueryOrFail(ctx, request, &response)
+	err := client.ExecuteQuery(ctx, request, &response)
 
-	return response["checkHealth"]
+	return response["checkHealth"], err
 }

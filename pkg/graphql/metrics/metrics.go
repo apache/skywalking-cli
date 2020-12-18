@@ -25,7 +25,7 @@ import (
 	"github.com/urfave/cli"
 )
 
-func IntValues(ctx *cli.Context, condition api.MetricsCondition, duration api.Duration) int {
+func IntValues(ctx *cli.Context, condition api.MetricsCondition, duration api.Duration) (int, error) {
 	var response map[string]int
 
 	request := graphql.NewRequest(assets.Read("graphqls/metrics/MetricsValue.graphql"))
@@ -33,12 +33,12 @@ func IntValues(ctx *cli.Context, condition api.MetricsCondition, duration api.Du
 	request.Var("condition", condition)
 	request.Var("duration", duration)
 
-	client.ExecuteQueryOrFail(ctx, request, &response)
+	err := client.ExecuteQuery(ctx, request, &response)
 
-	return response["result"]
+	return response["result"], err
 }
 
-func LinearIntValues(ctx *cli.Context, condition api.MetricsCondition, duration api.Duration) api.MetricsValues {
+func LinearIntValues(ctx *cli.Context, condition api.MetricsCondition, duration api.Duration) (api.MetricsValues, error) {
 	var response map[string]api.MetricsValues
 
 	request := graphql.NewRequest(assets.Read("graphqls/metrics/MetricsValues.graphql"))
@@ -46,12 +46,12 @@ func LinearIntValues(ctx *cli.Context, condition api.MetricsCondition, duration 
 	request.Var("condition", condition)
 	request.Var("duration", duration)
 
-	client.ExecuteQueryOrFail(ctx, request, &response)
+	err := client.ExecuteQuery(ctx, request, &response)
 
-	return response["result"]
+	return response["result"], err
 }
 
-func MultipleLinearIntValues(ctx *cli.Context, condition api.MetricsCondition, labels []string, duration api.Duration) []api.MetricsValues {
+func MultipleLinearIntValues(ctx *cli.Context, condition api.MetricsCondition, labels []string, duration api.Duration) ([]api.MetricsValues, error) {
 	var response map[string][]api.MetricsValues
 
 	request := graphql.NewRequest(assets.Read("graphqls/metrics/LabeledMetricsValues.graphql"))
@@ -60,12 +60,12 @@ func MultipleLinearIntValues(ctx *cli.Context, condition api.MetricsCondition, l
 	request.Var("condition", condition)
 	request.Var("labels", labels)
 
-	client.ExecuteQueryOrFail(ctx, request, &response)
+	err := client.ExecuteQuery(ctx, request, &response)
 
-	return response["result"]
+	return response["result"], err
 }
 
-func Thermodynamic(ctx *cli.Context, condition api.MetricsCondition, duration api.Duration) api.HeatMap {
+func Thermodynamic(ctx *cli.Context, condition api.MetricsCondition, duration api.Duration) (api.HeatMap, error) {
 	var response map[string]api.HeatMap
 
 	request := graphql.NewRequest(assets.Read("graphqls/metrics/HeatMap.graphql"))
@@ -73,29 +73,29 @@ func Thermodynamic(ctx *cli.Context, condition api.MetricsCondition, duration ap
 	request.Var("condition", condition)
 	request.Var("duration", duration)
 
-	client.ExecuteQueryOrFail(ctx, request, &response)
+	err := client.ExecuteQuery(ctx, request, &response)
 
-	return response["result"]
+	return response["result"], err
 }
 
-func SortMetrics(ctx *cli.Context, condition api.TopNCondition, duration api.Duration) []*api.SelectedRecord {
+func SortMetrics(ctx *cli.Context, condition api.TopNCondition, duration api.Duration) ([]*api.SelectedRecord, error) {
 	var response map[string][]*api.SelectedRecord
 
 	request := graphql.NewRequest(assets.Read("graphqls/metrics/SortMetrics.graphql"))
 	request.Var("condition", condition)
 	request.Var("duration", duration)
 
-	client.ExecuteQueryOrFail(ctx, request, &response)
+	err := client.ExecuteQuery(ctx, request, &response)
 
-	return response["result"]
+	return response["result"], err
 }
 
-func ListMetrics(ctx *cli.Context, regex string) []*api.MetricDefinition {
+func ListMetrics(ctx *cli.Context, regex string) ([]*api.MetricDefinition, error) {
 	var response map[string][]*api.MetricDefinition
 	request := graphql.NewRequest(assets.Read("graphqls/metrics/ListMetrics.graphql"))
 	request.Var("regex", regex)
 
-	client.ExecuteQueryOrFail(ctx, request, &response)
+	err := client.ExecuteQuery(ctx, request, &response)
 
-	return response["result"]
+	return response["result"], err
 }

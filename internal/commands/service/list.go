@@ -19,6 +19,7 @@ package service
 
 import (
 	"github.com/apache/skywalking-cli/api"
+	"github.com/apache/skywalking-cli/internal/logger"
 	"github.com/urfave/cli"
 
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
@@ -48,15 +49,22 @@ var ListCommand = cli.Command{
 		step := ctx.Generic("step")
 
 		var services []api.Service
+		var err error
 
 		if args := ctx.Args(); len(args) == 0 {
-			services = metadata.AllServices(ctx, api.Duration{
+			services, err = metadata.AllServices(ctx, api.Duration{
 				Start: start,
 				End:   end,
 				Step:  step.(*model.StepEnumValue).Selected,
 			})
+			if err != nil {
+				logger.Log.Fatalln(err)
+			}
 		} else {
-			service, _ := metadata.SearchService(ctx, args.First())
+			service, err := metadata.SearchService(ctx, args.First())
+			if err != nil {
+				logger.Log.Fatalln(err)
+			}
 			services = []api.Service{service}
 		}
 

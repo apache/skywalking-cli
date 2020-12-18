@@ -21,6 +21,7 @@ import (
 	"github.com/apache/skywalking-cli/api"
 	"github.com/apache/skywalking-cli/internal/commands/interceptor"
 	"github.com/apache/skywalking-cli/internal/flags"
+	"github.com/apache/skywalking-cli/internal/logger"
 	"github.com/apache/skywalking-cli/internal/model"
 	"github.com/apache/skywalking-cli/pkg/display"
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
@@ -51,11 +52,15 @@ var Metrics = cli.Command{
 		start := ctx.String("start")
 		step := ctx.Generic("step")
 
-		globalMetrics := dashboard.Metrics(ctx, api.Duration{
+		globalMetrics, err := dashboard.Metrics(ctx, api.Duration{
 			Start: start,
 			End:   end,
 			Step:  step.(*model.StepEnumValue).Selected,
 		})
+
+		if err != nil {
+			logger.Log.Fatalln(err)
+		}
 
 		return display.Display(ctx, &displayable.Displayable{Data: globalMetrics})
 	},

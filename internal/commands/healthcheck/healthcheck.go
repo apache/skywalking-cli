@@ -48,7 +48,12 @@ var Command = cli.Command{
 		},
 	},
 	Action: func(ctx *cli.Context) error {
-		healthStatus := hc.CheckHealth(ctx)
+		healthStatus, err := hc.CheckHealth(ctx)
+
+		if err != nil {
+			logger.Log.Fatalln(err)
+		}
+
 		if healthStatus.Score != 0 {
 			return cli.NewExitError(healthStatus.Details, healthStatus.Score)
 		}

@@ -26,24 +26,24 @@ import (
 	"github.com/apache/skywalking-cli/pkg/graphql/client"
 )
 
-func Trace(ctx *cli.Context, traceID string) api.Trace {
+func Trace(ctx *cli.Context, traceID string) (api.Trace, error) {
 	var response map[string]api.Trace
 
 	request := graphql.NewRequest(assets.Read("graphqls/trace/Trace.graphql"))
 	request.Var("traceId", traceID)
 
-	client.ExecuteQueryOrFail(ctx, request, &response)
+	err := client.ExecuteQuery(ctx, request, &response)
 
-	return response["result"]
+	return response["result"], err
 }
 
-func Traces(ctx *cli.Context, condition *api.TraceQueryCondition) api.TraceBrief {
+func Traces(ctx *cli.Context, condition *api.TraceQueryCondition) (api.TraceBrief, error) {
 	var response map[string]api.TraceBrief
 
 	request := graphql.NewRequest(assets.Read("graphqls/trace/Traces.graphql"))
 	request.Var("condition", condition)
 
-	client.ExecuteQueryOrFail(ctx, request, &response)
+	err := client.ExecuteQuery(ctx, request, &response)
 
-	return response["result"]
+	return response["result"], err
 }
