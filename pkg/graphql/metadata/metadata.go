@@ -19,6 +19,7 @@ package metadata
 
 import (
 	"fmt"
+
 	"github.com/apache/skywalking-cli/api"
 
 	"github.com/apache/skywalking-cli/assets"

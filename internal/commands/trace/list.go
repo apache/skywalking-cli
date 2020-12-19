@@ -18,9 +18,10 @@
 package trace
 
 import (
+	"strings"
+
 	"github.com/apache/skywalking-cli/api"
 	"github.com/apache/skywalking-cli/internal/logger"
-	"strings"
 
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
 

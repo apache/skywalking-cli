@@ -18,9 +18,10 @@
 package global
 
 import (
+	"github.com/urfave/cli"
+
 	"github.com/apache/skywalking-cli/api"
 	"github.com/apache/skywalking-cli/internal/logger"
-	"github.com/urfave/cli"
 
 	"github.com/apache/skywalking-cli/internal/model"
 	"github.com/apache/skywalking-cli/pkg/display/displayable"

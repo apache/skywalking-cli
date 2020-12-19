@@ -18,10 +18,11 @@
 package utils
 
 import (
-	"github.com/apache/skywalking-cli/api"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/apache/skywalking-cli/api"
 
 	"github.com/apache/skywalking-cli/internal/logger"
 )

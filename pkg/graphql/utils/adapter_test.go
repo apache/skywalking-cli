@@ -18,9 +18,10 @@
 package utils
 
 import (
-	"github.com/apache/skywalking-cli/api"
 	"reflect"
 	"testing"
+
+	"github.com/apache/skywalking-cli/api"
 )
 
 func TestMetricsToMap(t *testing.T) {

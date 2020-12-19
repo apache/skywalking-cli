@@ -19,11 +19,12 @@ package dashboard
 
 import (
 	"bytes"
-	"github.com/apache/skywalking-cli/api"
-	"github.com/apache/skywalking-cli/internal/logger"
 	"io/ioutil"
 	"strings"
 	"sync"
+
+	"github.com/apache/skywalking-cli/api"
+	"github.com/apache/skywalking-cli/internal/logger"
 
 	"github.com/spf13/viper"
 	"github.com/urfave/cli"

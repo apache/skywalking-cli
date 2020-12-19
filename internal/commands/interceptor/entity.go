@@ -18,8 +18,9 @@
 package interceptor
 
 import (
-	"github.com/apache/skywalking-cli/api"
 	"github.com/urfave/cli"
+
+	"github.com/apache/skywalking-cli/api"
 )
 
 func ParseEntity(ctx *cli.Context) *api.Entity {

@@ -20,8 +20,9 @@ package heatmap
 import (
 	"context"
 	"fmt"
-	"github.com/apache/skywalking-cli/api"
 	"strings"
+
+	"github.com/apache/skywalking-cli/api"
 
 	"github.com/mum4k/termdash"
 	"github.com/mum4k/termdash/container"

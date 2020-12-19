@@ -18,8 +18,9 @@
 package flags
 
 import (
-	"github.com/apache/skywalking-cli/api"
 	"github.com/urfave/cli"
+
+	"github.com/apache/skywalking-cli/api"
 
 	"github.com/apache/skywalking-cli/internal/model"
 )

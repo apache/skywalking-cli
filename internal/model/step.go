@@ -19,8 +19,9 @@ package model
 
 import (
 	"fmt"
-	"github.com/apache/skywalking-cli/api"
 	"strings"
+
+	"github.com/apache/skywalking-cli/api"
 )
 
 // StepEnumValue defines the values domain of --step option

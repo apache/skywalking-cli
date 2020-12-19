@@ -18,8 +18,9 @@
 package endpoint
 
 import (
-	"github.com/apache/skywalking-cli/internal/logger"
 	"github.com/urfave/cli"
+
+	"github.com/apache/skywalking-cli/internal/logger"
 
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
 

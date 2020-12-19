@@ -18,11 +18,12 @@
 package metrics
 
 import (
+	"github.com/machinebox/graphql"
+	"github.com/urfave/cli"
+
 	"github.com/apache/skywalking-cli/api"
 	"github.com/apache/skywalking-cli/assets"
 	"github.com/apache/skywalking-cli/pkg/graphql/client"
-	"github.com/machinebox/graphql"
-	"github.com/urfave/cli"
 )
 
 func IntValues(ctx *cli.Context, condition api.MetricsCondition, duration api.Duration) (int, error) {

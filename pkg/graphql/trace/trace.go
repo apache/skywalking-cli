@@ -18,9 +18,10 @@
 package trace
 
 import (
-	"github.com/apache/skywalking-cli/api"
 	"github.com/machinebox/graphql"
 	"github.com/urfave/cli"
+
+	"github.com/apache/skywalking-cli/api"
 
 	"github.com/apache/skywalking-cli/assets"
 	"github.com/apache/skywalking-cli/pkg/graphql/client"

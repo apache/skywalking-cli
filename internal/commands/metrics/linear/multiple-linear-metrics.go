@@ -19,9 +19,10 @@ package linear
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/apache/skywalking-cli/api"
 	"github.com/apache/skywalking-cli/internal/logger"
-	"strings"
 
 	"github.com/apache/skywalking-cli/internal/commands/interceptor"
 	"github.com/apache/skywalking-cli/internal/flags"

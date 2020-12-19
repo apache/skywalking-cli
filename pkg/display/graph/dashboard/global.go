@@ -20,10 +20,11 @@ package dashboard
 import (
 	"context"
 	"fmt"
-	"github.com/apache/skywalking-cli/api"
 	"math"
 	"strings"
 	"time"
+
+	"github.com/apache/skywalking-cli/api"
 
 	"github.com/apache/skywalking-cli/internal/commands/interceptor"
 	"github.com/apache/skywalking-cli/pkg/graphql/utils"
@@ -202,8 +203,8 @@ func newWidgets(data *dashboard.GlobalData) error {
 	var linears []*linechart.LineChart
 
 	// Create gauges to display global metrics.
-	for i, t := range template.Metrics {
-		col, err := gauge.NewMetricColumn(data.Metrics[i], &t)
+	for i := range template.Metrics {
+		col, err := gauge.NewMetricColumn(data.Metrics[i], &template.Metrics[i])
 		if err != nil {
 			return err
 		}

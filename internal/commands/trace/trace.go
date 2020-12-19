@@ -19,6 +19,7 @@ package trace
 
 import (
 	"fmt"
+
 	"github.com/apache/skywalking-cli/internal/logger"
 
 	"github.com/urfave/cli"

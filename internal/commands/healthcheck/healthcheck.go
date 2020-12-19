@@ -18,8 +18,9 @@
 package healthcheck
 
 import (
-	"github.com/apache/skywalking-cli/pkg/healthcheck"
 	"github.com/urfave/cli"
+
+	"github.com/apache/skywalking-cli/pkg/healthcheck"
 
 	"github.com/apache/skywalking-cli/internal/logger"
 	hc "github.com/apache/skywalking-cli/pkg/graphql/healthcheck"

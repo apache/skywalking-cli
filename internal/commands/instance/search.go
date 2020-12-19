@@ -18,9 +18,10 @@
 package instance
 
 import (
+	"regexp"
+
 	"github.com/apache/skywalking-cli/api"
 	"github.com/apache/skywalking-cli/internal/logger"
-	"regexp"
 
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
 

@@ -19,8 +19,9 @@ package tree
 
 import (
 	"fmt"
-	"github.com/apache/skywalking-cli/api"
 	"strings"
+
+	"github.com/apache/skywalking-cli/api"
 
 	"github.com/apache/skywalking-cli/pkg/util"
 )

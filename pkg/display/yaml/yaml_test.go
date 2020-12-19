@@ -18,8 +18,9 @@
 package yaml
 
 import (
-	"github.com/apache/skywalking-cli/api"
 	"testing"
+
+	"github.com/apache/skywalking-cli/api"
 
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
 )

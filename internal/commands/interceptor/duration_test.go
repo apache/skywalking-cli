@@ -18,10 +18,11 @@
 package interceptor
 
 import (
-	"github.com/apache/skywalking-cli/api"
 	"reflect"
 	"testing"
 	"time"
+
+	"github.com/apache/skywalking-cli/api"
 )
 
 func TestParseDuration(t *testing.T) {

@@ -20,10 +20,11 @@ package gauge
 import (
 	"context"
 	"fmt"
-	"github.com/apache/skywalking-cli/api"
 	"math"
 	"strconv"
 	"strings"
+
+	"github.com/apache/skywalking-cli/api"
 
 	"github.com/urfave/cli"
 
@@ -215,8 +216,8 @@ func Display(ctx *cli.Context, metrics [][]*api.SelectedRecord) error {
 		return nil
 	}
 
-	for i, config := range configs.Metrics {
-		col, innerErr := NewMetricColumn(metrics[i], &config)
+	for i := range configs.Metrics {
+		col, innerErr := NewMetricColumn(metrics[i], &configs.Metrics[i])
 		if innerErr != nil {
 			return innerErr
 		}

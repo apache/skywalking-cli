@@ -18,8 +18,9 @@
 package interceptor
 
 import (
-	"github.com/apache/skywalking-cli/api"
 	"testing"
+
+	"github.com/apache/skywalking-cli/api"
 )
 
 func Test_parseScope(t *testing.T) {

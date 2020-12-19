@@ -18,8 +18,9 @@
 package json
 
 import (
-	"github.com/apache/skywalking-cli/api"
 	"testing"
+
+	"github.com/apache/skywalking-cli/api"
 
 	d "github.com/apache/skywalking-cli/pkg/display/displayable"
 )

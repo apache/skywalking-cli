@@ -18,9 +18,10 @@
 package interceptor
 
 import (
-	"github.com/apache/skywalking-cli/api"
 	"strconv"
 	"time"
+
+	"github.com/apache/skywalking-cli/api"
 
 	"github.com/apache/skywalking-cli/pkg/graphql/utils"
 

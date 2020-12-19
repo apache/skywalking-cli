@@ -19,9 +19,10 @@ package graph
 
 import (
 	"fmt"
-	"github.com/apache/skywalking-cli/api"
 	"reflect"
 	"strings"
+
+	"github.com/apache/skywalking-cli/api"
 
 	"github.com/urfave/cli"
 
