@@ -15,17 +15,30 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package assets
+package yaml
 
 import (
-	"github.com/apache/skywalking-cli/internal/logger"
+	"testing"
+
+	"github.com/apache/skywalking-cli/api"
+
+	"github.com/apache/skywalking-cli/pkg/display/displayable"
 )
 
-// Read reads all content from a file under assets, which is packed in to the binary
-func Read(filename string) string {
-	content, err := AssetString(filename)
-	if err != nil {
-		logger.Log.Fatalln("failed to read asset: ", filename, err)
+func TestYamlDisplay(t *testing.T) {
+	var result []api.Service
+	display(t, result)
+	result = make([]api.Service, 0)
+	display(t, result)
+	result = append(result, api.Service{
+		ID:   "1",
+		Name: "yaml",
+	})
+	display(t, result)
+}
+
+func display(t *testing.T, result []api.Service) {
+	if err := Display(&displayable.Displayable{Data: result}); err != nil {
+		t.Error(err)
 	}
-	return content
 }

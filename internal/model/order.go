@@ -15,17 +15,38 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package assets
+package model
 
 import (
-	"github.com/apache/skywalking-cli/internal/logger"
+	"fmt"
+	"strings"
+
+	"github.com/apache/skywalking-cli/api"
 )
 
-// Read reads all content from a file under assets, which is packed in to the binary
-func Read(filename string) string {
-	content, err := AssetString(filename)
-	if err != nil {
-		logger.Log.Fatalln("failed to read asset: ", filename, err)
+// OrderEnumValue defines the values domain of --order option
+type OrderEnumValue struct {
+	Enum     []api.Order
+	Default  api.Order
+	Selected api.Order
+}
+
+// Set the --order value, from raw string to OrderEnumValue
+func (s *OrderEnumValue) Set(value string) error {
+	for _, enum := range s.Enum {
+		if strings.EqualFold(enum.String(), value) {
+			s.Selected = enum
+			return nil
+		}
 	}
-	return content
+	orders := make([]string, len(api.AllOrder))
+	for i, order := range api.AllOrder {
+		orders[i] = order.String()
+	}
+	return fmt.Errorf("allowed orders are %s", strings.Join(orders, ", "))
+}
+
+// String representation of the order
+func (s OrderEnumValue) String() string {
+	return s.Selected.String()
 }

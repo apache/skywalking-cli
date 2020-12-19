@@ -15,17 +15,39 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package assets
+package trace
 
 import (
+	"fmt"
+
 	"github.com/apache/skywalking-cli/internal/logger"
+
+	"github.com/urfave/cli"
+
+	"github.com/apache/skywalking-cli/pkg/display"
+	"github.com/apache/skywalking-cli/pkg/display/displayable"
+	"github.com/apache/skywalking-cli/pkg/graphql/trace"
 )
 
-// Read reads all content from a file under assets, which is packed in to the binary
-func Read(filename string) string {
-	content, err := AssetString(filename)
-	if err != nil {
-		logger.Log.Fatalln("failed to read asset: ", filename, err)
-	}
-	return content
+var Command = cli.Command{
+	Name:      "trace",
+	ShortName: "t",
+	Usage:     "trace related sub-command",
+	ArgsUsage: "trace id",
+	Action: func(ctx *cli.Context) error {
+		if ctx.NArg() == 0 {
+			return fmt.Errorf("command trace without sub command requires 1 trace id as argument")
+		}
+
+		trace, err := trace.Trace(ctx, ctx.Args().First())
+
+		if err != nil {
+			logger.Log.Fatalln(err)
+		}
+
+		return display.Display(ctx, &displayable.Displayable{Data: trace})
+	},
+	Subcommands: cli.Commands{
+		ListCommand,
+	},
 }

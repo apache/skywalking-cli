@@ -15,17 +15,38 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package assets
+package model
 
 import (
-	"github.com/apache/skywalking-cli/internal/logger"
+	"fmt"
+	"strings"
+
+	"github.com/apache/skywalking-cli/api"
 )
 
-// Read reads all content from a file under assets, which is packed in to the binary
-func Read(filename string) string {
-	content, err := AssetString(filename)
-	if err != nil {
-		logger.Log.Fatalln("failed to read asset: ", filename, err)
+// ScopeEnumValue defines the values domain of --scope option
+type ScopeEnumValue struct {
+	Enum     []api.Scope
+	Default  api.Scope
+	Selected api.Scope
+}
+
+// Set the --scope value, from raw string to ScopeEnumValue
+func (s *ScopeEnumValue) Set(value string) error {
+	for _, enum := range s.Enum {
+		if strings.EqualFold(enum.String(), value) {
+			s.Selected = enum
+			return nil
+		}
 	}
-	return content
+	scopes := make([]string, len(api.AllScope))
+	for i, scope := range api.AllScope {
+		scopes[i] = scope.String()
+	}
+	return fmt.Errorf("allowed scopes are %s", strings.Join(scopes, ", "))
+}
+
+// String representation of the scope
+func (s ScopeEnumValue) String() string {
+	return s.Selected.String()
 }

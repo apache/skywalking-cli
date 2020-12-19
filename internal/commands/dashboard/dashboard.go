@@ -15,17 +15,20 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package assets
+package dashboard
 
 import (
-	"github.com/apache/skywalking-cli/internal/logger"
+	"github.com/urfave/cli"
+
+	"github.com/apache/skywalking-cli/internal/commands/dashboard/global"
 )
 
-// Read reads all content from a file under assets, which is packed in to the binary
-func Read(filename string) string {
-	content, err := AssetString(filename)
-	if err != nil {
-		logger.Log.Fatalln("failed to read asset: ", filename, err)
-	}
-	return content
+var Command = cli.Command{
+	Name:      "dashboard",
+	ShortName: "db",
+	Usage:     "Dashboard related sub-command",
+	Subcommands: cli.Commands{
+		global.GlobalCommand,
+		global.Metrics,
+	},
 }

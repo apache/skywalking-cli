@@ -15,17 +15,15 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package assets
+package displayable
 
 import (
-	"github.com/apache/skywalking-cli/internal/logger"
+	"github.com/apache/skywalking-cli/api"
 )
 
-// Read reads all content from a file under assets, which is packed in to the binary
-func Read(filename string) string {
-	content, err := AssetString(filename)
-	if err != nil {
-		logger.Log.Fatalln("failed to read asset: ", filename, err)
-	}
-	return content
+type Displayable struct {
+	Data      interface{}
+	Condition interface{}
+	Duration  api.Duration
+	Title     string
 }

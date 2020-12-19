@@ -15,17 +15,39 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package assets
+package flags
 
 import (
-	"github.com/apache/skywalking-cli/internal/logger"
+	"github.com/urfave/cli"
+
+	"github.com/apache/skywalking-cli/api"
+
+	"github.com/apache/skywalking-cli/internal/model"
 )
 
-// Read reads all content from a file under assets, which is packed in to the binary
-func Read(filename string) string {
-	content, err := AssetString(filename)
-	if err != nil {
-		logger.Log.Fatalln("failed to read asset: ", filename, err)
-	}
-	return content
+// DurationFlags are healthcheck flags that involves a duration, composed
+// by a start time, an end time, and a step, which is commonly used
+// in most of the commands
+var DurationFlags = []cli.Flag{
+	cli.StringFlag{
+		Name:  "start",
+		Usage: "query start `TIME`",
+	},
+	cli.StringFlag{
+		Name:  "end",
+		Usage: "query end `TIME`",
+	},
+	cli.GenericFlag{
+		Name:   "step",
+		Hidden: true,
+		Value: &model.StepEnumValue{
+			Enum:     api.AllStep,
+			Default:  api.StepMinute,
+			Selected: api.StepMinute,
+		},
+	},
+	cli.StringFlag{
+		Name:  "durationType",
+		Usage: "the type of duration",
+	},
 }

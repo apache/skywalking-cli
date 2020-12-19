@@ -15,17 +15,29 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package assets
+package metrics
 
 import (
-	"github.com/apache/skywalking-cli/internal/logger"
+	"github.com/urfave/cli"
+
+	"github.com/apache/skywalking-cli/internal/commands/metrics/aggregation"
+	"github.com/apache/skywalking-cli/internal/commands/metrics/list"
+
+	"github.com/apache/skywalking-cli/internal/commands/metrics/thermodynamic"
+
+	"github.com/apache/skywalking-cli/internal/commands/metrics/linear"
+	"github.com/apache/skywalking-cli/internal/commands/metrics/single"
 )
 
-// Read reads all content from a file under assets, which is packed in to the binary
-func Read(filename string) string {
-	content, err := AssetString(filename)
-	if err != nil {
-		logger.Log.Fatalln("failed to read asset: ", filename, err)
-	}
-	return content
+var Command = cli.Command{
+	Name:  "metrics",
+	Usage: "Query metrics defined in backend OAL",
+	Subcommands: cli.Commands{
+		single.Command,
+		linear.Single,
+		linear.Multiple,
+		thermodynamic.Command,
+		aggregation.TopN,
+		list.Command,
+	},
 }

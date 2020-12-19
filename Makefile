@@ -51,7 +51,7 @@ tools:
 	mkdir -p $(GO_PATH)/bin
 	$(GO_BINDATA) -v || curl --location --output $(GO_BINDATA) https://github.com/kevinburke/go-bindata/releases/download/$(GOBINDATA_VERSION)/go-bindata-$(OSNAME)-amd64 \
 		&& chmod +x $(GO_BINDATA)
-	$(GO_LINT) version || curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(GO_PATH)/bin v1.21.0
+	$(GO_LINT) version || curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(GO_PATH)/bin
 	$(GO_LICENSER) -version || GO111MODULE=off $(GO_GET) -u github.com/elastic/go-licenser
 	$(GQL_GEN) version || GO111MODULE=off $(GO_GET) -u github.com/99designs/gqlgen
 
@@ -63,14 +63,14 @@ assets: tools
 	cd assets \
 		&& $(GO_BINDATA) --nocompress --nometadata --pkg assets --ignore '.*\.go' \
 			-o "assets.gen.go" ./... \
-		&& ../hack/build-header.sh assets.gen.go \
+		&& ../scripts/build-header.sh assets.gen.go \
 		&& cd ..
 
 gqlgen: tools
 	echo 'scalar Long' > query-protocol/schema.graphqls
 	$(GQL_GEN) generate
 	-rm -rf generated.go
-	-hack/build-header.sh graphql/schema/schema.go
+	-scripts/build-header.sh api/schema.go
 	-rm query-protocol/schema.graphqls
 	
 codegen: clean assets gqlgen
@@ -79,7 +79,7 @@ codegen: clean assets gqlgen
 .PHONY: $(PLATFORMS)
 $(PLATFORMS):
 	mkdir -p $(OUT_DIR)
-	GOOS=$(os) GOARCH=$(ARCH) $(GO_BUILD) $(GO_BUILD_FLAGS) -ldflags "$(GO_BUILD_LDFLAGS)" -o $(OUT_DIR)/$(BINARY)-$(VERSION)-$(os)-$(ARCH) cmd/main.go
+	GOOS=$(os) GOARCH=$(ARCH) $(GO_BUILD) $(GO_BUILD_FLAGS) -ldflags "$(GO_BUILD_LDFLAGS)" -o $(OUT_DIR)/$(BINARY)-$(VERSION)-$(os)-$(ARCH) cmd/swctl/main.go
 
 .PHONY: lint
 lint: codegen tools
@@ -163,6 +163,6 @@ test-commands:
 		docker container prune -f; \
 		docker run --name oap -p 12800:12800 -p 11800:11800 -d -e SW_HEALTH_CHECKER=default -e SW_TELEMETRY=prometheus apache/skywalking-oap-server:latest; \
 	fi
-	./test/test_commands.sh
+	./scripts/test_commands.sh
 	@docker container stop oap
 	@docker container prune -f

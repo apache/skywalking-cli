@@ -15,17 +15,51 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package assets
+package table
 
 import (
+	"encoding/json"
+	"os"
+
+	d "github.com/apache/skywalking-cli/pkg/display/displayable"
+
 	"github.com/apache/skywalking-cli/internal/logger"
+
+	"github.com/olekukonko/tablewriter"
 )
 
-// Read reads all content from a file under assets, which is packed in to the binary
-func Read(filename string) string {
-	content, err := AssetString(filename)
-	if err != nil {
-		logger.Log.Fatalln("failed to read asset: ", filename, err)
+func Display(displayable *d.Displayable) error {
+	var stringMapArrays []map[string]string
+
+	bytes, _ := json.Marshal(displayable.Data)
+	_ = json.Unmarshal(bytes, &stringMapArrays)
+
+	if len(stringMapArrays) < 1 {
+		return nil
 	}
-	return content
+
+	var header []string
+
+	for k := range stringMapArrays[0] {
+		header = append(header, k)
+	}
+
+	logger.Log.Debugln("stringMapArrays = ", stringMapArrays, " Headers = ", header)
+
+	var data [][]string
+
+	for _, objMap := range stringMapArrays {
+		var datum []string
+		for _, key := range header {
+			datum = append(datum, objMap[key])
+		}
+		data = append(data, datum)
+	}
+
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetHeader(header)
+	table.AppendBulk(data)
+	table.Render()
+
+	return nil
 }

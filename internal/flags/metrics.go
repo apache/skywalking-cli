@@ -15,17 +15,40 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package assets
+package flags
 
 import (
-	"github.com/apache/skywalking-cli/internal/logger"
+	"github.com/urfave/cli"
+
+	"github.com/apache/skywalking-cli/api"
+	"github.com/apache/skywalking-cli/internal/model"
 )
 
-// Read reads all content from a file under assets, which is packed in to the binary
-func Read(filename string) string {
-	content, err := AssetString(filename)
-	if err != nil {
-		logger.Log.Fatalln("failed to read asset: ", filename, err)
-	}
-	return content
+// MetricsFlags can be reused in metrics commands.
+var MetricsFlags = []cli.Flag{
+	cli.StringFlag{
+		Name:     "name",
+		Usage:    "metrics `name`, which should be defined in OAL script",
+		Required: true,
+	},
+	cli.StringFlag{
+		Name:     "service",
+		Usage:    "the name of the service",
+		Value:    "",
+		Required: false,
+	},
+	cli.BoolTFlag{
+		Name:     "isNormal",
+		Usage:    "set the service to normal or unnormal",
+		Required: false,
+	},
+	cli.GenericFlag{
+		Name:  "scope",
+		Usage: "the scope of the metrics entity",
+		Value: &model.ScopeEnumValue{
+			Enum:     api.AllScope,
+			Default:  api.ScopeService,
+			Selected: api.ScopeService,
+		},
+	},
 }

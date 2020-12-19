@@ -15,17 +15,21 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package assets
+package yaml
 
 import (
-	"github.com/apache/skywalking-cli/internal/logger"
+	"fmt"
+
+	d "github.com/apache/skywalking-cli/pkg/display/displayable"
+
+	"gopkg.in/yaml.v2"
 )
 
-// Read reads all content from a file under assets, which is packed in to the binary
-func Read(filename string) string {
-	content, err := AssetString(filename)
-	if err != nil {
-		logger.Log.Fatalln("failed to read asset: ", filename, err)
+func Display(displayable *d.Displayable) error {
+	bytes, e := yaml.Marshal(displayable.Data)
+	if e != nil {
+		return e
 	}
-	return content
+	_, e = fmt.Printf("%v", string(bytes))
+	return e
 }

@@ -15,17 +15,25 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package assets
+package healthcheck
 
 import (
-	"github.com/apache/skywalking-cli/internal/logger"
+	"github.com/machinebox/graphql"
+	"github.com/urfave/cli"
+
+	"github.com/apache/skywalking-cli/api"
+
+	"github.com/apache/skywalking-cli/assets"
+	"github.com/apache/skywalking-cli/pkg/graphql/client"
 )
 
-// Read reads all content from a file under assets, which is packed in to the binary
-func Read(filename string) string {
-	content, err := AssetString(filename)
-	if err != nil {
-		logger.Log.Fatalln("failed to read asset: ", filename, err)
-	}
-	return content
+// CheckHealth intends to query the health status of OAP server
+func CheckHealth(ctx *cli.Context) (api.HealthStatus, error) {
+	var response map[string]api.HealthStatus
+
+	request := graphql.NewRequest(assets.Read("graphqls/healthcheck/healthcheck.graphql"))
+
+	err := client.ExecuteQuery(ctx, request, &response)
+
+	return response["checkHealth"], err
 }

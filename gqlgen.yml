@@ -20,8 +20,8 @@ schema:
 skip_validation: true
 
 model:
-  filename: graphql/schema/schema.go
-  package: schema
+  filename: api/schema.go
+  package: api
 
 models:
   Long:

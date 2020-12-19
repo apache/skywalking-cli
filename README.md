@@ -82,7 +82,7 @@ This section covers all the available commands in SkyWalking CLI and their usage
 
 | option | description | default |
 | :--- | :--- | :--- |
-| `--config` | from where the default options values will be loaded | `~/.skywalking.yml` |
+| `--config` | from where the default options values will be loaded | `~/.skywalking.yml`, example can be found [here](examples/.skywalking.yaml) |
 | `--debug` | enable debug mode, will print more detailed information at runtime | `false` |
 | `--base-url` | base url of GraphQL backend | `http://127.0.0.1:12800/graphql` |
 | `--username` | username of `Basic` authorization | `` |
@@ -322,7 +322,7 @@ Ascii Graph, like coloring in terminal, so please use `json`  or `yaml` instead.
 | `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
 | `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
 
-You can imitate the content of [the default template file](example/global.yml) to customize the dashboard.
+You can imitate the content of [the default template file](examples/global.yml) to customize the dashboard.
 
 </details>
 
@@ -341,7 +341,7 @@ You can imitate the content of [the default template file](example/global.yml) t
 | `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
 | `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
 
-You can imitate the content of [the default template file](example/global.yml) to customize the dashboard.
+You can imitate the content of [the default template file](examples/global.yml) to customize the dashboard.
 
 </details>
 
