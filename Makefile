@@ -83,7 +83,7 @@ $(PLATFORMS):
 
 .PHONY: lint
 lint: codegen tools
-	$(GO_LINT) run -v ./...
+	$(GO_LINT) run -v --timeout 5m ./...
 
 .PHONY: test
 test: clean codegen lint

@@ -29,6 +29,7 @@ import (
 	"github.com/apache/skywalking-cli/internal/commands/metrics"
 
 	"github.com/apache/skywalking-cli/internal/commands/endpoint"
+	"github.com/apache/skywalking-cli/internal/commands/install"
 	"github.com/apache/skywalking-cli/internal/commands/instance"
 
 	"github.com/sirupsen/logrus"
@@ -110,6 +111,7 @@ func main() {
 		trace.Command,
 		healthcheck.Command,
 		dashboard.Command,
+		install.Command,
 	}
 
 	app.Before = interceptor.BeforeChain([]cli.BeforeFunc{

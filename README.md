@@ -361,6 +361,22 @@ You can imitate the content of [the default template file](examples/global.yml) 
 
 </details>
 
+### `install`
+
+#### `manifest`
+
+<details>
+
+<summary>install manifest oap|ui [--name=string] [--namespace=string] [-f=filepath/-]</summary>
+
+| argument | description | default |
+| :--- | :--- | :--- |
+| `--name` | The name of prefix of generated resources  | `skywalking` |
+| `--namespace` |  The namespace where resource will be deployed | `skywalking-system` |
+| `-f` | The custom resource file describing custom resources defined by swck | |
+
+</details>
+
 # Use Cases
 
 <details>
@@ -616,6 +632,95 @@ Once the gRPC endpoint of OAP encrypts communication by TLS.
 
 ```shell
 $ ./bin/swctl checkHealth --grpcTLS=true
+```
+
+</details>
+
+<details>
+<summary>Output manifest of OAP server</summary>
+
+Output manifest with default custom resource
+
+```shell
+./bin/swctl install manifest oap
+```
+
+Load overlay custom resource from flag
+```shell
+swctl install manifest ui -f oap-cr.yaml
+```
+
+Load overlay custom resource from stdin
+```shell
+cat ui-cr.yaml | ./bin/swctl install manifest oap -f=-
+```
+
+Apply directly to Kubernetes
+```shell
+./bin/swctl install manifest oap -f oap-cr.yaml | kubectl apply -f-
+```
+
+A custome resource file(oap-cr.yaml) to enable ALS analyzer and connect to elasticsearch cluster `es1.foo:9200`:
+
+```yaml
+spec:
+  config:
+    - name: SW_ENVOY_METRIC_ALS_HTTP_ANALYSIS
+      value: k8s-mesh
+    - name: SW_STORAGE
+      value: elasticsearch
+    - name: SW_STORAGE_ES_CLUSTER_NODES
+      value: es1.foo:9200
+```
+
+
+</details>
+
+<details>
+<summary>Output manifest of UI</summary>
+
+Output manifest with default custom resource
+
+```shell
+./bin/swctl install manifest ui
+```
+
+Load overlay custom resource from flag
+```shell
+swctl install manifest ui -f ui-cr.yaml
+```
+
+Load overlay custom resource from stdin
+```shell
+cat ui-cr.yaml | ./bin/swctl install manifest ui -f=-
+```
+
+Apply directly to Kubernetes
+```shell
+./bin/swctl install manifest ui -f ui-cr.yaml | kubectl apply -f-
+```
+
+Some examples of custome resource overlay files(ui-cr.yaml).
+
+1. Set OAP server address to `oap.test`, use an ingress to expose UI
+```yaml
+spec:
+  OAPServerAddress: oap.test
+  service:
+    ingress:
+      host: ui.skywalking.test
+```
+
+2. Use a Loadbalancer to expose UI
+```yaml
+spec:
+  service:
+    serviceSpec:
+      type: LoadBalancer
+      ports:
+        - name: page
+          port: 80
+          targetPort: 8080
 ```
 
 </details>
