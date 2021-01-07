@@ -120,7 +120,7 @@ func render(repoName string, ctx *cli.Context, base, overlay runtime.Object) err
 	for _, f := range ff {
 		manifests, err := r.ReadFile(f)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "failed to read template ile content: %v", err)
+			fmt.Fprintf(os.Stderr, "failed to read template file content: %v", err)
 			continue
 		}
 		bb, err := kubernetes.GenerateManifests(string(manifests), base, nil)
