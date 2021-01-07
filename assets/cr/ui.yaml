@@ -18,7 +18,7 @@
 apiVersion: operator.skywalking.apache.org/v1alpha1
 kind: UI
 metadata:
-  name: minimal
+  name: skywalking
 spec:
   version: 8.3.0
   instances: 1
