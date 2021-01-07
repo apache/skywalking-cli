@@ -3,7 +3,7 @@ module github.com/apache/skywalking-cli
 go 1.13
 
 require (
-	github.com/apache/skywalking-swck v0.0.0-20210107001121-8e7183a65d64
+	github.com/apache/skywalking-swck v0.0.0-20210107023854-d15ef19f8317
 	github.com/ghodss/yaml v1.0.0
 	github.com/gizak/termui/v3 v3.1.0
 	github.com/machinebox/graphql v0.2.2
