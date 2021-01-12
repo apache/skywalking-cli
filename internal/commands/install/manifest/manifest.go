@@ -27,8 +27,8 @@ import (
 
 	"github.com/apache/skywalking-swck/pkg/kubernetes"
 	"github.com/apache/skywalking-swck/pkg/operator/repo"
-	"github.com/ghodss/yaml"
 	"github.com/urfave/cli"
+	"gopkg.in/yaml.v2"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
