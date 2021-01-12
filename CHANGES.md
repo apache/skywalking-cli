@@ -2,6 +2,24 @@ Changes by Version
 ==================
 Release Notes.
 
+0.6.0
+------------------
+
+### Features
+
+- Support authorization when connecting to the OAP
+- Add `install` command and `manifest` sub-command
+
+### Bug Fixes
+
+- Fix the bug that can't query JVM instance metrics
+
+### Chores
+
+- Set up a simple test with GitHub Actions
+- Reorganize the project layout
+- Update year in NOTICE
+
 0.5.0
 ------------------
 
