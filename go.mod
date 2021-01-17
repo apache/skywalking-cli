@@ -2,6 +2,8 @@ module github.com/apache/skywalking-cli
 
 go 1.13
 
+//replace skywalking/network v1.0.0 => ./gen-codes/skywalking/network
+
 require (
 	github.com/apache/skywalking-swck v0.0.0-20210107023854-d15ef19f8317
 	github.com/ghodss/yaml v1.0.0
