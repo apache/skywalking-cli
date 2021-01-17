@@ -18,6 +18,7 @@
 package main
 
 import (
+	"github.com/apache/skywalking-cli/internal/commands/report"
 	"io/ioutil"
 	"os"
 
@@ -112,6 +113,7 @@ func main() {
 		healthcheck.Command,
 		dashboard.Command,
 		install.Command,
+		report.Command,
 	}
 
 	app.Before = interceptor.BeforeChain([]cli.BeforeFunc{

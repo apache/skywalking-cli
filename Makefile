@@ -75,7 +75,7 @@ assets: tools
 
 .PHONY: proto-gen
 proto-gen: tools
-	$(PROTOC) -I=data-collect-protocol --go_out=gen-codes data-collect-protocol/common/*.proto data-collect-protocol/event/*.proto
+	$(PROTOC) -I=data-collect-protocol --go_out=$(GEN_CODE_PATH) --go-grpc_out=$(GEN_CODE_PATH) data-collect-protocol/common/*.proto data-collect-protocol/event/*.proto
 	cd $(GEN_CODE_PATH)/$(COLLECT_PROTOCOL_MODULE) \
 		&& $(GO) mod init $(COLLECT_PROTOCOL_MODULE) \
 		&& $(GO) mod tidy
