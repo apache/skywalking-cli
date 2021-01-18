@@ -80,6 +80,7 @@ proto-gen: tools
 	cd $(GEN_CODE_PATH)/$(COLLECT_PROTOCOL_MODULE) \
 		&& $(GO) mod init $(COLLECT_PROTOCOL_MODULE) \
 		&& $(GO) mod tidy
+	-scripts/build-header.sh $(GEN_CODE_PATH)/$(COLLECT_PROTOCOL_MODULE)/event/v3/Event_grpc.pb.go
 
 gqlgen: tools
 	echo 'scalar Long' > query-protocol/schema.graphqls

@@ -38,23 +38,23 @@ var Command = cli.Command{
 	Flags: []cli.Flag{
 		cli.StringFlag{
 			Name:     "grpcAddr",
-			Usage:    "`host:port` to connect",
+			Usage:    "`host:port` to connect.",
 			Value:    "127.0.0.1:11800",
 			Required: true,
 		},
 		cli.StringFlag{
 			Name:     "uuid",
-			Usage:    "Unique ID of the event",
+			Usage:    "Unique `ID` of the event.",
 			Required: true,
 		},
 		cli.StringFlag{
 			Name:     "service",
-			Usage:    "The service of the event occurred on",
+			Usage:    "The service of the event occurred on.",
 			Required: true,
 		},
 		cli.StringFlag{
 			Name:     "instance",
-			Usage:    "The service instance of the event occurred on",
+			Usage:    "The service instance of the event occurred on.",
 			Required: false,
 		},
 		cli.StringFlag{
@@ -64,7 +64,7 @@ var Command = cli.Command{
 		},
 		cli.StringFlag{
 			Name:     "name",
-			Usage:    "The name of the event. For example, `Reboot`, `Upgrade` etc.",
+			Usage:    "The name of the event. For example, 'Reboot' and 'Upgrade' etc.",
 			Required: true,
 		},
 		cli.GenericFlag{
@@ -78,17 +78,17 @@ var Command = cli.Command{
 		},
 		cli.StringFlag{
 			Name:     "message",
-			Usage:    "The detail of the event. dThis should be a one-line message that briefly describes why the event is reported",
+			Usage:    "The detail of the event. dThis should be a one-line message that briefly describes why the event is reported.",
 			Required: true,
 		},
 		cli.Int64Flag{
 			Name:     "startTime",
-			Usage:    "The start time (in milliseconds) of the event, measured between the current time and midnight, January 1, 1970 UTC",
+			Usage:    "The start time (in milliseconds) of the event, measured between the current time and midnight, January 1, 1970 UTC.",
 			Required: true,
 		},
 		cli.Int64Flag{
 			Name:     "endTime",
-			Usage:    "The end time (in milliseconds) of the event, measured between the current time and midnight, January 1, 1970 UTC",
+			Usage:    "The end time (in milliseconds) of the event, measured between the current time and midnight, January 1, 1970 UTC.",
 			Required: false,
 		},
 	},
