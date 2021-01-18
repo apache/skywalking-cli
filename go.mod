@@ -17,7 +17,6 @@ require (
 	github.com/spf13/viper v1.7.0
 	github.com/urfave/cli v1.22.1
 	google.golang.org/grpc v1.35.0
-	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.1.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0
 	k8s.io/apimachinery v0.19.3
 	sigs.k8s.io/controller-runtime v0.7.0-alpha.6
