@@ -15,38 +15,31 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package model
+package interceptor
 
 import (
-	"fmt"
 	"strings"
 
-	event "skywalking/network/event/v3"
+	"github.com/apache/skywalking-cli/internal/logger"
+
+	"github.com/urfave/cli"
 )
 
-// EventTypeEnumValue defines the values domain of --type option.
-type EventTypeEnumValue struct {
-	Enum     []event.Type
-	Default  event.Type
-	Selected event.Type
-}
+// ParseParameters parses parameters of the event message from args.
+func ParseParameters(paras cli.Args) map[string]string {
+	ret := make(map[string]string, len(paras))
 
-// Set the --type value, from raw string to EventTypeEnumValue.
-func (s *EventTypeEnumValue) Set(value string) error {
-	for _, enum := range s.Enum {
-		if strings.EqualFold(enum.String(), value) {
-			s.Selected = enum
-			return nil
+	for _, para := range paras {
+		sepIndex := strings.Index(para, "=")
+		// To make sure that len(k) > 0 && len(v) > 0
+		if len(para) >= 3 && sepIndex >= 1 && sepIndex < len(para)-1 {
+			k := para[:sepIndex]
+			v := para[sepIndex+1:]
+			ret[k] = v
+		} else {
+			logger.Log.Warnf("%s is not a vaild parameter, should like `key=value`\n", para)
 		}
 	}
-	types := make([]string, len(event.Type_name))
-	for index := range event.Type_name {
-		types[index] = event.Type_name[index]
-	}
-	return fmt.Errorf("allowed types are %s", strings.Join(types, ", "))
-}
 
-// String representation of the event type.
-func (s EventTypeEnumValue) String() string {
-	return s.Selected.String()
+	return ret
 }

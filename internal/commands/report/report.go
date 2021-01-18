@@ -1,8 +1,24 @@
+// Licensed to Apache Software Foundation (ASF) under one or more contributor
+// license agreements. See the NOTICE file distributed with
+// this work for additional information regarding copyright
+// ownership. Apache Software Foundation (ASF) licenses this file to you under
+// the Apache License, Version 2.0 (the "License"); you may
+// not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied.  See the License for the
+// specific language governing permissions and limitations
+// under the License.
+
 package report
 
 import (
-	"strings"
-
+	"github.com/apache/skywalking-cli/internal/commands/interceptor"
 	"github.com/apache/skywalking-cli/internal/logger"
 	"github.com/apache/skywalking-cli/internal/model"
 	"github.com/apache/skywalking-cli/pkg/display"
@@ -15,7 +31,7 @@ import (
 )
 
 var Command = cli.Command{
-	Name:      "grpc",
+	Name:      "report",
 	Aliases:   []string{"r"},
 	Usage:     "Report an event to OAP server via gRPC",
 	ArgsUsage: "[parameters...]",
@@ -77,19 +93,6 @@ var Command = cli.Command{
 		},
 	},
 	Action: func(ctx *cli.Context) error {
-		parameters := make(map[string]string, ctx.NArg())
-		if ctx.NArg() > 0 {
-			for _, para := range ctx.Args() {
-				// Not sure, "key:value" ?
-				tmp := strings.Split(para, ":")
-				if len(tmp) == 2 {
-					parameters[tmp[0]] = tmp[1]
-				} else {
-					logger.Log.Warnf("%s is not a vaild parameter, should like `key:value`", para)
-				}
-			}
-		}
-
 		event := event.Event{
 			Uuid: ctx.String("uuid"),
 			Source: &event.Source{
@@ -100,7 +103,7 @@ var Command = cli.Command{
 			Name:       ctx.String("name"),
 			Type:       ctx.Generic("type").(*model.EventTypeEnumValue).Selected,
 			Message:    ctx.String("message"),
-			Parameters: parameters,
+			Parameters: interceptor.ParseParameters(ctx.Args()),
 			StartTime:  ctx.Int64("startTime"),
 			EndTime:    ctx.Int64("endTime"),
 		}
@@ -108,8 +111,10 @@ var Command = cli.Command{
 		reply, err := grpc.ReportEvent(ctx.String("grpcAddr"), &event)
 		if err != nil {
 			logger.Log.Fatalln(err)
+			return err
 		}
 
+		logger.Log.Println("Report the event successfully, whose uuid is ", ctx.String("uuid"))
 		return display.Display(ctx, &displayable.Displayable{Data: reply})
 	},
 }
