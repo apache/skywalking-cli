@@ -1,16 +1,21 @@
 package report
 
 import (
+	"strings"
+
 	"github.com/apache/skywalking-cli/internal/logger"
 	"github.com/apache/skywalking-cli/internal/model"
+	"github.com/apache/skywalking-cli/pkg/display"
+	"github.com/apache/skywalking-cli/pkg/display/displayable"
+	"github.com/apache/skywalking-cli/pkg/grpc"
+
 	"github.com/urfave/cli"
-	"strings"
 
 	event "skywalking/network/event/v3"
 )
 
 var Command = cli.Command{
-	Name:      "report",
+	Name:      "grpc",
 	Aliases:   []string{"r"},
 	Usage:     "Report an event to OAP server via gRPC",
 	ArgsUsage: "[parameters...]",
@@ -57,7 +62,7 @@ var Command = cli.Command{
 		},
 		cli.StringFlag{
 			Name:     "message",
-			Usage:    "The detail of the event that describes why this event happened. This should be a one-line message that briefly describes why the event is reported",
+			Usage:    "The detail of the event. dThis should be a one-line message that briefly describes why the event is reported",
 			Required: true,
 		},
 		cli.Int64Flag{
@@ -100,8 +105,11 @@ var Command = cli.Command{
 			EndTime:    ctx.Int64("endTime"),
 		}
 
-		logger.Log.Println("OAP modules are healthy")
-		logger.Log.Println("OAP gRPC is healthy")
-		return nil
+		reply, err := grpc.ReportEvent(ctx.String("grpcAddr"), &event)
+		if err != nil {
+			logger.Log.Fatalln(err)
+		}
+
+		return display.Display(ctx, &displayable.Displayable{Data: reply})
 	},
 }

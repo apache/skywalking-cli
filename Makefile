@@ -61,6 +61,7 @@ tools:
 	$(GQL_GEN) version || GO111MODULE=off $(GO_GET) -u github.com/99designs/gqlgen
 	$(PROTOC) --version || sh scripts/install_protoc.sh
 	$(GO_INSTALL) google.golang.org/protobuf/cmd/protoc-gen-go
+	$(GO_INSTALL) google.golang.org/grpc/cmd/protoc-gen-go-grpc
 
 deps: tools
 	$(GO_GET) -v -t -d ./...
@@ -87,7 +88,7 @@ gqlgen: tools
 	-scripts/build-header.sh api/schema.go
 	-rm query-protocol/schema.graphqls
 	
-codegen: clean assets gqlgen proto-gen
+codegen: clean assets gqlgen
 	@go mod tidy &> /dev/null
 
 .PHONY: $(PLATFORMS)

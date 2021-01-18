@@ -1,12 +1,13 @@
-package report
+package grpc
 
 import (
 	"context"
-	"google.golang.org/grpc"
 	"time"
 
 	common "skywalking/network/common/v3"
 	event "skywalking/network/event/v3"
+
+	"google.golang.org/grpc"
 )
 
 func ReportEvent(addr string, e *event.Event) (*common.Commands, error) {
@@ -19,13 +20,14 @@ func ReportEvent(addr string, e *event.Event) (*common.Commands, error) {
 	rpcCtx, rpcCancel := context.WithTimeout(context.Background(), time.Second)
 	defer rpcCancel()
 
-	client, err := event.NewEventServiceClient(conn).Collect(rpcCtx)
+	client := event.NewEventServiceClient(conn)
+	stream, err := client.Collect(rpcCtx)
 	if err != nil {
 		return nil, err
 	}
 
-	if err := client.Send(e); err != nil {
+	if err := stream.Send(e); err != nil {
 		return nil, err
 	}
-	return client.CloseAndRecv()
+	return stream.CloseAndRecv()
 }

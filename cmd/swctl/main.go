@@ -18,29 +18,25 @@
 package main
 
 import (
-	"github.com/apache/skywalking-cli/internal/commands/report"
 	"io/ioutil"
 	"os"
 
-	"github.com/apache/skywalking-cli/internal/commands/healthcheck"
-	"github.com/apache/skywalking-cli/internal/commands/trace"
-
 	"github.com/apache/skywalking-cli/internal/commands/dashboard"
-
-	"github.com/apache/skywalking-cli/internal/commands/metrics"
-
 	"github.com/apache/skywalking-cli/internal/commands/endpoint"
+	"github.com/apache/skywalking-cli/internal/commands/healthcheck"
 	"github.com/apache/skywalking-cli/internal/commands/install"
 	"github.com/apache/skywalking-cli/internal/commands/instance"
+	"github.com/apache/skywalking-cli/internal/commands/interceptor"
+	"github.com/apache/skywalking-cli/internal/commands/metrics"
+	"github.com/apache/skywalking-cli/internal/commands/report"
+	"github.com/apache/skywalking-cli/internal/commands/service"
+	"github.com/apache/skywalking-cli/internal/commands/trace"
+	"github.com/apache/skywalking-cli/internal/logger"
+	"github.com/apache/skywalking-cli/pkg/util"
 
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
 	"github.com/urfave/cli/altsrc"
-
-	"github.com/apache/skywalking-cli/internal/commands/interceptor"
-	"github.com/apache/skywalking-cli/internal/commands/service"
-	"github.com/apache/skywalking-cli/internal/logger"
-	"github.com/apache/skywalking-cli/pkg/util"
 )
 
 var log *logrus.Logger
