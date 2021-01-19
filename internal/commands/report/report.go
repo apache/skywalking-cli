@@ -37,12 +37,6 @@ var Command = cli.Command{
 	ArgsUsage: "[parameters...]",
 	Flags: []cli.Flag{
 		cli.StringFlag{
-			Name:     "grpcAddr",
-			Usage:    "`host:port` to connect.",
-			Value:    "127.0.0.1:11800",
-			Required: true,
-		},
-		cli.StringFlag{
 			Name:     "uuid",
 			Usage:    "Unique `ID` of the event.",
 			Required: true,
@@ -93,6 +87,11 @@ var Command = cli.Command{
 		},
 	},
 	Action: func(ctx *cli.Context) error {
+		parameters, err := interceptor.ParseParameters(ctx.Args())
+		if err != nil {
+			return err
+		}
+
 		event := event.Event{
 			Uuid: ctx.String("uuid"),
 			Source: &event.Source{
@@ -103,12 +102,12 @@ var Command = cli.Command{
 			Name:       ctx.String("name"),
 			Type:       ctx.Generic("type").(*model.EventTypeEnumValue).Selected,
 			Message:    ctx.String("message"),
-			Parameters: interceptor.ParseParameters(ctx.Args()),
+			Parameters: parameters,
 			StartTime:  ctx.Int64("startTime"),
 			EndTime:    ctx.Int64("endTime"),
 		}
 
-		reply, err := grpc.ReportEvent(ctx.String("grpcAddr"), &event)
+		reply, err := grpc.ReportEvent(ctx.GlobalString("grpcAddr"), &event)
 		if err != nil {
 			logger.Log.Fatalln(err)
 			return err

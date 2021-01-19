@@ -26,14 +26,16 @@ import (
 
 func TestParseParameters(t *testing.T) {
 	tests := []struct {
-		name string
-		args cli.Args
-		want map[string]string
+		name    string
+		args    cli.Args
+		want    map[string]string
+		wantErr bool
 	}{
 		{
-			name: "no parameters",
-			args: cli.Args([]string{}),
-			want: map[string]string{},
+			name:    "no parameters",
+			args:    cli.Args([]string{}),
+			want:    map[string]string{},
+			wantErr: false,
 		},
 		{
 			name: "all parameters are invalid",
@@ -43,7 +45,8 @@ func TestParseParameters(t *testing.T) {
 				"=value",
 				"=",
 			}),
-			want: map[string]string{},
+			want:    nil,
+			wantErr: true,
 		},
 		{
 			name: "all parameters are valid",
@@ -57,12 +60,18 @@ func TestParseParameters(t *testing.T) {
 				"k":   "v===",
 				"kk":  "====",
 			},
+			wantErr: false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := ParseParameters(tt.args); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("ParseParameters() = %v, want %v", got, tt.want)
+			got, err := ParseParameters(tt.args)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("ParseParameters() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("ParseParameters() got = %v, want %v", got, tt.want)
 			}
 		})
 	}

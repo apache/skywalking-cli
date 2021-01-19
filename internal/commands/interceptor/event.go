@@ -18,15 +18,14 @@
 package interceptor
 
 import (
+	"fmt"
 	"strings"
-
-	"github.com/apache/skywalking-cli/internal/logger"
 
 	"github.com/urfave/cli"
 )
 
 // ParseParameters parses parameters of the event message from args.
-func ParseParameters(paras cli.Args) map[string]string {
+func ParseParameters(paras cli.Args) (map[string]string, error) {
 	ret := make(map[string]string, len(paras))
 
 	for _, para := range paras {
@@ -37,9 +36,9 @@ func ParseParameters(paras cli.Args) map[string]string {
 			v := para[sepIndex+1:]
 			ret[k] = v
 		} else {
-			logger.Log.Warnf("%s is not a vaild parameter, should like `key=value`\n", para)
+			return nil, fmt.Errorf("%s is not a vaild parameter, should like `key=value`", para)
 		}
 	}
 
-	return ret
+	return ret, nil
 }

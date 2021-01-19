@@ -64,6 +64,12 @@ func main() {
 			Value:    "http://127.0.0.1:12800/graphql",
 		}),
 		altsrc.NewStringFlag(cli.StringFlag{
+			Name:     "grpcAddr",
+			Usage:    "`host:port` to connect",
+			Value:    "127.0.0.1:11800",
+			Required: false,
+		}),
+		altsrc.NewStringFlag(cli.StringFlag{
 			Name:     "username",
 			Required: false,
 			Usage:    "username of basic authorization",

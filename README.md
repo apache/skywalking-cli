@@ -85,6 +85,7 @@ This section covers all the available commands in SkyWalking CLI and their usage
 | `--config` | from where the default options values will be loaded | `~/.skywalking.yml`, example can be found [here](examples/.skywalking.yaml) |
 | `--debug` | enable debug mode, will print more detailed information at runtime | `false` |
 | `--base-url` | base url of GraphQL backend | `http://127.0.0.1:12800/graphql` |
+| `--grpcAddr` | The address of gRPC endpoint | `127.0.0.1:11800` |
 | `--username` | username of `Basic` authorization | `` |
 | `--password` | password of `Basic` authorization | `` |
 | `--authorization` | authorization header, can be something like `Basic base64<username:password>` or `Bearer jwt-token`, if `authorization` is set, `username` and `password` are ignored | `` |
