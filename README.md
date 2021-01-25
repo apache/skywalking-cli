@@ -378,6 +378,28 @@ You can imitate the content of [the default template file](examples/global.yml) 
 
 </details>
 
+### `report`
+
+<details>
+
+<summary>report --uuid=uuid --service=service --name=name --message=message --startTime=startTime [--endTime=endTime] [--instance=instance] [--endpoint=endpoint] [--type=type] [parameters...]</summary>
+
+`report` reports an event to OAP server via gRPC.
+
+| argument | description | default |
+| :--- | :--- | :--- |
+| `uuid` | The unique ID of the event. |  |
+| `service` | The service of the event occurred on. |  |
+| `instance` | The service instance of the event occurred on. |  |
+| `endpoint` | The endpoint of the event occurred on. |  |
+| `name` | The name of the event. For example, 'Reboot' and 'Upgrade' etc. |  |
+| `type` | The type of the event, could be `Normal` or `Error`. | `Normal` |
+| `message` | The detail of the event. This should be a one-line message that briefly describes why the event is reported. |  |
+| `startTime` | The start time (in milliseconds) of the event, measured between the current time and midnight, January 1, 1970 UTC. |  |
+| `endTime` | The end time (in milliseconds) of the event, measured between the current time and midnight, January 1, 1970 UTC. |  |
+
+</details>
+
 # Use Cases
 
 <details>

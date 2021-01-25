@@ -72,7 +72,7 @@ var Command = cli.Command{
 		},
 		cli.StringFlag{
 			Name:     "message",
-			Usage:    "The detail of the event. dThis should be a one-line message that briefly describes why the event is reported.",
+			Usage:    "The detail of the event. This should be a one-line message that briefly describes why the event is reported.",
 			Required: true,
 		},
 		cli.Int64Flag{
