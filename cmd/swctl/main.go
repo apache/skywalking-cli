@@ -23,12 +23,12 @@ import (
 
 	"github.com/apache/skywalking-cli/internal/commands/dashboard"
 	"github.com/apache/skywalking-cli/internal/commands/endpoint"
+	"github.com/apache/skywalking-cli/internal/commands/event"
 	"github.com/apache/skywalking-cli/internal/commands/healthcheck"
 	"github.com/apache/skywalking-cli/internal/commands/install"
 	"github.com/apache/skywalking-cli/internal/commands/instance"
 	"github.com/apache/skywalking-cli/internal/commands/interceptor"
 	"github.com/apache/skywalking-cli/internal/commands/metrics"
-	"github.com/apache/skywalking-cli/internal/commands/report"
 	"github.com/apache/skywalking-cli/internal/commands/service"
 	"github.com/apache/skywalking-cli/internal/commands/trace"
 	"github.com/apache/skywalking-cli/internal/logger"
@@ -115,7 +115,7 @@ func main() {
 		healthcheck.Command,
 		dashboard.Command,
 		install.Command,
-		report.Command,
+		event.Command,
 	}
 
 	app.Before = interceptor.BeforeChain([]cli.BeforeFunc{

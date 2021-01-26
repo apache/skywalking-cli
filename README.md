@@ -378,13 +378,15 @@ You can imitate the content of [the default template file](examples/global.yml) 
 
 </details>
 
-### `report`
+### `event`
+
+#### `report`
 
 <details>
 
-<summary>report --uuid=uuid --service=service --name=name --message=message --startTime=startTime [--endTime=endTime] [--instance=instance] [--endpoint=endpoint] [--type=type] [parameters...]</summary>
+<summary>event report --uuid=uuid --service=service --name=name --message=message --startTime=startTime [--endTime=endTime] [--instance=instance] [--endpoint=endpoint] [--type=type] [parameters...]</summary>
 
-`report` reports an event to OAP server via gRPC.
+`event report` reports an event to OAP server via gRPC.
 
 | argument | description | default |
 | :--- | :--- | :--- |

@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package report
+package event
 
 import (
 	"github.com/apache/skywalking-cli/internal/commands/interceptor"
@@ -30,7 +30,7 @@ import (
 	event "skywalking/network/event/v3"
 )
 
-var Command = cli.Command{
+var reportCommand = cli.Command{
 	Name:      "report",
 	Aliases:   []string{"r"},
 	Usage:     "Report an event to OAP server via gRPC",
