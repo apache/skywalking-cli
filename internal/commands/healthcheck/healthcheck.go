@@ -36,12 +36,6 @@ var Command = cli.Command{
 			Usage:    "Check gRPC by HealthCheck service",
 			Required: false,
 		},
-		cli.StringFlag{
-			Name:     "grpcAddr",
-			Usage:    "`host:port` to connect",
-			Value:    "127.0.0.1:11800",
-			Required: false,
-		},
 		cli.BoolFlag{
 			Name:     "grpcTLS",
 			Usage:    "use TLS for gRPC",
@@ -62,7 +56,7 @@ var Command = cli.Command{
 		if !ctx.BoolT("grpc") {
 			return nil
 		}
-		retCode := healthcheck.HealthCheck(ctx.String("grpcAddr"), ctx.Bool("grpcTLS"))
+		retCode := healthcheck.HealthCheck(ctx.GlobalString("grpcAddr"), ctx.Bool("grpcTLS"))
 		if retCode != 0 {
 			return cli.NewExitError("gRPC: failed to check health", retCode)
 		}

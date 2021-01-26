@@ -1,3 +1,6 @@
 [submodule "query-protocol"]
 	path = query-protocol
 	url = http://github.com/apache/skywalking-query-protocol/
+[submodule "data-collect-protocol"]
+	path = data-collect-protocol
+	url = https://github.com/apache/skywalking-data-collect-protocol.git

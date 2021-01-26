@@ -85,6 +85,7 @@ This section covers all the available commands in SkyWalking CLI and their usage
 | `--config` | from where the default options values will be loaded | `~/.skywalking.yml`, example can be found [here](examples/.skywalking.yaml) |
 | `--debug` | enable debug mode, will print more detailed information at runtime | `false` |
 | `--base-url` | base url of GraphQL backend | `http://127.0.0.1:12800/graphql` |
+| `--grpcAddr` | The address of gRPC endpoint | `127.0.0.1:11800` |
 | `--username` | username of `Basic` authorization | `` |
 | `--password` | password of `Basic` authorization | `` |
 | `--authorization` | authorization header, can be something like `Basic base64<username:password>` or `Bearer jwt-token`, if `authorization` is set, `username` and `password` are ignored | `` |
@@ -374,6 +375,30 @@ You can imitate the content of [the default template file](examples/global.yml) 
 | `--name` | The name of prefix of generated resources  | `skywalking` |
 | `--namespace` |  The namespace where resource will be deployed | `skywalking-system` |
 | `-f` | The custom resource file describing custom resources defined by swck | |
+
+</details>
+
+### `event`
+
+#### `report`
+
+<details>
+
+<summary>event report --uuid=uuid --service=service --name=name --message=message --startTime=startTime [--endTime=endTime] [--instance=instance] [--endpoint=endpoint] [--type=type] [parameters...]</summary>
+
+`event report` reports an event to OAP server via gRPC.
+
+| argument | description | default |
+| :--- | :--- | :--- |
+| `uuid` | The unique ID of the event. |  |
+| `service` | The service of the event occurred on. |  |
+| `instance` | The service instance of the event occurred on. |  |
+| `endpoint` | The endpoint of the event occurred on. |  |
+| `name` | The name of the event. For example, 'Reboot' and 'Upgrade' etc. |  |
+| `type` | The type of the event, could be `Normal` or `Error`. | `Normal` |
+| `message` | The detail of the event. This should be a one-line message that briefly describes why the event is reported. |  |
+| `startTime` | The start time (in milliseconds) of the event, measured between the current time and midnight, January 1, 1970 UTC. |  |
+| `endTime` | The end time (in milliseconds) of the event, measured between the current time and midnight, January 1, 1970 UTC. |  |
 
 </details>
 

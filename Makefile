@@ -28,6 +28,7 @@ GO = go
 GO_PATH = $$($(GO) env GOPATH)
 GO_BUILD = $(GO) build
 GO_GET = $(GO) get
+GO_INSTALL = $(GO) install
 GO_TEST = $(GO) test
 GO_LINT = $(GO_PATH)/bin/golangci-lint
 GO_LICENSER = $(GO_PATH)/bin/go-licenser
@@ -38,6 +39,10 @@ GO_BINDATA = $(GO_PATH)/bin/go-bindata
 GO_BUILD_FLAGS = -v
 GO_BUILD_LDFLAGS = -X main.version=$(VERSION)
 GQL_GEN = $(GO_PATH)/bin/gqlgen
+PROTOC = protoc
+
+GEN_CODE_PATH = gen-codes
+COLLECT_PROTOCOL_MODULE = skywalking/network
 
 PLATFORMS := windows linux darwin
 os = $(word 1, $@)
@@ -54,6 +59,9 @@ tools:
 	$(GO_LINT) version || curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(GO_PATH)/bin
 	$(GO_LICENSER) -version || GO111MODULE=off $(GO_GET) -u github.com/elastic/go-licenser
 	$(GQL_GEN) version || GO111MODULE=off $(GO_GET) -u github.com/99designs/gqlgen
+	$(PROTOC) --version || sh scripts/install_protoc.sh
+	$(GO_INSTALL) google.golang.org/protobuf/cmd/protoc-gen-go
+	$(GO_INSTALL) google.golang.org/grpc/cmd/protoc-gen-go-grpc
 
 deps: tools
 	$(GO_GET) -v -t -d ./...
@@ -65,6 +73,14 @@ assets: tools
 			-o "assets.gen.go" ./... \
 		&& ../scripts/build-header.sh assets.gen.go \
 		&& cd ..
+
+.PHONY: proto-gen
+proto-gen: tools
+	$(PROTOC) -I=data-collect-protocol --go_out=$(GEN_CODE_PATH) --go-grpc_out=$(GEN_CODE_PATH) data-collect-protocol/common/*.proto data-collect-protocol/event/*.proto
+	cd $(GEN_CODE_PATH)/$(COLLECT_PROTOCOL_MODULE) \
+		&& $(GO) mod init $(COLLECT_PROTOCOL_MODULE) \
+		&& $(GO) mod tidy
+	-scripts/build-header.sh $(GEN_CODE_PATH)/$(COLLECT_PROTOCOL_MODULE)/event/v3/Event_grpc.pb.go
 
 gqlgen: tools
 	echo 'scalar Long' > query-protocol/schema.graphqls
@@ -94,7 +110,7 @@ build: deps windows linux darwin
 
 .PHONY: license
 license: clean tools
-	$(GO_LICENSER) -d -licensor='Apache Software Foundation (ASF)' .
+	$(GO_LICENSER) -d -exclude=$(GEN_CODE_PATH) -licensor='Apache Software Foundation (ASF)' .
 
 .PHONY: verify
 verify: clean license lint test
