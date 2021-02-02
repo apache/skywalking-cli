@@ -37,29 +37,24 @@ var reportCommand = cli.Command{
 	ArgsUsage: "[parameters...]",
 	Flags: []cli.Flag{
 		cli.StringFlag{
-			Name:     "uuid",
-			Usage:    "Unique `ID` of the event.",
-			Required: true,
+			Name:  "uuid",
+			Usage: "Unique `ID` of the event.",
 		},
 		cli.StringFlag{
-			Name:     "service",
-			Usage:    "The service of the event occurred on.",
-			Required: true,
+			Name:  "service",
+			Usage: "The service of the event occurred on.",
 		},
 		cli.StringFlag{
-			Name:     "instance",
-			Usage:    "The service instance of the event occurred on.",
-			Required: false,
+			Name:  "instance",
+			Usage: "The service instance of the event occurred on.",
 		},
 		cli.StringFlag{
-			Name:     "endpoint",
-			Usage:    "The endpoint of the event occurred on",
-			Required: false,
+			Name:  "endpoint",
+			Usage: "The endpoint of the event occurred on",
 		},
 		cli.StringFlag{
-			Name:     "name",
-			Usage:    "The name of the event. For example, 'Reboot' and 'Upgrade' etc.",
-			Required: true,
+			Name:  "name",
+			Usage: "The name of the event. For example, 'Reboot' and 'Upgrade' etc.",
 		},
 		cli.GenericFlag{
 			Name:  "type",
@@ -71,19 +66,16 @@ var reportCommand = cli.Command{
 			},
 		},
 		cli.StringFlag{
-			Name:     "message",
-			Usage:    "The detail of the event. This should be a one-line message that briefly describes why the event is reported.",
-			Required: true,
+			Name:  "message",
+			Usage: "The detail of the event. This should be a one-line message that briefly describes why the event is reported.",
 		},
 		cli.Int64Flag{
-			Name:     "startTime",
-			Usage:    "The start time (in milliseconds) of the event, measured between the current time and midnight, January 1, 1970 UTC.",
-			Required: true,
+			Name:  "startTime",
+			Usage: "The start time (in milliseconds) of the event, measured between the current time and midnight, January 1, 1970 UTC.",
 		},
 		cli.Int64Flag{
-			Name:     "endTime",
-			Usage:    "The end time (in milliseconds) of the event, measured between the current time and midnight, January 1, 1970 UTC.",
-			Required: false,
+			Name:  "endTime",
+			Usage: "The end time (in milliseconds) of the event, measured between the current time and midnight, January 1, 1970 UTC.",
 		},
 	},
 	Action: func(ctx *cli.Context) error {
