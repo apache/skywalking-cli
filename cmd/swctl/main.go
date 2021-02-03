@@ -21,25 +21,22 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/apache/skywalking-cli/internal/commands/healthcheck"
-	"github.com/apache/skywalking-cli/internal/commands/trace"
-
 	"github.com/apache/skywalking-cli/internal/commands/dashboard"
-
-	"github.com/apache/skywalking-cli/internal/commands/metrics"
-
 	"github.com/apache/skywalking-cli/internal/commands/endpoint"
+	"github.com/apache/skywalking-cli/internal/commands/event"
+	"github.com/apache/skywalking-cli/internal/commands/healthcheck"
 	"github.com/apache/skywalking-cli/internal/commands/install"
 	"github.com/apache/skywalking-cli/internal/commands/instance"
+	"github.com/apache/skywalking-cli/internal/commands/interceptor"
+	"github.com/apache/skywalking-cli/internal/commands/metrics"
+	"github.com/apache/skywalking-cli/internal/commands/service"
+	"github.com/apache/skywalking-cli/internal/commands/trace"
+	"github.com/apache/skywalking-cli/internal/logger"
+	"github.com/apache/skywalking-cli/pkg/util"
 
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
 	"github.com/urfave/cli/altsrc"
-
-	"github.com/apache/skywalking-cli/internal/commands/interceptor"
-	"github.com/apache/skywalking-cli/internal/commands/service"
-	"github.com/apache/skywalking-cli/internal/logger"
-	"github.com/apache/skywalking-cli/pkg/util"
 )
 
 var log *logrus.Logger
@@ -65,6 +62,12 @@ func main() {
 			Required: false,
 			Usage:    "base `url` of the OAP backend graphql",
 			Value:    "http://127.0.0.1:12800/graphql",
+		}),
+		altsrc.NewStringFlag(cli.StringFlag{
+			Name:     "grpcAddr",
+			Usage:    "`host:port` to connect",
+			Value:    "127.0.0.1:11800",
+			Required: false,
 		}),
 		altsrc.NewStringFlag(cli.StringFlag{
 			Name:     "username",
@@ -112,6 +115,7 @@ func main() {
 		healthcheck.Command,
 		dashboard.Command,
 		install.Command,
+		event.Command,
 	}
 
 	app.Before = interceptor.BeforeChain([]cli.BeforeFunc{

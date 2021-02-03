@@ -16,5 +16,6 @@
 # under the License.
 
 base-url: http://demo.skywalking.apache.org/graphql
+grpcAddr: 127.0.0.1:11800
 username: basic-auth-username
 password: basic-auth-password
