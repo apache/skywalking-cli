@@ -211,7 +211,7 @@ The text of each license is the standard Apache 2.0 license.
 	mum4k (termdash) 0.10.0: https://github.com/mum4k/termdash Apache 2.0
 	yaml.v2 2.2.4: https://gopkg.in/yaml.v2 Apache 2.0
 	Google (grpc-go): https://github.com/grpc/grpc-go Apache 2.0
-	skywalking-swck v0.0.0-20210107023854-d15ef19f8317: https://github.com/apache/skywalking-swck Apache 2.0
+	skywalking-swck v0.2.0: https://github.com/apache/skywalking-swck Apache 2.0
 	k8s.io/apimachinery v0.20.1: https://github.com/kubernetes/apimachinery Apache 2.0
 	controller-runtime v0.7.0-alpha.6: https://github.com/kubernetes-sigs/controller-runtime Apache 2.0
 
