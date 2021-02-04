@@ -211,6 +211,9 @@ The text of each license is the standard Apache 2.0 license.
 	mum4k (termdash) 0.10.0: https://github.com/mum4k/termdash Apache 2.0
 	yaml.v2 2.2.4: https://gopkg.in/yaml.v2 Apache 2.0
 	Google (grpc-go): https://github.com/grpc/grpc-go Apache 2.0
+	skywalking-swck v0.2.0: https://github.com/apache/skywalking-swck Apache 2.0
+	k8s.io/apimachinery v0.20.1: https://github.com/kubernetes/apimachinery Apache 2.0
+	controller-runtime v0.7.0-alpha.6: https://github.com/kubernetes-sigs/controller-runtime Apache 2.0
 
 ========================================================================
 MIT licenses
@@ -225,8 +228,8 @@ The text of each license is also included at licenses/LICENSE-[project].txt.
 	nsf (termbox-go) 0.0.0-20190817171036-93860e161317: https://github.com/nsf/termbox-go MIT
 	gizak (termui) v3: https://github.com/gizak/termui MIT
 	mattn (go-runewidth) v3: https://github.com/mattn/go-runewidth MIT
-	gobuffalo (packr) v2: https://github.com/gobuffalo/packr MIT
 	spf13 (viper) 1.4.0: https://github.com/spf13/viper MIT
+	mapstructure (mitchellh) v1.4.0: github.com/mitchellh/mapstructure MIT
 
 ========================================================================
 BSD licenses
@@ -236,3 +239,4 @@ The following components are provided under a BSD license. See project link for 
 The text of each license is also included at licenses/LICENSE-[project].txt.
 
 	pkg (errors) 0.8.1 https://github.com/pkg/errors BSD 2-Clause
+	Google (protobuf) v1.25.0 https://github.com/protocolbuffers/protobuf-go BSD-3-Clause
