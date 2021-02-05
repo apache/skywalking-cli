@@ -9,6 +9,7 @@ Release Notes.
 
 - Support authorization when connecting to the OAP
 - Add `install` command and `manifest` sub-command
+- Add `event` command and `report` sub-command
 
 ### Bug Fixes
 
@@ -19,6 +20,8 @@ Release Notes.
 - Set up a simple test with GitHub Actions
 - Reorganize the project layout
 - Update year in NOTICE
+- Add missing license of swck
+- Use license-eye to check license header
 
 0.5.0
 ------------------
