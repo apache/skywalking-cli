@@ -27,7 +27,7 @@ git push --tags
 make clean && make release
 ```
 
-**In total, six files should be automatically generated in the directory**:  `skywalking-cli-${VERSION}-bin.tgz`, `skywalking-cli-${VERSION}-src.tgz`, and their corresponding `asc`, `sha512` files.
+**In total, six files should be automatically generated in the directory**: `skywalking-cli-${VERSION}-bin.tgz`, `skywalking-cli-${VERSION}-src.tgz`, and their corresponding `asc`, `sha512` files.
 
 ## Upload to Apache svn
 
@@ -189,7 +189,7 @@ Vote result should follow these:
     svn mv https://dist.apache.org/repos/dist/dev/skywalking/cli/$VERSION https://dist.apache.org/repos/dist/release/skywalking/cli
     ```
     
-1. Refer to the previous [PR](https://github.com/apache/skywalking-website/pull/118), update news and links on the website. There are seven files need to modify.
+1. Refer to the previous [PR](https://github.com/apache/skywalking-website/pull/212), update the event and download links on the website.
 
 1. Update [Github release page](https://github.com/apache/skywalking-cli/releases), follow the previous convention.
 
@@ -221,3 +221,9 @@ Vote result should follow these:
     
     The Apache SkyWalking Team
     ```
+
+## Remove Unnecessary Releases
+
+Please remember to remove all unnecessary releases in the mirror svn (https://dist.apache.org/repos/dist/release/skywalking/), if you don't recommend users to choose those version.
+For example, you have removed the download and documentation links from the website. 
+If they want old ones, the Archive repository has all of them.
