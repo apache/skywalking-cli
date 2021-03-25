@@ -174,10 +174,10 @@ check-codegen: codegen
 
 .PHONY: test-commands
 test-commands:
-	@if ! docker run --name oap -p 12800:12800 -p 11800:11800 -d -e SW_HEALTH_CHECKER=default -e SW_TELEMETRY=prometheus apache/skywalking-oap-server:latest > /dev/null 2>&1;then \
+	@if ! docker run --name oap -p 12800:12800 -p 11800:11800 -d -e SW_HEALTH_CHECKER=default -e SW_TELEMETRY=prometheus apache/skywalking-oap-server > /dev/null 2>&1;then \
 		docker container stop oap; \
 		docker container prune -f; \
-		docker run --name oap -p 12800:12800 -p 11800:11800 -d -e SW_HEALTH_CHECKER=default -e SW_TELEMETRY=prometheus apache/skywalking-oap-server:latest; \
+		docker run --name oap -p 12800:12800 -p 11800:11800 -d -e SW_HEALTH_CHECKER=default -e SW_TELEMETRY=prometheus apache/skywalking-oap-server; \
 	fi
 	./scripts/test_commands.sh
 	@docker container stop oap
