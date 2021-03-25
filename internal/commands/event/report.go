@@ -18,16 +18,15 @@
 package event
 
 import (
-	"github.com/apache/skywalking-cli/internal/commands/interceptor"
+	event "skywalking/network/event/v3"
+
 	"github.com/apache/skywalking-cli/internal/logger"
 	"github.com/apache/skywalking-cli/internal/model"
+	pkgevent "github.com/apache/skywalking-cli/pkg/commands/event"
 	"github.com/apache/skywalking-cli/pkg/display"
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
-	"github.com/apache/skywalking-cli/pkg/grpc"
 
 	"github.com/urfave/cli"
-
-	event "skywalking/network/event/v3"
 )
 
 var reportCommand = cli.Command{
@@ -79,29 +78,8 @@ var reportCommand = cli.Command{
 		},
 	},
 	Action: func(ctx *cli.Context) error {
-		parameters, err := interceptor.ParseParameters(ctx.Args())
+		reply, err := pkgevent.Report(ctx)
 		if err != nil {
-			return err
-		}
-
-		event := event.Event{
-			Uuid: ctx.String("uuid"),
-			Source: &event.Source{
-				Service:         ctx.String("service"),
-				ServiceInstance: ctx.String("instance"),
-				Endpoint:        ctx.String("endpoint"),
-			},
-			Name:       ctx.String("name"),
-			Type:       ctx.Generic("type").(*model.EventTypeEnumValue).Selected,
-			Message:    ctx.String("message"),
-			Parameters: parameters,
-			StartTime:  ctx.Int64("startTime"),
-			EndTime:    ctx.Int64("endTime"),
-		}
-
-		reply, err := grpc.ReportEvent(ctx.GlobalString("grpcAddr"), &event)
-		if err != nil {
-			logger.Log.Fatalln(err)
 			return err
 		}
 
