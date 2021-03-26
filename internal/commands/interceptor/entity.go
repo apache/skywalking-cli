@@ -21,6 +21,7 @@ import (
 	"github.com/urfave/cli"
 
 	"github.com/apache/skywalking-cli/api"
+	"github.com/apache/skywalking-cli/pkg/graphql/utils"
 )
 
 func ParseEntity(ctx *cli.Context) *api.Entity {
@@ -44,28 +45,7 @@ func ParseEntity(ctx *cli.Context) *api.Entity {
 		DestServiceInstanceName: &destInstance,
 		DestEndpointName:        &destEndpoint,
 	}
-	entity.Scope = parseScope(entity)
+	entity.Scope = utils.ParseScope(entity)
 
 	return entity
-}
-
-// parseScope defines the scope based on the input parameters.
-func parseScope(entity *api.Entity) api.Scope {
-	scope := api.ScopeAll
-
-	if *entity.DestEndpointName != "" {
-		scope = api.ScopeEndpointRelation
-	} else if *entity.DestServiceInstanceName != "" {
-		scope = api.ScopeServiceInstanceRelation
-	} else if *entity.DestServiceName != "" {
-		scope = api.ScopeServiceRelation
-	} else if *entity.EndpointName != "" {
-		scope = api.ScopeEndpoint
-	} else if *entity.ServiceInstanceName != "" {
-		scope = api.ScopeServiceInstance
-	} else if *entity.ServiceName != "" {
-		scope = api.ScopeService
-	}
-
-	return scope
 }

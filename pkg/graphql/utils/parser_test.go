@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package interceptor
+package utils
 
 import (
 	"testing"
@@ -23,7 +23,7 @@ import (
 	"github.com/apache/skywalking-cli/api"
 )
 
-func Test_parseScope(t *testing.T) {
+func TestParseScope(t *testing.T) {
 	empty := ""
 	nonEmpty := "test"
 	tests := []struct {
@@ -116,10 +116,11 @@ func Test_parseScope(t *testing.T) {
 			want: api.ScopeServiceInstanceRelation,
 		},
 	}
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := parseScope(tt.args); got != tt.want {
-				t.Errorf("parseScope() = %v, want %v", got, tt.want)
+			if got := ParseScope(tt.args); got != tt.want {
+				t.Errorf("ParseScope() = %v, want %v", got, tt.want)
 			}
 		})
 	}
