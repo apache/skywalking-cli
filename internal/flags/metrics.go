@@ -21,6 +21,7 @@ import (
 	"github.com/urfave/cli"
 
 	"github.com/apache/skywalking-cli/internal/model"
+
 	api "skywalking.apache.org/repo/goapi/query"
 )
 

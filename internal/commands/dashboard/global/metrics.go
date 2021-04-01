@@ -27,6 +27,7 @@ import (
 	"github.com/apache/skywalking-cli/pkg/display"
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
 	"github.com/apache/skywalking-cli/pkg/graphql/dashboard"
+
 	api "skywalking.apache.org/repo/goapi/query"
 )
 

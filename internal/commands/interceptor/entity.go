@@ -21,6 +21,7 @@ import (
 	"github.com/urfave/cli"
 
 	"github.com/apache/skywalking-cli/pkg/graphql/utils"
+
 	api "skywalking.apache.org/repo/goapi/query"
 )
 

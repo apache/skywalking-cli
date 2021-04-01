@@ -20,17 +20,15 @@ package instance
 import (
 	"github.com/urfave/cli"
 
-	"github.com/apache/skywalking-cli/internal/logger"
 	api "skywalking.apache.org/repo/goapi/query"
-
-	"github.com/apache/skywalking-cli/pkg/display/displayable"
-
-	"github.com/apache/skywalking-cli/pkg/graphql/metadata"
 
 	"github.com/apache/skywalking-cli/internal/commands/interceptor"
 	"github.com/apache/skywalking-cli/internal/flags"
+	"github.com/apache/skywalking-cli/internal/logger"
 	"github.com/apache/skywalking-cli/internal/model"
 	"github.com/apache/skywalking-cli/pkg/display"
+	"github.com/apache/skywalking-cli/pkg/display/displayable"
+	"github.com/apache/skywalking-cli/pkg/graphql/metadata"
 )
 
 var ListCommand = cli.Command{

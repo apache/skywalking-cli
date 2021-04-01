@@ -23,6 +23,7 @@ import (
 
 	"github.com/apache/skywalking-cli/assets"
 	"github.com/apache/skywalking-cli/pkg/graphql/client"
+
 	api "skywalking.apache.org/repo/goapi/query"
 )
 

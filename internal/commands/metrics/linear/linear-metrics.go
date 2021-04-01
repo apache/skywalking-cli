@@ -26,6 +26,7 @@ import (
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
 	"github.com/apache/skywalking-cli/pkg/graphql/metrics"
 	"github.com/apache/skywalking-cli/pkg/graphql/utils"
+
 	api "skywalking.apache.org/repo/goapi/query"
 
 	"github.com/urfave/cli"
