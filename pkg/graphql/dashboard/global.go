@@ -23,8 +23,8 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/apache/skywalking-cli/api"
 	"github.com/apache/skywalking-cli/internal/logger"
+	api "skywalking.apache.org/repo/goapi/query"
 
 	"github.com/spf13/viper"
 	"github.com/urfave/cli"

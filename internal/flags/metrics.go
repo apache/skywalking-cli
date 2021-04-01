@@ -20,8 +20,8 @@ package flags
 import (
 	"github.com/urfave/cli"
 
-	"github.com/apache/skywalking-cli/api"
 	"github.com/apache/skywalking-cli/internal/model"
+	api "skywalking.apache.org/repo/goapi/query"
 )
 
 // MetricsFlags can be reused in metrics commands.

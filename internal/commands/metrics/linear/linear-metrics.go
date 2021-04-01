@@ -18,7 +18,6 @@
 package linear
 
 import (
-	"github.com/apache/skywalking-cli/api"
 	"github.com/apache/skywalking-cli/internal/commands/interceptor"
 	"github.com/apache/skywalking-cli/internal/flags"
 	"github.com/apache/skywalking-cli/internal/logger"
@@ -27,6 +26,7 @@ import (
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
 	"github.com/apache/skywalking-cli/pkg/graphql/metrics"
 	"github.com/apache/skywalking-cli/pkg/graphql/utils"
+	api "skywalking.apache.org/repo/goapi/query"
 
 	"github.com/urfave/cli"
 )

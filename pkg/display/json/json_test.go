@@ -20,7 +20,7 @@ package json
 import (
 	"testing"
 
-	"github.com/apache/skywalking-cli/api"
+	api "skywalking.apache.org/repo/goapi/query"
 
 	d "github.com/apache/skywalking-cli/pkg/display/displayable"
 )

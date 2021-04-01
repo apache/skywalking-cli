@@ -17,7 +17,7 @@
 
 package utils
 
-import "github.com/apache/skywalking-cli/api"
+import api "skywalking.apache.org/repo/goapi/query"
 
 // ParseScope defines the scope based on the input parameters.
 func ParseScope(entity *api.Entity) api.Scope {

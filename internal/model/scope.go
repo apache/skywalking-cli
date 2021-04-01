@@ -21,7 +21,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/apache/skywalking-cli/api"
+	api "skywalking.apache.org/repo/goapi/query"
 )
 
 // ScopeEnumValue defines the values domain of --scope option

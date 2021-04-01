@@ -21,8 +21,8 @@ import (
 	"context"
 	"time"
 
-	common "skywalking/network/common/v3"
-	event "skywalking/network/event/v3"
+	common "skywalking.apache.org/repo/goapi/collect/common/v3"
+	event "skywalking.apache.org/repo/goapi/collect/event/v3"
 
 	"google.golang.org/grpc"
 )

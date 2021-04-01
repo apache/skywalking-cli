@@ -24,7 +24,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/apache/skywalking-cli/api"
+	api "skywalking.apache.org/repo/goapi/query"
 
 	"github.com/apache/skywalking-cli/internal/commands/interceptor"
 	"github.com/apache/skywalking-cli/pkg/graphql/utils"

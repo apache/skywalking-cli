@@ -21,7 +21,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/apache/skywalking-cli/api"
+	api "skywalking.apache.org/repo/goapi/query"
 
 	d "github.com/apache/skywalking-cli/pkg/display/displayable"
 	"github.com/apache/skywalking-cli/pkg/graphql/trace"

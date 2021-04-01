@@ -20,7 +20,6 @@ package thermodynamic
 import (
 	"github.com/urfave/cli"
 
-	"github.com/apache/skywalking-cli/api"
 	"github.com/apache/skywalking-cli/internal/commands/interceptor"
 	"github.com/apache/skywalking-cli/internal/flags"
 	"github.com/apache/skywalking-cli/internal/logger"
@@ -28,6 +27,7 @@ import (
 	"github.com/apache/skywalking-cli/pkg/display"
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
 	"github.com/apache/skywalking-cli/pkg/graphql/metrics"
+	api "skywalking.apache.org/repo/goapi/query"
 )
 
 var Command = cli.Command{

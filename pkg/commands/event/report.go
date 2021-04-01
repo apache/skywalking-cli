@@ -18,8 +18,8 @@
 package event
 
 import (
-	common "skywalking/network/common/v3"
-	event "skywalking/network/event/v3"
+	common "skywalking.apache.org/repo/goapi/collect/common/v3"
+	event "skywalking.apache.org/repo/goapi/collect/event/v3"
 
 	"github.com/apache/skywalking-cli/internal/commands/interceptor"
 	"github.com/apache/skywalking-cli/internal/logger"

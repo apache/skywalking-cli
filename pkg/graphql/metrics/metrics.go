@@ -21,9 +21,9 @@ import (
 	"github.com/machinebox/graphql"
 	"github.com/urfave/cli"
 
-	"github.com/apache/skywalking-cli/api"
 	"github.com/apache/skywalking-cli/assets"
 	"github.com/apache/skywalking-cli/pkg/graphql/client"
+	api "skywalking.apache.org/repo/goapi/query"
 )
 
 func IntValues(ctx *cli.Context, condition api.MetricsCondition, duration api.Duration) (int, error) {

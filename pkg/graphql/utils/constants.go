@@ -20,7 +20,7 @@ package utils
 import (
 	"time"
 
-	"github.com/apache/skywalking-cli/api"
+	api "skywalking.apache.org/repo/goapi/query"
 )
 
 // StepFormats is a mapping from schema.Step to its time format
