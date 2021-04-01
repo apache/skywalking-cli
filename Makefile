@@ -64,9 +64,6 @@ assets: tools
 			-o "assets.gen.go" ./... \
 		&& ../scripts/build-header.sh assets.gen.go \
 		&& cd ..
-	
-codegen: clean assets
-	@go mod tidy &> /dev/null
 
 .PHONY: $(PLATFORMS)
 $(PLATFORMS):
@@ -108,6 +105,7 @@ clean: tools
 	-rm -rf *.tgz
 	-rm -rf *.asc
 	-rm -rf *.sha512
+	@go mod tidy &> /dev/null
 
 release-src: clean
 	-tar -zcvf $(RELEASE_SRC).tgz \
