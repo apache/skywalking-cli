@@ -21,8 +21,6 @@ As SkyWalking CLI is using `Makefile`, compiling the project is as easy as execu
 ```shell
 git clone https://github.com/apache/skywalking-cli
 cd skywalking-cli
-git submodule init
-git submodule update
 make
 ```
 

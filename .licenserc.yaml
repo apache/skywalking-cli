@@ -28,7 +28,6 @@ header:
     - 'LICENSE'
     - 'NOTICE'
     - '.graphqlconfig'
-    - '.gitmodules'
     - '.gitignore'
     - 'go.mod'
     - 'go.sum'

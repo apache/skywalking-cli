@@ -22,7 +22,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/apache/skywalking-cli/api"
+	api "skywalking.apache.org/repo/goapi/query"
 
 	"github.com/mum4k/termdash"
 	"github.com/mum4k/termdash/container"

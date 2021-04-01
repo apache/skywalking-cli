@@ -20,7 +20,7 @@ package utils
 import (
 	"testing"
 
-	"github.com/apache/skywalking-cli/api"
+	api "skywalking.apache.org/repo/goapi/query"
 )
 
 func TestParseScope(t *testing.T) {

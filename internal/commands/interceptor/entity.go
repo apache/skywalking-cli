@@ -20,8 +20,9 @@ package interceptor
 import (
 	"github.com/urfave/cli"
 
-	"github.com/apache/skywalking-cli/api"
 	"github.com/apache/skywalking-cli/pkg/graphql/utils"
+
+	api "skywalking.apache.org/repo/goapi/query"
 )
 
 func ParseEntity(ctx *cli.Context) *api.Entity {

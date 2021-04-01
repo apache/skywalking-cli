@@ -18,7 +18,7 @@
 package event
 
 import (
-	event "skywalking/network/event/v3"
+	event "skywalking.apache.org/repo/goapi/collect/event/v3"
 
 	"github.com/apache/skywalking-cli/internal/logger"
 	"github.com/apache/skywalking-cli/internal/model"

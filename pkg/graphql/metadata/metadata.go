@@ -20,7 +20,7 @@ package metadata
 import (
 	"fmt"
 
-	"github.com/apache/skywalking-cli/api"
+	api "skywalking.apache.org/repo/goapi/query"
 
 	"github.com/apache/skywalking-cli/assets"
 

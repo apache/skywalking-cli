@@ -18,7 +18,7 @@
 package displayable
 
 import (
-	"github.com/apache/skywalking-cli/api"
+	api "skywalking.apache.org/repo/goapi/query"
 )
 
 type Displayable struct {

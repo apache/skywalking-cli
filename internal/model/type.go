@@ -21,7 +21,7 @@ import (
 	"fmt"
 	"strings"
 
-	event "skywalking/network/event/v3"
+	event "skywalking.apache.org/repo/goapi/collect/event/v3"
 )
 
 // EventTypeEnumValue defines the values domain of --type option.

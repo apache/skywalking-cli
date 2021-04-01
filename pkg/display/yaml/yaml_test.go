@@ -20,7 +20,7 @@ package yaml
 import (
 	"testing"
 
-	"github.com/apache/skywalking-cli/api"
+	api "skywalking.apache.org/repo/goapi/query"
 
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
 )
