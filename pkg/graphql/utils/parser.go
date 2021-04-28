@@ -17,7 +17,11 @@
 
 package utils
 
-import api "skywalking.apache.org/repo/goapi/query"
+import (
+	api "skywalking.apache.org/repo/goapi/query"
+
+	"strings"
+)
 
 // ParseScope defines the scope based on the input parameters.
 func ParseScope(entity *api.Entity) api.Scope {
@@ -35,6 +39,20 @@ func ParseScope(entity *api.Entity) api.Scope {
 		scope = api.ScopeServiceInstance
 	} else if *entity.ServiceName != "" {
 		scope = api.ScopeService
+	}
+
+	return scope
+}
+
+// ParseScopeInTop defines the scope based on the metrics' name.
+// The scope can only be `Service` or `ServiceInstance` or `Endpoint`.
+func ParseScopeInTop(metricsName string) api.Scope {
+	scope := api.ScopeService
+
+	if strings.HasPrefix(metricsName, "service_instance") {
+		scope = api.ScopeServiceInstance
+	} else if strings.HasPrefix(metricsName, "endpoint") {
+		scope = api.ScopeEndpoint
 	}
 
 	return scope
