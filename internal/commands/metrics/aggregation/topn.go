@@ -32,6 +32,7 @@ import (
 	"github.com/apache/skywalking-cli/pkg/display"
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
 	"github.com/apache/skywalking-cli/pkg/graphql/metrics"
+	"github.com/apache/skywalking-cli/pkg/graphql/utils"
 )
 
 var TopN = cli.Command{
@@ -64,7 +65,7 @@ var TopN = cli.Command{
 
 		metricsName := ctx.String("name")
 		normal := ctx.BoolT("isNormal")
-		scope := ctx.Generic("scope").(*model.ScopeEnumValue).Selected
+		scope := utils.ParseScopeInTop(metricsName)
 		order := ctx.Generic("order").(*model.OrderEnumValue).Selected
 		topN := 5
 		parentService := ctx.String("service")
@@ -81,6 +82,10 @@ var TopN = cli.Command{
 			Start: start,
 			End:   end,
 			Step:  step,
+		}
+
+		if ctx.Bool("debug") {
+			logger.Log.Debugln(metricsName, scope, topN)
 		}
 
 		metricsValues, err := metrics.SortMetrics(ctx, api.TopNCondition{
