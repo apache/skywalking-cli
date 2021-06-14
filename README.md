@@ -748,6 +748,45 @@ spec:
 
 </details>
 
+<details>
+<summary>Report events in CD workflows - GitHub Actions</summary>
+
+Integrate skywalking-cli into your CD workflows to report events, this is an implementation of GitHub Actions, but we
+welcome you to contribute plugins of other CD platforms, like Jenkins, GitLab, etc.
+
+The usage of integration for GitHub Actions is as follows.
+
+```yaml
+# ...
+
+jobs:
+  deploy:
+    strategy:
+      matrix:
+        instance:
+          - asia-southeast
+          - asia-northeast
+    name: Deploy Product Service
+    runs-on: ubuntu-latest
+    steps:
+      # other steps such as checkout ...
+
+      - name: Wrap the deployment steps with skywalking-cli
+        uses: apache/skywalking-cli@main # we always suggest using a revision instead of `main`
+        with:
+          oap-url: ${{ secrets.OAP_URL }}                       # Required. Set the OAP backend URL, such as example.com:11800
+          auth-token: ${{ secrets.OAP_AUTH_TOKEN }}             # Optional. OAP auth token if you enable authentication in OAP
+          service: product                                      # Required. Name of the service to be deployed
+          instance: ${{ matrix.instance }}                      # Required. Name of the instance to be deployed
+          endpoint: ""                                          # Optional. Endpoint of the service, if any
+          message: "Upgrade from {fromVersion} to {toVersion}"  # Optional. The message of the event
+          parameters: ""                                        # Optional. The parameters in the message, if any
+
+      # your package / deployment steps... 
+```
+
+</details>
+
 # Contributing
 For developers who want to contribute to this project, see [Contribution Guide](CONTRIBUTING.md)
 
