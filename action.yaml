@@ -1,0 +1,62 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+name: SkyWalking Event Reporter
+description: Report GitHub workflow events to Apache SkyWalking
+author: Apache SkyWalking
+inputs:
+  oap-url:
+    description: URL of SkyWalking OAP
+    required: true
+  auth-token:
+    description: Authorization token of SkyWalking OAP
+    required: false
+  name:
+    description: The name of the event, for example, "Upgrade"
+    required: false
+    default: Upgrade
+  service:
+    description: The service name of the event
+    required: true
+  instance:
+    description: The service instance of the event
+    required: true
+  endpoint:
+    description: The service endpoint of the event, if any
+    required: false
+  message:
+    description: The message of the event
+    required: false
+    default: Upgrade from {fromVersion} to {toVersion}
+  parameters:
+    description: The parameters in the message
+    required: false
+    default: ""
+
+runs:
+  using: docker
+  image: Dockerfile
+  env:
+    OAP_URL: ${{ inputs.oap-url }}
+    AUTH_TOKEN: ${{ inputs.auth-token }}
+    NAME: ${{ inputs.name }}
+    SERVICE: ${{ inputs.service }}
+    INSTANCE: ${{ inputs.instance }}
+    ENDPOINT: ${{ inputs.endpoint }}
+    MESSAGE: ${{ inputs.message }}
+    PARAMETERS: ${{ inputs.parameters }}
+  entrypoint: /entrypoint.sh
+  post-entrypoint: /post-entrypoint.sh

@@ -21,7 +21,7 @@ else
   os="linux"
 fi
 
-swctl="bin/swctl-latest-${os}-amd64 --base-url=http://localhost:12800/graphql"
+swctl="bin/swctl-${VERSION}-${os}-amd64 --base-url=http://localhost:12800/graphql"
 
 retries=1
 max_retries=10

@@ -15,9 +15,12 @@
 # limitations under the License.
 #
 
-VERSION ?= latest
+VERSION ?= dev-$(shell git rev-parse --short HEAD)
+APP_NAME = skywalking-cli
 OUT_DIR = bin
 BINARY = swctl
+
+HUB ?= docker.io/apache
 
 RELEASE_BIN = skywalking-cli-$(VERSION)-bin
 RELEASE_SRC = skywalking-cli-$(VERSION)-src
@@ -144,6 +147,10 @@ check-codegen:
 		exit 1; \
 	fi
 
+.PHONY: docker
+docker:
+	docker build . -t $(HUB)/$(APP_NAME):$(VERSION)
+
 .PHONY: test-commands
 test-commands:
 	@if ! docker run --name oap -p 12800:12800 -p 11800:11800 -d -e SW_HEALTH_CHECKER=default -e SW_TELEMETRY=prometheus apache/skywalking-oap-server:8.4.0-es7 > /dev/null 2>&1;then \
@@ -151,6 +158,6 @@ test-commands:
 		docker container prune -f; \
 		docker run --name oap -p 12800:12800 -p 11800:11800 -d -e SW_HEALTH_CHECKER=default -e SW_TELEMETRY=prometheus apache/skywalking-oap-server:8.4.0-es7; \
 	fi
-	./scripts/test_commands.sh
+	VERSION=$(VERSION) ./scripts/test_commands.sh
 	@docker container stop oap
 	@docker container prune -f
