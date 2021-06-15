@@ -2,6 +2,24 @@ Changes by Version
 ==================
 Release Notes.
 
+0.7.0
+------------------
+
+### Features
+
+- Add GitHub Action for integration of event reporter 
+
+### Bug Fixes
+
+- Fix `metrics top` can't infer the scope automatically
+
+### Chores
+
+- Upgrade dependency crypto
+- Refactor project to use goapi
+- Move `parseScope` to pkg
+- Update release doc
+
 0.6.0
 ------------------
 
