@@ -138,7 +138,7 @@ Voting will start now and will remain open for at least 72 hours, all PMC member
 
 Thanks.
 
-[1] https://github.com/apache/skywalking/blob/master/docs/en/guides/How-to-release.md#vote-check
+[1] https://github.com/apache/skywalking-cli/blob/master/docs/How-to-release.md#vote-check
 ```
 
 ## Vote Check
@@ -221,6 +221,9 @@ Vote result should follow these:
     
     The Apache SkyWalking Team
     ```
+   
+1. Add a release on [the report system](https://reporter.apache.org/addrelease.html?skywalking) (**you can do this only if you are a PMC member**).   
+
 
 ## Remove Unnecessary Releases
 
