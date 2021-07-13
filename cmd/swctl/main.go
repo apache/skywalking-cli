@@ -47,6 +47,10 @@ func init() {
 }
 
 func main() {
+	cli.AppHelpTemplate = util.AppHelpTemplate
+	cli.CommandHelpTemplate = util.CommandHelpTemplate
+	cli.SubcommandHelpTemplate = util.SubcommandHelpTemplate
+
 	app := cli.NewApp()
 	app.Usage = "The CLI (Command Line Interface) for Apache SkyWalking."
 	app.Version = version
