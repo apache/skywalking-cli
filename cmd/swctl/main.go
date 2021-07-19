@@ -106,7 +106,7 @@ func main() {
 			Name:     "display",
 			Required: false,
 			Usage:    "display `style` of the result, supported styles are: json, yaml, table, graph",
-			Value:    "json",
+			Value:    "",
 		}),
 	}
 
@@ -129,6 +129,7 @@ func main() {
 	})
 
 	app.Flags = flags
+	app.CommandNotFound = util.CommandNotFound
 
 	if err := app.Run(os.Args); err != nil {
 		log.Fatalln(err)

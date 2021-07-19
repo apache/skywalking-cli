@@ -19,7 +19,11 @@ package display
 
 import (
 	"fmt"
+	"io/ioutil"
+	"log"
 	"strings"
+
+	yml "gopkg.in/yaml.v2"
 
 	d "github.com/apache/skywalking-cli/pkg/display/displayable"
 
@@ -39,10 +43,24 @@ const (
 	GRAPH = "graph"
 )
 
+type STYLE struct {
+	DISPLAY [][]string `yaml:"DISPLAY"`
+}
+
 // Display the object in the style specified in flag --display
 func Display(ctx *cli.Context, displayable *d.Displayable) error {
 	displayStyle := ctx.GlobalString("display")
-
+	if displayStyle == "" {
+		commandFullName := ctx.Command.FullName()
+		if commandFullName != "" {
+			displayStyle = getDisplay(commandFullName)
+		} else if ctx.Parent() != nil {
+			displayStyle = getDisplay(ctx.Parent().Args()[0])
+		}
+	}
+	if displayStyle == "" {
+		displayStyle = "json"
+	}
 	switch strings.ToLower(displayStyle) {
 	case JSON:
 		return json.Display(displayable)
@@ -55,4 +73,20 @@ func Display(ctx *cli.Context, displayable *d.Displayable) error {
 	default:
 		return fmt.Errorf("unsupported display style: %s", displayStyle)
 	}
+}
+
+// Get the default display settings
+func getDisplay(fullName string) string {
+	content, _ := ioutil.ReadFile("../../style.yaml")
+	style := STYLE{}
+	err := yml.Unmarshal(content, &style)
+	if err != nil {
+		log.Fatalf("cannot unmarshal data: %v", err)
+	}
+	for _, command := range style.DISPLAY {
+		if fullName == command[0] {
+			return command[1]
+		}
+	}
+	return ""
 }
