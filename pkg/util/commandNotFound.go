@@ -23,9 +23,9 @@ import (
 	"github.com/urfave/cli"
 )
 
-const GAP = 3
+const GAP = 3 // Control the appropriate edit distance.
 
-// CommandNotFound is executed when the command entered does not exist
+// CommandNotFound is executed when the command entered does not exist.
 func CommandNotFound(c *cli.Context, s string) {
 	suppose := make([]string, 0)
 	var parentCommand string
@@ -35,10 +35,10 @@ func CommandNotFound(c *cli.Context, s string) {
 		parentCommand = c.Parent().Args()[0]
 	}
 	fmt.Printf("Error: unknown command \"%s\" for \"%s\" \n\n", s, parentCommand)
-	// Record commands whose edit distance is less than GAP to suppose
+	// Record commands whose edit distance is less than GAP to suppose.
 	for index := range c.App.Commands {
 		commandName := c.App.Commands[index].Name
-		distance := minDistance(commandName, s)
+		distance := minEditDistance(commandName, s)
 		if distance <= GAP && commandName != "help" {
 			suppose = append(suppose, commandName)
 		}
@@ -57,8 +57,8 @@ func CommandNotFound(c *cli.Context, s string) {
 	}
 }
 
-// minDistance calculates the edit distance of two strings
-func minDistance(word1, word2 string) int {
+// minEditDistance calculates the edit distance of two strings.
+func minEditDistance(word1, word2 string) int {
 	m, n := len(word1), len(word2)
 	dp := make([][]int, m+1)
 	for i := range dp {
@@ -82,7 +82,7 @@ func minDistance(word1, word2 string) int {
 	return dp[m][n]
 }
 
-// min get The minimum of the args
+// min get The minimum of the args.
 func min(args ...int) int {
 	min := args[0]
 	for _, item := range args {

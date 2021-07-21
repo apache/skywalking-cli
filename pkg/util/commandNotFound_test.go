@@ -19,7 +19,7 @@ package util
 
 import "testing"
 
-func Test_minDistance(t *testing.T) {
+func Test_minEditDistance(t *testing.T) {
 	type args struct {
 		word1 string
 		word2 string
@@ -34,6 +34,10 @@ func Test_minDistance(t *testing.T) {
 			args: args{"", ""},
 			want: 0,
 		}, {
+			name: "one empty string",
+			args: args{"", "dashboard"},
+			want: 9,
+		}, {
 			name: "equal length",
 			args: args{"service", "service"},
 			want: 0,
@@ -45,7 +49,7 @@ func Test_minDistance(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := minDistance(tt.args.word1, tt.args.word2); got != tt.want {
+			if got := minEditDistance(tt.args.word1, tt.args.word2); got != tt.want {
 				t.Errorf("minDistance() = %v, want %v", got, tt.want)
 			}
 		})

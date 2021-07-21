@@ -19,11 +19,8 @@ package display
 
 import (
 	"fmt"
-	"io/ioutil"
-	"log"
-	"strings"
 
-	yml "gopkg.in/yaml.v2"
+	"strings"
 
 	d "github.com/apache/skywalking-cli/pkg/display/displayable"
 
@@ -42,10 +39,6 @@ const (
 	TABLE = "table"
 	GRAPH = "graph"
 )
-
-type STYLE struct {
-	DISPLAY [][]string `yaml:"DISPLAY"`
-}
 
 // Display the object in the style specified in flag --display
 func Display(ctx *cli.Context, displayable *d.Displayable) error {
@@ -75,15 +68,18 @@ func Display(ctx *cli.Context, displayable *d.Displayable) error {
 	}
 }
 
-// getDisplay gets the default display settings
+// getDisplay gets the default display settings.
 func getDisplay(fullName string) string {
-	content, _ := ioutil.ReadFile("../../displaystyle.yaml")
-	style := STYLE{}
-	err := yml.Unmarshal(content, &style)
-	if err != nil {
-		log.Fatalf("cannot unmarshal data: %v", err)
-	}
-	for _, command := range style.DISPLAY {
+	// The variable displaystyle sets the input command and the corresponding output format.
+	var style = [][]string{{"dashboard global", "graph"},
+		{"dashboard global-metrics", "graph"},
+		{"metrics top", "table"},
+		{"metrics linear", "graph"},
+		{"metrics list", "table"},
+		{"service list", "table"},
+		{"t", "graph"},
+		{"trace", "graph"}}
+	for _, command := range style {
 		if fullName == command[0] {
 			return command[1]
 		}
