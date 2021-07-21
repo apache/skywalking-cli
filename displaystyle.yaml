@@ -17,13 +17,9 @@
 DISPLAY:
   - ["dashboard global",          "graph"]
   - ["dashboard global-metrics",  "graph"]
-  - ["endpoint list",             "yaml" ]
-  - ["instance list",             "yaml" ]
-  - ["instance search",           "yaml" ]
   - ["metrics top",               "table"]
   - ["metrics linear",            "graph"]
   - ["metrics list",              "table"]
   - ["service list",              "table"]
-  - ["trace list",                "yaml" ]
   - ["t",                         "graph"]
   - ["trace",                     "graph"]

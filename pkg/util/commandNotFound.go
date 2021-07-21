@@ -25,34 +25,39 @@ import (
 
 const GAP = 3
 
-// Handle error through CommandNotFound function when the input command does not exist
+// CommandNotFound is executed when the command entered does not exist
 func CommandNotFound(c *cli.Context, s string) {
 	suppose := make([]string, 0)
-
-	fmt.Printf("Command '%s' not found. ", s)
+	var parentCommand string
+	if c.Parent() == nil {
+		parentCommand = "swctl"
+	} else {
+		parentCommand = c.Parent().Args()[0]
+	}
+	fmt.Printf("Error: unknown command \"%s\" for \"%s\" \n\n", s, parentCommand)
+	// Record commands whose edit distance is less than GAP to suppose
 	for index := range c.App.Commands {
 		commandName := c.App.Commands[index].Name
 		distance := minDistance(commandName, s)
-		// Record commands that edit distance is less than 3
-		if distance <= GAP {
+		if distance <= GAP && commandName != "help" {
 			suppose = append(suppose, commandName)
 		}
 	}
-
 	if len(suppose) != 0 {
-		fmt.Println("Do you mean:")
+		fmt.Println("Do you mean this?")
 		for index := range suppose {
-			if c.Parent() == nil {
-				fmt.Printf("\t%s\n", suppose[index])
-			} else {
-				fmt.Printf("\t%s %s\n", c.Parent().Args()[0], suppose[index])
-			}
+			fmt.Printf("\t%s\n", suppose[index])
 		}
+		fmt.Println()
 	}
-	fmt.Println()
+	if c.Parent() == nil {
+		fmt.Printf("Run '%s --help' for usage.\n", parentCommand)
+	} else {
+		fmt.Printf("Run 'swctl %s --help' for usage.\n", parentCommand)
+	}
 }
 
-// Calculate the edit distance of two strings
+// minDistance calculates the edit distance of two strings
 func minDistance(word1, word2 string) int {
 	m, n := len(word1), len(word2)
 	dp := make([][]int, m+1)
@@ -70,13 +75,15 @@ func minDistance(word1, word2 string) int {
 			if word1[i-1] == word2[j-1] {
 				dp[i][j] = dp[i-1][j-1]
 			} else {
-				dp[i][j] = Min(dp[i][j-1], dp[i-1][j], dp[i-1][j-1]) + 1
+				dp[i][j] = min(dp[i][j-1], dp[i-1][j], dp[i-1][j-1]) + 1
 			}
 		}
 	}
 	return dp[m][n]
 }
-func Min(args ...int) int {
+
+// min get The minimum of the args
+func min(args ...int) int {
 	min := args[0]
 	for _, item := range args {
 		if item < min {

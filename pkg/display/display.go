@@ -75,9 +75,9 @@ func Display(ctx *cli.Context, displayable *d.Displayable) error {
 	}
 }
 
-// Get the default display settings
+// getDisplay gets the default display settings
 func getDisplay(fullName string) string {
-	content, _ := ioutil.ReadFile("../../style.yaml")
+	content, _ := ioutil.ReadFile("../../displaystyle.yaml")
 	style := STYLE{}
 	err := yml.Unmarshal(content, &style)
 	if err != nil {
