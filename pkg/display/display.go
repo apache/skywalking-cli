@@ -40,15 +40,25 @@ const (
 	GRAPH = "graph"
 )
 
+// The variable style sets the output style for the command.
+var style = map[string]string{"dashboard global": "graph",
+	"dashboard global-metrics": "graph",
+	"metrics top":              "table",
+	"metrics linear":           "graph",
+	"metrics list":             "table",
+	"service list":             "table",
+	"t":                        "graph",
+	"trace":                    "graph"}
+
 // Display the object in the style specified in flag --display
 func Display(ctx *cli.Context, displayable *d.Displayable) error {
 	displayStyle := ctx.GlobalString("display")
 	if displayStyle == "" {
 		commandFullName := ctx.Command.FullName()
 		if commandFullName != "" {
-			displayStyle = getDisplay(commandFullName)
+			displayStyle = getDisplayStyle(commandFullName)
 		} else if ctx.Parent() != nil {
-			displayStyle = getDisplay(ctx.Parent().Args()[0])
+			displayStyle = getDisplayStyle(ctx.Parent().Args()[0])
 		}
 	}
 	if displayStyle == "" {
@@ -68,21 +78,10 @@ func Display(ctx *cli.Context, displayable *d.Displayable) error {
 	}
 }
 
-// getDisplay gets the default display settings.
-func getDisplay(fullName string) string {
-	// The variable displaystyle sets the input command and the corresponding output format.
-	var style = [][]string{{"dashboard global", "graph"},
-		{"dashboard global-metrics", "graph"},
-		{"metrics top", "table"},
-		{"metrics linear", "graph"},
-		{"metrics list", "table"},
-		{"service list", "table"},
-		{"t", "graph"},
-		{"trace", "graph"}}
-	for _, command := range style {
-		if fullName == command[0] {
-			return command[1]
-		}
+// getDisplayStyle gets the default display settings.
+func getDisplayStyle(fullName string) string {
+	if command, ok := style[fullName]; ok {
+		return command
 	}
 	return ""
 }
