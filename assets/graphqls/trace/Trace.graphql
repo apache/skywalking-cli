@@ -29,6 +29,7 @@ query ($traceId: ID!) {
                 type
             }
             serviceCode
+            serviceInstanceName
             startTime
             endTime
             endpointName
