@@ -36,11 +36,11 @@ while ! ${swctl} ch > /dev/null 2>&1; do
   retries=$(($retries+1))
 done;
 
-${swctl} metrics ls > /dev/null 2>&1
+${swctl} --display=json metrics ls > /dev/null 2>&1
 
-${swctl} service ls > /dev/null 2>&1
+${swctl} --display=json service ls > /dev/null 2>&1
 
-${swctl} endpoint ls --service-id="test" > /dev/null 2>&1
+${swctl} --display=json endpoint ls --service-id="test" > /dev/null 2>&1
 
 SERVICE_SCOPE_METRICS=(
   service_resp_time
@@ -50,19 +50,19 @@ SERVICE_SCOPE_METRICS=(
 )
 
 for metrics in "${SERVICE_SCOPE_METRICS[@]}"; do
-  ${swctl} metrics linear --name="$metrics" --service="test" > /dev/null 2>&1
+  ${swctl} --display=json metrics linear --name="$metrics" --service="test" > /dev/null 2>&1
 
-  ${swctl} metrics single --name="$metrics" --service="test" > /dev/null 2>&1
+  ${swctl} --display=json metrics single --name="$metrics" --service="test" > /dev/null 2>&1
 
-  ${swctl} metrics top 3 --name="$metrics" > /dev/null 2>&1
+  ${swctl} --display=json metrics top 3 --name="$metrics" > /dev/null 2>&1
 done
 
-${swctl} metrics multiple-linear --name="all_percentile" > /dev/null 2>&1
+${swctl} --display=json metrics multiple-linear --name="all_percentile" > /dev/null 2>&1
 
 # Test `metrics thermodynamic`
-${swctl} metrics hp --name="all_heatmap" >/dev/null 2>&1
+${swctl} --display=json metrics hp --name="all_heatmap" >/dev/null 2>&1
 
-${swctl} trace ls >/dev/null 2>&1
+${swctl} --display=json trace ls >/dev/null 2>&1
 
 # Test `dashboard global`
-${swctl} db g >/dev/null 2>&1
+${swctl} --display=json db g >/dev/null 2>&1
