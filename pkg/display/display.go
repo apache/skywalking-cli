@@ -19,6 +19,7 @@ package display
 
 import (
 	"fmt"
+
 	"strings"
 
 	d "github.com/apache/skywalking-cli/pkg/display/displayable"
@@ -39,10 +40,30 @@ const (
 	GRAPH = "graph"
 )
 
+// The variable style sets the output style for the command.
+var style = map[string]string{"dashboard global": "graph",
+	"dashboard global-metrics": "graph",
+	"metrics top":              "table",
+	"metrics linear":           "graph",
+	"metrics list":             "table",
+	"service list":             "table",
+	"t":                        "graph",
+	"trace":                    "graph"}
+
 // Display the object in the style specified in flag --display
 func Display(ctx *cli.Context, displayable *d.Displayable) error {
 	displayStyle := ctx.GlobalString("display")
-
+	if displayStyle == "" {
+		commandFullName := ctx.Command.FullName()
+		if commandFullName != "" {
+			displayStyle = getDisplayStyle(commandFullName)
+		} else if ctx.Parent() != nil {
+			displayStyle = getDisplayStyle(ctx.Parent().Args()[0])
+		}
+	}
+	if displayStyle == "" {
+		displayStyle = "json"
+	}
 	switch strings.ToLower(displayStyle) {
 	case JSON:
 		return json.Display(displayable)
@@ -55,4 +76,12 @@ func Display(ctx *cli.Context, displayable *d.Displayable) error {
 	default:
 		return fmt.Errorf("unsupported display style: %s", displayStyle)
 	}
+}
+
+// getDisplayStyle gets the default display settings.
+func getDisplayStyle(fullName string) string {
+	if command, ok := style[fullName]; ok {
+		return command
+	}
+	return ""
 }
