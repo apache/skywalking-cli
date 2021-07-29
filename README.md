@@ -400,6 +400,24 @@ You can imitate the content of [the default template file](examples/global.yml) 
 
 </details>
 
+### `logs`
+
+#### `list`
+
+<details>
+
+<summary>logs list [--service-id=service-id] [--service-instance-id=service-instance-id] [--endpoint-id=endpoint-id] [--trace-id=trace-id] [--tags=tags] [--start=start-time] [--end=end-time] </summary>
+
+| argument | description | default |
+| :--- | :--- | :--- |
+| `service-id` | The service id whose logs are to displayed. |  |
+| `service-instance-id` | The service instance id whose logs are to displayed. |  |
+| `endpoint-id` | The service endpoint id whose logs are to displayed. |  |
+| `trace-id` | The trace id whose logs are to displayed. |  |
+| `tags` | Only tags defined in the core/default/searchableLogsTags are searchable. Check more details on the Configuration Vocabulary page | See [Configuration Vocabulary page](https://github.com/apache/skywalking/blob/master/docs/en/setup/backend/configuration-vocabulary.md) |
+
+</details>
+
 # Use Cases
 
 <details>
@@ -566,6 +584,17 @@ $ ./bin/swctl --display=graph metrics thermodynamic
 ```
 
 ![heatmap](http://skywalking.apache.org/screenshots/cli/heatmap.png)
+
+</details>
+
+<details>
+
+<summary>Query the logs</summary>
+
+```shell
+$ ./bin/swctl logs list
+{"logs":[{"serviceName":"e2e-service-provider","serviceId":"ZTJlLXNlcnZpY2UtcHJvdmlkZXI=.1","serviceInstanceName":"provider1","serviceInstanceId":"ZTJlLXNlcnZpY2UtcHJvdmlkZXI=.1_cHJvdmlkZXIx","endpointName":null,"endpointId":null,"traceId":"ccdb2bb86f834b6699980fad9b2560d6.74.16275170853710001","timestamp":1627517086179,"contentType":"TEXT","content":"2021-07-29 00:04:46.179 [TID:ccdb2bb86f834b6699980fad9b2560d6.74.16275170853710001] [http-nio-9090-exec-9] INFO  o.a.s.e2e.controller.LogController -logback message==\u003e now: 1627517086179\n","tags":[{"key":"level","value":"INFO"},{"key":"logger","value":"org.apache.skywalking.e2e.controller.LogController"},{"key":"thread","value":"http-nio-9090-exec-9"}]}],"total":1}
+```
 
 </details>
 
