@@ -20,6 +20,7 @@
 // cr/oap.yaml (942B)
 // cr/ui.yaml (935B)
 // graphqls/healthcheck/healthcheck.graphql (870B)
+// graphqls/logs/Logs.graphql (1.258kB)
 // graphqls/metadata/AllServices.graphql (911B)
 // graphqls/metadata/Instances.graphql (1.069kB)
 // graphqls/metadata/SearchEndpoints.graphql (975B)
@@ -198,6 +199,61 @@ func graphqlsHealthcheckHealthcheckGraphql() (*asset, error) {
 
 	info := bindataFileInfo{name: "graphqls/healthcheck/healthcheck.graphql", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0xc0, 0x71, 0x53, 0x13, 0xd0, 0x51, 0xd7, 0x12, 0xd1, 0xed, 0xd9, 0x34, 0x17, 0xef, 0x22, 0xf8, 0xa0, 0xa2, 0x35, 0x57, 0xb, 0x54, 0x6d, 0x5a, 0xb1, 0x8f, 0xbd, 0xb3, 0x40, 0x34, 0xc2, 0x2d}}
+	return a, nil
+}
+
+var _graphqlsLogsLogsGraphql = []byte(`# Licensed to Apache Software Foundation (ASF) under one or more contributor
+# license agreements. See the NOTICE file distributed with
+# this work for additional information regarding copyright
+# ownership. Apache Software Foundation (ASF) licenses this file to you under
+# the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+
+query ($condition: LogQueryCondition!) {
+    result: queryLogs(condition: $condition) {
+        total
+        logs {
+            serviceName
+            serviceId
+            serviceInstanceName
+            serviceInstanceId
+            endpointName
+            endpointId
+            traceId
+            timestamp
+            contentType
+            content
+            tags {
+                key
+                value
+            }
+        }
+    }
+}
+`)
+
+func graphqlsLogsLogsGraphqlBytes() ([]byte, error) {
+	return _graphqlsLogsLogsGraphql, nil
+}
+
+func graphqlsLogsLogsGraphql() (*asset, error) {
+	bytes, err := graphqlsLogsLogsGraphqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "graphqls/logs/Logs.graphql", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0x5, 0xb, 0x5c, 0x60, 0x9b, 0x18, 0x98, 0xa0, 0xdd, 0x60, 0x42, 0x91, 0x53, 0x25, 0xcd, 0x59, 0xa5, 0x1c, 0xff, 0xc3, 0xf7, 0xf0, 0x45, 0xb3, 0xf7, 0xcd, 0xd8, 0x63, 0xee, 0x9f, 0x6a, 0x3a}}
 	return a, nil
 }
 
@@ -972,6 +1028,7 @@ var _bindata = map[string]func() (*asset, error){
 	"cr/oap.yaml": crOapYaml,
 	"cr/ui.yaml":  crUiYaml,
 	"graphqls/healthcheck/healthcheck.graphql":      graphqlsHealthcheckHealthcheckGraphql,
+	"graphqls/logs/Logs.graphql":                    graphqlsLogsLogsGraphql,
 	"graphqls/metadata/AllServices.graphql":         graphqlsMetadataAllservicesGraphql,
 	"graphqls/metadata/Instances.graphql":           graphqlsMetadataInstancesGraphql,
 	"graphqls/metadata/SearchEndpoints.graphql":     graphqlsMetadataSearchendpointsGraphql,
@@ -1039,6 +1096,9 @@ var _bintree = &bintree{nil, map[string]*bintree{
 	"graphqls": &bintree{nil, map[string]*bintree{
 		"healthcheck": &bintree{nil, map[string]*bintree{
 			"healthcheck.graphql": &bintree{graphqlsHealthcheckHealthcheckGraphql, map[string]*bintree{}},
+		}},
+		"logs": &bintree{nil, map[string]*bintree{
+			"Logs.graphql": &bintree{graphqlsLogsLogsGraphql, map[string]*bintree{}},
 		}},
 		"metadata": &bintree{nil, map[string]*bintree{
 			"AllServices.graphql":     &bintree{graphqlsMetadataAllservicesGraphql, map[string]*bintree{}},
