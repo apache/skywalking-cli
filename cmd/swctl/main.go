@@ -30,6 +30,7 @@ import (
 	"github.com/apache/skywalking-cli/internal/commands/interceptor"
 	"github.com/apache/skywalking-cli/internal/commands/logs"
 	"github.com/apache/skywalking-cli/internal/commands/metrics"
+	"github.com/apache/skywalking-cli/internal/commands/profile"
 	"github.com/apache/skywalking-cli/internal/commands/service"
 	"github.com/apache/skywalking-cli/internal/commands/trace"
 	"github.com/apache/skywalking-cli/internal/logger"
@@ -122,6 +123,7 @@ func main() {
 		install.Command,
 		event.Command,
 		logs.Command,
+		profile.Command,
 	}
 
 	app.Before = interceptor.BeforeChain([]cli.BeforeFunc{

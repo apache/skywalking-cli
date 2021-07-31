@@ -32,6 +32,11 @@
 // graphqls/metrics/MetricsValue.graphql (943B)
 // graphqls/metrics/MetricsValues.graphql (1.05kB)
 // graphqls/metrics/SortMetrics.graphql (969B)
+// graphqls/profile/CreateTask.graphql (971B)
+// graphqls/profile/GetProfileAnalyze.graphql (1.161kB)
+// graphqls/profile/GetProfiledSegment.graphql (1.2kB)
+// graphqls/profile/GetTaskList.graphql (1.212kB)
+// graphqls/profile/GetTaskSegmentList.graphql (1.002kB)
 // graphqls/trace/Trace.graphql (1.518kB)
 // graphqls/trace/Traces.graphql (1.077kB)
 // templates/dashboard/global.yml (3.001kB)
@@ -712,6 +717,244 @@ func graphqlsMetricsSortmetricsGraphql() (*asset, error) {
 	return a, nil
 }
 
+var _graphqlsProfileCreatetaskGraphql = []byte(`# Licensed to Apache Software Foundation (ASF) under one or more contributor
+# license agreements. See the NOTICE file distributed with
+# this work for additional information regarding copyright
+# ownership. Apache Software Foundation (ASF) licenses this file to you under
+# the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+
+mutation ($condition: ProfileTaskCreationRequest) {
+    result: createProfileTask(creationRequest: $condition) {
+      errorReason: errorReason
+      id: id
+    }
+}
+`)
+
+func graphqlsProfileCreatetaskGraphqlBytes() ([]byte, error) {
+	return _graphqlsProfileCreatetaskGraphql, nil
+}
+
+func graphqlsProfileCreatetaskGraphql() (*asset, error) {
+	bytes, err := graphqlsProfileCreatetaskGraphqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "graphqls/profile/CreateTask.graphql", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0x4f, 0xcc, 0x41, 0xa2, 0xe6, 0x43, 0x55, 0xfb, 0x37, 0x34, 0x52, 0x74, 0x8c, 0xf3, 0x96, 0x2d, 0x14, 0x43, 0x5e, 0x3c, 0x5a, 0xf1, 0xc2, 0x3b, 0x45, 0xaf, 0xf2, 0xd2, 0xb, 0xbe, 0x38, 0xaf}}
+	return a, nil
+}
+
+var _graphqlsProfileGetprofileanalyzeGraphql = []byte(`# Licensed to Apache Software Foundation (ASF) under one or more contributor
+# license agreements. See the NOTICE file distributed with
+# this work for additional information regarding copyright
+# ownership. Apache Software Foundation (ASF) licenses this file to you under
+# the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+
+query ($segmentId: String!, $timeRanges: [ProfileAnalyzeTimeRange!]!) {
+    result: getProfileAnalyze(segmentId: $segmentId, timeRanges: $timeRanges) {
+        trees {
+    		elements {
+              id
+              parentId
+              codeSignature
+              duration
+              durationChildExcluded
+              count
+    		}
+    	}
+    }
+}
+`)
+
+func graphqlsProfileGetprofileanalyzeGraphqlBytes() ([]byte, error) {
+	return _graphqlsProfileGetprofileanalyzeGraphql, nil
+}
+
+func graphqlsProfileGetprofileanalyzeGraphql() (*asset, error) {
+	bytes, err := graphqlsProfileGetprofileanalyzeGraphqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "graphqls/profile/GetProfileAnalyze.graphql", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0xf6, 0x37, 0x86, 0xaa, 0x43, 0x4b, 0x29, 0x39, 0x2b, 0xee, 0xdb, 0x51, 0x22, 0xb9, 0xf8, 0xd6, 0x8a, 0x96, 0x5d, 0xe1, 0xb1, 0x8c, 0xd3, 0x1e, 0xe1, 0x6, 0x63, 0xdd, 0x51, 0x5b, 0xfa, 0x1d}}
+	return a, nil
+}
+
+var _graphqlsProfileGetprofiledsegmentGraphql = []byte(`# Licensed to Apache Software Foundation (ASF) under one or more contributor
+# license agreements. See the NOTICE file distributed with
+# this work for additional information regarding copyright
+# ownership. Apache Software Foundation (ASF) licenses this file to you under
+# the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+
+query ($segmentId: String!) {
+    result: getProfiledSegment(segmentId: $segmentId) {
+        spans {
+           spanId
+           parentSpanId
+           serviceCode
+           startTime
+           endTime
+           endpointName
+           type
+           peer
+           component
+           isError
+           layer
+           tags {
+               key value
+           }
+        }
+    }
+}
+`)
+
+func graphqlsProfileGetprofiledsegmentGraphqlBytes() ([]byte, error) {
+	return _graphqlsProfileGetprofiledsegmentGraphql, nil
+}
+
+func graphqlsProfileGetprofiledsegmentGraphql() (*asset, error) {
+	bytes, err := graphqlsProfileGetprofiledsegmentGraphqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "graphqls/profile/GetProfiledSegment.graphql", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0xe8, 0xf1, 0xcb, 0x40, 0xbc, 0x1f, 0xc7, 0x7a, 0xa, 0x57, 0x29, 0x4b, 0x1c, 0xdd, 0x48, 0x7c, 0x81, 0x5b, 0xed, 0x80, 0xf2, 0x3, 0xc3, 0xa4, 0x7, 0x18, 0x90, 0x55, 0xe8, 0x6, 0x21, 0xf7}}
+	return a, nil
+}
+
+var _graphqlsProfileGettasklistGraphql = []byte(`# Licensed to Apache Software Foundation (ASF) under one or more contributor
+# license agreements. See the NOTICE file distributed with
+# this work for additional information regarding copyright
+# ownership. Apache Software Foundation (ASF) licenses this file to you under
+# the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+
+query ($serviceId: ID, $endpointName: String) {
+    result: getProfileTaskList(serviceId: $serviceId, endpointName: $endpointName) {
+        id
+        serviceId
+        endpointName
+        startTime
+        duration
+        minDurationThreshold
+        dumpPeriod
+        maxSamplingCount
+        logs {
+          id
+          instanceId
+          operationType
+          operationTime
+        }
+    }
+}
+`)
+
+func graphqlsProfileGettasklistGraphqlBytes() ([]byte, error) {
+	return _graphqlsProfileGettasklistGraphql, nil
+}
+
+func graphqlsProfileGettasklistGraphql() (*asset, error) {
+	bytes, err := graphqlsProfileGettasklistGraphqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "graphqls/profile/GetTaskList.graphql", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0xe8, 0xf0, 0x74, 0x1, 0xe2, 0xbb, 0x9c, 0x3e, 0xc5, 0x29, 0x7e, 0x8f, 0x6b, 0x4a, 0x50, 0x21, 0xc3, 0xb, 0x28, 0x6c, 0x65, 0x5a, 0xcc, 0x51, 0x8e, 0x3e, 0x10, 0xc0, 0x85, 0xec, 0x68, 0x82}}
+	return a, nil
+}
+
+var _graphqlsProfileGettasksegmentlistGraphql = []byte(`# Licensed to Apache Software Foundation (ASF) under one or more contributor
+# license agreements. See the NOTICE file distributed with
+# this work for additional information regarding copyright
+# ownership. Apache Software Foundation (ASF) licenses this file to you under
+# the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+
+query ($taskId: String!) {
+    result: getProfileTaskSegmentList(taskID: $taskId) {
+        segmentId
+        endpointNames
+        duration
+        start
+        isError
+        traceIds
+    }
+}
+`)
+
+func graphqlsProfileGettasksegmentlistGraphqlBytes() ([]byte, error) {
+	return _graphqlsProfileGettasksegmentlistGraphql, nil
+}
+
+func graphqlsProfileGettasksegmentlistGraphql() (*asset, error) {
+	bytes, err := graphqlsProfileGettasksegmentlistGraphqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "graphqls/profile/GetTaskSegmentList.graphql", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0xbb, 0xac, 0x15, 0xf8, 0x73, 0x38, 0x2f, 0xc, 0xdf, 0xcb, 0x2b, 0x43, 0x16, 0x30, 0x9d, 0x3e, 0xbf, 0x47, 0x0, 0x88, 0x35, 0x4c, 0x9b, 0xfa, 0x7, 0x5d, 0x32, 0x5, 0xbf, 0x51, 0x31, 0xdc}}
+	return a, nil
+}
+
 var _graphqlsTraceTraceGraphql = []byte(`# Licensed to Apache Software Foundation (ASF) under one or more contributor
 # license agreements. See the NOTICE file distributed with
 # this work for additional information regarding copyright
@@ -1040,6 +1283,11 @@ var _bindata = map[string]func() (*asset, error){
 	"graphqls/metrics/MetricsValue.graphql":         graphqlsMetricsMetricsvalueGraphql,
 	"graphqls/metrics/MetricsValues.graphql":        graphqlsMetricsMetricsvaluesGraphql,
 	"graphqls/metrics/SortMetrics.graphql":          graphqlsMetricsSortmetricsGraphql,
+	"graphqls/profile/CreateTask.graphql":           graphqlsProfileCreatetaskGraphql,
+	"graphqls/profile/GetProfileAnalyze.graphql":    graphqlsProfileGetprofileanalyzeGraphql,
+	"graphqls/profile/GetProfiledSegment.graphql":   graphqlsProfileGetprofiledsegmentGraphql,
+	"graphqls/profile/GetTaskList.graphql":          graphqlsProfileGettasklistGraphql,
+	"graphqls/profile/GetTaskSegmentList.graphql":   graphqlsProfileGettasksegmentlistGraphql,
 	"graphqls/trace/Trace.graphql":                  graphqlsTraceTraceGraphql,
 	"graphqls/trace/Traces.graphql":                 graphqlsTraceTracesGraphql,
 	"templates/dashboard/global.yml":                templatesDashboardGlobalYml,
@@ -1114,6 +1362,13 @@ var _bintree = &bintree{nil, map[string]*bintree{
 			"MetricsValue.graphql":         &bintree{graphqlsMetricsMetricsvalueGraphql, map[string]*bintree{}},
 			"MetricsValues.graphql":        &bintree{graphqlsMetricsMetricsvaluesGraphql, map[string]*bintree{}},
 			"SortMetrics.graphql":          &bintree{graphqlsMetricsSortmetricsGraphql, map[string]*bintree{}},
+		}},
+		"profile": &bintree{nil, map[string]*bintree{
+			"CreateTask.graphql":         &bintree{graphqlsProfileCreatetaskGraphql, map[string]*bintree{}},
+			"GetProfileAnalyze.graphql":  &bintree{graphqlsProfileGetprofileanalyzeGraphql, map[string]*bintree{}},
+			"GetProfiledSegment.graphql": &bintree{graphqlsProfileGetprofiledsegmentGraphql, map[string]*bintree{}},
+			"GetTaskList.graphql":        &bintree{graphqlsProfileGettasklistGraphql, map[string]*bintree{}},
+			"GetTaskSegmentList.graphql": &bintree{graphqlsProfileGettasksegmentlistGraphql, map[string]*bintree{}},
 		}},
 		"trace": &bintree{nil, map[string]*bintree{
 			"Trace.graphql":  &bintree{graphqlsTraceTraceGraphql, map[string]*bintree{}},

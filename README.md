@@ -418,6 +418,78 @@ You can imitate the content of [the default template file](examples/global.yml) 
 
 </details>
 
+### `profile`
+
+#### `create`
+
+<details>
+
+<summary>profile create [--service-id=service-id] [--service-name=service-name] [--endpoint=endpoint] [--start-time=start-time] [--duration=duration] [--min-duration-threshold=min-duration-threshold] [--dump-period=dump-period] [--max-sampling-count=max-sampling-count] </summary>
+
+| argument | description | default |
+| :--- | :--- | :--- |
+| `service-id` | <service-id> whose endpoints are to be profile. |  |
+| `service-name` | <service-name> whose endpoints are to be profile. |  |
+| `endpoint` | which endpoint should profile. |  |
+| `start-time` | profile task start time(millisecond). |  |
+| `duration` | profile task continuous time(minute). | |
+| `min-duration-threshold` | profiled endpoint must greater duration(millisecond). | |
+| `dump-period` | profiled endpoint dump period(millisecond). | |
+| `max-sampling-count` | profile task max sampling count. | |
+
+</details>
+
+#### `list`
+
+<details>
+
+<summary>profile list [--service-id=service-id] [--service-name=service-name] [--endpoint=endpoint] </summary>
+
+| argument | description | default |
+| :--- | :--- | :--- |
+| `service-id` | `<service id>` whose profile task are to be searched. |  |
+| `service-name` | `<service name>` whose profile task are to be searched. |  |
+| `endpoint` | `<endpoint>` whose profile task are to be searched |  |
+
+</details>
+
+#### `segment-list`
+
+<details>
+
+<summary>profile segment-list [--task-id=task-id] </summary>
+
+| argument | description | default |
+| :--- | :--- | :--- |
+| `task-id` | `<task id>` whose profiled segment are to be searched. |  |
+
+</details>
+
+#### `profiled-segment`
+
+<details>
+
+<summary>profile profiled-segment [--segment-id=segment-id] </summary>
+
+| argument | description | default |
+| :--- | :--- | :--- |
+| `segment-id` | profiled segment id. |  |
+
+</details>
+
+#### `profiled-analyze`
+
+<details>
+
+<summary>profile profiled-analyze [--segment-id=segment-id] [--time-ranges=time-ranges] </summary>
+
+| argument | description | default |
+| :--- | :--- | :--- |
+| `segment-id` | profiled segment id. |  |
+| `time-ranges` | need to analyze time ranges in the segment: start-end,start-end. |  |
+
+</details>
+
 # Use Cases
 
 <details>
@@ -594,6 +666,44 @@ $ ./bin/swctl --display=graph metrics thermodynamic
 ```shell
 $ ./bin/swctl logs list
 {"logs":[{"serviceName":"e2e-service-provider","serviceId":"ZTJlLXNlcnZpY2UtcHJvdmlkZXI=.1","serviceInstanceName":"provider1","serviceInstanceId":"ZTJlLXNlcnZpY2UtcHJvdmlkZXI=.1_cHJvdmlkZXIx","endpointName":null,"endpointId":null,"traceId":"ccdb2bb86f834b6699980fad9b2560d6.74.16275170853710001","timestamp":1627517086179,"contentType":"TEXT","content":"2021-07-29 00:04:46.179 [TID:ccdb2bb86f834b6699980fad9b2560d6.74.16275170853710001] [http-nio-9090-exec-9] INFO  o.a.s.e2e.controller.LogController -logback message==\u003e now: 1627517086179\n","tags":[{"key":"level","value":"INFO"},{"key":"logger","value":"org.apache.skywalking.e2e.controller.LogController"},{"key":"thread","value":"http-nio-9090-exec-9"}]}],"total":1}
+```
+
+</details>
+
+<details>
+
+<summary>Profile the endpoint</summary>
+
+If your endpoint has performance issue and could not use tracing to find out what's happen, you could try to profile. You could get more information on [this page](https://github.com/apache/skywalking/blob/master/docs/en/guides/backend-profile.md).
+
+create profile task.
+```shell
+$ ./bin/swctl profile create --service-name=service-name --endpoint=endpoint --start-time=1627656127860 --duration=5 --min-duration-threshold=0 --dump-period=10 --max-sampling-count=9
+{"errorReason":null,"id":"1627740677560_ZTJlLXNlcnZpY2UtcHJvdmlkZXI=.1"}
+```
+
+Query existing task and logs.
+```shell
+$ ./bin/swctl profile list --service-name=service-name --endpoint=endpoint
+[{"id":"1627740677560_ZTJlLXNlcnZpY2UtcHJvdmlkZXI=.1","serviceId":"ZTJlLXNlcnZpY2UtcHJvdmlkZXI=.1","serviceName":"","endpointName":"/info","startTime":1627740917933,"duration":5,"minDurationThreshold":0,"dumpPeriod":10,"maxSamplingCount":9,"logs":[{"id":"1627740677560_ZTJlLXNlcnZpY2UtcHJvdmlkZXI=.1_ZTJlLXNlcnZpY2UtcHJvdmlkZXI=.1_cHJvdmlkZXIx_1_1627740682470","instanceId":"ZTJlLXNlcnZpY2UtcHJvdmlkZXI=.1_cHJvdmlkZXIx","instanceName":"","operationType":"NOTIFIED","operationTime":1627740682470}]}]
+```
+
+Query profiled segment list.
+```shell
+$ ./bin/swctl profile segment-list --service-name=service-name --endpoint=endpoint
+[{"segmentId":"8f7e9e21221d427cb684a60d352a47ef.71.16277409290420002","endpointNames":["/info"],"duration":603,"start":"1627740929042","isError":false,"traceIds":["8f7e9e21221d427cb684a60d352a47ef.71.16277409290420003"]}]
+```
+
+Query profiled segment spans.
+```shell
+$ ./bin/swctl profile profiled-segment --segment-id=segment-id
+{"spans":[{"spanId":0,"parentSpanId":-1,"serviceCode":"e2e-service-provider","serviceInstanceName":"","startTime":1627740929042,"endTime":1627740929645,"endpointName":"/info","type":"Entry","peer":"","component":"Tomcat","isError":false,"layer":"Http","tags":[{"key":"url","value":"http://localhost:49553/info"},{"key":"http.method","value":"POST"}],"logs":null}]}
+```
+
+Analyze profiled segment with time ranges.
+```shell
+$ ./bin/swctl profile profiled-segment --segment-id=segment-id --time-ranges=start-end
+{"tip":null,"trees":[{"elements":[{"id":"1","parentId":"0","codeSignature":"java.lang.Thread.run:748","duration":577,"durationChildExcluded":0,"count":56},{"id":"2","parentId":"1","codeSignature":"org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run:61","duration":577,"durationChildExcluded":0,"count":56}]}]}
 ```
 
 </details>
