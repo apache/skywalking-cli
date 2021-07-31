@@ -53,7 +53,7 @@ var getTaskListCommand = cli.Command{
 		if serviceID == "" {
 			serviceName := ctx.String("service-name")
 			if serviceName == "" {
-				return fmt.Errorf("flags \"service-id, service-name\" must set one")
+				return fmt.Errorf(`either flags "service-id" or "service-name" must be set`)
 			}
 			service, err := metadata.SearchService(ctx, serviceName)
 			if err != nil {
