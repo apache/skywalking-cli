@@ -19,6 +19,7 @@
 // sources:
 // cr/oap.yaml (942B)
 // cr/ui.yaml (935B)
+// graphqls/event/events.graphql (1.256kB)
 // graphqls/healthcheck/healthcheck.graphql (870B)
 // graphqls/logs/Logs.graphql (1.258kB)
 // graphqls/metadata/AllServices.graphql (911B)
@@ -33,10 +34,10 @@
 // graphqls/metrics/MetricsValues.graphql (1.05kB)
 // graphqls/metrics/SortMetrics.graphql (969B)
 // graphqls/profile/CreateTask.graphql (971B)
-// graphqls/profile/GetProfileAnalyze.graphql (1.161kB)
-// graphqls/profile/GetProfiledSegment.graphql (1.2kB)
-// graphqls/profile/GetTaskList.graphql (1.212kB)
-// graphqls/profile/GetTaskSegmentList.graphql (1.002kB)
+// graphqls/profile/GetProfileAnalyze.graphql (1.16kB)
+// graphqls/profile/GetProfiledSegment.graphql (1.199kB)
+// graphqls/profile/GetTaskList.graphql (1.211kB)
+// graphqls/profile/GetTaskSegmentList.graphql (1.001kB)
 // graphqls/trace/Trace.graphql (1.518kB)
 // graphqls/trace/Traces.graphql (1.077kB)
 // templates/dashboard/global.yml (3.001kB)
@@ -164,6 +165,62 @@ func crUiYaml() (*asset, error) {
 
 	info := bindataFileInfo{name: "cr/ui.yaml", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0xdc, 0x65, 0xbc, 0x6, 0xf6, 0x0, 0x70, 0x4d, 0xcc, 0x9f, 0x9e, 0xea, 0x1b, 0x5d, 0xee, 0xcd, 0x95, 0x5b, 0xf2, 0xdf, 0xe7, 0x76, 0xb4, 0x36, 0x96, 0x98, 0x2, 0xa1, 0x8e, 0x2f, 0x27, 0x60}}
+	return a, nil
+}
+
+var _graphqlsEventEventsGraphql = []byte(`# Licensed to Apache Software Foundation (ASF) under one or more contributor
+# license agreements. See the NOTICE file distributed with
+# this work for additional information regarding copyright
+# ownership. Apache Software Foundation (ASF) licenses this file to you under
+# the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+
+query ($condition: EventQueryCondition) {
+    result: queryEvents(condition: $condition) {
+        total
+        events {
+            uuid
+            source {
+                service
+                serviceInstance
+                endpoint
+            }
+            name
+            type
+            message
+            parameters {
+                key
+                value
+            }
+            startTime
+            endTime
+        }
+    }
+}
+`)
+
+func graphqlsEventEventsGraphqlBytes() ([]byte, error) {
+	return _graphqlsEventEventsGraphql, nil
+}
+
+func graphqlsEventEventsGraphql() (*asset, error) {
+	bytes, err := graphqlsEventEventsGraphqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "graphqls/event/events.graphql", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0xa6, 0x9f, 0x9e, 0xdc, 0x33, 0x45, 0xfe, 0x28, 0x85, 0x6, 0xcf, 0x2b, 0xde, 0xac, 0x21, 0x70, 0x5b, 0xb6, 0x1, 0xaf, 0x21, 0x93, 0x9, 0x95, 0x43, 0x5e, 0xb3, 0x23, 0xc0, 0xc8, 0x93, 0x2e}}
 	return a, nil
 }
 
@@ -787,8 +844,7 @@ query ($segmentId: String!, $timeRanges: [ProfileAnalyzeTimeRange!]!) {
     		}
     	}
     }
-}
-`)
+}`)
 
 func graphqlsProfileGetprofileanalyzeGraphqlBytes() ([]byte, error) {
 	return _graphqlsProfileGetprofileanalyzeGraphql, nil
@@ -801,7 +857,7 @@ func graphqlsProfileGetprofileanalyzeGraphql() (*asset, error) {
 	}
 
 	info := bindataFileInfo{name: "graphqls/profile/GetProfileAnalyze.graphql", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
-	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0xf6, 0x37, 0x86, 0xaa, 0x43, 0x4b, 0x29, 0x39, 0x2b, 0xee, 0xdb, 0x51, 0x22, 0xb9, 0xf8, 0xd6, 0x8a, 0x96, 0x5d, 0xe1, 0xb1, 0x8c, 0xd3, 0x1e, 0xe1, 0x6, 0x63, 0xdd, 0x51, 0x5b, 0xfa, 0x1d}}
+	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0xa0, 0x24, 0x39, 0x6d, 0x3b, 0x8e, 0x62, 0x8, 0xb, 0xec, 0xa6, 0xa9, 0x51, 0xc8, 0x8a, 0x4, 0xf7, 0x7a, 0x58, 0x1d, 0xf2, 0x6c, 0x5a, 0x1e, 0x8d, 0x8a, 0x87, 0x18, 0xda, 0xc5, 0xe7, 0xe7}}
 	return a, nil
 }
 
@@ -841,8 +897,7 @@ query ($segmentId: String!) {
            }
         }
     }
-}
-`)
+}`)
 
 func graphqlsProfileGetprofiledsegmentGraphqlBytes() ([]byte, error) {
 	return _graphqlsProfileGetprofiledsegmentGraphql, nil
@@ -855,7 +910,7 @@ func graphqlsProfileGetprofiledsegmentGraphql() (*asset, error) {
 	}
 
 	info := bindataFileInfo{name: "graphqls/profile/GetProfiledSegment.graphql", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
-	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0xe8, 0xf1, 0xcb, 0x40, 0xbc, 0x1f, 0xc7, 0x7a, 0xa, 0x57, 0x29, 0x4b, 0x1c, 0xdd, 0x48, 0x7c, 0x81, 0x5b, 0xed, 0x80, 0xf2, 0x3, 0xc3, 0xa4, 0x7, 0x18, 0x90, 0x55, 0xe8, 0x6, 0x21, 0xf7}}
+	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0x4b, 0x91, 0x47, 0x18, 0x20, 0x4b, 0x3f, 0x67, 0xfc, 0x9b, 0x4b, 0xfc, 0x95, 0xf8, 0xe8, 0x5a, 0x5f, 0x5c, 0x81, 0x7d, 0xb1, 0x27, 0xb9, 0x89, 0xf4, 0xc0, 0xfd, 0x4f, 0x1e, 0x5b, 0x69, 0xa5}}
 	return a, nil
 }
 
@@ -893,8 +948,7 @@ query ($serviceId: ID, $endpointName: String) {
           operationTime
         }
     }
-}
-`)
+}`)
 
 func graphqlsProfileGettasklistGraphqlBytes() ([]byte, error) {
 	return _graphqlsProfileGettasklistGraphql, nil
@@ -907,7 +961,7 @@ func graphqlsProfileGettasklistGraphql() (*asset, error) {
 	}
 
 	info := bindataFileInfo{name: "graphqls/profile/GetTaskList.graphql", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
-	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0xe8, 0xf0, 0x74, 0x1, 0xe2, 0xbb, 0x9c, 0x3e, 0xc5, 0x29, 0x7e, 0x8f, 0x6b, 0x4a, 0x50, 0x21, 0xc3, 0xb, 0x28, 0x6c, 0x65, 0x5a, 0xcc, 0x51, 0x8e, 0x3e, 0x10, 0xc0, 0x85, 0xec, 0x68, 0x82}}
+	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0x87, 0xe0, 0x1c, 0x5a, 0x5, 0x9c, 0x4a, 0xf7, 0xce, 0x2f, 0x91, 0x6a, 0x2f, 0x5d, 0x9a, 0x7, 0x15, 0xf6, 0xa3, 0x5a, 0x50, 0x40, 0xff, 0x71, 0xfc, 0xde, 0xa7, 0x91, 0x13, 0x77, 0xca, 0xc2}}
 	return a, nil
 }
 
@@ -937,8 +991,7 @@ query ($taskId: String!) {
         isError
         traceIds
     }
-}
-`)
+}`)
 
 func graphqlsProfileGettasksegmentlistGraphqlBytes() ([]byte, error) {
 	return _graphqlsProfileGettasksegmentlistGraphql, nil
@@ -951,7 +1004,7 @@ func graphqlsProfileGettasksegmentlistGraphql() (*asset, error) {
 	}
 
 	info := bindataFileInfo{name: "graphqls/profile/GetTaskSegmentList.graphql", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
-	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0xbb, 0xac, 0x15, 0xf8, 0x73, 0x38, 0x2f, 0xc, 0xdf, 0xcb, 0x2b, 0x43, 0x16, 0x30, 0x9d, 0x3e, 0xbf, 0x47, 0x0, 0x88, 0x35, 0x4c, 0x9b, 0xfa, 0x7, 0x5d, 0x32, 0x5, 0xbf, 0x51, 0x31, 0xdc}}
+	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0xd5, 0xaf, 0xab, 0xf5, 0x2, 0x57, 0xbe, 0x94, 0x9, 0x3f, 0xae, 0x9, 0x51, 0xf3, 0xd6, 0x9b, 0x72, 0x70, 0xc2, 0xba, 0xf7, 0x6c, 0xac, 0x8f, 0x1a, 0x4c, 0xf, 0x28, 0x3e, 0x94, 0x8f, 0x8d}}
 	return a, nil
 }
 
@@ -1268,8 +1321,9 @@ func AssetNames() []string {
 
 // _bindata is a table, holding each asset generator, mapped to its name.
 var _bindata = map[string]func() (*asset, error){
-	"cr/oap.yaml": crOapYaml,
-	"cr/ui.yaml":  crUiYaml,
+	"cr/oap.yaml":                                   crOapYaml,
+	"cr/ui.yaml":                                    crUiYaml,
+	"graphqls/event/events.graphql":                 graphqlsEventEventsGraphql,
 	"graphqls/healthcheck/healthcheck.graphql":      graphqlsHealthcheckHealthcheckGraphql,
 	"graphqls/logs/Logs.graphql":                    graphqlsLogsLogsGraphql,
 	"graphqls/metadata/AllServices.graphql":         graphqlsMetadataAllservicesGraphql,
@@ -1342,6 +1396,9 @@ var _bintree = &bintree{nil, map[string]*bintree{
 		"ui.yaml":  &bintree{crUiYaml, map[string]*bintree{}},
 	}},
 	"graphqls": &bintree{nil, map[string]*bintree{
+		"event": &bintree{nil, map[string]*bintree{
+			"events.graphql": &bintree{graphqlsEventEventsGraphql, map[string]*bintree{}},
+		}},
 		"healthcheck": &bintree{nil, map[string]*bintree{
 			"healthcheck.graphql": &bintree{graphqlsHealthcheckHealthcheckGraphql, map[string]*bintree{}},
 		}},

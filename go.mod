@@ -16,9 +16,9 @@ require (
 	github.com/spf13/viper v1.7.0
 	github.com/urfave/cli v1.22.1
 	golang.org/x/crypto v0.0.0-20201216223049-8b5274cf687f // indirect
-	google.golang.org/grpc v1.36.1
+	google.golang.org/grpc v1.38.0
 	gopkg.in/yaml.v2 v2.4.0
 	k8s.io/apimachinery v0.21.1
 	sigs.k8s.io/controller-runtime v0.7.0
-	skywalking.apache.org/repo/goapi v0.0.0-20210401062122-a049ca15c62d
+	skywalking.apache.org/repo/goapi v0.0.0-20210804062511-c324007aab53
 )
