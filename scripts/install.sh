@@ -20,19 +20,19 @@
 # 2. clear milestone issues, and create a new one if needed
 # 3. export VERSION=<the version to release>
 
-# Get the latest version number
+# Get the latest version number.
 VERSION=$(curl "https://endpoint.fastgit.org/https://github.com/apache/skywalking-website/blob/5da4b1082da44c0548b968417005b8f4821c1712/data/releases.yml" | grep --after-context=7 "name: SkyWalking CLI" | grep "version" | grep -o "[0-9].[0-9].[0-9]")
 if [ $VERSION != "" ]; then
     echo Latest version:$VERSION
-    # Download the package
+    # Download the package.
     curl -LO "https://mirrors.advancedhosters.com/apache/skywalking/cli/$VERSION/skywalking-cli-$VERSION-bin.tgz"
     if [ -f "skywalking-cli-$VERSION-bin.tgz" ]; then        
         # Installation
         tar -zxvf skywalking-cli-$VERSION-bin.tgz 
         sudo cp skywalking-cli-$VERSION-bin/bin/swctl-$VERSION-linux-amd64 /usr/local/bin/swctl
         sudo rm -rf "./skywalking-cli-$VERSION-bin.tgz"
-        sudo rm -rf "./skywalking-cli-0.7.0-bin"
-        echo "Type swctl --help to get more information."
+        sudo rm -rf "./skywalking-cli-$VERSION-bin"
+        echo "Type 'swctl --help' to get more information."
     else
         echo Could not found skywalking-cli-$VERSION-bin.tgz
     fi

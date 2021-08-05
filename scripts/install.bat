@@ -23,7 +23,7 @@ setlocal ENABLEDELAYEDEXPANSION
 set FLAG="FALSE"
 set VERSION="UNKNOW"
 curl -LO "https://endpoint.fastgit.org/https://github.com/apache/skywalking-website/blob/5da4b1082da44c0548b968417005b8f4821c1712/data/releases.yml"
-@REM Get the latest version number
+@REM Get the latest version number.
 for /F "tokens=1,2,*" %%i in ('FINDSTR "name version" "./releases.yml"') do (
     if !FLAG! EQU "TRUE" (
         set FLAG="FALSE"
@@ -35,18 +35,18 @@ del "./releases.yml"
 set VERSION=%VERSION:~1%
 if VERSION NEQ "UNKNOW" (
     @echo Latest version:%VERSION%
-    @REM Download the package
+    @REM Download the package.
     curl -LO "https://apache.osuosl.org/skywalking/cli/%VERSION%/skywalking-cli-%VERSION%-bin.tgz"
     if EXIST "skywalking-cli-%VERSION%-bin.tgz" (
-        @REM Installation (this requires you to be in privileged mode)
+        @REM Installation (this requires you to be in privileged mode).
         tar -zxvf ".\skywalking-cli-%VERSION%-bin.tgz"
         mkdir "C:\Program Files\swctl-cli"
-        @REM Add swctl to the environment variable PATH
+        @REM Add swctl to the environment variable PATH.
         copy ".\skywalking-cli-%VERSION%-bin\bin\swctl-%VERSION%-windows-amd64" "C:\Program Files\swctl-cli\swctl.exe"
         setx "Path" "C:\Program Files\swctl-cli\;%path%" /m
 		del ".\skywalking-cli-%VERSION%-bin.tgz"
         rd /S /Q ".\skywalking-cli-%VERSION%-bin"
-        @echo Reopen the terminal and type "swctl --help" to get more information.
+        @echo Type "swctl --help" to get more information.
     ) else (
         @echo Could not found "skywalking-cli-%VERSION%-bin.tgz"
     )
