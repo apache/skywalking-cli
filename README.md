@@ -400,6 +400,22 @@ You can imitate the content of [the default template file](examples/global.yml) 
 
 </details>
 
+#### `list`
+
+<details>
+
+<summary>event list [--service=service] [--instance=instance] [--endpoint=endpoint] [--name=name] [--type=type] [--start=start-time] [--end=end-time] </summary>
+
+| argument | description | default |
+| :--- | :--- | :--- |
+| `service` | The service name whose events are to displayed. |  |
+| `instance` | The service instance name whose events are to displayed. |  |
+| `endpoint` | The endpoint name whose logs are to displayed. |  |
+| `name` | The name of the event. |  |
+| `type` | The type of the event, could be `Normal` or `Error`. | `Normal` |
+
+</details>
+
 ### `logs`
 
 #### `list`
@@ -666,6 +682,17 @@ $ ./bin/swctl --display=graph metrics thermodynamic
 ```shell
 $ ./bin/swctl logs list
 {"logs":[{"serviceName":"e2e-service-provider","serviceId":"ZTJlLXNlcnZpY2UtcHJvdmlkZXI=.1","serviceInstanceName":"provider1","serviceInstanceId":"ZTJlLXNlcnZpY2UtcHJvdmlkZXI=.1_cHJvdmlkZXIx","endpointName":null,"endpointId":null,"traceId":"ccdb2bb86f834b6699980fad9b2560d6.74.16275170853710001","timestamp":1627517086179,"contentType":"TEXT","content":"2021-07-29 00:04:46.179 [TID:ccdb2bb86f834b6699980fad9b2560d6.74.16275170853710001] [http-nio-9090-exec-9] INFO  o.a.s.e2e.controller.LogController -logback message==\u003e now: 1627517086179\n","tags":[{"key":"level","value":"INFO"},{"key":"logger","value":"org.apache.skywalking.e2e.controller.LogController"},{"key":"thread","value":"http-nio-9090-exec-9"}]}],"total":1}
+```
+
+</details>
+
+<details>
+
+<summary>Query the events</summary>
+
+```shell
+$ ./bin/swctl event list
+{"events":[{"uuid":"bac7951b-e398-484b-b1a2-c6f3062c2293","source":{"service":"e2e-service-provider","serviceInstance":"provider1","endpoint":""},"name":"Start","type":"Normal","message":"Start Java Application","parameters":[{"key":"OPTS","value":"-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005 -javaagent:/skywalking/agent/skywalking-agent.jar -javaagent:/skywalking/agent/skywalking-agent.jar=logging.output=CONSOLE,agent.instance_name=provider1"}],"startTime":1628092824422,"endTime":1628092856875}],"total":1}
 ```
 
 </details>

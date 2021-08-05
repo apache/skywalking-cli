@@ -18,14 +18,23 @@
 package event
 
 import (
+	"github.com/apache/skywalking-cli/assets"
+	"github.com/apache/skywalking-cli/pkg/graphql/client"
+
+	"github.com/machinebox/graphql"
+
 	"github.com/urfave/cli"
+
+	api "skywalking.apache.org/repo/goapi/query"
 )
 
-var Command = cli.Command{
-	Name:  "event",
-	Usage: "Event related sub-command",
-	Subcommands: []cli.Command{
-		reportCommand,
-		listCommand,
-	},
+func Events(ctx *cli.Context, condition *api.EventQueryCondition) (api.Events, error) {
+	var response map[string]api.Events
+
+	request := graphql.NewRequest(assets.Read("graphqls/event/events.graphql"))
+	request.Var("condition", condition)
+
+	err := client.ExecuteQuery(ctx, request, &response)
+
+	return response["result"], err
 }
