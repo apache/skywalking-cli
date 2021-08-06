@@ -16,7 +16,7 @@
 # limitations under the License.
 
 # Get the latest version number.
-VERSION=$(curl "https://endpoint.fastgit.org/https://github.com/apache/skywalking-website/blob/5da4b1082da44c0548b968417005b8f4821c1712/data/releases.yml" | grep --after-context=7 "name: SkyWalking CLI" | grep "version" | grep -o "[0-9].[0-9].[0-9]")
+VERSION=$(curl "https://raw.githubusercontent.com/apache/skywalking-website/master/data/releases.yml" | grep --after-context=7 "name: SkyWalking CLI" | grep "version" | grep -o "[0-9].[0-9].[0-9]")
 if [ "$VERSION" != "" ]; then
     echo "Latest version: $VERSION"
     # Download the package.

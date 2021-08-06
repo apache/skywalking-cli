@@ -19,7 +19,7 @@ setlocal ENABLEDELAYEDEXPANSION
 @REM  Get the latest version number.
 set FLAG="FALSE"
 set VERSION= UNKNOW
-curl -LO "https://endpoint.fastgit.org/https://github.com/apache/skywalking-website/blob/5da4b1082da44c0548b968417005b8f4821c1712/data/releases.yml"
+curl -LO "https://raw.githubusercontent.com/apache/skywalking-website/master/data/releases.yml"
 if EXIST "releases.yml" (
     for /F "tokens=1,2,*" %%i in ('FINDSTR "name version" "./releases.yml"') do (
         if !FLAG! EQU "TRUE" (
