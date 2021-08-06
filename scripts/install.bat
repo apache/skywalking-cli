@@ -13,43 +13,57 @@
 @REM See the License for the specific language governing permissions and
 @REM limitations under the License.
 
-@REM Prerequisites
-@REM 1. update change log
-@REM 2. clear milestone issues, and create a new one if needed
-@REM 3. export VERSION=<the version to release>
-
+@REM Installation (this requires you to be in privileged mode !)
 @echo off
 setlocal ENABLEDELAYEDEXPANSION
+@REM  Get the latest version number.
 set FLAG="FALSE"
-set VERSION="UNKNOW"
+set VERSION= UNKNOW
 curl -LO "https://endpoint.fastgit.org/https://github.com/apache/skywalking-website/blob/5da4b1082da44c0548b968417005b8f4821c1712/data/releases.yml"
-@REM Get the latest version number.
-for /F "tokens=1,2,*" %%i in ('FINDSTR "name version" "./releases.yml"') do (
-    if !FLAG! EQU "TRUE" (
-        set FLAG="FALSE"
-        set VERSION=%%k
+if EXIST "releases.yml" (
+    for /F "tokens=1,2,*" %%i in ('FINDSTR "name version" "./releases.yml"') do (
+        if !FLAG! EQU "TRUE" (
+            set FLAG="FALSE"
+            set VERSION=%%k
+        )
+        if "%%k" == "SkyWalking CLI" (set FLAG="TRUE")
     )
-    if "%%k" == "SkyWalking CLI" (set FLAG="TRUE")
 )
-del "./releases.yml"
 set VERSION=%VERSION:~1%
-if VERSION NEQ "UNKNOW" (
-    @echo Latest version:%VERSION%
+@echo "Latest version: %VERSION%"
+if "%VERSION%" NEQ "UNKNOW" (
     @REM Download the package.
-    curl -LO "https://apache.osuosl.org/skywalking/cli/%VERSION%/skywalking-cli-%VERSION%-bin.tgz"
+    curl -LO "https://apache.claz.org/skywalking/cli/%VERSION%/skywalking-cli-%VERSION%-bin.tgz"
     if EXIST "skywalking-cli-%VERSION%-bin.tgz" (
-        @REM Installation (this requires you to be in privileged mode).
         tar -zxvf ".\skywalking-cli-%VERSION%-bin.tgz"
-        mkdir "C:\Program Files\swctl-cli"
-        @REM Add swctl to the environment variable PATH.
-        copy ".\skywalking-cli-%VERSION%-bin\bin\swctl-%VERSION%-windows-amd64" "C:\Program Files\swctl-cli\swctl.exe"
-        setx "Path" "C:\Program Files\swctl-cli\;%path%" /m
-		del ".\skywalking-cli-%VERSION%-bin.tgz"
-        rd /S /Q ".\skywalking-cli-%VERSION%-bin"
-        @echo Type "swctl --help" to get more information.
+        @REM Verify the integrity.
+        curl -LO "https://downloads.apache.org/skywalking/cli/%VERSION%/skywalking-cli-%VERSION%-bin.tgz.sha512"
+        CertUtil -hashfile skywalking-cli-%VERSION%-bin.tgz sha512 | findstr /X "[0-9a-zA-Z]*" > verify.txt
+        for /F "tokens=*" %%i in ( 'type ".\verify.txt"' ) do ( set VERIFY1="%%i  skywalking-cli-%VERSION%-bin.tgz" )
+        for /F "tokens=*" %%i in ( 'type ".\skywalking-cli-%VERSION%-bin.tgz.sha512"' ) do ( set VERIFY2="%%i" )
+        if "!VERIFY1!" EQU "!VERIFY2!" (
+            if "!VERIFY1!" NEQ "" (
+                @echo "Through verification, the file is complete."
+                mkdir "C:\Program Files\swctl-cli"
+                @REM Add swctl to the environment variable PATH.
+                copy ".\skywalking-cli-%VERSION%-bin\bin\swctl-%VERSION%-windows-amd64" "C:\Program Files\swctl-cli\swctl.exe"
+                setx "Path" "C:\Program Files\swctl-cli\;%path%" /m
+                @REM Delete unnecessary files.
+                del ".\skywalking-cli-%VERSION%-bin.tgz"
+                del ".\verify.txt"
+                del ".\skywalking-cli-%VERSION%-bin.tgz.sha512"
+                del ".\releases.yml"
+                rd /S /Q ".\skywalking-cli-%VERSION%-bin"
+                @echo "Reopen the terminal and type 'swctl --help' to get more information."
+            ) else (
+                @echo "The file is incomplete."
+            )
+        ) else (
+            @echo "The file is incomplete."
+        )
     ) else (
-        @echo Could not found "skywalking-cli-%VERSION%-bin.tgz"
+        @echo "Could not found skywalking-cli-%VERSION%-bin.tgz"
     )
 ) else (
-    @echo Can't get the latest version.
+    @echo "Can't get the latest version."
 )

@@ -28,6 +28,23 @@ Then copy the `./bin/swctl-latest-(darwin|linux|windows)-amd64` to your `PATH` d
 usually `/usr/bin/` or `/usr/local/bin`, or you can copy it to any directory you like,
 and add that directory to `PATH`, we recommend you to rename the `swctl-latest-(darwin|linux|windows)-amd64` to `swctl`.
 
+In addition, you can also quickly install through the following methods:
+
+**Install swctl on Linux**
+
+```shell
+sudo ./scripts/install.sh
+```
+
+**Install swctl on Windows**
+
+First you need to start cmd in administrator mode.
+
+```shell
+./scripts/install.bat
+```
+
+
 # Commands
 Commands in SkyWalking CLI are organized into two levels, in the form of `swctl --option <level1> --option <level2> --option`,
 there're options in each level, which should follow right after the corresponding command, take the following command as example:

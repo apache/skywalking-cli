@@ -15,26 +15,32 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Prerequisites
-# 1. update change log
-# 2. clear milestone issues, and create a new one if needed
-# 3. export VERSION=<the version to release>
-
 # Get the latest version number.
 VERSION=$(curl "https://endpoint.fastgit.org/https://github.com/apache/skywalking-website/blob/5da4b1082da44c0548b968417005b8f4821c1712/data/releases.yml" | grep --after-context=7 "name: SkyWalking CLI" | grep "version" | grep -o "[0-9].[0-9].[0-9]")
-if [ $VERSION != "" ]; then
-    echo Latest version:$VERSION
+if [ "$VERSION" != "" ]; then
+    echo "Latest version: $VERSION"
     # Download the package.
-    curl -LO "https://mirrors.advancedhosters.com/apache/skywalking/cli/$VERSION/skywalking-cli-$VERSION-bin.tgz"
-    if [ -f "skywalking-cli-$VERSION-bin.tgz" ]; then        
-        # Installation
-        tar -zxvf skywalking-cli-$VERSION-bin.tgz 
-        sudo cp skywalking-cli-$VERSION-bin/bin/swctl-$VERSION-linux-amd64 /usr/local/bin/swctl
-        sudo rm -rf "./skywalking-cli-$VERSION-bin.tgz"
-        sudo rm -rf "./skywalking-cli-$VERSION-bin"
-        echo "Type 'swctl --help' to get more information."
+    curl -LO "https://apache.claz.org/skywalking/cli/$VERSION/skywalking-cli-$VERSION-bin.tgz"
+    if [ -f "skywalking-cli-$VERSION-bin.tgz" ]; then
+        # Verify the integrity.
+        curl -LO "https://downloads.apache.org/skywalking/cli/$VERSION/skywalking-cli-$VERSION-bin.tgz.sha512"
+        VERIFY=$(sha512sum --check "skywalking-cli-$VERSION-bin.tgz.sha512")
+        VERIFY="${VERIFY#* }"
+        if [ "$VERIFY" = "OK" ]; then
+            echo "Through verification, the file is complete."
+            tar -zxvf skywalking-cli-$VERSION-bin.tgz
+            # Add swctl to the environment variable PATH.
+            sudo cp skywalking-cli-$VERSION-bin/bin/swctl-$VERSION-linux-amd64 /usr/local/bin/swctl
+            # Delete unnecessary files.
+            sudo rm -rf "./skywalking-cli-$VERSION-bin.tgz.sha512"
+            sudo rm -rf "./skywalking-cli-$VERSION-bin.tgz"
+            sudo rm -rf "./skywalking-cli-$VERSION-bin"
+            echo "Type 'swctl --help' to get more information."
+        else
+            echo "The file is incomplete."
+        fi
     else
-        echo Could not found skywalking-cli-$VERSION-bin.tgz
+        echo "Could not found skywalking-cli-$VERSION-bin.tgz"
     fi
 else
     echo "Can't get the latest version."
