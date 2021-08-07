@@ -33,7 +33,7 @@ set VERSION=%VERSION:~1%
 @echo Latest version: %VERSION%
 if "%VERSION%" NEQ "UNKNOW" (
     @REM Download the package.
-    curl -LO "https://www.apache.org/dyn/closer.cgi/skywalking/cli/%VERSION%/skywalking-cli-%VERSION%-bin.tgz"
+    curl -LO "https://apache.website-solution.net/skywalking/cli/%VERSION%/skywalking-cli-%VERSION%-bin.tgz"
     if EXIST "skywalking-cli-%VERSION%-bin.tgz" (
         tar -zxvf ".\skywalking-cli-%VERSION%-bin.tgz"
         @REM Verify the integrity.

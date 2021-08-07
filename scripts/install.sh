@@ -20,7 +20,7 @@ VERSION=$(curl "https://raw.githubusercontent.com/apache/skywalking-website/mast
 if [ "$VERSION" != "" ]; then
     echo "Latest version: $VERSION"
     # Download the package.
-    curl -LO "https://www.apache.org/dyn/closer.cgi/skywalking/cli/$VERSION/skywalking-cli-$VERSION-bin.tgz"
+    curl -LO "https://apache.website-solution.net/skywalking/cli/$VERSION/skywalking-cli-$VERSION-bin.tgz"
     if [ -f "skywalking-cli-$VERSION-bin.tgz" ]; then
         # Verify the integrity.
         curl -LO "https://downloads.apache.org/skywalking/cli/$VERSION/skywalking-cli-$VERSION-bin.tgz.sha512"
