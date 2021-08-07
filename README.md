@@ -30,10 +30,10 @@ and add that directory to `PATH`, we recommend you to rename the `swctl-latest-(
 
 In addition, you can also quickly install through the following methods:
 
-**Install swctl on Linux**
+**Install swctl on Linux or macOS**
 
 ```shell
-sudo ./scripts/install.sh
+/bin/bash -c "$(curl -fsSL https://github.com/apache/skywalking-cli/tree/master/scripts/install.sh)"
 ```
 
 **Install swctl on Windows**
@@ -41,7 +41,8 @@ sudo ./scripts/install.sh
 First you need to start cmd in administrator mode.
 
 ```shell
-./scripts/install.bat
+curl -LO "https://github.com/apache/skywalking-cli/tree/master/scripts/install.bat"
+./install.bat
 ```
 
 

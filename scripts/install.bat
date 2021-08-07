@@ -30,10 +30,10 @@ if EXIST "releases.yml" (
     )
 )
 set VERSION=%VERSION:~1%
-@echo "Latest version: %VERSION%"
+@echo Latest version: %VERSION%
 if "%VERSION%" NEQ "UNKNOW" (
     @REM Download the package.
-    curl -LO "https://apache.claz.org/skywalking/cli/%VERSION%/skywalking-cli-%VERSION%-bin.tgz"
+    curl -LO "https://www.apache.org/dyn/closer.cgi/skywalking/cli/%VERSION%/skywalking-cli-%VERSION%-bin.tgz"
     if EXIST "skywalking-cli-%VERSION%-bin.tgz" (
         tar -zxvf ".\skywalking-cli-%VERSION%-bin.tgz"
         @REM Verify the integrity.
@@ -42,28 +42,24 @@ if "%VERSION%" NEQ "UNKNOW" (
         for /F "tokens=*" %%i in ( 'type ".\verify.txt"' ) do ( set VERIFY1="%%i  skywalking-cli-%VERSION%-bin.tgz" )
         for /F "tokens=*" %%i in ( 'type ".\skywalking-cli-%VERSION%-bin.tgz.sha512"' ) do ( set VERIFY2="%%i" )
         if "!VERIFY1!" EQU "!VERIFY2!" (
-            if "!VERIFY1!" NEQ "" (
-                @echo "Through verification, the file is complete."
-                mkdir "C:\Program Files\swctl-cli"
-                @REM Add swctl to the environment variable PATH.
-                copy ".\skywalking-cli-%VERSION%-bin\bin\swctl-%VERSION%-windows-amd64" "C:\Program Files\swctl-cli\swctl.exe"
-                setx "Path" "C:\Program Files\swctl-cli\;%path%" /m
-                @REM Delete unnecessary files.
-                del ".\skywalking-cli-%VERSION%-bin.tgz"
-                del ".\verify.txt"
-                del ".\skywalking-cli-%VERSION%-bin.tgz.sha512"
-                del ".\releases.yml"
-                rd /S /Q ".\skywalking-cli-%VERSION%-bin"
-                @echo "Reopen the terminal and type 'swctl --help' to get more information."
-            ) else (
-                @echo "The file is incomplete."
-            )
+            @echo Through verification, the file is complete.
+            mkdir "C:\Program Files\swctl-cli"
+            @REM Add swctl to the environment variable PATH.
+            copy ".\skywalking-cli-%VERSION%-bin\bin\swctl-%VERSION%-windows-amd64" "C:\Program Files\swctl-cli\swctl.exe"
+            setx "Path" "C:\Program Files\swctl-cli\;%path%" /m
+            @REM Delete unnecessary files.
+            del ".\skywalking-cli-%VERSION%-bin.tgz"
+            del ".\verify.txt"
+            del ".\skywalking-cli-%VERSION%-bin.tgz.sha512"
+            del ".\releases.yml"
+            rd /S /Q ".\skywalking-cli-%VERSION%-bin"
+            @echo Reopen the terminal and type 'swctl --help' to get more information.
         ) else (
-            @echo "The file is incomplete."
+            @echo The file is incomplete.
         )
     ) else (
-        @echo "Could not found skywalking-cli-%VERSION%-bin.tgz"
+        @echo Could not found skywalking-cli-%VERSION%-bin.tgz
     )
 ) else (
-    @echo "Can't get the latest version."
+    @echo Can't get the latest version.
 )
