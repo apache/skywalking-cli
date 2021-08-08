@@ -11,12 +11,33 @@ The CLI (Command Line Interface) for [Apache SkyWalking](https://github.com/apac
 SkyWalking CLI is a command interaction tool for the SkyWalking user or OPS team, as an alternative besides using browser GUI.
 It is based on SkyWalking [GraphQL query protocol](https://github.com/apache/skywalking-query-protocol), same as GUI.
 
-# Download
-Go to the [download page](https://skywalking.apache.org/downloads/) to download all available binaries, including MacOS, Linux, Windows.
-If you want to try the latest features, however, you can compile the latest codes yourself, as the guide below. 
+## Install
 
-# Install
-As SkyWalking CLI is using `Makefile`, compiling the project is as easy as executing a command in the root directory of the project.
+### Quick install
+
+#### Linux or macOS
+
+Install the latest version with the following command:
+
+```shell
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/apache/skywalking-cli/tree/master/scripts/install.sh)"
+```
+
+#### Windows
+
+Note: you need to start cmd or powershell in administrator mode.
+
+```shell
+curl -LO "https://raw.githubusercontent.com/apache/skywalking-cli/tree/master/scripts/install.bat" && .\install.bat
+```
+
+### Install by available binaries
+
+Go to the [download page](https://skywalking.apache.org/downloads/) to download all available binaries, including macOS, Linux, Windows.
+
+### Build from source
+
+If you want to try the latest features, you can compile the latest source code and build `swctl` by yourself. Since SkyWalking CLI is using `Makefile`, compiling the project is as easy as executing a command in the root directory of the project.
 
 ```shell
 git clone https://github.com/apache/skywalking-cli
@@ -24,26 +45,9 @@ cd skywalking-cli
 make
 ```
 
-Then copy the `./bin/swctl-latest-(darwin|linux|windows)-amd64` to your `PATH` directory according to your OS,
-usually `/usr/bin/` or `/usr/local/bin`, or you can copy it to any directory you like,
-and add that directory to `PATH`, we recommend you to rename the `swctl-latest-(darwin|linux|windows)-amd64` to `swctl`.
+Then copy the `./bin/swctl-latest-(darwin|linux|windows)-amd64` to your `PATH` directory according to your OS, usually `/usr/bin/` or `/usr/local/bin`. 
 
-In addition, you can also quickly install through the following methods:
-
-**Install swctl on Linux or macOS**
-
-```shell
-/bin/bash -c "$(curl -fsSL https://github.com/apache/skywalking-cli/tree/master/scripts/install.sh)"
-```
-
-**Install swctl on Windows**
-
-First you need to start cmd in administrator mode.
-
-```shell
-curl -LO "https://github.com/apache/skywalking-cli/tree/master/scripts/install.bat"
-./install.bat
-```
+You can also copy it to any directory you like, then add that directory to `PATH`. **We recommend you to rename the `swctl-latest-(darwin|linux|windows)-amd64` to `swctl`.**
 
 
 # Commands

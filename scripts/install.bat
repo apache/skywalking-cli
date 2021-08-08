@@ -13,10 +13,11 @@
 @REM See the License for the specific language governing permissions and
 @REM limitations under the License.
 
-@REM Installation (this requires you to be in privileged mode !)
+@REM Installation (Note: you need to start cmd or powershell in administrator mode.)
 @echo off
 setlocal ENABLEDELAYEDEXPANSION
-@REM  Get the latest version number.
+
+@REM  Get the latest version of swctl.
 set FLAG="FALSE"
 set VERSION= UNKNOW
 curl -LO "https://raw.githubusercontent.com/apache/skywalking-website/master/data/releases.yml"
@@ -30,13 +31,16 @@ if EXIST "releases.yml" (
     )
 )
 set VERSION=%VERSION:~1%
-@echo Latest version: %VERSION%
+@echo The latest version of swctl is %VERSION%
+
 if "%VERSION%" NEQ "UNKNOW" (
-    @REM Download the package.
+
+    @REM Download the binary package.
     curl -LO "https://apache.website-solution.net/skywalking/cli/%VERSION%/skywalking-cli-%VERSION%-bin.tgz"
     if EXIST "skywalking-cli-%VERSION%-bin.tgz" (
         tar -zxvf ".\skywalking-cli-%VERSION%-bin.tgz"
-        @REM Verify the integrity.
+
+        @REM Verify the integrity of the downloaded file.
         curl -LO "https://downloads.apache.org/skywalking/cli/%VERSION%/skywalking-cli-%VERSION%-bin.tgz.sha512"
         CertUtil -hashfile skywalking-cli-%VERSION%-bin.tgz sha512 | findstr /X "[0-9a-zA-Z]*" > verify.txt
         for /F "tokens=*" %%i in ( 'type ".\verify.txt"' ) do ( set VERIFY1="%%i  skywalking-cli-%VERSION%-bin.tgz" )
@@ -44,22 +48,23 @@ if "%VERSION%" NEQ "UNKNOW" (
         if "!VERIFY1!" EQU "!VERIFY2!" (
             @echo Through verification, the file is complete.
             mkdir "C:\Program Files\swctl-cli"
+
             @REM Add swctl to the environment variable PATH.
             copy ".\skywalking-cli-%VERSION%-bin\bin\swctl-%VERSION%-windows-amd64" "C:\Program Files\swctl-cli\swctl.exe"
             setx "Path" "C:\Program Files\swctl-cli\;%path%" /m
+
             @REM Delete unnecessary files.
-            del ".\skywalking-cli-%VERSION%-bin.tgz"
-            del ".\verify.txt"
-            del ".\skywalking-cli-%VERSION%-bin.tgz.sha512"
-            del ".\releases.yml"
+            del ".\skywalking-cli-%VERSION%-bin.tgz" ".\verify.txt" 
+            del ".\skywalking-cli-%VERSION%-bin.tgz.sha512" ".\releases.yml"
             rd /S /Q ".\skywalking-cli-%VERSION%-bin"
+            
             @echo Reopen the terminal and type 'swctl --help' to get more information.
         ) else (
             @echo The file is incomplete.
         )
     ) else (
-        @echo Could not found skywalking-cli-%VERSION%-bin.tgz
+        @echo Failed to download skywalking-cli-%VERSION%-bin.tgz
     )
 ) else (
-    @echo Can't get the latest version.
+    @echo Can't get the latest version. The install script may be invalid, try other install methods please.
 )
