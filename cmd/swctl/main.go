@@ -21,6 +21,7 @@ import (
 	"io/ioutil"
 	"os"
 
+	"github.com/apache/skywalking-cli/internal/commands/completion"
 	"github.com/apache/skywalking-cli/internal/commands/dashboard"
 	"github.com/apache/skywalking-cli/internal/commands/endpoint"
 	"github.com/apache/skywalking-cli/internal/commands/event"
@@ -124,6 +125,7 @@ func main() {
 		event.Command,
 		logs.Command,
 		profile.Command,
+		completion.Command,
 	}
 
 	app.Before = interceptor.BeforeChain([]cli.BeforeFunc{
