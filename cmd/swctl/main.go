@@ -135,6 +135,12 @@ func main() {
 	app.Flags = flags
 	app.CommandNotFound = util.CommandNotFound
 
+	// Enable auto-completion.
+	app.EnableBashCompletion = true
+	cli.BashCompletionFlag = cli.BoolFlag{
+		Name:   "auto_complete",
+		Hidden: true,
+	}
 	if err := app.Run(os.Args); err != nil {
 		log.Fatalln(err)
 	}
