@@ -14,16 +14,16 @@
 # limitations under the License.
 
 Register-ArgumentCompleter -Native -CommandName swctl -ScriptBlock {
-      param($commandName, $wordToComplete, $cursorPosition)
-      
-      $match = $($(complete($wordToComplete)) -split " ")
+      param($commandName, $commands, $cursorPosition)
+
+      $match = $($(complete $commands $cursorPosition) -split " ")
       # Output matched commands one by one.
       for($i=0; $i -lt ($match.Length-1); $i+=1){
             Write-Output $match[$i]
       }
 }
 # Find all matching commands.
-function complete($commands){
+function complete($commands, $cursorPosition){
       # Get command line parameters.
       $parameters = $($commands -split " ")
       # Uncompleted parameters.
@@ -31,6 +31,7 @@ function complete($commands){
 
       # Get the parameters before $uncomplete.
       $len = $parameters.Length-2
+      if ("$commands".Length -ne $cursorPosition) { $len = $parameters.Length-1 }
       $beforeCommands = $parameters[0..($len)]
 
       # Find the command prefixed with $uncomplete.
