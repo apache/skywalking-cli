@@ -23,19 +23,18 @@ import (
 	"github.com/urfave/cli"
 )
 
-
 var bashCommand = cli.Command{
 	Name:      "bash",
 	Aliases:   []string{"b"},
 	Usage:     "Output shell completion code for bash",
 	ArgsUsage: "[parameters...]",
 	Action: func(ctx *cli.Context) error {
-		fmt.Print(bash_script)
+		fmt.Print(bashScript)
 		return nil
 	},
 }
 
-const bash_script = `
+const bashScript = `
 : ${PROG:=$(basename ${BASH_SOURCE})}
 
 _cli_bash_autocomplete() {

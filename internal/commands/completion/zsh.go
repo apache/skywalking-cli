@@ -29,12 +29,12 @@ var zshCommand = cli.Command{
 	Usage:     "Output shell completion code for zsh",
 	ArgsUsage: "[parameters...]",
 	Action: func(ctx *cli.Context) error {
-		fmt.Print(zsh_script)
+		fmt.Print(zshScript)
 		return nil
 	},
 }
 
-const zsh_script = `
+const zshScript = `
 #compdef $PROG
 
 _cli_zsh_autocomplete() {

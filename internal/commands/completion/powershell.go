@@ -29,12 +29,12 @@ var powershellCommand = cli.Command{
 	Usage:     "Output shell completion code for powershell",
 	ArgsUsage: "[parameters...]",
 	Action: func(ctx *cli.Context) error {
-		fmt.Print(powershell_script)
+		fmt.Print(powershellScript)
 		return nil
 	},
 }
 
-const powershell_script = `
+const powershellScript = `
 Register-ArgumentCompleter -Native -CommandName swctl -ScriptBlock {
 	param($commandName, $commands, $cursorPosition)
 
