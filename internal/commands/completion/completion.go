@@ -26,7 +26,6 @@ var Command = cli.Command{
 	Usage: "Output shell completion code for bash, zsh or powershell",
 	Subcommands: []cli.Command{
 		bashCommand,
-		zshCommand,
 		powershellCommand,
 	},
 }

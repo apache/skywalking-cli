@@ -53,7 +53,7 @@ function complete($commands, $cursorPosition){
 
 	# Get the parameters before $uncomplete.
 	$len = $parameters.Length-2
-	if ("$commands".Length -ne $cursorPosition) { $len = $parameters.Length-1 }
+	if ("$commands".Length -ne $cursorPosition) { return "" }
 	$beforeCommands = $parameters[0..($len)]
 
 	# Find the command prefixed with $uncomplete.
