@@ -23,7 +23,7 @@ import (
 
 var Command = cli.Command{
 	Name:      "dependency",
-	ShortName: "dp",
+	ShortName: "dep",
 	Usage:     "Dependency related subcommand",
 	Subcommands: cli.Commands{
 		EndpointCommand,
