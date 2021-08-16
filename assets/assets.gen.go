@@ -19,6 +19,7 @@
 // sources:
 // cr/oap.yaml (942B)
 // cr/ui.yaml (935B)
+// graphqls/dependency/Dependency.graphql (1.207kB)
 // graphqls/event/events.graphql (1.256kB)
 // graphqls/healthcheck/healthcheck.graphql (870B)
 // graphqls/logs/Logs.graphql (1.258kB)
@@ -165,6 +166,58 @@ func crUiYaml() (*asset, error) {
 
 	info := bindataFileInfo{name: "cr/ui.yaml", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0xdc, 0x65, 0xbc, 0x6, 0xf6, 0x0, 0x70, 0x4d, 0xcc, 0x9f, 0x9e, 0xea, 0x1b, 0x5d, 0xee, 0xcd, 0x95, 0x5b, 0xf2, 0xdf, 0xe7, 0x76, 0xb4, 0x36, 0x96, 0x98, 0x2, 0xa1, 0x8e, 0x2f, 0x27, 0x60}}
+	return a, nil
+}
+
+var _graphqlsDependencyDependencyGraphql = []byte(`# Licensed to Apache Software Foundation (ASF) under one or more contributor
+# license agreements. See the NOTICE file distributed with
+# this work for additional information regarding copyright
+# ownership. Apache Software Foundation (ASF) licenses this file to you under
+# the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+
+query ($endpointId:ID!, $duration: Duration!) {
+    result: getEndpointDependencies(duration: $duration, endpointId: $endpointId) {
+        nodes {
+            id
+            name
+            serviceId
+            serviceName
+            type         
+            isReal
+        }
+        calls {
+            id
+            source
+            target
+            detectPoints
+        }        
+    }
+}
+`)
+
+func graphqlsDependencyDependencyGraphqlBytes() ([]byte, error) {
+	return _graphqlsDependencyDependencyGraphql, nil
+}
+
+func graphqlsDependencyDependencyGraphql() (*asset, error) {
+	bytes, err := graphqlsDependencyDependencyGraphqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "graphqls/dependency/Dependency.graphql", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0xed, 0x55, 0x1, 0xe5, 0x9f, 0x2d, 0xaf, 0xe1, 0xad, 0x20, 0xc5, 0xa2, 0xaa, 0x16, 0x1, 0xca, 0xe3, 0xbf, 0x54, 0x54, 0x4a, 0x9d, 0xa6, 0x69, 0x37, 0x8a, 0xa8, 0x1a, 0xe5, 0xed, 0x28, 0xf}}
 	return a, nil
 }
 
@@ -1323,6 +1376,7 @@ func AssetNames() []string {
 var _bindata = map[string]func() (*asset, error){
 	"cr/oap.yaml":                                   crOapYaml,
 	"cr/ui.yaml":                                    crUiYaml,
+	"graphqls/dependency/Dependency.graphql":        graphqlsDependencyDependencyGraphql,
 	"graphqls/event/events.graphql":                 graphqlsEventEventsGraphql,
 	"graphqls/healthcheck/healthcheck.graphql":      graphqlsHealthcheckHealthcheckGraphql,
 	"graphqls/logs/Logs.graphql":                    graphqlsLogsLogsGraphql,
@@ -1396,6 +1450,9 @@ var _bintree = &bintree{nil, map[string]*bintree{
 		"ui.yaml":  &bintree{crUiYaml, map[string]*bintree{}},
 	}},
 	"graphqls": &bintree{nil, map[string]*bintree{
+		"dependency": &bintree{nil, map[string]*bintree{
+			"Dependency.graphql": &bintree{graphqlsDependencyDependencyGraphql, map[string]*bintree{}},
+		}},
 		"event": &bintree{nil, map[string]*bintree{
 			"events.graphql": &bintree{graphqlsEventEventsGraphql, map[string]*bintree{}},
 		}},
