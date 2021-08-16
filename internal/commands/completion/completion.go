@@ -23,7 +23,7 @@ import (
 
 var Command = cli.Command{
 	Name:  "completion",
-	Usage: "Output shell completion code for bash, zsh or powershell",
+	Usage: "Output shell completion code for bash and powershell",
 	Subcommands: []cli.Command{
 		bashCommand,
 		powershellCommand,
