@@ -23,7 +23,7 @@ import (
 
 	api "skywalking.apache.org/repo/goapi/query"
 
-	"github.com/apache/skywalking-cli/assets" 
+	"github.com/apache/skywalking-cli/assets"
 	"github.com/apache/skywalking-cli/pkg/graphql/client"
 )
 
@@ -38,4 +38,3 @@ func Dependency(ctx *cli.Context, endpointID string, duration api.Duration) (api
 
 	return response["result"], err
 }
-

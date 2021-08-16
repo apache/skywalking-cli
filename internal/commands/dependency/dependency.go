@@ -26,7 +26,7 @@ import (
 	"github.com/apache/skywalking-cli/internal/flags"
 	"github.com/apache/skywalking-cli/internal/logger"
 	"github.com/apache/skywalking-cli/internal/model"
-	
+
 	"github.com/apache/skywalking-cli/pkg/display"
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
 
@@ -40,17 +40,17 @@ var Command = cli.Command{
 	ShortName: "dp",
 	Usage:     "Query the dependencies of given endpoint",
 	ArgsUsage: "<endpointId>",
-	Flags:      flags.Flags(
+	Flags: flags.Flags(
 		flags.DurationFlags,
 	),
 	Before: interceptor.BeforeChain([]cli.BeforeFunc{
 		interceptor.TimezoneInterceptor,
 		interceptor.DurationInterceptor,
 	}),
-	
+
 	Action: func(ctx *cli.Context) error {
 		if ctx.NArg() == 0 {
-			return fmt.Errorf("command dependency requires endpointId as argument") 
+			return fmt.Errorf("command dependency requires endpointId as argument")
 		}
 
 		end := ctx.String("end")
