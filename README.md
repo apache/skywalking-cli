@@ -59,7 +59,7 @@ The swctl completion script for bash can be generated with the command `swctl co
 
 ```shell
 swctl completion bash > bash_autocomplete &&
-	sudo cp ./bash_autocomplete /etc/bash_completion.d/swctl &&
+    sudo cp ./bash_autocomplete /etc/bash_completion.d/swctl &&
     echo >> ~/.bashrc &&
     echo "export PROG=swctl" >> ~/.bashrc
 ```
