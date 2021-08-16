@@ -27,10 +27,10 @@ import (
 	"github.com/apache/skywalking-cli/pkg/graphql/client"
 )
 
-func Dependency(ctx *cli.Context, endpointID string, duration api.Duration) (api.EndpointTopology, error) {
+func EndpointDependency(ctx *cli.Context, endpointID string, duration api.Duration) (api.EndpointTopology, error) {
 	var response map[string]api.EndpointTopology
 
-	request := graphql.NewRequest(assets.Read("graphqls/dependency/Dependency.graphql"))
+	request := graphql.NewRequest(assets.Read("graphqls/dependency/EndpointDependency.graphql"))
 	request.Var("endpointId", endpointID)
 	request.Var("duration", duration)
 

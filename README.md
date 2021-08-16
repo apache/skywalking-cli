@@ -530,11 +530,13 @@ You can imitate the content of [the default template file](examples/global.yml) 
 
 ### `dependency`
 
+#### `endpoint`
+
 <details>
 
-<summary>dependency [endpoint-id] [--start=start-time] [--end=end-time]</summary>
+<summary>dependency endpoint [endpoint-id] [--start=start-time] [--end=end-time]</summary>
 
-`dependency` shows all the dependencies of given `[endpoint-id]` in the time range of `[start, end]`.
+`dependency endpoint` shows all the dependencies of given `[endpoint-id]` in the time range of `[start, end]`.
 
 | argument | description | default |
 | :--- | :--- | :--- |

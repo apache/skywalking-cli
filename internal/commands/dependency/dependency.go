@@ -18,57 +18,14 @@
 package dependency
 
 import (
-	"fmt"
-
 	"github.com/urfave/cli"
-
-	"github.com/apache/skywalking-cli/internal/commands/interceptor"
-	"github.com/apache/skywalking-cli/internal/flags"
-	"github.com/apache/skywalking-cli/internal/logger"
-	"github.com/apache/skywalking-cli/internal/model"
-
-	"github.com/apache/skywalking-cli/pkg/display"
-	"github.com/apache/skywalking-cli/pkg/display/displayable"
-
-	"github.com/apache/skywalking-cli/pkg/graphql/dependency"
-
-	api "skywalking.apache.org/repo/goapi/query"
 )
 
 var Command = cli.Command{
 	Name:      "dependency",
 	ShortName: "dp",
-	Usage:     "Query the dependencies of given endpoint",
-	ArgsUsage: "<endpointId>",
-	Flags: flags.Flags(
-		flags.DurationFlags,
-	),
-	Before: interceptor.BeforeChain([]cli.BeforeFunc{
-		interceptor.TimezoneInterceptor,
-		interceptor.DurationInterceptor,
-	}),
-
-	Action: func(ctx *cli.Context) error {
-		if ctx.NArg() == 0 {
-			return fmt.Errorf("command dependency requires endpointId as argument")
-		}
-
-		end := ctx.String("end")
-		start := ctx.String("start")
-		step := ctx.Generic("step")
-
-		duration := api.Duration{
-			Start: start,
-			End:   end,
-			Step:  step.(*model.StepEnumValue).Selected,
-		}
-
-		dependency, err := dependency.Dependency(ctx, ctx.Args().First(), duration)
-
-		if err != nil {
-			logger.Log.Fatalln(err)
-		}
-
-		return display.Display(ctx, &displayable.Displayable{Data: dependency})
+	Usage:     "Dependency related subcommand",
+	Subcommands: cli.Commands{
+		EndpointCommand,
 	},
 }

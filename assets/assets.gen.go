@@ -19,7 +19,7 @@
 // sources:
 // cr/oap.yaml (942B)
 // cr/ui.yaml (935B)
-// graphqls/dependency/Dependency.graphql (1.207kB)
+// graphqls/dependency/EndpointDependency.graphql (1.207kB)
 // graphqls/event/events.graphql (1.256kB)
 // graphqls/healthcheck/healthcheck.graphql (870B)
 // graphqls/logs/Logs.graphql (1.258kB)
@@ -169,7 +169,7 @@ func crUiYaml() (*asset, error) {
 	return a, nil
 }
 
-var _graphqlsDependencyDependencyGraphql = []byte(`# Licensed to Apache Software Foundation (ASF) under one or more contributor
+var _graphqlsDependencyEndpointdependencyGraphql = []byte(`# Licensed to Apache Software Foundation (ASF) under one or more contributor
 # license agreements. See the NOTICE file distributed with
 # this work for additional information regarding copyright
 # ownership. Apache Software Foundation (ASF) licenses this file to you under
@@ -206,17 +206,17 @@ query ($endpointId:ID!, $duration: Duration!) {
 }
 `)
 
-func graphqlsDependencyDependencyGraphqlBytes() ([]byte, error) {
-	return _graphqlsDependencyDependencyGraphql, nil
+func graphqlsDependencyEndpointdependencyGraphqlBytes() ([]byte, error) {
+	return _graphqlsDependencyEndpointdependencyGraphql, nil
 }
 
-func graphqlsDependencyDependencyGraphql() (*asset, error) {
-	bytes, err := graphqlsDependencyDependencyGraphqlBytes()
+func graphqlsDependencyEndpointdependencyGraphql() (*asset, error) {
+	bytes, err := graphqlsDependencyEndpointdependencyGraphqlBytes()
 	if err != nil {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "graphqls/dependency/Dependency.graphql", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	info := bindataFileInfo{name: "graphqls/dependency/EndpointDependency.graphql", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0xed, 0x55, 0x1, 0xe5, 0x9f, 0x2d, 0xaf, 0xe1, 0xad, 0x20, 0xc5, 0xa2, 0xaa, 0x16, 0x1, 0xca, 0xe3, 0xbf, 0x54, 0x54, 0x4a, 0x9d, 0xa6, 0x69, 0x37, 0x8a, 0xa8, 0x1a, 0xe5, 0xed, 0x28, 0xf}}
 	return a, nil
 }
@@ -1374,31 +1374,31 @@ func AssetNames() []string {
 
 // _bindata is a table, holding each asset generator, mapped to its name.
 var _bindata = map[string]func() (*asset, error){
-	"cr/oap.yaml":                                   crOapYaml,
-	"cr/ui.yaml":                                    crUiYaml,
-	"graphqls/dependency/Dependency.graphql":        graphqlsDependencyDependencyGraphql,
-	"graphqls/event/events.graphql":                 graphqlsEventEventsGraphql,
-	"graphqls/healthcheck/healthcheck.graphql":      graphqlsHealthcheckHealthcheckGraphql,
-	"graphqls/logs/Logs.graphql":                    graphqlsLogsLogsGraphql,
-	"graphqls/metadata/AllServices.graphql":         graphqlsMetadataAllservicesGraphql,
-	"graphqls/metadata/Instances.graphql":           graphqlsMetadataInstancesGraphql,
-	"graphqls/metadata/SearchEndpoints.graphql":     graphqlsMetadataSearchendpointsGraphql,
-	"graphqls/metadata/SearchService.graphql":       graphqlsMetadataSearchserviceGraphql,
-	"graphqls/metadata/ServerTimeInfo.graphql":      graphqlsMetadataServertimeinfoGraphql,
-	"graphqls/metrics/HeatMap.graphql":              graphqlsMetricsHeatmapGraphql,
-	"graphqls/metrics/LabeledMetricsValues.graphql": graphqlsMetricsLabeledmetricsvaluesGraphql,
-	"graphqls/metrics/ListMetrics.graphql":          graphqlsMetricsListmetricsGraphql,
-	"graphqls/metrics/MetricsValue.graphql":         graphqlsMetricsMetricsvalueGraphql,
-	"graphqls/metrics/MetricsValues.graphql":        graphqlsMetricsMetricsvaluesGraphql,
-	"graphqls/metrics/SortMetrics.graphql":          graphqlsMetricsSortmetricsGraphql,
-	"graphqls/profile/CreateTask.graphql":           graphqlsProfileCreatetaskGraphql,
-	"graphqls/profile/GetProfileAnalyze.graphql":    graphqlsProfileGetprofileanalyzeGraphql,
-	"graphqls/profile/GetProfiledSegment.graphql":   graphqlsProfileGetprofiledsegmentGraphql,
-	"graphqls/profile/GetTaskList.graphql":          graphqlsProfileGettasklistGraphql,
-	"graphqls/profile/GetTaskSegmentList.graphql":   graphqlsProfileGettasksegmentlistGraphql,
-	"graphqls/trace/Trace.graphql":                  graphqlsTraceTraceGraphql,
-	"graphqls/trace/Traces.graphql":                 graphqlsTraceTracesGraphql,
-	"templates/dashboard/global.yml":                templatesDashboardGlobalYml,
+	"cr/oap.yaml": crOapYaml,
+	"cr/ui.yaml":  crUiYaml,
+	"graphqls/dependency/EndpointDependency.graphql": graphqlsDependencyEndpointdependencyGraphql,
+	"graphqls/event/events.graphql":                  graphqlsEventEventsGraphql,
+	"graphqls/healthcheck/healthcheck.graphql":       graphqlsHealthcheckHealthcheckGraphql,
+	"graphqls/logs/Logs.graphql":                     graphqlsLogsLogsGraphql,
+	"graphqls/metadata/AllServices.graphql":          graphqlsMetadataAllservicesGraphql,
+	"graphqls/metadata/Instances.graphql":            graphqlsMetadataInstancesGraphql,
+	"graphqls/metadata/SearchEndpoints.graphql":      graphqlsMetadataSearchendpointsGraphql,
+	"graphqls/metadata/SearchService.graphql":        graphqlsMetadataSearchserviceGraphql,
+	"graphqls/metadata/ServerTimeInfo.graphql":       graphqlsMetadataServertimeinfoGraphql,
+	"graphqls/metrics/HeatMap.graphql":               graphqlsMetricsHeatmapGraphql,
+	"graphqls/metrics/LabeledMetricsValues.graphql":  graphqlsMetricsLabeledmetricsvaluesGraphql,
+	"graphqls/metrics/ListMetrics.graphql":           graphqlsMetricsListmetricsGraphql,
+	"graphqls/metrics/MetricsValue.graphql":          graphqlsMetricsMetricsvalueGraphql,
+	"graphqls/metrics/MetricsValues.graphql":         graphqlsMetricsMetricsvaluesGraphql,
+	"graphqls/metrics/SortMetrics.graphql":           graphqlsMetricsSortmetricsGraphql,
+	"graphqls/profile/CreateTask.graphql":            graphqlsProfileCreatetaskGraphql,
+	"graphqls/profile/GetProfileAnalyze.graphql":     graphqlsProfileGetprofileanalyzeGraphql,
+	"graphqls/profile/GetProfiledSegment.graphql":    graphqlsProfileGetprofiledsegmentGraphql,
+	"graphqls/profile/GetTaskList.graphql":           graphqlsProfileGettasklistGraphql,
+	"graphqls/profile/GetTaskSegmentList.graphql":    graphqlsProfileGettasksegmentlistGraphql,
+	"graphqls/trace/Trace.graphql":                   graphqlsTraceTraceGraphql,
+	"graphqls/trace/Traces.graphql":                  graphqlsTraceTracesGraphql,
+	"templates/dashboard/global.yml":                 templatesDashboardGlobalYml,
 }
 
 // AssetDebug is true if the assets were built with the debug flag enabled.
@@ -1451,7 +1451,7 @@ var _bintree = &bintree{nil, map[string]*bintree{
 	}},
 	"graphqls": &bintree{nil, map[string]*bintree{
 		"dependency": &bintree{nil, map[string]*bintree{
-			"Dependency.graphql": &bintree{graphqlsDependencyDependencyGraphql, map[string]*bintree{}},
+			"EndpointDependency.graphql": &bintree{graphqlsDependencyEndpointdependencyGraphql, map[string]*bintree{}},
 		}},
 		"event": &bintree{nil, map[string]*bintree{
 			"events.graphql": &bintree{graphqlsEventEventsGraphql, map[string]*bintree{}},
