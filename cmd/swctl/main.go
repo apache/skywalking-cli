@@ -21,6 +21,7 @@ import (
 	"io/ioutil"
 	"os"
 
+	"github.com/apache/skywalking-cli/internal/commands/completion"
 	"github.com/apache/skywalking-cli/internal/commands/dashboard"
 	"github.com/apache/skywalking-cli/internal/commands/dependency"
 	"github.com/apache/skywalking-cli/internal/commands/endpoint"
@@ -125,6 +126,7 @@ func main() {
 		event.Command,
 		logs.Command,
 		profile.Command,
+		completion.Command,
 		dependency.Command,
 	}
 
@@ -137,6 +139,12 @@ func main() {
 	app.Flags = flags
 	app.CommandNotFound = util.CommandNotFound
 
+	// Enable auto-completion.
+	app.EnableBashCompletion = true
+	cli.BashCompletionFlag = cli.BoolFlag{
+		Name:   "auto_complete",
+		Hidden: true,
+	}
 	if err := app.Run(os.Args); err != nil {
 		log.Fatalln(err)
 	}

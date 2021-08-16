@@ -49,6 +49,40 @@ Then copy the `./bin/swctl-latest-(darwin|linux|windows)-amd64` to your `PATH` d
 
 You can also copy it to any directory you like, then add that directory to `PATH`. **We recommend you to rename the `swctl-latest-(darwin|linux|windows)-amd64` to `swctl`.**
 
+## Autocompletion
+
+`swctl` provides auto-completion support for bash and powershell, which can save you a lot of typing.
+
+### Bash
+
+The swctl completion script for bash can be generated with the command `swctl completion bash`. Sourcing the completion script in your shell enables swctl auto-completion:
+
+```shell
+swctl completion bash > bash_autocomplete &&
+    sudo cp ./bash_autocomplete /etc/bash_completion.d/swctl &&
+    echo >> ~/.bashrc &&
+    echo "export PROG=swctl" >> ~/.bashrc
+```
+
+After reloading your shell, swctl auto-completion should be working.
+
+### powershell
+
+Similarly, run the following command in your powershell terminal to enable auto-completion:
+
+```shell 
+set-executionpolicy remotesigned -Scope CurrentUser
+swctl completion powershell >> $profile
+```
+
+If you get an error like `OpenError: (:) [Out-File], DirectoryNotFoundException`, then you need to run the following command to create `$profile` file:
+
+```shell
+New-Item -Type file -Force $profile
+```
+
+After reloading your shell, swctl auto-completion should be working.
+
 
 # Commands
 Commands in SkyWalking CLI are organized into two levels, in the form of `swctl --option <level1> --option <level2> --option`,
