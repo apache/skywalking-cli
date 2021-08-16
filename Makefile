@@ -78,7 +78,7 @@ lint: tools
 	$(GO_LINT) run -v --timeout 5m ./...
 
 .PHONY: test
-test: clean lint
+test: clean
 	$(GO_TEST) ./... -coverprofile=coverage.txt -covermode=atomic
 
 .PHONY: build
@@ -101,7 +101,7 @@ coverage: test
 	bash <(curl -s https://codecov.io/bash) -t a5af28a3-92a2-4b35-9a77-54ad99b1ae00
 
 .PHONY: clean
-clean: tools
+clean:
 	-rm -rf bin
 	-rm -rf coverage.txt
 	-rm -rf *.tgz
