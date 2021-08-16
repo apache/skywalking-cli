@@ -528,6 +528,25 @@ You can imitate the content of [the default template file](examples/global.yml) 
 
 </details>
 
+### `dependency`
+
+#### `endpoint`
+
+<details>
+
+<summary>dependency endpoint [endpoint-id] [--start=start-time] [--end=end-time]</summary>
+
+`dependency endpoint` shows all the dependencies of given `[endpoint-id]` in the time range of `[start, end]`.
+
+| argument | description | default |
+| :--- | :--- | :--- |
+| `endpoint-id` | The service endpoint id whose dependencies are to displayed. |  |
+| `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
+| `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
+
+</details>
+
+
 # Use Cases
 
 <details>

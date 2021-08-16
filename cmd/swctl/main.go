@@ -22,6 +22,7 @@ import (
 	"os"
 
 	"github.com/apache/skywalking-cli/internal/commands/dashboard"
+	"github.com/apache/skywalking-cli/internal/commands/dependency"
 	"github.com/apache/skywalking-cli/internal/commands/endpoint"
 	"github.com/apache/skywalking-cli/internal/commands/event"
 	"github.com/apache/skywalking-cli/internal/commands/healthcheck"
@@ -124,6 +125,7 @@ func main() {
 		event.Command,
 		logs.Command,
 		profile.Command,
+		dependency.Command,
 	}
 
 	app.Before = interceptor.BeforeChain([]cli.BeforeFunc{
