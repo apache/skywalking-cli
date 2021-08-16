@@ -17,6 +17,8 @@
 # under the License.
 #
 
+name: unit-test
+
 on:
   pull_request:
   push:

@@ -17,6 +17,8 @@
 # under the License.
 #
 
+name: license-checker
+
 on:
   pull_request:
   push:
