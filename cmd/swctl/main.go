@@ -20,6 +20,7 @@ package main
 import (
 	"io/ioutil"
 	"os"
+	"runtime"
 
 	"github.com/apache/skywalking-cli/internal/commands/completion"
 	"github.com/apache/skywalking-cli/internal/commands/dashboard"
@@ -51,9 +52,11 @@ func init() {
 }
 
 func main() {
-	cli.AppHelpTemplate = util.AppHelpTemplate
-	cli.CommandHelpTemplate = util.CommandHelpTemplate
-	cli.SubcommandHelpTemplate = util.SubcommandHelpTemplate
+	if runtime.GOOS != "windows" {
+		cli.AppHelpTemplate = util.AppHelpTemplate
+		cli.CommandHelpTemplate = util.CommandHelpTemplate
+		cli.SubcommandHelpTemplate = util.SubcommandHelpTemplate
+	}
 
 	app := cli.NewApp()
 	app.Usage = "The CLI (Command Line Interface) for Apache SkyWalking."
