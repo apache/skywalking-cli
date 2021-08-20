@@ -105,7 +105,6 @@ var ListCommand = cli.Command{
 			ServiceInstanceID: &serviceInstanceID,
 			TraceID:           &traceID,
 			EndpointID:        nil,
-			EndpointName:      nil,
 			QueryDuration:     &duration,
 			MinTraceDuration:  nil,
 			MaxTraceDuration:  nil,
