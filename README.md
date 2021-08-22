@@ -33,7 +33,7 @@ curl -LO "https://raw.githubusercontent.com/apache/skywalking-cli/tree/master/sc
 
 ### Install by available binaries
 
-Go to the [download page](https://skywalking.apache.org/downloads/) to download all available binaries, including macOS, Linux, Windows.
+Go to the [download page](https://skywalking.apache.org/downloads/#SkyWalkingCLI) to download all available binaries, including macOS, Linux, Windows.
 
 ### Build from source
 
