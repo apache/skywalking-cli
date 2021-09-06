@@ -27,5 +27,6 @@ var Command = cli.Command{
 	Usage:     "Dependency related subcommand",
 	Subcommands: cli.Commands{
 		EndpointCommand,
+		ServiceCommand,
 	},
 }

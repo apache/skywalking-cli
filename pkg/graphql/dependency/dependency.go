@@ -38,3 +38,15 @@ func EndpointDependency(ctx *cli.Context, endpointID string, duration api.Durati
 
 	return response["result"], err
 }
+
+func ServiceTopology(ctx *cli.Context, serviceID string, duration api.Duration) (api.Topology, error) {
+	var response map[string]api.Topology
+
+	request := graphql.NewRequest(assets.Read("graphqls/dependency/ServiceTopology.graphql"))
+	request.Var("serviceId", serviceID)
+	request.Var("duration", duration)
+
+	err := client.ExecuteQuery(ctx, request, &response)
+
+	return response["result"], err
+}
