@@ -564,6 +564,22 @@ You can imitate the content of [the default template file](examples/global.yml) 
 
 ### `dependency`
 
+#### `service`
+
+<details>
+
+<summary>dependency service [service-id] [--start=start-time] [--end=end-time]</summary>
+
+`dependency service` shows all the dependencies of given `[service-id]` in the time range of `[start, end]`.
+
+| argument | description | default |
+| :--- | :--- | :--- |
+| `service-id` | The service id whose dependencies are to displayed. |  |
+| `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
+| `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
+
+</details>
+
 #### `endpoint`
 
 <details>
