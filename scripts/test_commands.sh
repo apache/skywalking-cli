@@ -66,3 +66,8 @@ ${swctl} --display=json trace ls >/dev/null 2>&1
 
 # Test `dashboard global`
 ${swctl} --display=json db g >/dev/null 2>&1
+
+# Test `dependency`
+${swctl} --display=json dependency service "test" > /dev/null 2>&1
+
+${swctl} --display=json dependency endpoint "test" > /dev/null 2>&1
