@@ -37,7 +37,7 @@ import (
 
 var ServiceCommand = cli.Command{
 	Name:      "service",
-	ShortName: "sv",
+	ShortName: "svc",
 	Usage:     "Query the dependencies of given service",
 	ArgsUsage: "<serviceId>",
 	Flags: flags.Flags(
