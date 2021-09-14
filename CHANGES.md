@@ -2,6 +2,30 @@ Changes by Version
 ==================
 Release Notes.
 
+0.8.0
+------------------
+
+### Features
+
+- Add profile command
+- Add logs command
+- Add dependency command
+- Support query events protocol
+- Support auto-completion for bash and powershell
+
+### Bug Fixes
+
+- Fix missing service instance name in trace command
+
+### Chores
+
+- Optimize output by adding color to help information
+- Set display style explicitly for commands in the test script
+- Set different default display style for different commands
+- Add scripts for quick install
+- Update release doc and add scripts for release
+- split into multiple workflows to speed up CI
+
 0.7.0
 ------------------
 
