@@ -33,7 +33,7 @@ curl -LO "https://raw.githubusercontent.com/apache/skywalking-cli/tree/master/sc
 
 ### Install by available binaries
 
-Go to the [download page](https://skywalking.apache.org/downloads/) to download all available binaries, including macOS, Linux, Windows.
+Go to the [download page](https://skywalking.apache.org/downloads/#SkyWalkingCLI) to download all available binaries, including macOS, Linux, Windows.
 
 ### Build from source
 
@@ -48,6 +48,40 @@ make
 Then copy the `./bin/swctl-latest-(darwin|linux|windows)-amd64` to your `PATH` directory according to your OS, usually `/usr/bin/` or `/usr/local/bin`. 
 
 You can also copy it to any directory you like, then add that directory to `PATH`. **We recommend you to rename the `swctl-latest-(darwin|linux|windows)-amd64` to `swctl`.**
+
+## Autocompletion
+
+`swctl` provides auto-completion support for bash and powershell, which can save you a lot of typing.
+
+### Bash
+
+The swctl completion script for bash can be generated with the command `swctl completion bash`. Sourcing the completion script in your shell enables swctl auto-completion:
+
+```shell
+swctl completion bash > bash_autocomplete &&
+    sudo cp ./bash_autocomplete /etc/bash_completion.d/swctl &&
+    echo >> ~/.bashrc &&
+    echo "export PROG=swctl" >> ~/.bashrc
+```
+
+After reloading your shell, swctl auto-completion should be working.
+
+### powershell
+
+Similarly, run the following command in your powershell terminal to enable auto-completion:
+
+```shell 
+set-executionpolicy remotesigned -Scope CurrentUser
+swctl completion powershell >> $profile
+```
+
+If you get an error like `OpenError: (:) [Out-File], DirectoryNotFoundException`, then you need to run the following command to create `$profile` file:
+
+```shell
+New-Item -Type file -Force $profile
+```
+
+After reloading your shell, swctl auto-completion should be working.
 
 
 # Commands
@@ -527,6 +561,41 @@ You can imitate the content of [the default template file](examples/global.yml) 
 | `time-ranges` | need to analyze time ranges in the segment: start-end,start-end. |  |
 
 </details>
+
+### `dependency`
+
+#### `service`
+
+<details>
+
+<summary>dependency service <service-id> [--start=start-time] [--end=end-time]</summary>
+
+`dependency service` shows all the dependencies of given `[service-id]` in the time range of `[start, end]`.
+
+| argument | description | default |
+| :--- | :--- | :--- |
+| `service-id` | The service id whose dependencies are to displayed. |  |
+| `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
+| `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
+
+</details>
+
+#### `endpoint`
+
+<details>
+
+<summary>dependency endpoint [endpoint-id] [--start=start-time] [--end=end-time]</summary>
+
+`dependency endpoint` shows all the dependencies of given `[endpoint-id]` in the time range of `[start, end]`.
+
+| argument | description | default |
+| :--- | :--- | :--- |
+| `endpoint-id` | The service endpoint id whose dependencies are to displayed. |  |
+| `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
+| `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
+
+</details>
+
 
 # Use Cases
 

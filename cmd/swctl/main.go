@@ -20,8 +20,11 @@ package main
 import (
 	"io/ioutil"
 	"os"
+	"runtime"
 
+	"github.com/apache/skywalking-cli/internal/commands/completion"
 	"github.com/apache/skywalking-cli/internal/commands/dashboard"
+	"github.com/apache/skywalking-cli/internal/commands/dependency"
 	"github.com/apache/skywalking-cli/internal/commands/endpoint"
 	"github.com/apache/skywalking-cli/internal/commands/event"
 	"github.com/apache/skywalking-cli/internal/commands/healthcheck"
@@ -49,9 +52,11 @@ func init() {
 }
 
 func main() {
-	cli.AppHelpTemplate = util.AppHelpTemplate
-	cli.CommandHelpTemplate = util.CommandHelpTemplate
-	cli.SubcommandHelpTemplate = util.SubcommandHelpTemplate
+	if runtime.GOOS != "windows" {
+		cli.AppHelpTemplate = util.AppHelpTemplate
+		cli.CommandHelpTemplate = util.CommandHelpTemplate
+		cli.SubcommandHelpTemplate = util.SubcommandHelpTemplate
+	}
 
 	app := cli.NewApp()
 	app.Usage = "The CLI (Command Line Interface) for Apache SkyWalking."
@@ -124,6 +129,8 @@ func main() {
 		event.Command,
 		logs.Command,
 		profile.Command,
+		completion.Command,
+		dependency.Command,
 	}
 
 	app.Before = interceptor.BeforeChain([]cli.BeforeFunc{
@@ -135,6 +142,12 @@ func main() {
 	app.Flags = flags
 	app.CommandNotFound = util.CommandNotFound
 
+	// Enable auto-completion.
+	app.EnableBashCompletion = true
+	cli.BashCompletionFlag = cli.BoolFlag{
+		Name:   "auto_complete",
+		Hidden: true,
+	}
 	if err := app.Run(os.Args); err != nil {
 		log.Fatalln(err)
 	}
