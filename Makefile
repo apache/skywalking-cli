@@ -117,6 +117,7 @@ release-src: clean
 	--exclude .idea \
 	--exclude .DS_Store \
 	--exclude .github \
+	--exclude dist \
 	--exclude $(RELEASE_SRC).tgz \
 	.
 
