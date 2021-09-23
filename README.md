@@ -49,6 +49,20 @@ Then copy the `./bin/swctl-latest-(darwin|linux|windows)-amd64` to your `PATH` d
 
 You can also copy it to any directory you like, then add that directory to `PATH`. **We recommend you to rename the `swctl-latest-(darwin|linux|windows)-amd64` to `swctl`.**
 
+### Run from Docker image
+
+If you prefer to use Docker, skywalking-cli also provides Docker images for convenient usages since 0.9.0.
+We also push the snapshot Docker images to GitHub registry for developers who want to test the latest features,
+note that this is not Apache releases, and it's for test only, **DO NOT** use it in your production environment.
+
+```shell
+docker run -it --rm apache/skywalking-cli service ls
+
+# Or to use the snapshot Docker image
+
+docker run -it --rm ghcr.io/apache/skywalking-cli/skywalking-cli  service ls
+```
+
 ## Autocompletion
 
 `swctl` provides auto-completion support for bash and powershell, which can save you a lot of typing.
