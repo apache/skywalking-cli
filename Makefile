@@ -69,7 +69,7 @@ assets: tools
 		&& cd ..
 
 .PHONY: $(PLATFORMS)
-$(PLATFORMS):
+$(PLATFORMS): clean
 	mkdir -p $(OUT_DIR)
 	GOOS=$(os) GOARCH=$(ARCH) $(GO_BUILD) $(GO_BUILD_FLAGS) -ldflags "$(GO_BUILD_LDFLAGS)" -o $(OUT_DIR)/$(BINARY)-$(VERSION)-$(os)-$(ARCH) cmd/swctl/main.go
 
@@ -150,7 +150,11 @@ check-codegen:
 
 .PHONY: docker
 docker:
-	docker build . -t $(HUB)/$(APP_NAME):$(VERSION)
+	docker build --build-arg VERSION=$(VERSION) . -t $(HUB)/$(APP_NAME):$(VERSION)
+
+.PHONY: docker.push
+docker.push: docker
+	docker push $(HUB)/$(APP_NAME):$(VERSION)
 
 .PHONY: test-commands
 test-commands:

@@ -185,10 +185,15 @@ Vote result should follow these:
 1. Move source codes tar balls and distributions to `https://dist.apache.org/repos/dist/release/skywalking/`, **you can do this only if you are a PMC member**.
 
     ```shell
-    export SVN_EDITOR=vim
-    svn mv https://dist.apache.org/repos/dist/dev/skywalking/cli/$VERSION https://dist.apache.org/repos/dist/release/skywalking/cli
+    svn mv https://dist.apache.org/repos/dist/dev/skywalking/cli/$VERSION https://dist.apache.org/repos/dist/release/skywalking/cli -m"Release SkyWalking CLI $VERSION"
     ```
-    
+
+1. Push Docker images.
+
+```shell
+make docker.push
+```
+
 1. Refer to the previous [PR](https://github.com/apache/skywalking-website/pull/212), update the event and download links on the website.
 
 1. Update [Github release page](https://github.com/apache/skywalking-cli/releases), follow the previous convention.

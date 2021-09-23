@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+ARG VERSION
+
 FROM golang:1.14 AS builder
 
 ENV CGO_ENABLED=0
