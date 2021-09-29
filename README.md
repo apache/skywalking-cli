@@ -582,13 +582,13 @@ You can imitate the content of [the default template file](examples/global.yml) 
 
 <details>
 
-<summary>dependency service <service-id> [--start=start-time] [--end=end-time]</summary>
+<summary>dependency service [service-id] [--start=start-time] [--end=end-time]</summary>
 
 `dependency service` shows all the dependencies of given `[service-id]` in the time range of `[start, end]`.
 
 | argument | description | default |
 | :--- | :--- | :--- |
-| `service-id` | The service id whose dependencies are to displayed. |  |
+| `service-id` | The service id whose dependencies are to displayed. |
 | `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
 | `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
 
@@ -610,6 +610,22 @@ You can imitate the content of [the default template file](examples/global.yml) 
 
 </details>
 
+#### `instance`
+
+<details>
+
+<summary>dependency instance [clientService-id] [serverService-id] [--start=start-time] [--end=end-time]</summary>
+
+`dependency instance` shows the instance topology of given `[clientService-id]` and `[serverService-id]` in the time range of `[start, end]`.
+
+| argument | description | default |
+| :--- | :--- | :--- |
+| `clientService-id` | The service id of the client. |  |
+| `serverService-id` | The service id of the server. |  |
+| `--start` | See [Common options](#common-options) | See [Common options](#common-options) |
+| `--end` | See [Common options](#common-options) | See [Common options](#common-options) |
+
+</details>
 
 # Use Cases
 

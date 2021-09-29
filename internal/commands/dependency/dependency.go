@@ -28,5 +28,6 @@ var Command = cli.Command{
 	Subcommands: cli.Commands{
 		EndpointCommand,
 		ServiceCommand,
+		InstanceCommand,
 	},
 }

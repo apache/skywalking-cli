@@ -20,6 +20,7 @@
 // cr/oap.yaml (942B)
 // cr/ui.yaml (935B)
 // graphqls/dependency/EndpointDependency.graphql (1.207kB)
+// graphqls/dependency/InstanceTopology.graphql (1.272kB)
 // graphqls/dependency/ServiceTopology.graphql (1.137kB)
 // graphqls/event/events.graphql (1.256kB)
 // graphqls/healthcheck/healthcheck.graphql (870B)
@@ -219,6 +220,58 @@ func graphqlsDependencyEndpointdependencyGraphql() (*asset, error) {
 
 	info := bindataFileInfo{name: "graphqls/dependency/EndpointDependency.graphql", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0xed, 0x55, 0x1, 0xe5, 0x9f, 0x2d, 0xaf, 0xe1, 0xad, 0x20, 0xc5, 0xa2, 0xaa, 0x16, 0x1, 0xca, 0xe3, 0xbf, 0x54, 0x54, 0x4a, 0x9d, 0xa6, 0x69, 0x37, 0x8a, 0xa8, 0x1a, 0xe5, 0xed, 0x28, 0xf}}
+	return a, nil
+}
+
+var _graphqlsDependencyInstancetopologyGraphql = []byte(`# Licensed to Apache Software Foundation (ASF) under one or more contributor
+# license agreements. See the NOTICE file distributed with
+# this work for additional information regarding copyright
+# ownership. Apache Software Foundation (ASF) licenses this file to you under
+# the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+
+query ($clientServiceId: ID!, $serverServiceId: ID!, $duration: Duration!) {
+    result: getServiceInstanceTopology(duration: $duration, clientServiceId: $clientServiceId, serverServiceId: $serverServiceId) {
+        nodes {
+            id
+            name
+            type
+            isReal
+            serviceName
+            serviceId
+        }
+        calls {
+            id
+            source
+            detectPoints
+            target
+        }
+    }
+}
+`)
+
+func graphqlsDependencyInstancetopologyGraphqlBytes() ([]byte, error) {
+	return _graphqlsDependencyInstancetopologyGraphql, nil
+}
+
+func graphqlsDependencyInstancetopologyGraphql() (*asset, error) {
+	bytes, err := graphqlsDependencyInstancetopologyGraphqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "graphqls/dependency/InstanceTopology.graphql", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0x8b, 0x83, 0x9c, 0xab, 0x61, 0xdb, 0x37, 0xc6, 0xad, 0x3b, 0x40, 0x65, 0x4b, 0x75, 0x57, 0x99, 0x72, 0xf5, 0xcd, 0x76, 0x49, 0x79, 0xda, 0xf8, 0x2f, 0xb8, 0x30, 0x69, 0x9a, 0x94, 0xa9, 0xf4}}
 	return a, nil
 }
 
@@ -1428,6 +1481,7 @@ var _bindata = map[string]func() (*asset, error){
 	"cr/oap.yaml": crOapYaml,
 	"cr/ui.yaml":  crUiYaml,
 	"graphqls/dependency/EndpointDependency.graphql": graphqlsDependencyEndpointdependencyGraphql,
+	"graphqls/dependency/InstanceTopology.graphql":   graphqlsDependencyInstancetopologyGraphql,
 	"graphqls/dependency/ServiceTopology.graphql":    graphqlsDependencyServicetopologyGraphql,
 	"graphqls/event/events.graphql":                  graphqlsEventEventsGraphql,
 	"graphqls/healthcheck/healthcheck.graphql":       graphqlsHealthcheckHealthcheckGraphql,
@@ -1504,6 +1558,7 @@ var _bintree = &bintree{nil, map[string]*bintree{
 	"graphqls": &bintree{nil, map[string]*bintree{
 		"dependency": &bintree{nil, map[string]*bintree{
 			"EndpointDependency.graphql": &bintree{graphqlsDependencyEndpointdependencyGraphql, map[string]*bintree{}},
+			"InstanceTopology.graphql":   &bintree{graphqlsDependencyInstancetopologyGraphql, map[string]*bintree{}},
 			"ServiceTopology.graphql":    &bintree{graphqlsDependencyServicetopologyGraphql, map[string]*bintree{}},
 		}},
 		"event": &bintree{nil, map[string]*bintree{
