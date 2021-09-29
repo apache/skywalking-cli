@@ -72,4 +72,4 @@ ${swctl} --display=json dependency service "test" > /dev/null 2>&1
 
 ${swctl} --display=json dependency endpoint "test" > /dev/null 2>&1
 
-${swctl} --display=json dependency endpoint "test" > /dev/null 2>&1
+${swctl} --display=json dependency instance "test" "test" > /dev/null 2>&1
