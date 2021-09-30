@@ -33,7 +33,7 @@ func ParseEntity(ctx *cli.Context) *api.Entity {
 
 	destService := ctx.String("destService")
 	destNormal := ctx.BoolT("isDestNormal")
-	destInstance := ctx.String("destServiceInstance")
+	destInstance := ctx.String("destInstance")
 	destEndpoint := ctx.String("destEndpoint")
 
 	entity := &api.Entity{
