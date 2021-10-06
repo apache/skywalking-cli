@@ -20,7 +20,7 @@ package util
 import (
 	"fmt"
 
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 )
 
 const GAP = 3 // Control the appropriate edit distance.
@@ -29,10 +29,10 @@ const GAP = 3 // Control the appropriate edit distance.
 func CommandNotFound(c *cli.Context, s string) {
 	suppose := make([]string, 0)
 	var parentCommand string
-	if c.Parent() == nil {
+	if len(c.Lineage()) == 1 {
 		parentCommand = "swctl"
 	} else {
-		parentCommand = c.Parent().Args()[0]
+		parentCommand = c.Lineage()[1].Args().First()
 	}
 	fmt.Printf("Error: unknown command \"%s\" for \"%s\" \n\n", s, parentCommand)
 	// Record commands whose edit distance is less than GAP to suppose.
@@ -50,7 +50,7 @@ func CommandNotFound(c *cli.Context, s string) {
 		}
 		fmt.Println()
 	}
-	if c.Parent() == nil {
+	if len(c.Lineage()) == 1 {
 		fmt.Printf("Run '%s --help' for usage.\n", parentCommand)
 	} else {
 		fmt.Printf("Run 'swctl %s --help' for usage.\n", parentCommand)

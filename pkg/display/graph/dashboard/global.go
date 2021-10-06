@@ -36,7 +36,7 @@ import (
 	"github.com/mum4k/termdash/linestyle"
 	"github.com/mum4k/termdash/terminal/termbox"
 	"github.com/mum4k/termdash/terminal/terminalapi"
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 
 	"github.com/apache/skywalking-cli/pkg/display/graph/gauge"
 	"github.com/apache/skywalking-cli/pkg/display/graph/heatmap"
@@ -289,7 +289,7 @@ func Display(ctx *cli.Context, data *dashboard.GlobalData) error {
 	}
 
 	refreshInterval := time.Duration(ctx.Int("refresh")) * time.Second
-	dt := utils.DurationType(ctx.String("durationType"))
+	dt := utils.DurationType(ctx.String("duration-type"))
 
 	// Only when users use the relative time, the duration will be adjusted to refresh.
 	if dt != utils.BothPresent {

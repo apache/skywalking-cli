@@ -26,7 +26,7 @@ import (
 
 	"github.com/apache/skywalking-cli/pkg/display/graph"
 
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 
 	"github.com/apache/skywalking-cli/pkg/display/json"
 	"github.com/apache/skywalking-cli/pkg/display/table"
@@ -48,17 +48,23 @@ var style = map[string]string{"dashboard global": "graph",
 	"metrics list":             "table",
 	"service list":             "table",
 	"t":                        "graph",
-	"trace":                    "graph"}
+	"trace":                    "graph",
+}
 
 // Display the object in the style specified in flag --display
 func Display(ctx *cli.Context, displayable *d.Displayable) error {
-	displayStyle := ctx.GlobalString("display")
+	displayStyle := ctx.String("display")
 	if displayStyle == "" {
 		commandFullName := ctx.Command.FullName()
 		if commandFullName != "" {
 			displayStyle = getDisplayStyle(commandFullName)
-		} else if ctx.Parent() != nil {
-			displayStyle = getDisplayStyle(ctx.Parent().Args()[0])
+		} else {
+			for _, c := range ctx.Lineage() {
+				if s := getDisplayStyle(c.Args().First()); s != "" {
+					displayStyle = s
+					break
+				}
+			}
 		}
 	}
 	if displayStyle == "" {

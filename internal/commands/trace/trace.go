@@ -20,20 +20,25 @@ package trace
 import (
 	"fmt"
 
-	"github.com/apache/skywalking-cli/internal/logger"
-
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 
 	"github.com/apache/skywalking-cli/pkg/display"
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
 	"github.com/apache/skywalking-cli/pkg/graphql/trace"
 )
 
-var Command = cli.Command{
+var Command = &cli.Command{
 	Name:      "trace",
-	ShortName: "t",
-	Usage:     "trace related sub-command",
-	ArgsUsage: "trace id",
+	Aliases:   []string{"t"},
+	Usage:     "Trace related sub-command",
+	ArgsUsage: "<trace id>",
+	UsageText: `This command can be used to query the details of a trace,
+and its sub-command "ls" can be used to list all or part of the traces
+with specified options, like service name, endpoint name, etc.
+
+Examples:
+1. Query the trace details (spans) of id "321661b1-9a31-4e12-ad64-c8f6711f108d":
+$ swctl trace "321661b1-9a31-4e12-ad64-c8f6711f108d"`,
 	Action: func(ctx *cli.Context) error {
 		if ctx.NArg() == 0 {
 			return fmt.Errorf("command trace without sub command requires 1 trace id as argument")
@@ -42,7 +47,7 @@ var Command = cli.Command{
 		trace, err := trace.Trace(ctx, ctx.Args().First())
 
 		if err != nil {
-			logger.Log.Fatalln(err)
+			return err
 		}
 
 		return display.Display(ctx, &displayable.Displayable{Data: trace})

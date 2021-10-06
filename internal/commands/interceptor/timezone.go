@@ -18,9 +18,10 @@
 package interceptor
 
 import (
+	"fmt"
 	"strconv"
 
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 
 	"github.com/apache/skywalking-cli/internal/logger"
 	"github.com/apache/skywalking-cli/pkg/graphql/metadata"
@@ -30,7 +31,7 @@ import (
 // otherwise, sets to local timezone
 func TimezoneInterceptor(ctx *cli.Context) error {
 	// If there is timezone given by the user in command line, use it directly
-	if ctx.GlobalString("timezone") != "" {
+	if ctx.IsSet("timezone") {
 		return nil
 	}
 
@@ -43,7 +44,12 @@ func TimezoneInterceptor(ctx *cli.Context) error {
 
 	if timezone := serverTimeInfo.Timezone; timezone != nil {
 		if _, err := strconv.Atoi(*timezone); err == nil {
-			return ctx.GlobalSet("timezone", *timezone)
+			for _, c := range ctx.Lineage() {
+				if err := c.Set("timezone", *timezone); err == nil {
+					return nil
+				}
+			}
+			return fmt.Errorf("cannot set the timezone flag globally")
 		}
 	}
 

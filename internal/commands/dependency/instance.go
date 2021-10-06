@@ -18,13 +18,10 @@
 package dependency
 
 import (
-	"fmt"
-
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 
 	"github.com/apache/skywalking-cli/internal/commands/interceptor"
 	"github.com/apache/skywalking-cli/internal/flags"
-	"github.com/apache/skywalking-cli/internal/logger"
 	"github.com/apache/skywalking-cli/internal/model"
 
 	"github.com/apache/skywalking-cli/pkg/display"
@@ -35,23 +32,22 @@ import (
 	api "skywalking.apache.org/repo/goapi/query"
 )
 
-var InstanceCommand = cli.Command{
-	Name:      "instance",
-	ShortName: "instc",
-	Usage:     "Query the instance topology, based on the given clientServiceId and serverServiceId",
-	ArgsUsage: "<clientServiceId> <serverServiceId>",
+var InstanceCommand = &cli.Command{
+	Name:    "instance",
+	Aliases: []string{"instc"},
+	Usage:   "Query the instance topology, based on the given source service and destination service",
 	Flags: flags.Flags(
 		flags.DurationFlags,
+		flags.ServiceRelationFlags,
 	),
-	Before: interceptor.BeforeChain([]cli.BeforeFunc{
-		interceptor.TimezoneInterceptor,
+	Before: interceptor.BeforeChain(
 		interceptor.DurationInterceptor,
-	}),
+		interceptor.ParseServiceRelation(true),
+	),
 
 	Action: func(ctx *cli.Context) error {
-		if ctx.NArg() < 2 {
-			return fmt.Errorf("command instance requires both clientServiceId and serverServiceId as arguments")
-		}
+		srcSvcID := ctx.String("service-id")
+		dstSvcID := ctx.String("dest-service-id")
 
 		end := ctx.String("end")
 		start := ctx.String("start")
@@ -63,10 +59,10 @@ var InstanceCommand = cli.Command{
 			Step:  step.(*model.StepEnumValue).Selected,
 		}
 
-		dependency, err := dependency.InstanceTopology(ctx, ctx.Args().First(), ctx.Args().Get(1), duration)
+		dependency, err := dependency.InstanceTopology(ctx, srcSvcID, dstSvcID, duration)
 
 		if err != nil {
-			logger.Log.Fatalln(err)
+			return err
 		}
 
 		return display.Display(ctx, &displayable.Displayable{Data: dependency})

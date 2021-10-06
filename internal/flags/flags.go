@@ -17,7 +17,7 @@
 
 package flags
 
-import "github.com/urfave/cli"
+import "github.com/urfave/cli/v2"
 
 // Flags concatenates the `flags` into one []cli.Flag
 func Flags(flags ...[]cli.Flag) []cli.Flag {

@@ -17,7 +17,7 @@
 # under the License.
 #
 
-code-changes:
+src:
   - '**/*.go'
   - 'go.mod'
   - '.golangci.yml'

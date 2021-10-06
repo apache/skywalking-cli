@@ -17,10 +17,10 @@
 
 package flags
 
-import "github.com/urfave/cli"
+import "github.com/urfave/cli/v2"
 
 var SearchRegexFlags = []cli.Flag{
-	cli.StringFlag{
+	&cli.StringFlag{
 		Name:     "regex",
 		Required: true,
 		Usage:    "search `Regex`",

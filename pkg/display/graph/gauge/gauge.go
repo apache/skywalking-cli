@@ -26,7 +26,7 @@ import (
 
 	api "skywalking.apache.org/repo/goapi/query"
 
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 
 	"github.com/apache/skywalking-cli/pkg/graphql/dashboard"
 	"github.com/apache/skywalking-cli/pkg/util"

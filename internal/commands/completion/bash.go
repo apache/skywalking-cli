@@ -20,10 +20,10 @@ package completion
 import (
 	"fmt"
 
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 )
 
-var bashCommand = cli.Command{
+var bashCommand = &cli.Command{
 	Name:      "bash",
 	Aliases:   []string{"b"},
 	Usage:     "Output shell completion code for bash",

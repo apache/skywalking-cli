@@ -18,21 +18,24 @@
 package profile
 
 import (
-	"github.com/apache/skywalking-cli/internal/logger"
 	"github.com/apache/skywalking-cli/pkg/display"
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
 	"github.com/apache/skywalking-cli/pkg/graphql/profile"
 
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 )
 
-var getTaskSegmentListCommand = cli.Command{
-	Name:      "segment-list",
-	Aliases:   []string{"sl"},
-	Usage:     "query profile task segment list",
-	ArgsUsage: "[parameters...]",
+var getTaskSegmentListCommand = &cli.Command{
+	Name:    "segment-list",
+	Aliases: []string{"sl"},
+	Usage:   "Query profile task segment list",
+	UsageText: `Query profile task segment list
+
+Examples:
+1. Query profiled segment list
+$ swctl profile segment-list --service-name=service-name --endpoint-name=endpoint`,
 	Flags: []cli.Flag{
-		cli.StringFlag{
+		&cli.StringFlag{
 			Name:  "task-id",
 			Usage: "`<task id>` whose profiled segment are to be searched",
 		},
@@ -42,7 +45,7 @@ var getTaskSegmentListCommand = cli.Command{
 		segmentList, err := profile.GetTaskSegmentList(ctx, taskID)
 
 		if err != nil {
-			logger.Log.Fatalln(err)
+			return err
 		}
 
 		return display.Display(ctx, &displayable.Displayable{Data: segmentList, Condition: taskID})

@@ -38,13 +38,13 @@ jobs:
           filters: .github/file-filters.yml
 
       - name: setup go
-        if: steps.changes.outputs.go == 'true'
+        if: steps.changes.outputs.src == 'true'
         uses: actions/setup-go@v2
         with:
-          go-version: '1.13'
+          go-version: '1.16'
 
       - name: run unit tests and report coverage
-        if: steps.changes.outputs.go == 'true'
+        if: steps.changes.outputs.src == 'true'
         working-directory: ./
         run: |
           make coverage

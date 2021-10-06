@@ -18,35 +18,65 @@
 package interceptor
 
 import (
-	"github.com/urfave/cli"
+	"encoding/base64"
+	"fmt"
+	"strings"
+
+	"github.com/urfave/cli/v2"
 
 	"github.com/apache/skywalking-cli/pkg/graphql/utils"
 
 	api "skywalking.apache.org/repo/goapi/query"
 )
 
-func ParseEntity(ctx *cli.Context) *api.Entity {
-	service := ctx.String("service")
-	normal := ctx.BoolT("isNormal")
-	instance := ctx.String("instance")
-	endpoint := ctx.String("endpoint")
+func ParseEntity(ctx *cli.Context) (*api.Entity, error) {
+	serviceID := ctx.String("service-id")
+	instance := ctx.String("instance-name")
+	endpoint := ctx.String("endpoint-name")
 
-	destService := ctx.String("destService")
-	destNormal := ctx.BoolT("isDestNormal")
-	destInstance := ctx.String("destInstance")
-	destEndpoint := ctx.String("destEndpoint")
+	destServiceID := ctx.String("dest-service-id")
+	destInstance := ctx.String("dest-instance-name")
+	destEndpoint := ctx.String("dest-endpoint-name")
+
+	serviceName, isNormal, err := ParseServiceID(serviceID)
+	if err != nil {
+		return nil, err
+	}
+
+	destServiceName, destIsNormal, err := ParseServiceID(destServiceID)
+	if err != nil {
+		return nil, err
+	}
 
 	entity := &api.Entity{
-		ServiceName:             &service,
-		Normal:                  &normal,
+		ServiceName:             &serviceName,
+		Normal:                  &isNormal,
 		ServiceInstanceName:     &instance,
 		EndpointName:            &endpoint,
-		DestServiceName:         &destService,
-		DestNormal:              &destNormal,
+		DestServiceName:         &destServiceName,
+		DestNormal:              &destIsNormal,
 		DestServiceInstanceName: &destInstance,
 		DestEndpointName:        &destEndpoint,
 	}
 	entity.Scope = utils.ParseScope(entity)
 
-	return entity
+	return entity, nil
+}
+
+func ParseServiceID(id string) (name string, isNormal bool, err error) {
+	if id == "" {
+		return "", false, nil
+	}
+	parts := strings.Split(id, ".")
+	if len(parts) != 2 {
+		return "", false, fmt.Errorf("invalid service id, cannot be splitted into 2 parts. %v", id)
+	}
+	nameBytes, err := base64.StdEncoding.DecodeString(parts[0])
+	if err != nil {
+		return "", false, err
+	}
+	name = string(nameBytes)
+	isNormal = parts[1] == "1"
+
+	return name, isNormal, nil
 }

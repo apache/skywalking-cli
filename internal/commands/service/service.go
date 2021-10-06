@@ -18,13 +18,13 @@
 package service
 
 import (
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 )
 
-var Command = cli.Command{
-	Name:      "service",
-	ShortName: "s",
-	Usage:     "Service related sub-command",
+var Command = &cli.Command{
+	Name:    "service",
+	Aliases: []string{"s", "svc"},
+	Usage:   "Service related sub-command",
 	Subcommands: cli.Commands{
 		ListCommand,
 	},

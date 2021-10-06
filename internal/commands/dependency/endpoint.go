@@ -18,13 +18,10 @@
 package dependency
 
 import (
-	"fmt"
-
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 
 	"github.com/apache/skywalking-cli/internal/commands/interceptor"
 	"github.com/apache/skywalking-cli/internal/flags"
-	"github.com/apache/skywalking-cli/internal/logger"
 	"github.com/apache/skywalking-cli/internal/model"
 
 	"github.com/apache/skywalking-cli/pkg/display"
@@ -35,24 +32,21 @@ import (
 	api "skywalking.apache.org/repo/goapi/query"
 )
 
-var EndpointCommand = cli.Command{
-	Name:      "endpoint",
-	ShortName: "ep",
-	Usage:     "Query the dependencies of given endpoint",
-	ArgsUsage: "<endpointId>",
+var EndpointCommand = &cli.Command{
+	Name:    "endpoint",
+	Aliases: []string{"ep"},
+	Usage:   "Query the dependencies of the given endpoint",
 	Flags: flags.Flags(
 		flags.DurationFlags,
+		flags.EndpointFlags,
 	),
-	Before: interceptor.BeforeChain([]cli.BeforeFunc{
-		interceptor.TimezoneInterceptor,
+	Before: interceptor.BeforeChain(
 		interceptor.DurationInterceptor,
-	}),
+		interceptor.ParseEndpoint(true),
+	),
 
 	Action: func(ctx *cli.Context) error {
-		if ctx.NArg() == 0 {
-			return fmt.Errorf("command endpoint requires endpointId as argument")
-		}
-
+		endpointID := ctx.String("endpoint-id")
 		end := ctx.String("end")
 		start := ctx.String("start")
 		step := ctx.Generic("step")
@@ -63,10 +57,10 @@ var EndpointCommand = cli.Command{
 			Step:  step.(*model.StepEnumValue).Selected,
 		}
 
-		dependency, err := dependency.EndpointDependency(ctx, ctx.Args().First(), duration)
+		dependency, err := dependency.EndpointDependency(ctx, endpointID, duration)
 
 		if err != nil {
-			logger.Log.Fatalln(err)
+			return err
 		}
 
 		return display.Display(ctx, &displayable.Displayable{Data: dependency})

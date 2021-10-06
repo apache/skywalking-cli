@@ -18,37 +18,15 @@
 package instance
 
 import (
-	"github.com/urfave/cli"
-
-	"github.com/apache/skywalking-cli/pkg/graphql/metadata"
-
-	"github.com/apache/skywalking-cli/internal/logger"
+	"github.com/urfave/cli/v2"
 )
 
-var Command = cli.Command{
-	Name:      "instance",
-	ShortName: "i",
-	Usage:     "Instance related sub-command",
+var Command = &cli.Command{
+	Name:    "instance",
+	Aliases: []string{"i"},
+	Usage:   "Instance related sub-command",
 	Subcommands: cli.Commands{
 		ListCommand,
 		SearchCommand,
 	},
-}
-
-func verifyAndSwitchServiceParameter(ctx *cli.Context) string {
-	serviceID := ctx.String("service-id")
-	serviceName := ctx.String("service-name")
-
-	if serviceID == "" && serviceName == "" {
-		logger.Log.Fatalf("flags \"service-id, service-name\" must set one")
-	}
-
-	if serviceID == "" && serviceName != "" {
-		service, err := metadata.SearchService(ctx, serviceName)
-		if err != nil {
-			logger.Log.Fatalln(err)
-		}
-		serviceID = service.ID
-	}
-	return serviceID
 }

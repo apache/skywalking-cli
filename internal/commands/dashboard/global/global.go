@@ -18,34 +18,41 @@
 package global
 
 import (
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 
 	api "skywalking.apache.org/repo/goapi/query"
 
 	"github.com/apache/skywalking-cli/internal/commands/interceptor"
 	"github.com/apache/skywalking-cli/internal/flags"
-	"github.com/apache/skywalking-cli/internal/logger"
 	"github.com/apache/skywalking-cli/internal/model"
 	"github.com/apache/skywalking-cli/pkg/display"
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
 	"github.com/apache/skywalking-cli/pkg/graphql/dashboard"
 )
 
-var GlobalCommand = cli.Command{
-	Name:        "global",
-	ShortName:   "g",
-	Usage:       "Display global data",
-	Description: "Display global data",
+var GlobalCommand = &cli.Command{
+	Name:    "global",
+	Aliases: []string{"g"},
+	Usage:   "Display global dashboard",
+	UsageText: `Display global dashboard
+
+Examples:
+1. Display the global dashboard
+$ swctl dashboard global
+
+2. Display the global dashboard with a customized template
+$ swctl dashboard global --template my-global-template.yml
+`,
 	Flags: flags.Flags(
 		flags.DurationFlags,
 		[]cli.Flag{
-			cli.StringFlag{
+			&cli.StringFlag{
 				Name:     "template",
 				Usage:    "load dashboard UI template",
 				Required: false,
 				Value:    dashboard.DefaultTemplatePath,
 			},
-			cli.IntFlag{
+			&cli.IntFlag{
 				Name:     "refresh",
 				Usage:    "the auto refreshing interval (s)",
 				Required: false,
@@ -53,10 +60,9 @@ var GlobalCommand = cli.Command{
 			},
 		},
 	),
-	Before: interceptor.BeforeChain([]cli.BeforeFunc{
-		interceptor.TimezoneInterceptor,
+	Before: interceptor.BeforeChain(
 		interceptor.DurationInterceptor,
-	}),
+	),
 	Action: func(ctx *cli.Context) error {
 		end := ctx.String("end")
 		start := ctx.String("start")
@@ -69,7 +75,7 @@ var GlobalCommand = cli.Command{
 		})
 
 		if err != nil {
-			logger.Log.Fatalln(err)
+			return err
 		}
 
 		return display.Display(ctx, &displayable.Displayable{Data: globalData})

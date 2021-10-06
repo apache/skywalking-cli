@@ -18,13 +18,13 @@
 package logs
 
 import (
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 )
 
-var Command = cli.Command{
-	Name:      "logs",
-	ShortName: "l",
-	Usage:     "logs related sub-command",
+var Command = &cli.Command{
+	Name:    "logs",
+	Aliases: []string{"l"},
+	Usage:   "Logs related sub-command",
 	Subcommands: cli.Commands{
 		ListCommand,
 	},

@@ -18,76 +18,62 @@
 package profile
 
 import (
-	"fmt"
-
-	"github.com/apache/skywalking-cli/internal/logger"
+	"github.com/apache/skywalking-cli/internal/commands/interceptor"
+	"github.com/apache/skywalking-cli/internal/flags"
 	"github.com/apache/skywalking-cli/pkg/display"
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
-	"github.com/apache/skywalking-cli/pkg/graphql/metadata"
 	"github.com/apache/skywalking-cli/pkg/graphql/profile"
 
 	api "skywalking.apache.org/repo/goapi/query"
 
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 )
 
-var createCommand = cli.Command{
-	Name:      "create",
-	Aliases:   []string{"c"},
-	Usage:     "create a new profile task",
-	ArgsUsage: "[parameters...]",
-	Flags: []cli.Flag{
-		cli.StringFlag{
-			Name:  "service-id",
-			Usage: "<service-id> whose endpoints are to be profile.",
+var createCommand = &cli.Command{
+	Name:    "create",
+	Aliases: []string{"c"},
+	Usage:   "Create a new profile task",
+	UsageText: `Create a new profile task
+
+Examples:
+1. Create profile task
+$ swctl profile create --service-name=service-name --endpoint=endpoint --start-time=1627656127860 --duration=5 \
+	--min-duration-threshold=0 --dump-period=10 --max-sampling-count=9`,
+	Flags: flags.Flags(
+		flags.EndpointFlags,
+
+		[]cli.Flag{
+			&cli.Int64Flag{
+				Name:  "start-time",
+				Usage: "profile task start time(millisecond).",
+			},
+			&cli.IntFlag{
+				Name:  "duration",
+				Usage: "profile task continuous time(minute).",
+			},
+			&cli.IntFlag{
+				Name:  "min-duration-threshold",
+				Usage: "profiled endpoint must greater duration(millisecond).",
+			},
+			&cli.IntFlag{
+				Name:  "dump-period",
+				Usage: "profiled endpoint dump period(millisecond).",
+			},
+			&cli.IntFlag{
+				Name:  "max-sampling-count",
+				Usage: "profile task max sampling count.",
+			},
 		},
-		cli.StringFlag{
-			Name:  "service-name",
-			Usage: "<service-name> whose endpoints are to be profile.",
-		},
-		cli.StringFlag{
-			Name:  "endpoint",
-			Usage: "which endpoint should profile.",
-		},
-		cli.Int64Flag{
-			Name:  "start-time",
-			Usage: "profile task start time(millisecond).",
-		},
-		cli.IntFlag{
-			Name:  "duration",
-			Usage: "profile task continuous time(minute).",
-		},
-		cli.IntFlag{
-			Name:  "min-duration-threshold",
-			Usage: "profiled endpoint must greater duration(millisecond).",
-		},
-		cli.IntFlag{
-			Name:  "dump-period",
-			Usage: "profiled endpoint dump period(millisecond).",
-		},
-		cli.IntFlag{
-			Name:  "max-sampling-count",
-			Usage: "profile task max sampling count.",
-		},
-	},
+	),
+	Before: interceptor.BeforeChain(
+		interceptor.ParseEndpoint(true),
+	),
 	Action: func(ctx *cli.Context) error {
 		serviceID := ctx.String("service-id")
-		if serviceID == "" {
-			serviceName := ctx.String("service-name")
-			if serviceName == "" {
-				return fmt.Errorf(`either flags "service-id" or "service-name" must be set`)
-			}
-			service, err := metadata.SearchService(ctx, serviceName)
-			if err != nil {
-				return err
-			}
-			serviceID = service.ID
-		}
-
 		startTime := ctx.Int64("start-time")
 		request := &api.ProfileTaskCreationRequest{
 			ServiceID:            serviceID,
-			EndpointName:         ctx.String("endpoint"),
+			EndpointName:         ctx.String("endpoint-name"),
 			StartTime:            &startTime,
 			Duration:             ctx.Int("duration"),
 			MinDurationThreshold: ctx.Int("min-duration-threshold"),
@@ -98,7 +84,7 @@ var createCommand = cli.Command{
 		task, err := profile.CreateTask(ctx, request)
 
 		if err != nil {
-			logger.Log.Fatalln(err)
+			return err
 		}
 
 		return display.Display(ctx, &displayable.Displayable{Data: task, Condition: request})

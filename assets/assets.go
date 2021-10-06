@@ -18,14 +18,19 @@
 package assets
 
 import (
+	"embed"
+
 	"github.com/apache/skywalking-cli/internal/logger"
 )
 
+//go:embed *
+var assets embed.FS
+
 // Read reads all content from a file under assets, which is packed in to the binary
 func Read(filename string) string {
-	content, err := AssetString(filename)
+	content, err := assets.ReadFile(filename)
 	if err != nil {
 		logger.Log.Fatalln("failed to read asset: ", filename, err)
 	}
-	return content
+	return string(content)
 }

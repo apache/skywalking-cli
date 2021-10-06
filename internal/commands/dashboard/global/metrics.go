@@ -18,11 +18,10 @@
 package global
 
 import (
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 
 	"github.com/apache/skywalking-cli/internal/commands/interceptor"
 	"github.com/apache/skywalking-cli/internal/flags"
-	"github.com/apache/skywalking-cli/internal/logger"
 	"github.com/apache/skywalking-cli/internal/model"
 	"github.com/apache/skywalking-cli/pkg/display"
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
@@ -31,13 +30,13 @@ import (
 	api "skywalking.apache.org/repo/goapi/query"
 )
 
-var Metrics = cli.Command{
+var Metrics = &cli.Command{
 	Name:  "global-metrics",
 	Usage: "Query global metrics",
 	Flags: flags.Flags(
 		flags.DurationFlags,
 		[]cli.Flag{
-			cli.StringFlag{
+			&cli.StringFlag{
 				Name:     "template",
 				Usage:    "load dashboard UI template",
 				Required: false,
@@ -45,10 +44,9 @@ var Metrics = cli.Command{
 			},
 		},
 	),
-	Before: interceptor.BeforeChain([]cli.BeforeFunc{
-		interceptor.TimezoneInterceptor,
+	Before: interceptor.BeforeChain(
 		interceptor.DurationInterceptor,
-	}),
+	),
 	Action: func(ctx *cli.Context) error {
 		end := ctx.String("end")
 		start := ctx.String("start")
@@ -61,7 +59,7 @@ var Metrics = cli.Command{
 		})
 
 		if err != nil {
-			logger.Log.Fatalln(err)
+			return err
 		}
 
 		return display.Display(ctx, &displayable.Displayable{Data: globalMetrics})

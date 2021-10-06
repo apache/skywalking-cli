@@ -34,13 +34,13 @@ jobs:
         uses: getsentry/paths-filter@v2
         id: changes
         with:
-            token: ${{ github.token }}
-            filters: .github/file-filters.yml
+          token: ${{ github.token }}
+          filters: .github/file-filters.yml
 
-      - name: Set up Go 1.14
+      - name: Set up Go 1.16
         uses: actions/setup-go@v2
         with:
-          go-version: 1.14
+          go-version: 1.16
 
       - name: Check code generation
         run: make check-codegen
@@ -54,6 +54,3 @@ jobs:
       - name: Build
         run: make build -j3
 
-      - name: Test commands
-        if: steps.changes.outputs.code-changes == 'true'
-        run: make test-commands

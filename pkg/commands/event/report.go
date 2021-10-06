@@ -22,11 +22,10 @@ import (
 	event "skywalking.apache.org/repo/goapi/collect/event/v3"
 
 	"github.com/apache/skywalking-cli/internal/commands/interceptor"
-	"github.com/apache/skywalking-cli/internal/logger"
 	"github.com/apache/skywalking-cli/internal/model"
 	"github.com/apache/skywalking-cli/pkg/grpc"
 
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 )
 
 func Report(ctx *cli.Context) (*common.Commands, error) {
@@ -38,21 +37,20 @@ func Report(ctx *cli.Context) (*common.Commands, error) {
 	e := event.Event{
 		Uuid: ctx.String("uuid"),
 		Source: &event.Source{
-			Service:         ctx.String("service"),
-			ServiceInstance: ctx.String("instance"),
-			Endpoint:        ctx.String("endpoint"),
+			Service:         ctx.String("service-name"),
+			ServiceInstance: ctx.String("instance-name"),
+			Endpoint:        ctx.String("endpoint-name"),
 		},
 		Name:       ctx.String("name"),
 		Type:       ctx.Generic("type").(*model.EventTypeEnumValue).Selected,
 		Message:    ctx.String("message"),
 		Parameters: parameters,
-		StartTime:  ctx.Int64("startTime"),
-		EndTime:    ctx.Int64("endTime"),
+		StartTime:  ctx.Int64("start-time"),
+		EndTime:    ctx.Int64("end-time"),
 	}
 
-	reply, err := grpc.ReportEvent(ctx.GlobalString("grpcAddr"), &e)
+	reply, err := grpc.ReportEvent(ctx.String("grpc-addr"), &e)
 	if err != nil {
-		logger.Log.Fatalln(err)
 		return nil, err
 	}
 

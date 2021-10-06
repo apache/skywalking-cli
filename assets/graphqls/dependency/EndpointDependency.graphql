@@ -22,7 +22,7 @@ query ($endpointId:ID!, $duration: Duration!) {
             name
             serviceId
             serviceName
-            type         
+            type
             isReal
         }
         calls {
@@ -30,6 +30,6 @@ query ($endpointId:ID!, $duration: Duration!) {
             source
             target
             detectPoints
-        }        
+        }
     }
 }

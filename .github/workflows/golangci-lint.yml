@@ -39,8 +39,8 @@ jobs:
           filters: .github/file-filters.yml
 
       - name: golangci-lint
-        if: steps.changes.outputs.code-changes == 'true'
+        if: steps.changes.outputs.src == 'true'
         uses: golangci/golangci-lint-action@v2
         with:
-          version: v1.40.1
+          version: v1.41.1
           args: --timeout 5m

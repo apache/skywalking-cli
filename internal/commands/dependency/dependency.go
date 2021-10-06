@@ -18,13 +18,13 @@
 package dependency
 
 import (
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 )
 
-var Command = cli.Command{
-	Name:      "dependency",
-	ShortName: "dep",
-	Usage:     "Dependency related subcommand",
+var Command = &cli.Command{
+	Name:    "dependency",
+	Aliases: []string{"dep"},
+	Usage:   "Dependency related subcommand",
 	Subcommands: cli.Commands{
 		EndpointCommand,
 		ServiceCommand,

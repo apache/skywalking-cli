@@ -18,34 +18,43 @@
 package instance
 
 import (
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 
 	api "skywalking.apache.org/repo/goapi/query"
 
 	"github.com/apache/skywalking-cli/internal/commands/interceptor"
 	"github.com/apache/skywalking-cli/internal/flags"
-	"github.com/apache/skywalking-cli/internal/logger"
 	"github.com/apache/skywalking-cli/internal/model"
 	"github.com/apache/skywalking-cli/pkg/display"
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
 	"github.com/apache/skywalking-cli/pkg/graphql/metadata"
 )
 
-var ListCommand = cli.Command{
-	Name:      "list",
-	ShortName: "ls",
-	Usage:     "List all available instance by given --service-id or --service-name parameter",
-	Flags:     append(flags.DurationFlags, flags.InstanceServiceIDFlags...),
-	Before: interceptor.BeforeChain([]cli.BeforeFunc{
-		interceptor.TimezoneInterceptor,
-		interceptor.DurationInterceptor,
-	}),
-	Action: func(ctx *cli.Context) error {
-		serviceID := verifyAndSwitchServiceParameter(ctx)
+var ListCommand = &cli.Command{
+	Name:    "list",
+	Aliases: []string{"ls"},
+	Usage:   `list all monitored instances of the given "--service-id" or "--service-name"`,
+	UsageText: `This command lists all instances of the service, via service id or service name.
 
+Examples:
+1. List all instances of the service by service name "provider":
+$ swctl instance ls --service-name business-zone::projectC
+
+2. List all instances of the service by service id "YnVzaW5lc3Mtem9uZTo6cHJvamVjdEM=.1":
+$ swctl instance ls --service-id YnVzaW5lc3Mtem9uZTo6cHJvamVjdEM=.1`,
+	Flags: flags.Flags(
+		flags.DurationFlags,
+		flags.ServiceFlags,
+	),
+	Before: interceptor.BeforeChain(
+		interceptor.DurationInterceptor,
+		interceptor.ParseService(true),
+	),
+	Action: func(ctx *cli.Context) error {
 		end := ctx.String("end")
 		start := ctx.String("start")
 		step := ctx.Generic("step")
+		serviceID := ctx.String("service-id")
 
 		instances, err := metadata.Instances(ctx, serviceID, api.Duration{
 			Start: start,
@@ -54,7 +63,7 @@ var ListCommand = cli.Command{
 		})
 
 		if err != nil {
-			logger.Log.Fatalln(err)
+			return err
 		}
 
 		return display.Display(ctx, &displayable.Displayable{Data: instances})
