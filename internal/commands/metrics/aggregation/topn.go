@@ -23,7 +23,7 @@ import (
 
 	api "skywalking.apache.org/repo/goapi/query"
 
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 
 	"github.com/apache/skywalking-cli/internal/commands/interceptor"
 	"github.com/apache/skywalking-cli/internal/flags"
@@ -35,15 +35,28 @@ import (
 	"github.com/apache/skywalking-cli/pkg/graphql/utils"
 )
 
-var TopN = cli.Command{
+var TopN = &cli.Command{
 	Name:      "top",
-	Usage:     "query top `n` entities",
+	Usage:     "query the top <n> entities sorted by the specified metrics",
 	ArgsUsage: "<n>",
+	UsageText: `Query the top <n> entities sorted by the specified metrics.
+
+Examples:
+1. Query the top 5 services whose sla are largest:
+$ swctl metrics top --name service_sla 5
+
+2. Query the top 5 endpoints whose sla is largest:
+$ swctl metrics top --name endpoint_sla 5
+
+3. Query the top 5 instances of service "boutique::adservice" whose sla are largest:
+$ swctl metrics top --name service_instance_sla --service-name boutique::adservice 5
+`,
 	Flags: flags.Flags(
 		flags.DurationFlags,
 		flags.MetricsFlags,
+		flags.ServiceFlags,
 		[]cli.Flag{
-			cli.GenericFlag{
+			&cli.GenericFlag{
 				Name:  "order",
 				Usage: "the `order` by which the top entities are sorted",
 				Value: &model.OrderEnumValue{
@@ -54,26 +67,29 @@ var TopN = cli.Command{
 			},
 		},
 	),
-	Before: interceptor.BeforeChain([]cli.BeforeFunc{
-		interceptor.TimezoneInterceptor,
+	Before: interceptor.BeforeChain(
 		interceptor.DurationInterceptor,
-	}),
+		interceptor.ParseService(false),
+	),
 	Action: func(ctx *cli.Context) error {
 		start := ctx.String("start")
 		end := ctx.String("end")
 		step := ctx.Generic("step").(*model.StepEnumValue).Selected
 
 		metricsName := ctx.String("name")
-		normal := ctx.BoolT("isNormal")
 		scope := utils.ParseScopeInTop(metricsName)
 		order := ctx.Generic("order").(*model.OrderEnumValue).Selected
 		topN := 5
-		parentService := ctx.String("service")
+		parentServiceID := ctx.String("service-id")
+		parentService, normal, err := interceptor.ParseServiceID(parentServiceID)
+		if err != nil {
+			return err
+		}
 
 		if ctx.NArg() > 0 {
-			nn, err := strconv.Atoi(ctx.Args().First())
-			if err != nil {
-				return fmt.Errorf("the 1st argument must be a number")
+			nn, err2 := strconv.Atoi(ctx.Args().First())
+			if err2 != nil {
+				return fmt.Errorf("the 1st argument must be a number: %v", err2)
 			}
 			topN = nn
 		}
@@ -84,9 +100,7 @@ var TopN = cli.Command{
 			Step:  step,
 		}
 
-		if ctx.Bool("debug") {
-			logger.Log.Debugln(metricsName, scope, topN)
-		}
+		logger.Log.Debugln(metricsName, scope, topN)
 
 		metricsValues, err := metrics.SortMetrics(ctx, api.TopNCondition{
 			Name:          metricsName,
@@ -98,7 +112,7 @@ var TopN = cli.Command{
 		}, duration)
 
 		if err != nil {
-			logger.Log.Fatalln(err)
+			return err
 		}
 
 		return display.Display(ctx, &displayable.Displayable{Data: metricsValues})

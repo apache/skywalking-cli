@@ -21,19 +21,29 @@ import (
 	"fmt"
 
 	operatorv1alpha1 "github.com/apache/skywalking-swck/apis/operator/v1alpha1"
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 	"gopkg.in/yaml.v2"
 	controllerruntime "sigs.k8s.io/controller-runtime"
 
 	"github.com/apache/skywalking-cli/assets"
 )
 
-var oapCmd = cli.Command{
-	Name:      "oap",
-	ShortName: "o",
-	Usage:     "Output the Kubernetes manifest for installing OAP server to stdout",
-	UsageText: usage("oap"),
-	Flags:     flags,
+var oapCmd = &cli.Command{
+	Name:    "oap",
+	Aliases: []string{"o"},
+	Usage:   "Output the Kubernetes manifest for installing OAP server to stdout",
+	UsageText: usage("oap", `A customized resource file (oap-cr.yaml) to enable ALS analyzer
+and connect to elasticsearch cluster 'es1.foo:9200':
+
+	spec:
+	  config:
+		- name: SW_ENVOY_METRIC_ALS_HTTP_ANALYSIS
+		  value: k8s-mesh
+		- name: SW_STORAGE
+		  value: elasticsearch
+		- name: SW_STORAGE_ES_CLUSTER_NODES
+		  value: es1.foo:9200`),
+	Flags: flags,
 	Action: func(ctx *cli.Context) error {
 		base := &operatorv1alpha1.OAPServer{
 			TypeMeta: controllerruntime.TypeMeta{
@@ -52,9 +62,6 @@ var oapCmd = cli.Command{
 		if err := base.ValidateCreate(); err != nil {
 			return fmt.Errorf("failed to validate OAPServer: %v", err)
 		}
-		if err := render("oapserver", ctx, base, &operatorv1alpha1.OAPServer{}); err != nil {
-			return err
-		}
-		return nil
+		return render("oapserver", ctx, base, &operatorv1alpha1.OAPServer{})
 	},
 }

@@ -22,32 +22,33 @@ import (
 
 	api "skywalking.apache.org/repo/goapi/query"
 
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 
 	"github.com/apache/skywalking-cli/internal/commands/interceptor"
 	"github.com/apache/skywalking-cli/internal/flags"
-	"github.com/apache/skywalking-cli/internal/logger"
 	"github.com/apache/skywalking-cli/internal/model"
 	"github.com/apache/skywalking-cli/pkg/display"
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
 	"github.com/apache/skywalking-cli/pkg/graphql/metadata"
 )
 
-var SearchCommand = cli.Command{
+var SearchCommand = &cli.Command{
 	Name:  "search",
 	Usage: "Filter the instance from the existing service instance list",
-	Flags: append(flags.DurationFlags, append(flags.SearchRegexFlags, flags.InstanceServiceIDFlags...)...),
-	Before: interceptor.BeforeChain([]cli.BeforeFunc{
-		interceptor.TimezoneInterceptor,
+	Flags: flags.Flags(
+		flags.DurationFlags,
+		flags.SearchRegexFlags,
+		flags.ServiceFlags,
+	),
+	Before: interceptor.BeforeChain(
 		interceptor.DurationInterceptor,
-	}),
+		interceptor.ParseService(true),
+	),
 	Action: func(ctx *cli.Context) error {
-		serviceID := verifyAndSwitchServiceParameter(ctx)
-
+		serviceID := ctx.String("service-id")
 		end := ctx.String("end")
 		start := ctx.String("start")
 		step := ctx.Generic("step")
-
 		regex := ctx.String("regex")
 
 		instances, err := metadata.Instances(ctx, serviceID, api.Duration{
@@ -57,7 +58,7 @@ var SearchCommand = cli.Command{
 		})
 
 		if err != nil {
-			logger.Log.Fatalln(err)
+			return err
 		}
 
 		var result []api.ServiceInstance

@@ -18,30 +18,36 @@
 package service
 
 import (
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 
 	api "skywalking.apache.org/repo/goapi/query"
 
 	"github.com/apache/skywalking-cli/internal/commands/interceptor"
 	"github.com/apache/skywalking-cli/internal/flags"
-	"github.com/apache/skywalking-cli/internal/logger"
 	"github.com/apache/skywalking-cli/internal/model"
 	"github.com/apache/skywalking-cli/pkg/display"
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
 	"github.com/apache/skywalking-cli/pkg/graphql/metadata"
 )
 
-var ListCommand = cli.Command{
-	Name:        "list",
-	ShortName:   "ls",
-	Usage:       "List services",
-	ArgsUsage:   "<service name>",
-	Description: "list all services if no <service name> is given, otherwise, only list the given service",
-	Flags:       flags.DurationFlags,
-	Before: interceptor.BeforeChain([]cli.BeforeFunc{
-		interceptor.TimezoneInterceptor,
+var ListCommand = &cli.Command{
+	Name:      "list",
+	Aliases:   []string{"ls"},
+	Usage:     `list the monitored services`,
+	ArgsUsage: "<service name>",
+	UsageText: `This command lists all services if no "<service name>" is given, 
+otherwise, it only lists the services matching the given "<service name>".
+
+Examples:
+1. List all the services:
+$ swctl svc ls
+
+2. List a specific service named "projectC":
+$ swctl svc ls projectC`,
+	Flags: flags.DurationFlags,
+	Before: interceptor.BeforeChain(
 		interceptor.DurationInterceptor,
-	}),
+	),
 	Action: func(ctx *cli.Context) error {
 		end := ctx.String("end")
 		start := ctx.String("start")
@@ -50,19 +56,19 @@ var ListCommand = cli.Command{
 		var services []api.Service
 		var err error
 
-		if args := ctx.Args(); len(args) == 0 {
+		if args := ctx.Args(); args.Len() == 0 {
 			services, err = metadata.AllServices(ctx, api.Duration{
 				Start: start,
 				End:   end,
 				Step:  step.(*model.StepEnumValue).Selected,
 			})
 			if err != nil {
-				logger.Log.Fatalln(err)
+				return err
 			}
 		} else {
 			service, err := metadata.SearchService(ctx, args.First())
 			if err != nil {
-				logger.Log.Fatalln(err)
+				return err
 			}
 			services = []api.Service{service}
 		}

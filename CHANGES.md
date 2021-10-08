@@ -31,7 +31,7 @@ Release Notes.
 
 ### Features
 
-- Add GitHub Action for integration of event reporter 
+- Add GitHub Action for integration of event reporter
 
 ### Bug Fixes
 
@@ -124,7 +124,7 @@ Release Notes.
 - Support visualization of heat map
 - Support top N entities, `swctl metrics top 5 --name service_sla`
 - Support thermodynamic metrics, `swctl metrics thermodynamic --name all_heatmap`
-- Support multiple linear metrics, `swctl --display=graph --debug metrics multiple-linear --name all_percentile` 
+- Support multiple linear metrics, `swctl --display=graph --debug metrics multiple-linear --name all_percentile`
 - Automatically make use of server timezone API when possible
 
 ### Chores
@@ -138,6 +138,7 @@ Release Notes.
 ------------------
 
 ### Features
+
 - Add command `swctl service` to list services
 - Add command `swctl instance` and `swctl search` to list and search instances of service.
 - Add command `swctl endpoint` to list endpoints of service.
@@ -145,4 +146,5 @@ Release Notes.
 - Add command `swctl single-metrics` to query single-value metrics.
 
 ### Chores
+
 - Set up GitHub actions to check code styles, licenses, and tests.

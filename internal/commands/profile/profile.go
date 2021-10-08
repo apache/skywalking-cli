@@ -18,13 +18,17 @@
 package profile
 
 import (
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 )
 
-var Command = cli.Command{
+var Command = &cli.Command{
 	Name:  "profile",
 	Usage: "Profile related sub-command",
-	Subcommands: []cli.Command{
+	UsageText: `If your endpoint has performance issue and could not use tracing to find out what's happening,
+you could try to profile. You could get more information
+on https://github.com/apache/skywalking/blob/master/docs/en/guides/backend-profile.md.
+`,
+	Subcommands: []*cli.Command{
 		createCommand,
 		getTaskListCommand,
 		getTaskSegmentListCommand,

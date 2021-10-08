@@ -24,55 +24,50 @@ import (
 
 	"github.com/apache/skywalking-cli/internal/commands/interceptor"
 	"github.com/apache/skywalking-cli/internal/flags"
-	"github.com/apache/skywalking-cli/internal/logger"
 	"github.com/apache/skywalking-cli/internal/model"
 	"github.com/apache/skywalking-cli/pkg/display"
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
 	"github.com/apache/skywalking-cli/pkg/graphql/log"
 
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 )
 
 const DefaultPageSize = 15
 
-var ListCommand = cli.Command{
-	Name:      "list",
-	ShortName: "ls",
-	Usage:     "List logs",
+var ListCommand = &cli.Command{
+	Name:    "list",
+	Aliases: []string{"ls"},
+	Usage:   "List logs according to the specified options",
+	UsageText: `List logs according to the specified options.
+
+Examples:
+1. Query all logs:
+$ swctl logs list
+
+2. Query the logs related to trace id 3d56f33f-bcd3-4e40-9e4f-5dc547998ef5
+$ swctl logs list --trace-id 3d56f33f-bcd3-4e40-9e4f-5dc547998ef5`,
 	Flags: flags.Flags(
 		flags.DurationFlags,
+		flags.InstanceFlags,
+		flags.EndpointFlags,
 		[]cli.Flag{
-			cli.StringFlag{
-				Name:     "service-id",
-				Usage:    "service id",
-				Required: false,
-			},
-			cli.StringFlag{
-				Name:     "service-instance-id",
-				Usage:    "service instance id",
-				Required: false,
-			},
-			cli.StringFlag{
-				Name:     "endpoint-id",
-				Usage:    "endpoint id",
-				Required: false,
-			},
-			cli.StringFlag{
+			&cli.StringFlag{
 				Name:     "trace-id",
-				Usage:    "relate trace id",
+				Usage:    "related trace id",
 				Required: false,
 			},
-			cli.StringFlag{
+			&cli.StringFlag{
 				Name:     "tags",
 				Usage:    "key=value,key=value",
 				Required: false,
 			},
 		},
 	),
-	Before: interceptor.BeforeChain([]cli.BeforeFunc{
-		interceptor.TimezoneInterceptor,
+	Before: interceptor.BeforeChain(
 		interceptor.DurationInterceptor,
-	}),
+		interceptor.ParseInstance(false),
+		interceptor.ParseEndpoint(false),
+	),
 	Action: func(ctx *cli.Context) error {
 		start := ctx.String("start")
 		end := ctx.String("end")
@@ -84,7 +79,7 @@ var ListCommand = cli.Command{
 			Step:  step.(*model.StepEnumValue).Selected,
 		}
 		serviceID := ctx.String("service-id")
-		serviceInstanceID := ctx.String("service-instance-id")
+		serviceInstanceID := ctx.String("instance-id")
 		endpointID := ctx.String("endpoint-id")
 		traceID := ctx.String("trace-id")
 		pageNum := 1
@@ -118,7 +113,7 @@ var ListCommand = cli.Command{
 		logs, err := log.Logs(ctx, condition)
 
 		if err != nil {
-			logger.Log.Fatalln(err)
+			return err
 		}
 
 		return display.Display(ctx, &displayable.Displayable{Data: logs, Condition: condition})

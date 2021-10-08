@@ -20,63 +20,57 @@ package event
 import (
 	event "skywalking.apache.org/repo/goapi/collect/event/v3"
 
+	"github.com/apache/skywalking-cli/internal/flags"
 	"github.com/apache/skywalking-cli/internal/logger"
 	"github.com/apache/skywalking-cli/internal/model"
 	pkgevent "github.com/apache/skywalking-cli/pkg/commands/event"
 	"github.com/apache/skywalking-cli/pkg/display"
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
 
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 )
 
-var reportCommand = cli.Command{
+var reportCommand = &cli.Command{
 	Name:      "report",
 	Aliases:   []string{"r"},
 	Usage:     "Report an event to OAP server via gRPC",
 	ArgsUsage: "[parameters...]",
-	Flags: []cli.Flag{
-		cli.StringFlag{
-			Name:  "uuid",
-			Usage: "Unique `ID` of the event.",
-		},
-		cli.StringFlag{
-			Name:  "service",
-			Usage: "The service of the event occurred on.",
-		},
-		cli.StringFlag{
-			Name:  "instance",
-			Usage: "The service instance of the event occurred on.",
-		},
-		cli.StringFlag{
-			Name:  "endpoint",
-			Usage: "The endpoint of the event occurred on",
-		},
-		cli.StringFlag{
-			Name:  "name",
-			Usage: "The name of the event. For example, 'Reboot' and 'Upgrade' etc.",
-		},
-		cli.GenericFlag{
-			Name:  "type",
-			Usage: "The type of the event.",
-			Value: &model.EventTypeEnumValue{
-				Enum:     []event.Type{event.Type_Normal, event.Type_Error},
-				Default:  event.Type_Normal,
-				Selected: event.Type_Normal,
+	Flags: flags.Flags(
+		flags.InstanceFlags,
+		flags.EndpointFlags,
+
+		[]cli.Flag{
+			&cli.StringFlag{
+				Name:  "uuid",
+				Usage: "Unique `ID` of the event.",
+			},
+			&cli.StringFlag{
+				Name:  "name",
+				Usage: "The name of the event. For example, 'Reboot' and 'Upgrade' etc.",
+			},
+			&cli.GenericFlag{
+				Name:  "type",
+				Usage: "The type of the event.",
+				Value: &model.EventTypeEnumValue{
+					Enum:     []event.Type{event.Type_Normal, event.Type_Error},
+					Default:  event.Type_Normal,
+					Selected: event.Type_Normal,
+				},
+			},
+			&cli.StringFlag{
+				Name:  "message",
+				Usage: "The detail of the event. This should be a one-line message that briefly describes why the event is reported.",
+			},
+			&cli.Int64Flag{
+				Name:  "start-time",
+				Usage: "The start time (in milliseconds) of the event, measured between the current time and midnight, January 1, 1970 UTC.",
+			},
+			&cli.Int64Flag{
+				Name:  "end-time",
+				Usage: "The end time (in milliseconds) of the event, measured between the current time and midnight, January 1, 1970 UTC.",
 			},
 		},
-		cli.StringFlag{
-			Name:  "message",
-			Usage: "The detail of the event. This should be a one-line message that briefly describes why the event is reported.",
-		},
-		cli.Int64Flag{
-			Name:  "startTime",
-			Usage: "The start time (in milliseconds) of the event, measured between the current time and midnight, January 1, 1970 UTC.",
-		},
-		cli.Int64Flag{
-			Name:  "endTime",
-			Usage: "The end time (in milliseconds) of the event, measured between the current time and midnight, January 1, 1970 UTC.",
-		},
-	},
+	),
 	Action: func(ctx *cli.Context) error {
 		reply, err := pkgevent.Report(ctx)
 		if err != nil {

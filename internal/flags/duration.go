@@ -18,26 +18,42 @@
 package flags
 
 import (
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 
 	api "skywalking.apache.org/repo/goapi/query"
 
 	"github.com/apache/skywalking-cli/internal/model"
 )
 
+var startEndUsage = `"start" and "end" specify a time range during which the query is preformed, 
+		they are both optional and their default values follow the rules below: 
+		1. when "start" and "end" are both absent, "start = now - 30 minutes" and "end = now", 
+		namely past 30 minutes; 
+		2. when "start" and "end" are both present, they are aligned to the same precision by 
+		truncating the more precise one, e.g. if "start = 2019-01-01 1234, end = 2019-01-01 18", 
+		then "start" is truncated (because it's more precise) to "2019-01-01 12", and "end = 2019-01-01 18"; 
+		3. when "start" is absent and "end" is present, will determine the precision of "end" 
+		and then use the precision to calculate "start" (minus 30 units), e.g. "end = 2019-11-09 1234", 
+		the precision is "MINUTE",  so "start = end - 30 minutes = 2019-11-09 1204", 
+		and if "end = 2019-11-09 12", the precision is "HOUR", so "start = end - 30HOUR = 2019-11-08 06"; 
+		4. when "start" is present and "end" is absent, will determine the precision of "start" 
+		and then use the precision to calculate "end" (plus 30 units), e.g. "start = 2019-11-09 1204", 
+		the precision is "MINUTE", so "end = start + 30 minutes = 2019-11-09 1234", 
+		and if "start = 2019-11-08 06", the precision is "HOUR", so "end = start + 30HOUR = 2019-11-09 12".`
+
 // DurationFlags are healthcheck flags that involves a duration, composed
 // by a start time, an end time, and a step, which is commonly used
 // in most of the commands
 var DurationFlags = []cli.Flag{
-	cli.StringFlag{
+	&cli.StringFlag{
 		Name:  "start",
-		Usage: "query start `TIME`",
+		Usage: startEndUsage,
 	},
-	cli.StringFlag{
+	&cli.StringFlag{
 		Name:  "end",
-		Usage: "query end `TIME`",
+		Usage: `end time of the query duration. Check the usage of "start"`,
 	},
-	cli.GenericFlag{
+	&cli.GenericFlag{
 		Name:   "step",
 		Hidden: true,
 		Value: &model.StepEnumValue{
@@ -46,8 +62,9 @@ var DurationFlags = []cli.Flag{
 			Selected: api.StepMinute,
 		},
 	},
-	cli.StringFlag{
-		Name:  "durationType",
-		Usage: "the type of duration",
+	&cli.StringFlag{
+		Name:   "duration-type",
+		Usage:  "the type of duration",
+		Hidden: true,
 	},
 }

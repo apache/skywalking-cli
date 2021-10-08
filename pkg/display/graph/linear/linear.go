@@ -32,7 +32,7 @@ import (
 	"github.com/mum4k/termdash/terminal/terminalapi"
 	"github.com/mum4k/termdash/widgets/linechart"
 
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 )
 
 const RootID = "root"

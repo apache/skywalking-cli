@@ -21,19 +21,38 @@ import (
 	"fmt"
 
 	operatorv1alpha1 "github.com/apache/skywalking-swck/apis/operator/v1alpha1"
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 	"gopkg.in/yaml.v2"
 	controllerruntime "sigs.k8s.io/controller-runtime"
 
 	"github.com/apache/skywalking-cli/assets"
 )
 
-var uiCmd = cli.Command{
-	Name:      "ui",
-	ShortName: "u",
-	Usage:     "Output the Kubernetes manifest for installing UI to stdout",
-	UsageText: usage("ui"),
-	Flags:     flags,
+var uiCmd = &cli.Command{
+	Name:    "ui",
+	Aliases: []string{"u"},
+	Usage:   "Output the Kubernetes manifest for installing UI to stdout",
+	UsageText: usage("ui", `Some examples of customized resource overlay files (ui-cr.yaml)
+
+1. Set OAP server address to 'oap.test'', use an ingress to expose UI
+
+	spec:
+	  OAPServerAddress: oap.test
+	  service:
+		ingress:
+		  host: ui.skywalking.test
+
+2. Use a LoadBalancer to expose UI
+
+	spec:
+	  service:
+		serviceSpec:
+		  type: LoadBalancer
+		  ports:
+			- name: page
+			  port: 80
+			  targetPort: 8080`),
+	Flags: flags,
 	Action: func(ctx *cli.Context) error {
 		base := &operatorv1alpha1.UI{
 			TypeMeta: controllerruntime.TypeMeta{
@@ -52,9 +71,6 @@ var uiCmd = cli.Command{
 		if err := base.ValidateCreate(); err != nil {
 			return fmt.Errorf("failed to validate UI: %v", err)
 		}
-		if err := render("ui", ctx, base, &operatorv1alpha1.UI{}); err != nil {
-			return err
-		}
-		return nil
+		return render("ui", ctx, base, &operatorv1alpha1.UI{})
 	},
 }

@@ -17,7 +17,7 @@
 
 mutation ($condition: ProfileTaskCreationRequest) {
     result: createProfileTask(creationRequest: $condition) {
-      errorReason: errorReason
-      id: id
+        errorReason: errorReason
+        id: id
     }
 }

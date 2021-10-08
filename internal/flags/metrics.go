@@ -18,7 +18,7 @@
 package flags
 
 import (
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 
 	"github.com/apache/skywalking-cli/internal/model"
 
@@ -27,25 +27,14 @@ import (
 
 // MetricsFlags can be reused in metrics commands.
 var MetricsFlags = []cli.Flag{
-	cli.StringFlag{
+	&cli.StringFlag{
 		Name:     "name",
-		Usage:    "metrics `name`, which should be defined in OAL script",
+		Usage:    "`metrics` name, which should be defined in OAL files",
 		Required: true,
 	},
-	cli.StringFlag{
-		Name:     "service",
-		Usage:    "the name of the service",
-		Value:    "",
-		Required: false,
-	},
-	cli.BoolTFlag{
-		Name:     "isNormal",
-		Usage:    "set the service to normal or unnormal",
-		Required: false,
-	},
-	cli.GenericFlag{
+	&cli.GenericFlag{
 		Name:  "scope",
-		Usage: "the scope of the metrics entity",
+		Usage: "the `scope` of the metrics entity, see https://skywalking.apache.org/docs/main/latest/en/concepts-and-designs/scope-definitions/",
 		Value: &model.ScopeEnumValue{
 			Enum:     api.AllScope,
 			Default:  api.ScopeService,

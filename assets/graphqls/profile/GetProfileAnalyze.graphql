@@ -18,14 +18,14 @@
 query ($segmentId: String!, $timeRanges: [ProfileAnalyzeTimeRange!]!) {
     result: getProfileAnalyze(segmentId: $segmentId, timeRanges: $timeRanges) {
         trees {
-    		elements {
-              id
-              parentId
-              codeSignature
-              duration
-              durationChildExcluded
-              count
-    		}
-    	}
+            elements {
+                id
+                parentId
+                codeSignature
+                duration
+                durationChildExcluded
+                count
+            }
+        }
     }
 }

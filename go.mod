@@ -1,6 +1,6 @@
 module github.com/apache/skywalking-cli
 
-go 1.13
+go 1.16
 
 replace golang.org/x/crypto v0.0.0-20201002170205-7f63de1d35b0 => golang.org/x/crypto v0.0.0-20201216223049-8b5274cf687f
 
@@ -14,7 +14,7 @@ require (
 	github.com/olekukonko/tablewriter v0.0.2
 	github.com/sirupsen/logrus v1.7.0
 	github.com/spf13/viper v1.7.0
-	github.com/urfave/cli v1.22.1
+	github.com/urfave/cli/v2 v2.3.0
 	golang.org/x/crypto v0.0.0-20201216223049-8b5274cf687f // indirect
 	google.golang.org/grpc v1.38.0
 	gopkg.in/yaml.v2 v2.4.0

@@ -18,15 +18,15 @@
 package dashboard
 
 import (
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 
 	"github.com/apache/skywalking-cli/internal/commands/dashboard/global"
 )
 
-var Command = cli.Command{
-	Name:      "dashboard",
-	ShortName: "db",
-	Usage:     "Dashboard related sub-command",
+var Command = &cli.Command{
+	Name:    "dashboard",
+	Aliases: []string{"db", "dash"},
+	Usage:   "Dashboard related sub-command",
 	Subcommands: cli.Commands{
 		global.GlobalCommand,
 		global.Metrics,

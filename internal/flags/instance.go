@@ -17,15 +17,38 @@
 
 package flags
 
-import "github.com/urfave/cli"
+import (
+	"github.com/urfave/cli/v2"
+)
 
-var InstanceServiceIDFlags = []cli.Flag{
-	cli.StringFlag{
-		Name:  "service-id",
-		Usage: "query service `ID` (priority over \"--service-name\")",
+// InstanceFlags take either service instance id or service instance name as input,
+// and transform to the other one.
+var InstanceFlags = []cli.Flag{
+	&cli.StringFlag{
+		Name:     "instance-id",
+		Usage:    "`instance id`, if you don't have instance id, use `--instance-name` instead",
+		Required: false,
 	},
-	cli.StringFlag{
-		Name:  "service-name",
-		Usage: "query service `Name`",
+	&cli.StringFlag{
+		Name:     "instance-name",
+		Usage:    "`instance name`, if you already have instance id, prefer to use `--instance-id`",
+		Required: false,
 	},
 }
+
+// InstanceRelationFlags take either destination instance id or destination instance name as input,
+// and transform to the other one.
+var InstanceRelationFlags = append(
+	InstanceFlags,
+
+	&cli.StringFlag{
+		Name:     "dest-instance-id",
+		Usage:    "`destination` instance id, if you don't have instance id, use `--dest-instance-name` instead",
+		Required: false,
+	},
+	&cli.StringFlag{
+		Name:     "dest-instance-name",
+		Usage:    "`destination` instance name, if you already have instance id, prefer to use `--dest-instance-id`",
+		Required: false,
+	},
+)

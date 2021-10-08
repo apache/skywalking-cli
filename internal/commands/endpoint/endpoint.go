@@ -18,13 +18,13 @@
 package endpoint
 
 import (
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 )
 
-var Command = cli.Command{
-	Name:      "endpoint",
-	ShortName: "e",
-	Usage:     "Endpoint related sub-command",
+var Command = &cli.Command{
+	Name:    "endpoint",
+	Aliases: []string{"e"},
+	Usage:   "Endpoint related sub-command",
 	Subcommands: cli.Commands{
 		ListCommand,
 	},

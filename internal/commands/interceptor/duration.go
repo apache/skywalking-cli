@@ -25,13 +25,13 @@ import (
 
 	"github.com/apache/skywalking-cli/pkg/graphql/utils"
 
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 
 	"github.com/apache/skywalking-cli/internal/logger"
 )
 
 func TryParseTime(unparsed string) (api.Step, time.Time, error) {
-	var possibleError error = nil
+	var possibleError error
 	for step, layout := range utils.StepFormats {
 		t, err := time.Parse(layout, unparsed)
 		if err == nil {
@@ -47,7 +47,7 @@ func TryParseTime(unparsed string) (api.Step, time.Time, error) {
 func DurationInterceptor(ctx *cli.Context) error {
 	start := ctx.String("start")
 	end := ctx.String("end")
-	timezone := ctx.GlobalString("timezone")
+	timezone := ctx.String("timezone")
 
 	startTime, endTime, step, dt := ParseDuration(start, end, timezone)
 
@@ -57,7 +57,7 @@ func DurationInterceptor(ctx *cli.Context) error {
 		return err
 	} else if err := ctx.Set("step", step.String()); err != nil {
 		return err
-	} else if err := ctx.Set("durationType", dt.String()); err != nil {
+	} else if err := ctx.Set("duration-type", dt.String()); err != nil {
 		return err
 	}
 	return nil

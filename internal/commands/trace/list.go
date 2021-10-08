@@ -18,15 +18,15 @@
 package trace
 
 import (
+	"fmt"
 	"strings"
 
 	api "skywalking.apache.org/repo/goapi/query"
 
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 
 	"github.com/apache/skywalking-cli/internal/commands/interceptor"
 	"github.com/apache/skywalking-cli/internal/flags"
-	"github.com/apache/skywalking-cli/internal/logger"
 	"github.com/apache/skywalking-cli/internal/model"
 	"github.com/apache/skywalking-cli/pkg/display"
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
@@ -35,41 +35,53 @@ import (
 
 const DefaultPageSize = 15
 
-var ListCommand = cli.Command{
-	Name:      "list",
-	ShortName: "ls",
-	Usage:     "query traces",
+var ListCommand = &cli.Command{
+	Name:    "list",
+	Aliases: []string{"ls"},
+	Usage:   "Query the monitored traces",
+	UsageText: `Query the monitored traces.
+
+Examples:
+1. Query all monitored traces:
+$ swctl trace ls
+
+2. Query all monitored traces of service "business-zone::projectB":
+$ swctl trace ls --service-name "business-zone::projectB"
+
+3. Query all monitored traces of endpoint "/projectB/{value}" of service "business-zone::projectB":
+$ swctl trace ls --service-name "business-zone::projectB" --endpoint-name "/projectB/{value}"
+
+3. Query the monitored trace of id "321661b1-9a31-4e12-ad64-c8f6711f108d":
+$ swctl trace ls --trace-id "321661b1-9a31-4e12-ad64-c8f6711f108d"
+`,
 	Flags: flags.Flags(
 		flags.DurationFlags,
+		flags.InstanceFlags,
+		flags.EndpointFlags,
 		[]cli.Flag{
-			cli.StringFlag{
-				Name:     "service-id",
-				Usage:    "service id",
-				Required: false,
-			},
-			cli.StringFlag{
-				Name:     "service-instance-id",
-				Usage:    "service instance id",
-				Required: false,
-			},
-			cli.StringFlag{
+			&cli.StringFlag{
 				Name:     "trace-id",
-				Usage:    "trace id",
+				Usage:    "`id` of the trace",
 				Required: false,
 			},
-			cli.StringFlag{
+			&cli.StringFlag{
 				Name:     "tags",
-				Usage:    "key=value,key=value",
+				Usage:    "`tags` of the trace, in form of `key=value,key=value`",
 				Required: false,
+			},
+			&cli.StringFlag{
+				Name:  "order",
+				Usage: "`order` of the returned traces, can be `duration` or `startTime`",
+				Value: "duration",
 			},
 		},
 	),
-	Before: interceptor.BeforeChain([]cli.BeforeFunc{
-		interceptor.TimezoneInterceptor,
+	Before: interceptor.BeforeChain(
 		interceptor.DurationInterceptor,
-	}),
+		interceptor.ParseInstance(false),
+		interceptor.ParseEndpoint(false),
+	),
 	Action: func(ctx *cli.Context) error {
-
 		start := ctx.String("start")
 		end := ctx.String("end")
 		step := ctx.Generic("step")
@@ -80,7 +92,8 @@ var ListCommand = cli.Command{
 			Step:  step.(*model.StepEnumValue).Selected,
 		}
 		serviceID := ctx.String("service-id")
-		serviceInstanceID := ctx.String("service-instance-id")
+		endpointID := ctx.String("endpoint-id")
+		serviceInstanceID := ctx.String("instance-id")
 		traceID := ctx.String("trace-id")
 		tagStr := ctx.String("tags")
 		var tags []*api.SpanTag = nil
@@ -100,23 +113,33 @@ var ListCommand = cli.Command{
 			NeedTotal: &needTotal,
 		}
 
+		var order api.QueryOrder
+		switch orderStr := ctx.String("order"); orderStr {
+		case "duration":
+			order = api.QueryOrderByDuration
+		case "startTime":
+			order = api.QueryOrderByStartTime
+		default:
+			return fmt.Errorf(`invalid order %v, must be one of "duration" or "startTime"`, orderStr)
+		}
+
 		condition := &api.TraceQueryCondition{
 			ServiceID:         &serviceID,
 			ServiceInstanceID: &serviceInstanceID,
 			TraceID:           &traceID,
-			EndpointID:        nil,
+			EndpointID:        &endpointID,
 			QueryDuration:     &duration,
 			MinTraceDuration:  nil,
 			MaxTraceDuration:  nil,
 			TraceState:        api.TraceStateAll,
-			QueryOrder:        api.QueryOrderByDuration,
+			QueryOrder:        order,
 			Tags:              tags,
 			Paging:            &paging,
 		}
 		traces, err := trace.Traces(ctx, condition)
 
 		if err != nil {
-			logger.Log.Fatalln(err)
+			return err
 		}
 
 		return display.Display(ctx, &displayable.Displayable{Data: traces, Condition: condition})

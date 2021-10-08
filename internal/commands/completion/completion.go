@@ -18,13 +18,13 @@
 package completion
 
 import (
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 )
 
-var Command = cli.Command{
+var Command = &cli.Command{
 	Name:  "completion",
 	Usage: "Output shell completion code for bash and powershell",
-	Subcommands: []cli.Command{
+	Subcommands: []*cli.Command{
 		bashCommand,
 		powershellCommand,
 	},

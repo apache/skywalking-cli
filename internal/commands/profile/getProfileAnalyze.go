@@ -21,27 +21,26 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/apache/skywalking-cli/internal/logger"
 	"github.com/apache/skywalking-cli/pkg/display"
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
 	"github.com/apache/skywalking-cli/pkg/graphql/profile"
 
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 
 	api "skywalking.apache.org/repo/goapi/query"
 )
 
-var getProfiledAnalyzeCommand = cli.Command{
+var getProfiledAnalyzeCommand = &cli.Command{
 	Name:      "profiled-analyze",
 	Aliases:   []string{"pa"},
-	Usage:     "analyze profiled segment.",
+	Usage:     "Analyze profiled segment.",
 	ArgsUsage: "[parameters...]",
 	Flags: []cli.Flag{
-		cli.StringFlag{
+		&cli.StringFlag{
 			Name:  "segment-id",
 			Usage: "profiled segment id.",
 		},
-		cli.StringFlag{
+		&cli.StringFlag{
 			Name:  "time-ranges",
 			Usage: "need to analyze time ranges in the segment: start-end,start-end",
 		},
@@ -70,7 +69,7 @@ var getProfiledAnalyzeCommand = cli.Command{
 		analysis, err := profile.GetProfileAnalyze(ctx, segmentID, timeRanges)
 
 		if err != nil {
-			logger.Log.Fatalln(err)
+			return err
 		}
 
 		return display.Display(ctx, &displayable.Displayable{Data: analysis, Condition: segmentID})

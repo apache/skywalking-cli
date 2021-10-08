@@ -21,14 +21,14 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 )
 
 // ParseParameters parses parameters of the event message from args.
 func ParseParameters(paras cli.Args) (map[string]string, error) {
-	ret := make(map[string]string, len(paras))
+	ret := make(map[string]string, paras.Len())
 
-	for _, para := range paras {
+	for _, para := range paras.Slice() {
 		sepIndex := strings.Index(para, "=")
 		// To make sure that len(k) > 0 && len(v) > 0
 		if len(para) >= 3 && sepIndex >= 1 && sepIndex < len(para)-1 {
