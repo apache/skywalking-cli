@@ -37,8 +37,6 @@ GO_LINT = $(GO_PATH)/bin/golangci-lint
 GO_LICENSER = $(GO_PATH)/bin/go-licenser
 ARCH := $(shell uname)
 OSNAME := $(if $(findstring Darwin,$(ARCH)),darwin,linux)
-GOBINDATA_VERSION := v3.21.0
-GO_BINDATA = $(GO_PATH)/bin/go-bindata
 GO_BUILD_FLAGS = -v
 GO_BUILD_LDFLAGS = -X main.version=$(VERSION)
 
@@ -52,21 +50,11 @@ all: clean license deps lint test build
 
 tools:
 	mkdir -p $(GO_PATH)/bin
-	$(GO_BINDATA) -v || curl --location --output $(GO_BINDATA) https://github.com/kevinburke/go-bindata/releases/download/$(GOBINDATA_VERSION)/go-bindata-$(OSNAME)-amd64 \
-		&& chmod +x $(GO_BINDATA)
 	$(GO_LINT) version || curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(GO_PATH)/bin
 	$(GO_LICENSER) -version || GO111MODULE=off $(GO_GET) -u github.com/elastic/go-licenser
 
 deps: tools
 	$(GO_GET) -v -t -d ./...
-
-.PHONY: assets
-assets: tools
-	cd assets \
-		&& $(GO_BINDATA) --nocompress --nometadata --pkg assets --ignore '.*\.go' \
-			-o "assets.gen.go" ./... \
-		&& ../scripts/build-header.sh assets.gen.go \
-		&& cd ..
 
 .PHONY: $(PLATFORMS)
 $(PLATFORMS): clean
@@ -156,13 +144,10 @@ docker:
 docker.push: docker
 	docker push $(HUB)/$(APP_NAME):$(VERSION)
 
-.PHONY: test-commands
-test-commands:
-	@if ! docker run --name oap -p 12800:12800 -p 11800:11800 -d -e SW_HEALTH_CHECKER=default -e SW_TELEMETRY=prometheus apache/skywalking-oap-server:8.4.0-es7 > /dev/null 2>&1;then \
-		docker container stop oap; \
-		docker container prune -f; \
-		docker run --name oap -p 12800:12800 -p 11800:11800 -d -e SW_HEALTH_CHECKER=default -e SW_TELEMETRY=prometheus apache/skywalking-oap-server:8.4.0-es7; \
-	fi
-	VERSION=$(VERSION) ./scripts/test_commands.sh
-	@docker container stop oap
-	@docker container prune -f
+.PHONY: install
+install: $(OSNAME)
+	-cp $(OUT_DIR)/$(BINARY)-$(VERSION)-$(OSNAME)-$(ARCH) $(DESTDIR)/swctl
+
+.PHONY: uninstall
+uninstall: $(OSNAME)
+	-rm $(DESTDIR)/$(PROJECT)/swctl

@@ -19,7 +19,7 @@ package healthcheck
 
 import (
 	"github.com/machinebox/graphql"
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 
 	api "skywalking.apache.org/repo/goapi/query"
 

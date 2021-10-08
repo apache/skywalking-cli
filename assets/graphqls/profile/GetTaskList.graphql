@@ -26,10 +26,10 @@ query ($serviceId: ID, $endpointName: String) {
         dumpPeriod
         maxSamplingCount
         logs {
-          id
-          instanceId
-          operationType
-          operationTime
+            id
+            instanceId
+            operationType
+            operationTime
         }
     }
 }

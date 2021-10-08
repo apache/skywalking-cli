@@ -25,25 +25,30 @@ import (
 
 	"github.com/apache/skywalking-cli/internal/commands/interceptor"
 	"github.com/apache/skywalking-cli/internal/flags"
-	"github.com/apache/skywalking-cli/internal/logger"
 	"github.com/apache/skywalking-cli/internal/model"
 	"github.com/apache/skywalking-cli/pkg/display"
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
 	"github.com/apache/skywalking-cli/pkg/graphql/metrics"
 	"github.com/apache/skywalking-cli/pkg/graphql/utils"
 
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 )
 
-var Multiple = cli.Command{
+var Multiple = &cli.Command{
 	Name:  "multiple-linear",
-	Usage: "Query multiple linear metrics defined in backend OAL",
+	Usage: "Query multiple linear-type metrics defined in backend OAL",
+	UsageText: `Query multiple linear-type metrics defined in backend OAL.
+
+Examples:
+1. Query the global percentiles:
+$ swctl metrics multiple-linear --name all_percentile`,
 	Flags: flags.Flags(
 		flags.DurationFlags,
 		flags.MetricsFlags,
-		flags.EntityFlags,
+		flags.InstanceRelationFlags,
+		flags.EndpointRelationFlags,
 		[]cli.Flag{
-			cli.StringFlag{
+			&cli.StringFlag{
 				Name:     "labels",
 				Usage:    "the labels you need to query",
 				Required: false,
@@ -51,10 +56,11 @@ var Multiple = cli.Command{
 			},
 		},
 	),
-	Before: interceptor.BeforeChain([]cli.BeforeFunc{
-		interceptor.TimezoneInterceptor,
+	Before: interceptor.BeforeChain(
 		interceptor.DurationInterceptor,
-	}),
+		interceptor.ParseInstanceRelation(false),
+		interceptor.ParseEndpointRelation(false),
+	),
 	Action: func(ctx *cli.Context) error {
 		end := ctx.String("end")
 		start := ctx.String("start")
@@ -62,7 +68,10 @@ var Multiple = cli.Command{
 
 		metricsName := ctx.String("name")
 		labels := ctx.String("labels")
-		entity := interceptor.ParseEntity(ctx)
+		entity, err := interceptor.ParseEntity(ctx)
+		if err != nil {
+			return err
+		}
 
 		if *entity.ServiceName == "" && entity.Scope != api.ScopeAll {
 			return fmt.Errorf("the name of service should be specified when metrics' scope is not `All`")
@@ -76,11 +85,11 @@ var Multiple = cli.Command{
 
 		metricsValuesArray, err := metrics.MultipleLinearIntValues(ctx, api.MetricsCondition{
 			Name:   metricsName,
-			Entity: interceptor.ParseEntity(ctx),
+			Entity: entity,
 		}, strings.Split(labels, ","), duration)
 
 		if err != nil {
-			logger.Log.Fatalln(err)
+			return err
 		}
 
 		reshaped := utils.MetricsValuesArrayToMap(duration, metricsValuesArray)

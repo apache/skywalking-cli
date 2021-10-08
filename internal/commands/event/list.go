@@ -23,45 +23,37 @@ import (
 
 	"github.com/apache/skywalking-cli/internal/commands/interceptor"
 	"github.com/apache/skywalking-cli/internal/flags"
-	"github.com/apache/skywalking-cli/internal/logger"
 	"github.com/apache/skywalking-cli/internal/model"
 	"github.com/apache/skywalking-cli/pkg/display"
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
 	eventQl "github.com/apache/skywalking-cli/pkg/graphql/event"
 
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 )
 
 const DefaultPageSize = 15
 
-var listCommand = cli.Command{
-	Name:      "list",
-	ShortName: "ls",
-	Usage:     "List events",
+var listCommand = &cli.Command{
+	Name:    "list",
+	Aliases: []string{"ls"},
+	Usage:   "List events",
+	UsageText: `List events
+
+Examples:
+1. List all events:
+$ swctl event list
+`,
 	Flags: flags.Flags(
 		flags.DurationFlags,
+		flags.InstanceFlags,
+		flags.EndpointFlags,
 		[]cli.Flag{
-			cli.StringFlag{
-				Name:     "service",
-				Usage:    "service name",
-				Required: false,
-			},
-			cli.StringFlag{
-				Name:     "instance",
-				Usage:    "service instance name",
-				Required: false,
-			},
-			cli.StringFlag{
-				Name:     "endpoint",
-				Usage:    "endpoint name",
-				Required: false,
-			},
-			cli.StringFlag{
+			&cli.StringFlag{
 				Name:     "name",
 				Usage:    "event name",
 				Required: false,
 			},
-			cli.GenericFlag{
+			&cli.GenericFlag{
 				Name:  "type",
 				Usage: "the type of the event",
 				Value: &model.EventTypeEnumValue{
@@ -72,10 +64,12 @@ var listCommand = cli.Command{
 			},
 		},
 	),
-	Before: interceptor.BeforeChain([]cli.BeforeFunc{
-		interceptor.TimezoneInterceptor,
+	Before: interceptor.BeforeChain(
 		interceptor.DurationInterceptor,
-	}),
+		interceptor.ParseService(false),
+		interceptor.ParseInstance(false),
+		interceptor.ParseEndpoint(false),
+	),
 	Action: func(ctx *cli.Context) error {
 		start := ctx.String("start")
 		end := ctx.String("end")
@@ -86,9 +80,9 @@ var listCommand = cli.Command{
 			End:   end,
 			Step:  step.(*model.StepEnumValue).Selected,
 		}
-		serviceName := ctx.String("service")
-		serviceInstanceName := ctx.String("instance")
-		endpointName := ctx.String("endpoint")
+		serviceName := ctx.String("service-name")
+		serviceInstanceName := ctx.String("instance-name")
+		endpointName := ctx.String("endpoint-name")
 		name := ctx.String("name")
 		eventType := api.EventType(ctx.Generic("type").(*model.EventTypeEnumValue).String())
 		pageNum := 1
@@ -115,7 +109,7 @@ var listCommand = cli.Command{
 		events, err := eventQl.Events(ctx, condition)
 
 		if err != nil {
-			logger.Log.Fatalln(err)
+			return err
 		}
 
 		return display.Display(ctx, &displayable.Displayable{Data: events, Condition: condition})

@@ -21,8 +21,45 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 )
+
+type args []string
+
+func (a *args) Get(n int) string {
+	if len(*a) > n {
+		return (*a)[n]
+	}
+	return ""
+}
+
+func (a *args) First() string {
+	return a.Get(0)
+}
+
+func (a *args) Tail() []string {
+	if a.Len() >= 2 {
+		tail := []string((*a)[1:])
+		ret := make([]string, len(tail))
+		copy(ret, tail)
+		return ret
+	}
+	return []string{}
+}
+
+func (a *args) Len() int {
+	return len(*a)
+}
+
+func (a *args) Present() bool {
+	return a.Len() != 0
+}
+
+func (a *args) Slice() []string {
+	ret := make([]string, len(*a))
+	copy(ret, *a)
+	return ret
+}
 
 func TestParseParameters(t *testing.T) {
 	tests := []struct {
@@ -33,28 +70,28 @@ func TestParseParameters(t *testing.T) {
 	}{
 		{
 			name:    "no parameters",
-			args:    cli.Args([]string{}),
+			args:    &args{},
 			want:    map[string]string{},
 			wantErr: false,
 		},
 		{
 			name: "all parameters are invalid",
-			args: cli.Args([]string{
+			args: &args{
 				"key",
 				"key=",
 				"=value",
 				"=",
-			}),
+			},
 			want:    nil,
 			wantErr: true,
 		},
 		{
 			name: "all parameters are valid",
-			args: cli.Args([]string{
+			args: &args{
 				"key=value",
 				"k=v===",
 				"kk=====",
-			}),
+			},
 			want: map[string]string{
 				"key": "value",
 				"k":   "v===",

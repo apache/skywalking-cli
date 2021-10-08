@@ -18,56 +18,41 @@
 package profile
 
 import (
-	"fmt"
-
-	"github.com/apache/skywalking-cli/internal/logger"
+	"github.com/apache/skywalking-cli/internal/commands/interceptor"
+	"github.com/apache/skywalking-cli/internal/flags"
 	"github.com/apache/skywalking-cli/pkg/display"
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
-	"github.com/apache/skywalking-cli/pkg/graphql/metadata"
 	"github.com/apache/skywalking-cli/pkg/graphql/profile"
 
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 )
 
-var getTaskListCommand = cli.Command{
-	Name:      "list",
-	Aliases:   []string{"l"},
-	Usage:     "query profile task list",
-	ArgsUsage: "[parameters...]",
-	Flags: []cli.Flag{
-		cli.StringFlag{
-			Name:  "service-id",
-			Usage: "`<service id>` whose profile task are to be searched",
-		},
-		cli.StringFlag{
-			Name:  "service-name",
-			Usage: "`<service name>` whose profile task are to be searched",
-		},
-		cli.StringFlag{
-			Name:  "endpoint",
-			Usage: "`<endpoint>` whose profile task are to be searched",
-		},
-	},
+var getTaskListCommand = &cli.Command{
+	Name:    "list",
+	Aliases: []string{"l"},
+	Usage:   "Query profile task list",
+	UsageText: `Query profile task list
+
+Examples:
+1. Query all profiling tasks
+$ swctl profile list --service-name=service-name --endpoint-name=endpoint
+
+2. Query profiling tasks of service "business-zone::projectC", endpoint "/projectC/{value}"
+$ swctl profile list --service-name=business-zone::projectC --endpoint-name=/projectC/{value}`,
+	Flags: flags.Flags(
+		flags.EndpointFlags,
+	),
+	Before: interceptor.BeforeChain(
+		interceptor.ParseEndpoint(false),
+	),
 	Action: func(ctx *cli.Context) error {
 		serviceID := ctx.String("service-id")
-		if serviceID == "" {
-			serviceName := ctx.String("service-name")
-			if serviceName == "" {
-				return fmt.Errorf(`either flags "service-id" or "service-name" must be set`)
-			}
-			service, err := metadata.SearchService(ctx, serviceName)
-			if err != nil {
-				return err
-			}
-			serviceID = service.ID
-		}
-
-		endpoint := ctx.String("endpoint")
+		endpoint := ctx.String("endpoint-name")
 
 		task, err := profile.GetTaskList(ctx, serviceID, endpoint)
 
 		if err != nil {
-			logger.Log.Fatalln(err)
+			return err
 		}
 
 		return display.Display(ctx, &displayable.Displayable{Data: task, Condition: serviceID})

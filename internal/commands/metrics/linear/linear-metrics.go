@@ -20,7 +20,6 @@ package linear
 import (
 	"github.com/apache/skywalking-cli/internal/commands/interceptor"
 	"github.com/apache/skywalking-cli/internal/flags"
-	"github.com/apache/skywalking-cli/internal/logger"
 	"github.com/apache/skywalking-cli/internal/model"
 	"github.com/apache/skywalking-cli/pkg/display"
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
@@ -29,28 +28,43 @@ import (
 
 	api "skywalking.apache.org/repo/goapi/query"
 
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 )
 
-var Single = cli.Command{
+var Single = &cli.Command{
 	Name:  "linear",
-	Usage: "Query linear metrics defined in backend OAL",
+	Usage: "Query linear-type metrics defined in backend OAL",
+	UsageText: `Query linear-type metrics defined in backend OAL
+
+Examples:
+1. Query the response time of service "business-zone::projectB"
+$ swctl metrics linear --name=service_resp_time --service-name business-zone::projectB
+
+2. Query the response time of service instance
+$ swctl metrics linear --name=service_instance_resp_time --service-name business-zone::projectB \
+	--instance-name d708c6bfea9f4d50902d1743302a6f50@10.170.0.12
+`,
 	Flags: flags.Flags(
 		flags.DurationFlags,
 		flags.MetricsFlags,
-		flags.EntityFlags,
+		flags.InstanceRelationFlags,
+		flags.EndpointRelationFlags,
 	),
-	Before: interceptor.BeforeChain([]cli.BeforeFunc{
-		interceptor.TimezoneInterceptor,
+	Before: interceptor.BeforeChain(
 		interceptor.DurationInterceptor,
-	}),
+		interceptor.ParseInstanceRelation(false),
+		interceptor.ParseEndpointRelation(false),
+	),
 	Action: func(ctx *cli.Context) error {
 		end := ctx.String("end")
 		start := ctx.String("start")
 		step := ctx.Generic("step")
 
 		metricsName := ctx.String("name")
-		entity := interceptor.ParseEntity(ctx)
+		entity, err := interceptor.ParseEntity(ctx)
+		if err != nil {
+			return err
+		}
 
 		duration := api.Duration{
 			Start: start,
@@ -64,7 +78,7 @@ var Single = cli.Command{
 		}, duration)
 
 		if err != nil {
-			logger.Log.Fatalln(err)
+			return err
 		}
 
 		return display.Display(ctx, &displayable.Displayable{Data: utils.MetricsValuesToMap(duration, metricsValues)})

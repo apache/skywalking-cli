@@ -27,55 +27,59 @@ import (
 
 	"github.com/apache/skywalking-swck/pkg/kubernetes"
 	"github.com/apache/skywalking-swck/pkg/operator/repo"
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 	"gopkg.in/yaml.v2"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
-var Command = cli.Command{
-	Name:      "manifest",
-	ShortName: "mf",
-	Usage:     "Output the Kubernetes manifest for installing OAP server and UI to stdout",
-	Subcommands: []cli.Command{
+var Command = &cli.Command{
+	Name:    "manifest",
+	Aliases: []string{"mf"},
+	Usage:   "Output the Kubernetes manifest for installing OAP server and UI to stdout",
+	Subcommands: []*cli.Command{
 		oapCmd,
 		uiCmd,
 	},
 }
 
 var flags = []cli.Flag{
-	cli.StringFlag{
+	&cli.StringFlag{
 		Name:     "name",
 		Usage:    "The name of prefix of generated resources",
 		Required: false,
 		Value:    "skywalking",
 	},
-	cli.StringFlag{
+	&cli.StringFlag{
 		Name:     "namespace",
 		Usage:    "The namespace where resource will be deployed",
 		Required: false,
 		Value:    "skywalking-system",
 	},
-	cli.StringFlag{
+	&cli.StringFlag{
 		Name:     "f",
 		Usage:    "The custom resource file describing custom resources defined by swck",
 		Required: false,
 	},
 }
 
-func usage(command string) string {
+func usage(command, exampleOverlays string) string {
 	return fmt.Sprintf(`
-# Output manifest with default custom resource
-swctl install manifest %s
+Examples:
 
-# Load overlay custom resource from flag
-swctl install manifest %s -f %s-cr.yaml
+%s
 
-# Load overlay custom resource from stdin
-cat %s-cr.yaml | swctl install manifest %s -f=-
+1. Output manifest with default custom resource
+$ swctl install manifest %s
 
-# Apply directly to Kubernetes
-swctl install manifest %s -f %s-cr.yaml | kubectl apply -f-
-`, command, command, command, command, command, command, command)
+2. Load overlay custom resource from flag
+$ swctl install manifest %s -f %s-cr.yaml
+
+3. Load overlay custom resource from stdin
+$ cat %s-cr.yaml | swctl install manifest %s -f=-
+
+4. Apply directly to Kubernetes
+$ swctl install manifest %s -f %s-cr.yaml | kubectl apply -f-
+`, exampleOverlays, command, command, command, command, command, command, command)
 }
 
 func loadOverlay(file string, in io.Reader, out interface{}) error {

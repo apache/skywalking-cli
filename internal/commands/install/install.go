@@ -18,16 +18,16 @@
 package install
 
 import (
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 
 	"github.com/apache/skywalking-cli/internal/commands/install/manifest"
 )
 
-var Command = cli.Command{
-	Name:      "install",
-	ShortName: "i",
-	Usage:     "Generates install manifest and applies it to a cluster",
-	Subcommands: []cli.Command{
+var Command = &cli.Command{
+	Name:    "install",
+	Aliases: []string{"i"},
+	Usage:   "Generates install manifest and applies it to a cluster",
+	Subcommands: []*cli.Command{
 		manifest.Command,
 	},
 }

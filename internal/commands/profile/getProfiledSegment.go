@@ -18,21 +18,24 @@
 package profile
 
 import (
-	"github.com/apache/skywalking-cli/internal/logger"
 	"github.com/apache/skywalking-cli/pkg/display"
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
 	"github.com/apache/skywalking-cli/pkg/graphql/profile"
 
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 )
 
-var getProfiledSegmentCommand = cli.Command{
-	Name:      "profiled-segment",
-	Aliases:   []string{"ps"},
-	Usage:     "query profile task segment list",
-	ArgsUsage: "[parameters...]",
+var getProfiledSegmentCommand = &cli.Command{
+	Name:    "profiled-segment",
+	Aliases: []string{"ps"},
+	Usage:   "Analyze profiled segment with time ranges",
+	UsageText: `Analyze profiled segment with time ranges.
+
+Examples:
+1. Analyze profiled segment with time ranges.
+$ swctl profile profiled-segment --segment-id=<segment-id>`,
 	Flags: []cli.Flag{
-		cli.StringFlag{
+		&cli.StringFlag{
 			Name:  "segment-id",
 			Usage: "profiled segment id.",
 		},
@@ -42,7 +45,7 @@ var getProfiledSegmentCommand = cli.Command{
 		segment, err := profile.GetProfiledSegment(ctx, segmentID)
 
 		if err != nil {
-			logger.Log.Fatalln(err)
+			return err
 		}
 
 		return display.Display(ctx, &displayable.Displayable{Data: segment, Condition: segmentID})

@@ -18,12 +18,16 @@
 package interceptor
 
 import (
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 )
 
 // BeforeChain is a convenient function to chain up multiple cli.BeforeFunc
-func BeforeChain(beforeFunctions []cli.BeforeFunc) cli.BeforeFunc {
+func BeforeChain(beforeFunctions ...cli.BeforeFunc) cli.BeforeFunc {
 	return func(ctx *cli.Context) error {
+		// --timezone is global option, it should be applied always.
+		if err := TimezoneInterceptor(ctx); err != nil {
+			return err
+		}
 		for _, beforeFunc := range beforeFunctions {
 			if err := beforeFunc(ctx); err != nil {
 				return err

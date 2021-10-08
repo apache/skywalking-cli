@@ -24,7 +24,7 @@ import (
 
 	api "skywalking.apache.org/repo/goapi/query"
 
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 
 	d "github.com/apache/skywalking-cli/pkg/display/displayable"
 	db "github.com/apache/skywalking-cli/pkg/display/graph/dashboard"

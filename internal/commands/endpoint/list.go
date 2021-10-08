@@ -18,9 +18,10 @@
 package endpoint
 
 import (
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 
-	"github.com/apache/skywalking-cli/internal/logger"
+	"github.com/apache/skywalking-cli/internal/commands/interceptor"
+	"github.com/apache/skywalking-cli/internal/flags"
 
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
 
@@ -29,30 +30,42 @@ import (
 	"github.com/apache/skywalking-cli/pkg/display"
 )
 
-var ListCommand = cli.Command{
-	Name:        "list",
-	ShortName:   "ls",
-	Usage:       "List endpoints",
-	Description: "list all endpoints if no <endpoint id> is given, otherwise, only list the given endpoint",
-	Flags: []cli.Flag{
-		cli.StringFlag{
-			Name:     "service-id",
-			Usage:    "`<service id>` whose endpoints are to be searched",
-			Required: true,
+var ListCommand = &cli.Command{
+	Name:    "list",
+	Aliases: []string{"ls"},
+	Usage:   `list all monitored endpoints of the given "--service-id" or "--service-name"`,
+	UsageText: `This command lists all endpoints of the service, via service id or service name.
+
+Examples:
+1. List all endpoints of the service by service name "business-zone::projectC":
+$ swctl endpoint ls --service-name business-zone::projectC
+
+2. List all endpoints of the service by service id "YnVzaW5lc3Mtem9uZTo6cHJvamVjdEM=.1":
+$ swctl endpoint ls --service-id YnVzaW5lc3Mtem9uZTo6cHJvamVjdEM=.1
+
+3. Search endpoints like "projectC" of the service "business-zone::projectC":
+$ swctl endpoint ls --service-name business-zone::projectC --keyword projectC`,
+	Flags: flags.Flags(
+		flags.ServiceFlags,
+
+		[]cli.Flag{
+			&cli.IntFlag{
+				Name:     "limit",
+				Usage:    "returns at most `<limit>` endpoints",
+				Required: false,
+				Value:    100,
+			},
+			&cli.StringFlag{
+				Name:     "keyword",
+				Usage:    "`<keyword>` of the endpoint name to search for, empty to search all",
+				Required: false,
+				Value:    "",
+			},
 		},
-		cli.IntFlag{
-			Name:     "limit",
-			Usage:    "returns at most `<limit>` endpoints",
-			Required: false,
-			Value:    100,
-		},
-		cli.StringFlag{
-			Name:     "keyword",
-			Usage:    "`<keyword>` of the endpoint name to search for, empty to search all",
-			Required: false,
-			Value:    "",
-		},
-	},
+	),
+	Before: interceptor.BeforeChain(
+		interceptor.ParseService(true),
+	),
 	Action: func(ctx *cli.Context) error {
 		serviceID := ctx.String("service-id")
 		limit := ctx.Int("limit")
@@ -61,7 +74,7 @@ var ListCommand = cli.Command{
 		endpoints, err := metadata.SearchEndpoints(ctx, serviceID, keyword, limit)
 
 		if err != nil {
-			logger.Log.Fatalln(err)
+			return err
 		}
 
 		return display.Display(ctx, &displayable.Displayable{Data: endpoints})

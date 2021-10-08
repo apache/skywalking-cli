@@ -18,21 +18,26 @@
 package list
 
 import (
-	"github.com/urfave/cli"
-
-	"github.com/apache/skywalking-cli/internal/logger"
+	"github.com/urfave/cli/v2"
 
 	"github.com/apache/skywalking-cli/pkg/display"
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
 	"github.com/apache/skywalking-cli/pkg/graphql/metrics"
 )
 
-var Command = cli.Command{
-	Name:      "list",
-	ShortName: "ls",
-	Usage:     "List metrics that could be queried",
+var Command = &cli.Command{
+	Name:    "list",
+	Aliases: []string{"ls"},
+	Usage:   "List metrics that could be queried",
+	UsageText: `With this command, you can list all available metrics
+as well as their types and catalogs that can be used in other metrics command
+to get the details.
+
+Examples:
+1. Query the metrics names start with "service_"
+$ swctl metrics list --regex "service_.*"`,
 	Flags: []cli.Flag{
-		cli.StringFlag{
+		&cli.StringFlag{
 			Name:  "regex",
 			Usage: "filter metrics with regex",
 		},
@@ -43,7 +48,7 @@ var Command = cli.Command{
 		metricsValue, err := metrics.ListMetrics(ctx, regex)
 
 		if err != nil {
-			logger.Log.Fatalln(err)
+			return err
 		}
 
 		return display.Display(ctx, &displayable.Displayable{Data: metricsValue})

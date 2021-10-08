@@ -18,13 +18,10 @@
 package dependency
 
 import (
-	"fmt"
-
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 
 	"github.com/apache/skywalking-cli/internal/commands/interceptor"
 	"github.com/apache/skywalking-cli/internal/flags"
-	"github.com/apache/skywalking-cli/internal/logger"
 	"github.com/apache/skywalking-cli/internal/model"
 
 	"github.com/apache/skywalking-cli/pkg/display"
@@ -35,24 +32,21 @@ import (
 	api "skywalking.apache.org/repo/goapi/query"
 )
 
-var ServiceCommand = cli.Command{
-	Name:      "service",
-	ShortName: "svc",
-	Usage:     "Query the dependencies of given service",
-	ArgsUsage: "<serviceId>",
+var ServiceCommand = &cli.Command{
+	Name:    "service",
+	Aliases: []string{"svc"},
+	Usage:   "Query the dependencies of given service",
 	Flags: flags.Flags(
 		flags.DurationFlags,
+		flags.ServiceFlags,
 	),
-	Before: interceptor.BeforeChain([]cli.BeforeFunc{
-		interceptor.TimezoneInterceptor,
+	Before: interceptor.BeforeChain(
 		interceptor.DurationInterceptor,
-	}),
+		interceptor.ParseService(true),
+	),
 
 	Action: func(ctx *cli.Context) error {
-		if ctx.NArg() == 0 {
-			return fmt.Errorf("command service requires serviceId as argument")
-		}
-
+		serviceID := ctx.String("service-id")
 		end := ctx.String("end")
 		start := ctx.String("start")
 		step := ctx.Generic("step")
@@ -63,10 +57,10 @@ var ServiceCommand = cli.Command{
 			Step:  step.(*model.StepEnumValue).Selected,
 		}
 
-		dependency, err := dependency.ServiceTopology(ctx, ctx.Args().First(), duration)
+		dependency, err := dependency.ServiceTopology(ctx, serviceID, duration)
 
 		if err != nil {
-			logger.Log.Fatalln(err)
+			return err
 		}
 
 		return display.Display(ctx, &displayable.Displayable{Data: dependency})

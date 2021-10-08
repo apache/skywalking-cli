@@ -18,7 +18,7 @@
 package healthcheck
 
 import (
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 
 	"github.com/apache/skywalking-cli/pkg/healthcheck"
 
@@ -26,17 +26,33 @@ import (
 	hc "github.com/apache/skywalking-cli/pkg/graphql/healthcheck"
 )
 
-var Command = cli.Command{
-	Name:    "checkHealth",
-	Aliases: []string{"ch"},
-	Usage:   "Check the health status of OAP server",
+var Command = &cli.Command{
+	Name:  "health",
+	Usage: "Checks whether OAP server is healthy",
+	UsageText: `Checks whether OAP server is healthy.
+Before using this, please make sure the OAP enables the health checker,
+refer to https://skywalking.apache.org/docs/main/latest/en/setup/backend/backend-health-check/
+
+Note: once enable gRPC TLS, checkHealth command would ignore server's cert.
+
+Examples:
+1. Check health status from GraphQL and the gRPC endpoint listening on 10.0.0.1:8843
+$ swctl health --grpc-addr=10.0.0.1:8843
+
+2. Once the gRPC endpoint of OAP encrypts communication by TLS:
+$ swctl health --grpcTLS=true
+
+3. Check health status from GraphQL service only:
+$ swctl health --grpc=false
+`,
 	Flags: []cli.Flag{
-		cli.BoolTFlag{
+		&cli.BoolFlag{
 			Name:     "grpc",
-			Usage:    "Check gRPC by HealthCheck service",
+			Usage:    "check OAP gRPC by HealthCheck service",
 			Required: false,
+			Value:    true,
 		},
-		cli.BoolFlag{
+		&cli.BoolFlag{
 			Name:     "grpcTLS",
 			Usage:    "use TLS for gRPC",
 			Required: false,
@@ -46,19 +62,19 @@ var Command = cli.Command{
 		healthStatus, err := hc.CheckHealth(ctx)
 
 		if err != nil {
-			logger.Log.Fatalln(err)
+			return err
 		}
 
 		if healthStatus.Score != 0 {
-			return cli.NewExitError(healthStatus.Details, healthStatus.Score)
+			return cli.Exit(healthStatus.Details, healthStatus.Score)
 		}
 		logger.Log.Println("OAP modules are healthy")
-		if !ctx.BoolT("grpc") {
+		if !ctx.Bool("grpc") {
 			return nil
 		}
-		retCode := healthcheck.HealthCheck(ctx.GlobalString("grpcAddr"), ctx.Bool("grpcTLS"))
+		retCode := healthcheck.HealthCheck(ctx.String("grpc-addr"), ctx.Bool("grpcTLS"))
 		if retCode != 0 {
-			return cli.NewExitError("gRPC: failed to check health", retCode)
+			return cli.Exit("gRPC: failed to check health", retCode)
 		}
 		logger.Log.Println("OAP gRPC is healthy")
 		return nil

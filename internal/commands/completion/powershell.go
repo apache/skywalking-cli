@@ -20,10 +20,10 @@ package completion
 import (
 	"fmt"
 
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 )
 
-var powershellCommand = cli.Command{
+var powershellCommand = &cli.Command{
 	Name:      "powershell",
 	Aliases:   []string{"p"},
 	Usage:     "Output shell completion code for powershell",

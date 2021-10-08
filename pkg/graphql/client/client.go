@@ -22,13 +22,13 @@ import (
 	"encoding/base64"
 
 	"github.com/machinebox/graphql"
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 
 	"github.com/apache/skywalking-cli/internal/logger"
 )
 
 func newClient(cliCtx *cli.Context) (client *graphql.Client) {
-	client = graphql.NewClient(cliCtx.GlobalString("base-url"))
+	client = graphql.NewClient(cliCtx.String("base-url"))
 	client.Log = func(msg string) {
 		logger.Log.Debugln(msg)
 	}
@@ -37,9 +37,9 @@ func newClient(cliCtx *cli.Context) (client *graphql.Client) {
 
 // ExecuteQuery executes the `request` and parse to the `response`, returning `error` if there is any.
 func ExecuteQuery(cliCtx *cli.Context, request *graphql.Request, response interface{}) error {
-	username := cliCtx.GlobalString("username")
-	password := cliCtx.GlobalString("password")
-	authorization := cliCtx.GlobalString("authorization")
+	username := cliCtx.String("username")
+	password := cliCtx.String("password")
+	authorization := cliCtx.String("authorization")
 	if authorization == "" && username != "" && password != "" {
 		authorization = "Basic " + base64.StdEncoding.EncodeToString([]byte(username+":"+password))
 	}

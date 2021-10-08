@@ -26,7 +26,7 @@ import (
 	api "skywalking.apache.org/repo/goapi/query"
 
 	"github.com/spf13/viper"
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 
 	"gopkg.in/yaml.v2"
 

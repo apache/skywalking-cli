@@ -18,44 +18,37 @@
 package flags
 
 import (
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 )
 
-// EntityFlags are attributes of Entity in the metrics v2 protocol.
-var EntityFlags = []cli.Flag{
-	cli.StringFlag{
-		Name:     "instance",
-		Usage:    "the name of the service instance",
-		Value:    "",
+// ServiceFlags take either service id or service name as input,
+// and transform to the other one.
+var ServiceFlags = []cli.Flag{
+	&cli.StringFlag{
+		Name:     "service-id",
+		Usage:    "`service id`, if you don't have service id, use `--service-name` instead",
 		Required: false,
 	},
-	cli.StringFlag{
-		Name:     "endpoint",
-		Usage:    "the name of the endpoint",
-		Value:    "",
-		Required: false,
-	},
-	cli.StringFlag{
-		Name:     "destService",
-		Usage:    "the name of the destination endpoint",
-		Value:    "",
-		Required: false,
-	},
-	cli.BoolTFlag{
-		Name:     "isDestNormal",
-		Usage:    "set the destination service to normal or unnormal",
-		Required: false,
-	},
-	cli.StringFlag{
-		Name:     "destInstance",
-		Usage:    "the name of the destination endpoint",
-		Value:    "",
-		Required: false,
-	},
-	cli.StringFlag{
-		Name:     "destEndpoint",
-		Usage:    "the name of the destination endpoint",
-		Value:    "",
+	&cli.StringFlag{
+		Name:     "service-name",
+		Usage:    "`service name`, if you already have service id, prefer to use `--service-id`",
 		Required: false,
 	},
 }
+
+// ServiceRelationFlags take either destination service id or destination service name as input,
+// and transform to the other one.
+var ServiceRelationFlags = append(
+	ServiceFlags,
+
+	&cli.StringFlag{
+		Name:     "dest-service-id",
+		Usage:    "`destination` service id, if you don't have service id, use `--dest-service-name` instead",
+		Required: false,
+	},
+	&cli.StringFlag{
+		Name:     "dest-service-name",
+		Usage:    "`destination` service name, if you already have service id, prefer to use `--dest-service-id`",
+		Required: false,
+	},
+)

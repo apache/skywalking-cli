@@ -18,20 +18,20 @@
 query ($segmentId: String!) {
     result: getProfiledSegment(segmentId: $segmentId) {
         spans {
-           spanId
-           parentSpanId
-           serviceCode
-           startTime
-           endTime
-           endpointName
-           type
-           peer
-           component
-           isError
-           layer
-           tags {
-               key value
-           }
+            spanId
+            parentSpanId
+            serviceCode
+            startTime
+            endTime
+            endpointName
+            type
+            peer
+            component
+            isError
+            layer
+            tags {
+                key value
+            }
         }
     }
 }

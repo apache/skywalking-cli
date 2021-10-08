@@ -18,7 +18,7 @@
 package metrics
 
 import (
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 
 	"github.com/apache/skywalking-cli/internal/commands/metrics/aggregation"
 	"github.com/apache/skywalking-cli/internal/commands/metrics/list"
@@ -29,7 +29,7 @@ import (
 	"github.com/apache/skywalking-cli/internal/commands/metrics/single"
 )
 
-var Command = cli.Command{
+var Command = &cli.Command{
 	Name:  "metrics",
 	Usage: "Query metrics defined in backend OAL",
 	Subcommands: cli.Commands{

@@ -18,11 +18,10 @@
 package single
 
 import (
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 
 	"github.com/apache/skywalking-cli/internal/commands/interceptor"
 	"github.com/apache/skywalking-cli/internal/flags"
-	"github.com/apache/skywalking-cli/internal/logger"
 	"github.com/apache/skywalking-cli/internal/model"
 	"github.com/apache/skywalking-cli/pkg/display"
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
@@ -31,25 +30,38 @@ import (
 	api "skywalking.apache.org/repo/goapi/query"
 )
 
-var Command = cli.Command{
+var Command = &cli.Command{
 	Name:  "single",
-	Usage: "Query single metrics defined in backend OAL",
+	Usage: "query single-value metrics defined in backend OAL",
+	UsageText: `Query single-value metrics defined in backend OAL.
+
+Examples:
+1. Query the traffic load (calls per minute) of service "business-zone:projectC"
+$ swctl metrics single --name service_cpm --service-name business-zone::projectC
+
+2. Query the traffic load (calls per minute) of service "business-zone:projectC" endpoint "/projectC/{value}"
+$ swctl metrics single --name endpoint_cpm --service-name business-zone::projectC --endpoint-name /projectC/{value}`,
 	Flags: flags.Flags(
 		flags.DurationFlags,
 		flags.MetricsFlags,
-		flags.EntityFlags,
+		flags.InstanceRelationFlags,
+		flags.EndpointRelationFlags,
 	),
-	Before: interceptor.BeforeChain([]cli.BeforeFunc{
-		interceptor.TimezoneInterceptor,
+	Before: interceptor.BeforeChain(
 		interceptor.DurationInterceptor,
-	}),
+		interceptor.ParseInstanceRelation(false),
+		interceptor.ParseEndpointRelation(false),
+	),
 	Action: func(ctx *cli.Context) error {
 		end := ctx.String("end")
 		start := ctx.String("start")
 		step := ctx.Generic("step")
 
 		metricsName := ctx.String("name")
-		entity := interceptor.ParseEntity(ctx)
+		entity, err := interceptor.ParseEntity(ctx)
+		if err != nil {
+			return err
+		}
 
 		duration := api.Duration{
 			Start: start,
@@ -63,7 +75,7 @@ var Command = cli.Command{
 		}, duration)
 
 		if err != nil {
-			logger.Log.Fatalln(err)
+			return err
 		}
 
 		return display.Display(ctx, &displayable.Displayable{Data: metricsValue})
