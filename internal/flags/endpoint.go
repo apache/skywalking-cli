@@ -41,7 +41,7 @@ var EndpointFlags = append(
 // EndpointRelationFlags take either destination endpoint id or destination endpoint name as input,
 // and transform to the other one.
 var EndpointRelationFlags = append(
-	EndpointFlags,
+	append(EndpointFlags[len(ServiceFlags):], ServiceRelationFlags...),
 
 	&cli.StringFlag{
 		Name:     "dest-endpoint-id",

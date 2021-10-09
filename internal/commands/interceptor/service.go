@@ -66,13 +66,7 @@ func parseService(required bool, idFlagName, nameFlagName string) func(*cli.Cont
 			return nil
 		}
 
-		if name != "" {
-			service, err := metadata.SearchService(ctx, name)
-			if err != nil {
-				return err
-			}
-			id = service.ID
-		} else if id != "" {
+		if id != "" {
 			parts := strings.Split(id, ".")
 			if len(parts) != 2 {
 				return fmt.Errorf("invalid service id, cannot be splitted into 2 parts. %v", id)
@@ -82,6 +76,12 @@ func parseService(required bool, idFlagName, nameFlagName string) func(*cli.Cont
 				return err
 			}
 			name = string(s)
+		} else if name != "" {
+			service, err := metadata.SearchService(ctx, name)
+			if err != nil {
+				return err
+			}
+			id = service.ID
 		}
 
 		if err := ctx.Set(idFlagName, id); err != nil {

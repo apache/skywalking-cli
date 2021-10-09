@@ -43,6 +43,9 @@ $ swctl metrics linear --name=service_resp_time --service-name business-zone::pr
 2. Query the response time of service instance
 $ swctl metrics linear --name=service_instance_resp_time --service-name business-zone::projectB \
 	--instance-name d708c6bfea9f4d50902d1743302a6f50@10.170.0.12
+
+3. Query the traffic (calls per minutes) between service "consumer" to service "provider"
+$ swctl metrics linear --name=service_relation_client_cpm --service-name consumer --dest-service-name provider
 `,
 	Flags: flags.Flags(
 		flags.DurationFlags,
@@ -52,8 +55,8 @@ $ swctl metrics linear --name=service_instance_resp_time --service-name business
 	),
 	Before: interceptor.BeforeChain(
 		interceptor.DurationInterceptor,
-		interceptor.ParseInstanceRelation(false),
 		interceptor.ParseEndpointRelation(false),
+		interceptor.ParseInstanceRelation(false),
 	),
 	Action: func(ctx *cli.Context) error {
 		end := ctx.String("end")

@@ -19,11 +19,14 @@ package interceptor
 
 import (
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"strings"
 
+	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli/v2"
 
+	"github.com/apache/skywalking-cli/internal/logger"
 	"github.com/apache/skywalking-cli/pkg/graphql/utils"
 
 	api "skywalking.apache.org/repo/goapi/query"
@@ -59,6 +62,11 @@ func ParseEntity(ctx *cli.Context) (*api.Entity, error) {
 		DestEndpointName:        &destEndpoint,
 	}
 	entity.Scope = utils.ParseScope(entity)
+
+	if logger.Log.GetLevel() <= logrus.DebugLevel {
+		s, _ := json.Marshal(&entity)
+		logger.Log.Debugf("entity: %+v", string(s))
+	}
 
 	return entity, nil
 }

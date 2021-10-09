@@ -70,6 +70,10 @@ verify:
       expected: expected/metrics-has-value.yml
     - query: swctl --display yaml --base-url=http://${oap_host}:${oap_12800}/graphql metrics linear --name=endpoint_sla --service-name provider --endpoint-name /users | yq e 'to_entries' -
       expected: expected/metrics-has-value.yml
+    - query: swctl --display yaml --base-url=http://${oap_host}:${oap_12800}/graphql metrics linear --name=service_relation_client_cpm --service-name consumer --dest-service-name provider | yq e 'to_entries' -
+      expected: expected/metrics-has-value.yml
+    - query: swctl --display yaml --base-url=http://${oap_host}:${oap_12800}/graphql metrics linear --name=service_instance_relation_client_cpm --service-name consumer --instance-name consumer1 --dest-service-name provider --dest-instance-name provider1 | yq e 'to_entries' -
+      expected: expected/metrics-has-value.yml
 
     - query: swctl --display yaml --base-url=http://${oap_host}:${oap_12800}/graphql metrics single --name endpoint_cpm --service-name provider --endpoint-name /users
       expected: expected/value.yml
