@@ -49,7 +49,7 @@ func ParseEndpoint(required bool) func(*cli.Context) error {
 // See flags.EndpointRelationFlags.
 func ParseEndpointRelation(required bool) func(*cli.Context) error {
 	return func(ctx *cli.Context) error {
-		if err := ParseService(required)(ctx); err != nil {
+		if err := ParseServiceRelation(required)(ctx); err != nil {
 			return err
 		}
 		if err := ParseEndpoint(required)(ctx); err != nil {
@@ -72,12 +72,7 @@ func parseEndpoint(required bool, idFlagName, nameFlagName, serviceIDFlagName st
 			return nil
 		}
 
-		if name != "" {
-			if serviceID == "" {
-				return fmt.Errorf(`"--%s" is specified but its related service name or id is not given`, nameFlagName)
-			}
-			id = serviceID + "_" + b64enc(name)
-		} else if id != "" {
+		if id != "" {
 			parts := strings.Split(id, "_")
 			if len(parts) != 2 {
 				return fmt.Errorf("invalid endpoint id, cannot be splitted into 2 parts. %v", id)
@@ -87,6 +82,11 @@ func parseEndpoint(required bool, idFlagName, nameFlagName, serviceIDFlagName st
 				return err
 			}
 			name = string(s)
+		} else if name != "" {
+			if serviceID == "" {
+				return fmt.Errorf(`"--%s" is specified but its related service name or id is not given`, nameFlagName)
+			}
+			id = serviceID + "_" + b64enc(name)
 		}
 
 		if err := ctx.Set(idFlagName, id); err != nil {

@@ -72,12 +72,7 @@ func parseInstance(required bool, idFlagName, nameFlagName, serviceIDFlagName st
 			return nil
 		}
 
-		if name != "" {
-			if serviceID == "" {
-				return fmt.Errorf(`"--%s" is specified but its related service name or id is not given`, nameFlagName)
-			}
-			id = serviceID + "_" + b64enc(name)
-		} else if id != "" {
+		if id != "" {
 			parts := strings.Split(id, "_")
 			if len(parts) != 2 {
 				return fmt.Errorf("invalid instance id, cannot be splitted into 2 parts. %v", id)
@@ -87,6 +82,11 @@ func parseInstance(required bool, idFlagName, nameFlagName, serviceIDFlagName st
 				return err
 			}
 			name = string(s)
+		} else if name != "" {
+			if serviceID == "" {
+				return fmt.Errorf(`"--%s" is specified but its related service name or id is not given`, nameFlagName)
+			}
+			id = serviceID + "_" + b64enc(name)
 		}
 
 		if err := ctx.Set(idFlagName, id); err != nil {

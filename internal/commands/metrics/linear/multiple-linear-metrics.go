@@ -58,8 +58,8 @@ $ swctl metrics multiple-linear --name all_percentile`,
 	),
 	Before: interceptor.BeforeChain(
 		interceptor.DurationInterceptor,
-		interceptor.ParseInstanceRelation(false),
 		interceptor.ParseEndpointRelation(false),
+		interceptor.ParseInstanceRelation(false),
 	),
 	Action: func(ctx *cli.Context) error {
 		end := ctx.String("end")
