@@ -137,7 +137,7 @@ check-codegen:
 	fi
 
 .PHONY: docker
-docker:
+docker: clean
 	docker build --build-arg VERSION=$(VERSION) . -t $(HUB)/$(APP_NAME):$(VERSION)
 
 .PHONY: docker.push

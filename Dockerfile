@@ -13,10 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-ARG VERSION
-
 FROM golang:1.16 AS builder
 
+ARG VERSION
+
+ENV VERSION=$VERSION
 ENV CGO_ENABLED=0
 ENV GO111MODULE=on
 
@@ -28,7 +29,7 @@ RUN go mod download
 
 COPY . .
 
-RUN make linux && mv bin/swctl-*-linux-amd64 /swctl
+RUN make install DESTDIR=/
 
 FROM alpine
 
