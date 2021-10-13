@@ -28,8 +28,9 @@ metrics:
   {{- end }}
 
 responselatency:
-  {{- range .responselatency }}
-  - {{- range $k, $v := . }}
+  {{- range $k1, $v1 := .responselatency }}
+  {{ $k1 }}:
+    {{- range $k, $v := $v1 }}
     {{ $k }}: {{ $v }}
     {{- end }}
   {{- end }}

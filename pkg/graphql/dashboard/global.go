@@ -50,11 +50,11 @@ type MetricTemplate struct {
 }
 
 type ChartTemplate struct {
-	Condition   api.MetricsCondition `mapstructure:"condition"`
-	Title       string               `mapstructure:"title"`
-	Unit        string               `mapstructure:"unit"`
-	Labels      string               `mapstructure:"labels"`
-	LabelsIndex string               `mapstructure:"labelsIndex"`
+	Condition api.MetricsCondition `mapstructure:"condition"`
+	Title     string               `mapstructure:"title"`
+	Unit      string               `mapstructure:"unit"`
+	Relabels  string               `mapstructure:"relabels"`
+	Labels    string               `mapstructure:"labels"`
 }
 
 type GlobalTemplate struct {
@@ -65,9 +65,9 @@ type GlobalTemplate struct {
 }
 
 type GlobalData struct {
-	Metrics         [][]*api.SelectedRecord `json:"metrics"`
-	ResponseLatency []map[string]float64    `json:"responseLatency"`
-	HeatMap         api.HeatMap             `json:"heatMap"`
+	Metrics         [][]*api.SelectedRecord       `json:"metrics"`
+	ResponseLatency map[string]map[string]float64 `json:"responseLatency"`
+	HeatMap         api.HeatMap                   `json:"heatMap"`
 }
 
 // Use singleton pattern to make sure to load template only once.
@@ -164,7 +164,7 @@ func Metrics(ctx *cli.Context, duration api.Duration) ([][]*api.SelectedRecord, 
 	return ret, nil
 }
 
-func responseLatency(ctx *cli.Context, duration api.Duration) []map[string]float64 {
+func responseLatency(ctx *cli.Context, duration api.Duration) map[string]map[string]float64 {
 	template, err := LoadTemplate(ctx.String("template"))
 	if err != nil {
 		return nil
@@ -175,18 +175,24 @@ func responseLatency(ctx *cli.Context, duration api.Duration) []map[string]float
 		return nil
 	}
 
-	// LabelsIndex in the template file is string type, like "0, 1, 2",
+	// Labels in the template file is string type, like "0, 1, 2",
 	// need use ", " to split into string array for graphql query.
-	labelsIndex := strings.Split(template.ResponseLatency.LabelsIndex, ", ")
+	labels := strings.Split(template.ResponseLatency.Labels, ",")
+	relabels := strings.Split(template.ResponseLatency.Relabels, ",")
 
-	responseLatency, err := metrics.MultipleLinearIntValues(ctx, template.ResponseLatency.Condition, labelsIndex, duration)
+	responseLatency, err := metrics.MultipleLinearIntValues(ctx, template.ResponseLatency.Condition, labels, duration)
 
 	if err != nil {
 		logger.Log.Fatalln(err)
 	}
 
+	mapping := make(map[string]string, len(labels))
+	for i := 0; i < len(labels); i++ {
+		mapping[labels[i]] = relabels[i]
+	}
+
 	// Convert metrics values to map type data.
-	return utils.MetricsValuesArrayToMap(duration, responseLatency)
+	return utils.MetricsValuesArrayToMap(duration, responseLatency, mapping)
 }
 
 func heatMap(ctx *cli.Context, duration api.Duration) (api.HeatMap, error) {
@@ -224,7 +230,7 @@ func Global(ctx *cli.Context, duration api.Duration) (*GlobalData, error) {
 		}
 		wg.Done()
 	}()
-	var rl []map[string]float64
+	var rl map[string]map[string]float64
 	go func() {
 		rl = responseLatency(ctx, duration)
 		wg.Done()
