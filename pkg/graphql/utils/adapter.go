@@ -18,8 +18,6 @@
 package utils
 
 import (
-	"strconv"
-	"strings"
 	"time"
 
 	api "skywalking.apache.org/repo/goapi/query"
@@ -28,15 +26,14 @@ import (
 )
 
 // MetricsValuesArrayToMap converts Array of MetricsValues into a map that uses time as key.
-func MetricsValuesArrayToMap(duration api.Duration, mvArray []api.MetricsValues) []map[string]float64 {
-	ret := make([]map[string]float64, len(mvArray))
+func MetricsValuesArrayToMap(duration api.Duration, mvArray []api.MetricsValues, labelsMap map[string]string) map[string]map[string]float64 {
+	ret := make(map[string]map[string]float64, len(mvArray))
 	for _, mvs := range mvArray {
-		index, err := strconv.Atoi(strings.TrimSpace(*mvs.Label))
-		if err != nil {
-			logger.Log.Fatalln(err)
-			return nil
+		label := *mvs.Label
+		if l, ok := labelsMap[label]; ok {
+			label = l
 		}
-		ret[index] = MetricsValuesToMap(duration, mvs)
+		ret[label] = MetricsValuesToMap(duration, mvs)
 	}
 	return ret
 }

@@ -78,10 +78,20 @@ func processInputs(inputs map[string]float64) (xLabels map[int]string, yValues [
 
 // LineChartElements is the part that separated from layout,
 // which can be reused by global dashboard.
-func LineChartElements(lineCharts []*linechart.LineChart, titles []string) [][]grid.Element {
+func LineChartElements(lineCharts map[string]*linechart.LineChart) [][]grid.Element {
 	cols := maxSqrt(len(lineCharts))
 
 	rows := make([][]grid.Element, int(math.Ceil(float64(len(lineCharts))/float64(cols))))
+
+	var charts []*linechart.LineChart
+	var titles []string
+	for t := range lineCharts {
+		titles = append(titles, t)
+	}
+	sort.Strings(titles)
+	for _, title := range titles {
+		charts = append(charts, lineCharts[title])
+	}
 
 	for r := 0; r < len(rows); r++ {
 		var row []grid.Element
@@ -91,17 +101,13 @@ func LineChartElements(lineCharts []*linechart.LineChart, titles []string) [][]g
 				percentage = int(math.Floor(float64(100) / float64(len(lineCharts)-r*cols)))
 			}
 
-			var title string
-			if titles == nil {
-				title = fmt.Sprintf("#%v", r*cols+c)
-			} else {
-				title = titles[r*cols+c]
-			}
+			title := titles[r*cols+c]
+			chart := charts[r*cols+c]
 
 			row = append(row, grid.ColWidthPerc(
 				int(math.Min(99, float64(percentage))),
 				grid.Widget(
-					lineCharts[r*cols+c],
+					chart,
 					container.Border(linestyle.Light),
 					container.BorderTitleAlignCenter(),
 					container.BorderTitle(title),
@@ -125,7 +131,7 @@ func layout(rows [][]grid.Element) ([]container.Option, error) {
 	return builder.Build()
 }
 
-func Display(cliCtx *cli.Context, inputs []map[string]float64, titles []string) error {
+func Display(cliCtx *cli.Context, inputs map[string]map[string]float64) error {
 	t, err := termbox.New()
 	if err != nil {
 		return err
@@ -140,17 +146,17 @@ func Display(cliCtx *cli.Context, inputs []map[string]float64, titles []string) 
 		return err
 	}
 
-	var elements []*linechart.LineChart
+	elements := make(map[string]*linechart.LineChart)
 
-	for _, input := range inputs {
+	for title, input := range inputs {
 		w, e := NewLineChart(input)
 		if e != nil {
 			return e
 		}
-		elements = append(elements, w)
+		elements[title] = w
 	}
 
-	gridOpts, err := layout(LineChartElements(elements, titles))
+	gridOpts, err := layout(LineChartElements(elements))
 	if err != nil {
 		return err
 	}

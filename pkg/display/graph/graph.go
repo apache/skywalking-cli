@@ -20,7 +20,6 @@ package graph
 import (
 	"fmt"
 	"reflect"
-	"strings"
 
 	api "skywalking.apache.org/repo/goapi/query"
 
@@ -38,7 +37,7 @@ import (
 type (
 	Thermodynamic      = api.HeatMap
 	LinearMetrics      = map[string]float64
-	MultiLinearMetrics = []LinearMetrics
+	MultiLinearMetrics = map[string]LinearMetrics
 	Trace              = api.Trace
 	TraceBrief         = api.TraceBrief
 	GlobalMetrics      = [][]*api.SelectedRecord
@@ -55,8 +54,6 @@ var (
 	GlobalDataType         = reflect.TypeOf(&GlobalData{})
 )
 
-const multipleLinearTitles = "P50, P75, P90, P95, P99"
-
 func Display(ctx *cli.Context, displayable *d.Displayable) error {
 	data := displayable.Data
 
@@ -65,12 +62,11 @@ func Display(ctx *cli.Context, displayable *d.Displayable) error {
 		return heatmap.Display(displayable)
 
 	case LinearMetricsType:
-		return linear.Display(ctx, []LinearMetrics{data.(LinearMetrics)}, nil)
+		return linear.Display(ctx, map[string]LinearMetrics{"": data.(LinearMetrics)})
 
 	case MultiLinearMetricsType:
 		inputs := data.(MultiLinearMetrics)
-		titles := strings.Split(multipleLinearTitles, ", ")[:len(inputs)]
-		return linear.Display(ctx, inputs, titles)
+		return linear.Display(ctx, inputs)
 
 	case TraceType:
 		return tree.Display(tree.Adapt(data.(Trace)))

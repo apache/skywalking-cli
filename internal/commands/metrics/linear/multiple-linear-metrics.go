@@ -41,7 +41,11 @@ var Multiple = &cli.Command{
 
 Examples:
 1. Query the global percentiles:
-$ swctl metrics multiple-linear --name all_percentile`,
+$ swctl metrics multiple-linear --name all_percentile
+
+2. Relabel the labels for better readability:
+$ swctl metrics multiple-linear --name all_percentile --labels=0,1,2,3,4 --relabels=P50,P75,P90,P95,P99
+`,
 	Flags: flags.Flags(
 		flags.DurationFlags,
 		flags.MetricsFlags,
@@ -52,7 +56,14 @@ $ swctl metrics multiple-linear --name all_percentile`,
 				Name:     "labels",
 				Usage:    "the labels you need to query",
 				Required: false,
-				Value:    "0,1,2,3,4",
+			},
+		},
+		[]cli.Flag{
+			&cli.StringFlag{
+				Name: "relabels",
+				Usage: `the new labels to map to the original "--labels", must be in same size and is order-sensitive. ` +
+					`"labels[i]" will be mapped to "relabels[i]"`,
+				Required: false,
 			},
 		},
 	),
@@ -67,7 +78,24 @@ $ swctl metrics multiple-linear --name all_percentile`,
 		step := ctx.Generic("step")
 
 		metricsName := ctx.String("name")
-		labels := ctx.String("labels")
+		labelsString := ctx.String("labels")
+		relabelsString := ctx.String("relabels")
+
+		labels := strings.Split(labelsString, ",")
+		relabels := strings.Split(relabelsString, ",")
+
+		labelMapping := make(map[string]string)
+		switch {
+		case labelsString == "" && relabelsString != "":
+			return fmt.Errorf(`"--labels" cannot be empty when "--relabels" is given`)
+		case labelsString != "" && relabelsString != "" && len(labels) != len(relabels):
+			return fmt.Errorf(`"--labels" and "--relabels" must be in same size if both specified, but was %v != %v`, len(labels), len(relabels))
+		case relabelsString != "":
+			for i := 0; i < len(labels); i++ {
+				labelMapping[labels[i]] = relabels[i]
+			}
+		}
+
 		entity, err := interceptor.ParseEntity(ctx)
 		if err != nil {
 			return err
@@ -86,13 +114,13 @@ $ swctl metrics multiple-linear --name all_percentile`,
 		metricsValuesArray, err := metrics.MultipleLinearIntValues(ctx, api.MetricsCondition{
 			Name:   metricsName,
 			Entity: entity,
-		}, strings.Split(labels, ","), duration)
+		}, labels, duration)
 
 		if err != nil {
 			return err
 		}
 
-		reshaped := utils.MetricsValuesArrayToMap(duration, metricsValuesArray)
+		reshaped := utils.MetricsValuesArrayToMap(duration, metricsValuesArray, labelMapping)
 		return display.Display(ctx, &displayable.Displayable{Data: reshaped})
 	},
 }

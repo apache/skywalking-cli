@@ -75,15 +75,12 @@ var strToLayoutType = map[string]layoutType{
 // widgets holds the widgets used by the dashboard.
 type widgets struct {
 	gauges  []*gauge.MetricColumn
-	linears []*linechart.LineChart
+	linears map[string]*linechart.LineChart
 	heatmap *lib.HeatMap
 
 	// buttons are used to change the layout.
 	buttons []*button.Button
 }
-
-// linearTitles are titles of each line chart, load from the template file.
-var linearTitles []string
 
 // template determines how the global dashboard is displayed.
 var template *dashboard.GlobalTemplate
@@ -164,7 +161,7 @@ func gridLayout(lt layoutType) ([]container.Option, error) {
 		)
 
 	case layoutLineChart:
-		lcElements := linear.LineChartElements(allWidgets.linears, linearTitles)
+		lcElements := linear.LineChartElements(allWidgets.linears)
 		percentage := int(math.Min(99, float64((100-buttonRowHeight)/len(lcElements))))
 
 		for _, e := range lcElements {
@@ -200,7 +197,7 @@ func gridLayout(lt layoutType) ([]container.Option, error) {
 // newWidgets creates all widgets used by the dashboard.
 func newWidgets(data *dashboard.GlobalData) error {
 	var columns []*gauge.MetricColumn
-	var linears []*linechart.LineChart
+	linears := make(map[string]*linechart.LineChart)
 
 	// Create gauges to display global metrics.
 	for i := range template.Metrics {
@@ -212,12 +209,12 @@ func newWidgets(data *dashboard.GlobalData) error {
 	}
 
 	// Create line charts to display global response latency.
-	for _, input := range data.ResponseLatency {
+	for label, input := range data.ResponseLatency {
 		l, err := linear.NewLineChart(input)
 		if err != nil {
 			return err
 		}
-		linears = append(linears, l)
+		linears[label] = l
 	}
 
 	// Create a heat map.
@@ -253,7 +250,6 @@ func Display(ctx *cli.Context, data *dashboard.GlobalData) error {
 		return err
 	}
 	template = te
-	linearTitles = strings.Split(template.ResponseLatency.Labels, ", ")
 
 	// Initialization
 	allWidgets = &widgets{
