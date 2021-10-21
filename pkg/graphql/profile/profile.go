@@ -51,6 +51,17 @@ func GetTaskList(ctx *cli.Context, serviceID, endpointName string) ([]*api.Profi
 	return response["result"], err
 }
 
+func GetTaskLogList(ctx *cli.Context, taskID string) ([]*api.ProfileTaskLog, error) {
+	var response map[string][]*api.ProfileTaskLog
+
+	request := graphql.NewRequest(assets.Read("graphqls/profile/GetProfileTaskLogs.graphql"))
+	request.Var("taskID", taskID)
+
+	err := client.ExecuteQuery(ctx, request, &response)
+
+	return response["result"], err
+}
+
 func GetTaskSegmentList(ctx *cli.Context, taskID string) ([]*api.BasicTrace, error) {
 	var response map[string][]*api.BasicTrace
 
