@@ -26,9 +26,8 @@ import (
 )
 
 var getTaskLogListCommand = &cli.Command{
-	Name:      "logs",
-	Aliases:   []string{"logs"},
-	ArgsUsage: "[parameters...]",
+	Name:    "logs",
+	Aliases: []string{"logs"},
 	Flags: []cli.Flag{
 		&cli.StringFlag{
 			Name:  "task-id",
