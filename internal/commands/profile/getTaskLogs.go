@@ -18,22 +18,38 @@
 package profile
 
 import (
+	"github.com/apache/skywalking-cli/pkg/display"
+	"github.com/apache/skywalking-cli/pkg/display/displayable"
+	"github.com/apache/skywalking-cli/pkg/graphql/profile"
+
 	"github.com/urfave/cli/v2"
 )
 
-var Command = &cli.Command{
-	Name:  "profile",
-	Usage: "Profile related sub-command",
-	UsageText: `If your endpoint has performance issue and could not use tracing to find out what's happening,
-you could try to profile. You could get more information
-on https://github.com/apache/skywalking/blob/master/docs/en/guides/backend-profile.md.
-`,
-	Subcommands: []*cli.Command{
-		createCommand,
-		getTaskListCommand,
-		getTaskLogListCommand,
-		getTaskSegmentListCommand,
-		getProfiledSegmentCommand,
-		getProfiledAnalyzeCommand,
+var getTaskLogListCommand = &cli.Command{
+	Name:      "logs",
+	Aliases:   []string{"logs"},
+	ArgsUsage: "[parameters...]",
+	Flags: []cli.Flag{
+		&cli.StringFlag{
+			Name:  "task-id",
+			Usage: "profile task id.",
+		},
+	},
+	Usage: "Query profile task log list",
+	UsageText: `Query profile task log list
+
+Examples:
+1. Query all profile task logs
+$ swctl profile logs --task-id=task-id`,
+	Action: func(ctx *cli.Context) error {
+		taskID := ctx.String("task-id")
+
+		task, err := profile.GetTaskLogList(ctx, taskID)
+
+		if err != nil {
+			return err
+		}
+
+		return display.Display(ctx, &displayable.Displayable{Data: task, Condition: taskID})
 	},
 }
