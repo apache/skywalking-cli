@@ -38,7 +38,7 @@ var getTaskLogListCommand = &cli.Command{
 	UsageText: `Query profile task log list
 
 Examples:
-1. Query all profile logs of task id `task-id`
+1. Query all profile logs of task id "task-id"
 $ swctl profile logs --task-id=task-id`,
 	Action: func(ctx *cli.Context) error {
 		taskID := ctx.String("task-id")
