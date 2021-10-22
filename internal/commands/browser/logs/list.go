@@ -18,13 +18,14 @@
 package logs
 
 import (
+	"github.com/urfave/cli/v2"
+
 	"github.com/apache/skywalking-cli/internal/commands/interceptor"
 	"github.com/apache/skywalking-cli/internal/flags"
 	"github.com/apache/skywalking-cli/internal/model"
 	"github.com/apache/skywalking-cli/pkg/display"
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
 	"github.com/apache/skywalking-cli/pkg/graphql/log"
-	"github.com/urfave/cli/v2"
 
 	api "skywalking.apache.org/repo/goapi/query"
 )

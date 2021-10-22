@@ -22,10 +22,11 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/apache/skywalking-cli/internal/logger"
-	"github.com/apache/skywalking-cli/pkg/graphql/metadata"
 	"github.com/urfave/cli/v2"
 	api "skywalking.apache.org/repo/goapi/query"
+
+	"github.com/apache/skywalking-cli/internal/logger"
+	"github.com/apache/skywalking-cli/pkg/graphql/metadata"
 )
 
 type nodeType int

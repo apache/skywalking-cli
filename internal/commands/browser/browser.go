@@ -18,11 +18,12 @@
 package browser
 
 import (
+	"github.com/urfave/cli/v2"
+
 	"github.com/apache/skywalking-cli/internal/commands/browser/logs"
 	"github.com/apache/skywalking-cli/internal/commands/browser/page"
 	"github.com/apache/skywalking-cli/internal/commands/browser/service"
 	"github.com/apache/skywalking-cli/internal/commands/browser/version"
-	"github.com/urfave/cli/v2"
 )
 
 var Command = &cli.Command{

@@ -18,12 +18,13 @@
 package page
 
 import (
+	"github.com/urfave/cli/v2"
+
 	"github.com/apache/skywalking-cli/internal/commands/interceptor"
 	"github.com/apache/skywalking-cli/internal/flags"
 	"github.com/apache/skywalking-cli/pkg/display"
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
 	"github.com/apache/skywalking-cli/pkg/graphql/metadata"
-	"github.com/urfave/cli/v2"
 )
 
 var listCommand = &cli.Command{
