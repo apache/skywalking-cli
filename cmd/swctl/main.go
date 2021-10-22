@@ -22,6 +22,7 @@ import (
 	"os"
 	"runtime"
 
+	"github.com/apache/skywalking-cli/internal/commands/browser"
 	"github.com/apache/skywalking-cli/internal/commands/completion"
 	"github.com/apache/skywalking-cli/internal/commands/dashboard"
 	"github.com/apache/skywalking-cli/internal/commands/dependency"
@@ -82,6 +83,7 @@ services, service instances, etc.`
 	flags := flags()
 
 	app.Commands = []*cli.Command{
+		browser.Command,
 		endpoint.Command,
 		instance.Command,
 		service.Command,
