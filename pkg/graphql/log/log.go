@@ -38,3 +38,14 @@ func Logs(ctx *cli.Context, condition *api.LogQueryCondition) (api.Logs, error) 
 
 	return response["result"], err
 }
+
+func BrowserLogs(ctx *cli.Context, condition *api.BrowserErrorLogQueryCondition) (api.BrowserErrorLogs, error) {
+	var response map[string]api.BrowserErrorLogs
+
+	request := graphql.NewRequest(assets.Read("graphqls/logs/BrowserLogs.graphql"))
+	request.Var("condition", condition)
+
+	err := client.ExecuteQuery(ctx, request, &response)
+
+	return response["result"], err
+}

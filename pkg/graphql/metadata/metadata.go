@@ -58,6 +58,34 @@ func SearchService(cliCtx *cli.Context, serviceCode string) (service api.Service
 	return service, err
 }
 
+func AllBrowserServices(cliCtx *cli.Context, duration api.Duration) ([]api.Service, error) {
+	var response map[string][]api.Service
+
+	request := graphql.NewRequest(assets.Read("graphqls/metadata/AllBrowserServices.graphql"))
+	request.Var("duration", duration)
+
+	err := client.ExecuteQuery(cliCtx, request, &response)
+
+	return response["result"], err
+}
+
+func SearchBrowserService(cliCtx *cli.Context, serviceCode string) (service api.Service, err error) {
+	var response map[string]api.Service
+
+	request := graphql.NewRequest(assets.Read("graphqls/metadata/SearchBrowserService.graphql"))
+	request.Var("serviceCode", serviceCode)
+
+	err = client.ExecuteQuery(cliCtx, request, &response)
+
+	service = response["result"]
+
+	if service.ID == "" {
+		return service, fmt.Errorf("no such service [%s]", serviceCode)
+	}
+
+	return service, err
+}
+
 func SearchEndpoints(cliCtx *cli.Context, serviceID, keyword string, limit int) ([]api.Endpoint, error) {
 	var response map[string][]api.Endpoint
 
