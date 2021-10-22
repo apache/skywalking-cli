@@ -27,8 +27,9 @@ import (
 )
 
 var Command = &cli.Command{
-	Name:  "browser",
-	Usage: "Browser related sub-command",
+	Name:    "browser",
+	Aliases: []string{"b"},
+	Usage:   "Browser related sub-command",
 	Subcommands: cli.Commands{
 		service.Command,
 		version.Command,

@@ -20,8 +20,9 @@ package page
 import "github.com/urfave/cli/v2"
 
 var Command = &cli.Command{
-	Name:  "page",
-	Usage: "Browser page related sub-command",
+	Name:    "page",
+	Aliases: []string{"p", "endpoint"},
+	Usage:   "Browser page related sub-command",
 	Subcommands: cli.Commands{
 		listCommand,
 	},

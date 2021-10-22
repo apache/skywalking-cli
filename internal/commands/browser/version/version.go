@@ -23,7 +23,7 @@ import (
 
 var Command = &cli.Command{
 	Name:    "version",
-	Aliases: []string{"v"},
+	Aliases: []string{"v", "instance"},
 	Usage:   `Browser service version related sub-command`,
 	Subcommands: cli.Commands{
 		listCommand,
