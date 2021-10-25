@@ -18,6 +18,7 @@
 package alarm
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/urfave/cli/v2"
@@ -90,7 +91,10 @@ $ swctl alarm list
 		if tagStr != "" {
 			tagArr := strings.Split(tagStr, ",")
 			for _, tag := range tagArr {
-				kv := strings.Split(tag, "=")
+				kv := strings.SplitN(tag, "=", 2)
+				if len(kv) != 2 {
+					return fmt.Errorf("invalid tag, cannot be splitted into 2 parts. %s", tag)
+				}
 				tags = append(tags, &api.AlarmTag{Key: kv[0], Value: &kv[1]})
 			}
 		}
