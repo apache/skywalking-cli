@@ -22,6 +22,7 @@ import (
 	"os"
 	"runtime"
 
+	"github.com/apache/skywalking-cli/internal/commands/alarm"
 	"github.com/apache/skywalking-cli/internal/commands/browser"
 	"github.com/apache/skywalking-cli/internal/commands/completion"
 	"github.com/apache/skywalking-cli/internal/commands/dashboard"
@@ -97,6 +98,7 @@ services, service instances, etc.`
 		profile.Command,
 		completion.Command,
 		dependency.Command,
+		alarm.Command,
 	}
 
 	app.Before = interceptor.BeforeChain(
