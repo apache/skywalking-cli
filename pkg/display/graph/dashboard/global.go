@@ -38,6 +38,7 @@ import (
 	"github.com/mum4k/termdash/terminal/terminalapi"
 	"github.com/urfave/cli/v2"
 
+	"github.com/apache/skywalking-cli/internal/model"
 	"github.com/apache/skywalking-cli/pkg/display/graph/gauge"
 	"github.com/apache/skywalking-cli/pkg/display/graph/heatmap"
 	"github.com/apache/skywalking-cli/pkg/display/graph/linear"
@@ -88,6 +89,7 @@ var template *dashboard.GlobalTemplate
 var allWidgets *widgets
 
 var initStartStr string
+var initStep = api.StepMinute
 var initEndStr string
 
 var curStartTime time.Time
@@ -131,7 +133,7 @@ func newLayoutButtons(c *container.Container) ([]*button.Button, error) {
 			return nil, err
 		}
 
-		buttons[int(lt)] = b
+		buttons[lt] = b
 	}
 
 	return buttons, nil
@@ -317,11 +319,15 @@ func refresh(con context.Context, ctx *cli.Context, interval time.Duration) {
 	initStartStr = ctx.String("start")
 	initEndStr = ctx.String("end")
 
-	_, start, err := interceptor.TryParseTime(initStartStr)
+	if s := ctx.Generic("step"); s != nil {
+		initStep = s.(*model.StepEnumValue).Selected
+	}
+
+	_, start, err := interceptor.TryParseTime(initStartStr, initStep)
 	if err != nil {
 		return
 	}
-	_, end, err := interceptor.TryParseTime(initEndStr)
+	_, end, err := interceptor.TryParseTime(initEndStr, initStep)
 	if err != nil {
 		return
 	}
@@ -355,7 +361,7 @@ func refresh(con context.Context, ctx *cli.Context, interval time.Duration) {
 // If the duration doesn't change, an error will be returned, and the dashboard will not refresh.
 // Otherwise, a new duration will be returned, which is used to get the latest global data.
 func updateDuration(interval time.Duration) (api.Duration, error) {
-	step, _, err := interceptor.TryParseTime(initStartStr)
+	step, _, err := interceptor.TryParseTime(initStartStr, initStep)
 	if err != nil {
 		return api.Duration{}, err
 	}
