@@ -18,7 +18,6 @@
 package main
 
 import (
-	"io/ioutil"
 	"os"
 	"runtime"
 
@@ -192,7 +191,7 @@ func expandConfigFile(c *cli.Context) error {
 func tryConfigFile(flags []cli.Flag) cli.BeforeFunc {
 	return func(c *cli.Context) error {
 		configFile := c.String("config")
-		if bytes, err := ioutil.ReadFile(configFile); err == nil {
+		if bytes, err := os.ReadFile(configFile); err == nil {
 			log.Debug("Using configurations:\n", string(bytes))
 
 			err = altsrc.InitInputSourceWithContext(flags, altsrc.NewYamlSourceFromFlagFunc("config"))(c)
