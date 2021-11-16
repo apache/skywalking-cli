@@ -25,64 +25,66 @@ HUB ?= docker.io/apache
 RELEASE_BIN = skywalking-cli-$(VERSION)-bin
 RELEASE_SRC = skywalking-cli-$(VERSION)-src
 
-OS = $(shell uname)
-
 GO = go
 GO_PATH = $$($(GO) env GOPATH)
 GO_BUILD = $(GO) build
 GO_GET = $(GO) get
 GO_INSTALL = $(GO) install
 GO_TEST = $(GO) test
-GO_LINT = $(GO_PATH)/bin/golangci-lint
-GO_LICENSER = $(GO_PATH)/bin/go-licenser
-ARCH := $(shell uname)
-OSNAME := $(if $(findstring Darwin,$(ARCH)),darwin,linux)
 GO_BUILD_FLAGS = -v
 GO_BUILD_LDFLAGS = -X main.version=$(VERSION)
 
-PLATFORMS := windows linux darwin
-os = $(word 1, $@)
-ARCH = amd64
+GO_LINT = golangci-lint
+LICENSE_EYE = license-eye
 
 SHELL = /bin/bash
 
+BUILDS := darwin-amd64 darwin-arm64 linux-386 linux-amd64 linux-arm64 windows-386 windows-amd64
+BUILD_RULE = GOOS=$(GOOS) GOARCH=$(GOARCH) $(GO_BUILD) $(GO_BUILD_FLAGS) -ldflags "$(GO_BUILD_LDFLAGS)" -o $(OUT_DIR)/$(BINARY)-$(VERSION)-$(GOOS)-$(GOARCH) cmd/swctl/main.go
+
 all: clean license deps lint test build
 
-tools:
-	mkdir -p $(GO_PATH)/bin
-	$(GO_LINT) version || curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(GO_PATH)/bin
-	$(GO_LICENSER) -version || GO111MODULE=off $(GO_GET) -u github.com/elastic/go-licenser
+.PHONY: $(BUILDS)
+$(BUILDS): GOOS = $(word 1,$(subst -, ,$@))
+$(BUILDS): GOARCH = $(word 2,$(subst -, ,$@))
+$(BUILDS):
+	$(BUILD_RULE)
 
-deps: tools
-	$(GO_GET) -v -t -d ./...
+.PHONY: build
+build: $(BUILDS)
 
-.PHONY: $(PLATFORMS)
-$(PLATFORMS): clean
-	mkdir -p $(OUT_DIR)
-	GOOS=$(os) GOARCH=$(ARCH) $(GO_BUILD) $(GO_BUILD_FLAGS) -ldflags "$(GO_BUILD_LDFLAGS)" -o $(OUT_DIR)/$(BINARY)-$(VERSION)-$(os)-$(ARCH) cmd/swctl/main.go
+.PHONY: deps
+deps:
+	@$(GO_GET) -v -t -d ./...
+
+$(GO_LINT):
+	@$(GO_LINT) version > /dev/null 2>&1 || go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+$(LICENSE_EYE):
+	@$(LICENSE_EYE) --version > /dev/null 2>&1 || go install github.com/apache/skywalking-eyes/cmd/license-eye@latest
 
 .PHONY: lint
-lint: tools
+lint: $(GO_LINT)
 	$(GO_LINT) run -v --timeout 5m ./...
+.PHONY: fix-lint
+fix-lint: $(GO_LINT)
+	$(GO_LINT) run -v --fix ./...
+
+.PHONY: license
+license: clean $(LICENSE_EYE)
+	@$(LICENSE_EYE) header check
+.PHONY: fix-license
+fix-license: clean $(LICENSE_EYE)
+	@$(LICENSE_EYE) header fix
+
+.PHONY: fix
+fix: fix-lint fix-license
 
 .PHONY: test
 test: clean
 	$(GO_TEST) ./... -coverprofile=coverage.txt -covermode=atomic
 
-.PHONY: build
-build: deps windows linux darwin
-
-.PHONY: license
-license: clean tools
-	$(GO_LICENSER) -d -licensor='Apache Software Foundation (ASF)' .
-
 .PHONY: verify
 verify: clean license lint test
-
-.PHONY: fix
-fix: tools
-	$(GO_LINT) run -v --fix ./...
-	$(GO_LICENSER) -licensor='Apache Software Foundation (ASF)' .
 
 .PHONY: coverage
 coverage: test
@@ -137,16 +139,18 @@ check-codegen:
 	fi
 
 .PHONY: docker
-docker: clean
-	docker build --build-arg VERSION=$(VERSION) . -t $(HUB)/$(APP_NAME):$(VERSION)
+docker:
+	docker buildx create --use
+	docker buildx build $(PUSH) --platform linux/386,linux/amd64,linux/arm64 --build-arg VERSION=$(VERSION) . -t $(HUB)/$(APP_NAME):$(VERSION) -t $(HUB)/$(APP_NAME):latest
 
 .PHONY: docker.push
+docker.push: PUSH = --push
 docker.push: docker
-	docker push $(HUB)/$(APP_NAME):$(VERSION)
 
 .PHONY: install
-install: $(OSNAME)
-	-cp $(OUT_DIR)/$(BINARY)-$(VERSION)-$(OSNAME)-$(ARCH) $(DESTDIR)/swctl
+install: clean
+	$(BUILD_RULE)
+	-cp $(OUT_DIR)/$(BINARY)-$(VERSION)-$(OSNAME)-* $(DESTDIR)/swctl
 
 .PHONY: uninstall
 uninstall: $(OSNAME)

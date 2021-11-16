@@ -54,3 +54,5 @@ jobs:
       - name: Build
         run: make build -j3
 
+      - name: Build Docker images
+        run: make docker

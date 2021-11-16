@@ -19,7 +19,7 @@ package dashboard
 
 import (
 	"bytes"
-	"io/ioutil"
+	"os"
 	"strings"
 	"sync"
 
@@ -100,7 +100,7 @@ func LoadTemplate(filename string) (*GlobalTemplate, error) {
 	if filename == DefaultTemplatePath {
 		byteValue = []byte(assets.Read(filename))
 	} else {
-		byteValue, err = ioutil.ReadFile(filename)
+		byteValue, err = os.ReadFile(filename)
 		if err != nil {
 			return nil, err
 		}

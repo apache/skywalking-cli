@@ -50,8 +50,5 @@ jobs:
           registry: ${{ env.HUB }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build docker image
-        run: |
-          make docker.push || make docker.push
-          docker tag $HUB/$APP_NAME:{$VERSION,latest}
-          docker push $HUB/$APP_NAME:latest
+      - name: Build and push docker images
+        run: make docker.push || make docker.push

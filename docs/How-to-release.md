@@ -195,7 +195,10 @@ Vote result should follow these:
     svn mv https://dist.apache.org/repos/dist/dev/skywalking/cli/$VERSION https://dist.apache.org/repos/dist/release/skywalking/cli -m"Release SkyWalking CLI $VERSION"
     ```
 
-1. Push Docker images.
+2. Push Docker images.
+
+In order to publish the Docker images, you
+have [to enable BuildKit in the Docker daemon](https://docs.docker.com/develop/develop-images/build_enhancements/.
 
 ```shell
 make docker.push
