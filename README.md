@@ -21,7 +21,7 @@ same as GUI.
 Install the latest version with the following command:
 
 ```shell
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/apache/skywalking-cli/tree/master/scripts/install.sh)"
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/apache/skywalking-cli/master/scripts/install.sh)"
 ```
 
 #### Windows
@@ -29,7 +29,7 @@ Install the latest version with the following command:
 Note: you need to start cmd or powershell in administrator mode.
 
 ```shell
-curl -LO "https://raw.githubusercontent.com/apache/skywalking-cli/tree/master/scripts/install.bat" && .\install.bat
+curl -LO "https://raw.githubusercontent.com/apache/skywalking-cli/master/scripts/install.bat" && .\install.bat
 ```
 
 ### Install by available binaries
