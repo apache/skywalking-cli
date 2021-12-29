@@ -56,7 +56,7 @@ if [ "$VERSION" != "" ]; then
     echo "The latest version of swctl is $VERSION"
     
     # Download the binary package.
-    curl -sSLO "https://apache.website-solution.net/skywalking/cli/$VERSION/skywalking-cli-$VERSION-bin.tgz" > /dev/null
+    curl -sSLO "https://archive.apache.org/dist/skywalking/cli/$VERSION/skywalking-cli-$VERSION-bin.tgz" > /dev/null
     if [ -f "skywalking-cli-$VERSION-bin.tgz" ]; then
         # Verify the integrity of the downloaded file.
         curl -sSLO "https://downloads.apache.org/skywalking/cli/$VERSION/skywalking-cli-$VERSION-bin.tgz.sha512" > /dev/null
