@@ -36,12 +36,12 @@ set VERSION=%VERSION:~1%
 if "%VERSION%" NEQ "UNKNOW" (
 
     @REM Download the binary package.
-    curl -LO "https://apache.website-solution.net/skywalking/cli/%VERSION%/skywalking-cli-%VERSION%-bin.tgz"
+    curl -LO "https://archive.apache.org/dist/skywalking/cli/%VERSION%/skywalking-cli-%VERSION%-bin.tgz"
     if EXIST "skywalking-cli-%VERSION%-bin.tgz" (
         tar -zxvf ".\skywalking-cli-%VERSION%-bin.tgz"
 
         @REM Verify the integrity of the downloaded file.
-        curl -LO "https://archive.apache.org/dist/skywalking/cli/%VERSION%/skywalking-cli-%VERSION%-bin.tgz.sha512"
+        curl -LO "https://downloads.apache.org/skywalking/cli/%VERSION%/skywalking-cli-%VERSION%-bin.tgz.sha512"
         CertUtil -hashfile skywalking-cli-%VERSION%-bin.tgz sha512 | findstr /X "[0-9a-zA-Z]*" > verify.txt
         for /F "tokens=*" %%i in ( 'type ".\verify.txt"' ) do ( set VERIFY1="%%i  skywalking-cli-%VERSION%-bin.tgz" )
         for /F "tokens=*" %%i in ( 'type ".\skywalking-cli-%VERSION%-bin.tgz.sha512"' ) do ( set VERIFY2="%%i" )
