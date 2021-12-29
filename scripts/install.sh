@@ -59,7 +59,7 @@ if [ "$VERSION" != "" ]; then
     curl -sSLO "https://archive.apache.org/dist/skywalking/cli/$VERSION/skywalking-cli-$VERSION-bin.tgz" > /dev/null
     if [ -f "skywalking-cli-$VERSION-bin.tgz" ]; then
         # Verify the integrity of the downloaded file.
-        curl -sSLO "https://downloads.apache.org/skywalking/cli/$VERSION/skywalking-cli-$VERSION-bin.tgz.sha512" > /dev/null
+        curl -sSLO "https://archive.apache.org/dist/skywalking/cli/$VERSION/skywalking-cli-$VERSION-bin.tgz.sha512" > /dev/null
         VERIFY=$(shasum -a512 -c "skywalking-cli-$VERSION-bin.tgz.sha512")
         if [ "${VERIFY#* }" = "OK" ]; then
             echo "The downloaded file is complete."
