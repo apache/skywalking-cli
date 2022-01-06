@@ -18,10 +18,12 @@
 package common
 
 import (
+	"github.com/machinebox/graphql"
+
+	"github.com/urfave/cli/v2"
+
 	"github.com/apache/skywalking-cli/assets"
 	"github.com/apache/skywalking-cli/pkg/graphql/client"
-	"github.com/machinebox/graphql"
-	"github.com/urfave/cli/v2"
 )
 
 func Version(ctx *cli.Context) (string, error) {
