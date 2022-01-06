@@ -8,8 +8,8 @@ Release Notes.
 ### Features
 
 - Add the sub-command `dependency instance` to query instance relationships (#117)
-- Add the sub-command `service layer` to query services according to layer.
-- Add the sub-command `layer list` to query layer list.
+- Add the sub-command `service layer` to query services according to layer.(#133)
+- Add the sub-command `layer list` to query layer list.(#133)
 
 ### Bug Fixes
 
