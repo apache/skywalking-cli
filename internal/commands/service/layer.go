@@ -18,15 +18,38 @@
 package service
 
 import (
+	"fmt"
+
 	"github.com/urfave/cli/v2"
+
+	api "skywalking.apache.org/repo/goapi/query"
+
+	"github.com/apache/skywalking-cli/pkg/display"
+	"github.com/apache/skywalking-cli/pkg/display/displayable"
+	"github.com/apache/skywalking-cli/pkg/graphql/metadata"
 )
 
-var Command = &cli.Command{
-	Name:    "service",
-	Aliases: []string{"s", "svc"},
-	Usage:   "Service related sub-command",
-	Subcommands: cli.Commands{
-		ListCommand,
-		LayerCommand,
+var LayerCommand = &cli.Command{
+	Name:      "layer",
+	Aliases:   []string{"ly"},
+	Usage:     `list the service list according to layer`,
+	ArgsUsage: "<layer name>",
+	UsageText: `This command lists the services matching the given "<layer name>".
+
+Examples:
+2. List services in "GENERAL" layer:
+$ swctl svc ly GENERAL`,
+	Action: func(ctx *cli.Context) error {
+		var services []api.Service
+
+		if args := ctx.Args(); args.Len() == 0 {
+			return fmt.Errorf("layer must be provide")
+		}
+		services, err := metadata.ListLayerService(ctx, ctx.Args().First())
+		if err != nil {
+			return err
+		}
+
+		return display.Display(ctx, &displayable.Displayable{Data: services})
 	},
 }

@@ -15,18 +15,32 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package service
+package layer
 
 import (
+	"github.com/apache/skywalking-cli/pkg/display"
+	"github.com/apache/skywalking-cli/pkg/display/displayable"
+	"github.com/apache/skywalking-cli/pkg/graphql/metadata"
+
 	"github.com/urfave/cli/v2"
 )
 
-var Command = &cli.Command{
-	Name:    "service",
-	Aliases: []string{"s", "svc"},
-	Usage:   "Service related sub-command",
-	Subcommands: cli.Commands{
-		ListCommand,
-		LayerCommand,
+var listCommand = &cli.Command{
+	Name:    "list",
+	Aliases: []string{"ls"},
+	Usage:   "List layers",
+	UsageText: `List layers
+
+Examples:
+1. List all layers:
+$ swctl layer list
+`,
+	Action: func(ctx *cli.Context) error {
+		layers, err := metadata.ListLayers(ctx)
+		if err != nil {
+			return err
+		}
+
+		return display.Display(ctx, &displayable.Displayable{Data: layers})
 	},
 }

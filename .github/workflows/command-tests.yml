@@ -28,6 +28,11 @@ on:
 jobs:
   command-test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        oap:
+          - 8.8.1
+          - 9.0.0
     steps:
       - uses: actions/checkout@v2
       - name: Check for go file changes
@@ -47,4 +52,4 @@ jobs:
         if: steps.changes.outputs.src == 'true'
         uses: apache/skywalking-infra-e2e@d714677324e31cd4ab45782e58cea0946a065132
         with:
-          e2e-file: test/test.yaml
+          e2e-file: test/cases/${{ matrix.oap }}/test.yaml

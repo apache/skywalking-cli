@@ -32,6 +32,7 @@ import (
 	"github.com/apache/skywalking-cli/internal/commands/install"
 	"github.com/apache/skywalking-cli/internal/commands/instance"
 	"github.com/apache/skywalking-cli/internal/commands/interceptor"
+	"github.com/apache/skywalking-cli/internal/commands/layer"
 	"github.com/apache/skywalking-cli/internal/commands/logs"
 	"github.com/apache/skywalking-cli/internal/commands/metrics"
 	"github.com/apache/skywalking-cli/internal/commands/profile"
@@ -98,6 +99,7 @@ services, service instances, etc.`
 		completion.Command,
 		dependency.Command,
 		alarm.Command,
+		layer.Command,
 	}
 
 	app.Before = interceptor.BeforeChain(

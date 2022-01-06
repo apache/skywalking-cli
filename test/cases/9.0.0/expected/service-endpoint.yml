@@ -13,14 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-  {{- with index . 0 }}
-- id: {{ b64enc "provider" }}.1_{{ b64enc "provider1" }}
-  name: provider1
-  attributes:
-    {{- range .attributes }}
-    - name: "{{ .name }}"
-      value: "{{ .value }}"
-    {{- end }}
-  language: {{ .language }}
-  instanceuuid: {{ b64enc "provider" }}.1_{{ b64enc "provider1" }}
+  {{- contains . }}
+- id: {{ b64enc "e2e-service-provider" }}.1_{{ b64enc "POST:/users" }}
+  name: POST:/users
   {{- end }}
