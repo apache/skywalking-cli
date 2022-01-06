@@ -42,9 +42,6 @@ services:
     volumes:
       - ./services/provider.py:/app.py
     entrypoint: [ "sw-python", "run", "python", "/app.py" ]
-    depends_on:
-      oap:
-        condition: service_healthy
     networks:
       - test
     healthcheck:
@@ -64,9 +61,6 @@ services:
     volumes:
       - ./services/consumer.py:/app.py
     entrypoint: [ "sw-python", "run", "python", "/app.py" ]
-    depends_on:
-      provider:
-        condition: service_healthy
     networks:
       - test
 

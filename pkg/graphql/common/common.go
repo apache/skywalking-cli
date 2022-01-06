@@ -15,18 +15,21 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package service
+package common
 
 import (
+	"github.com/apache/skywalking-cli/assets"
+	"github.com/apache/skywalking-cli/pkg/graphql/client"
+	"github.com/machinebox/graphql"
 	"github.com/urfave/cli/v2"
 )
 
-var Command = &cli.Command{
-	Name:    "service",
-	Aliases: []string{"s", "svc"},
-	Usage:   "Service related sub-command",
-	Subcommands: cli.Commands{
-		ListCommand,
-		LayerCommand,
-	},
+func Version(ctx *cli.Context) (string, error) {
+	var response map[string]string
+
+	request := graphql.NewRequest(assets.Read("graphqls/common/version.graphql"))
+
+	err := client.ExecuteQuery(ctx, request, &response)
+
+	return response["result"], err
 }

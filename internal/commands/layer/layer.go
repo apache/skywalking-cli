@@ -15,18 +15,16 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package service
+package layer
 
 import (
 	"github.com/urfave/cli/v2"
 )
 
 var Command = &cli.Command{
-	Name:    "service",
-	Aliases: []string{"s", "svc"},
-	Usage:   "Service related sub-command",
-	Subcommands: cli.Commands{
-		ListCommand,
-		LayerCommand,
+	Name:  "layer",
+	Usage: "Layer related sub-command",
+	Subcommands: []*cli.Command{
+		listCommand,
 	},
 }
