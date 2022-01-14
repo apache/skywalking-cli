@@ -141,15 +141,15 @@ check-codegen:
 .PHONY: docker
 docker: PUSH_OR_LOAD = --load
 docker: PLATFORMS =
-docker:
-	docker buildx create --use --driver docker-container --name skywalking_cli > /dev/null 2>&1 || true
-	docker buildx build $(PUSH_OR_LOAD) $(PLATFORMS) --build-arg VERSION=$(VERSION) . -t $(HUB)/$(APP_NAME):$(VERSION) -t $(HUB)/$(APP_NAME):latest
-	docker buildx rm skywalking_cli
 
 .PHONY: docker.push
 docker.push: PUSH_OR_LOAD = --push
 docker.push: PLATFORMS = --platform linux/386,linux/amd64,linux/arm64
-docker.push: docker
+
+docker docker.push:
+	docker buildx create --use --driver docker-container --name skywalking_cli > /dev/null 2>&1 || true
+	docker buildx build $(PUSH_OR_LOAD) $(PLATFORMS) --build-arg VERSION=$(VERSION) . -t $(HUB)/$(APP_NAME):$(VERSION) -t $(HUB)/$(APP_NAME):latest
+	docker buildx rm skywalking_cli
 
 .PHONY: install
 install: clean

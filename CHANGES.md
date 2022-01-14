@@ -19,6 +19,7 @@ Release Notes.
 - fix: `multiple-linear` command's `labels` type can be string type (#122)
 - Add missing `dest-service-id` `dest-service-name` to `metrics linear` command (#121)
 - Fix the wrong name when getting `destInstance` flag (#118)
+- Fix failed push docker image to ghcr.(#135)
 
 ### Chores
 
