@@ -52,12 +52,18 @@ func AllServices(cliCtx *cli.Context, duration api.Duration) ([]api.Service, err
 func SearchService(cliCtx *cli.Context, serviceCode string) (service api.Service, err error) {
 	var response map[string]api.Service
 
-	version, err := protocolVersion(cliCtx)
+	majorVersion, err := backendMajorVersion(cliCtx)
 	if err != nil {
 		return api.Service{}, err
 	}
-	request := graphql.NewRequest(assets.Read("graphqls/metadata/" + version + "/SearchService.graphql"))
-	request.Var("serviceCode", serviceCode)
+	var request *graphql.Request
+	if majorVersion >= 9 {
+		request = graphql.NewRequest(assets.Read("graphqls/metadata/v2/FindService.graphql"))
+		request.Var("serviceName", serviceCode)
+	} else {
+		request = graphql.NewRequest(assets.Read("graphqls/metadata/v1/SearchService.graphql"))
+		request.Var("serviceCode", serviceCode)
+	}
 
 	err = client.ExecuteQuery(cliCtx, request, &response)
 
@@ -109,13 +115,24 @@ func SearchBrowserService(cliCtx *cli.Context, serviceCode string) (service api.
 func SearchEndpoints(cliCtx *cli.Context, serviceID, keyword string, limit int) ([]api.Endpoint, error) {
 	var response map[string][]api.Endpoint
 
-	request := graphql.NewRequest(assets.Read("graphqls/metadata/v1/SearchEndpoints.graphql"))
-	request.Var("serviceId", serviceID)
-	request.Var("keyword", keyword)
-	request.Var("limit", limit)
+	majorVersion, err := backendMajorVersion(cliCtx)
+	if err != nil {
+		return nil, err
+	}
+	var request *graphql.Request
+	if majorVersion >= 9 {
+		request = graphql.NewRequest(assets.Read("graphqls/metadata/v2/FindEndpoints.graphql"))
+		request.Var("serviceId", serviceID)
+		request.Var("keyword", keyword)
+		request.Var("limit", limit)
+	} else {
+		request = graphql.NewRequest(assets.Read("graphqls/metadata/v1/SearchEndpoints.graphql"))
+		request.Var("serviceId", serviceID)
+		request.Var("keyword", keyword)
+		request.Var("limit", limit)
+	}
 
-	err := client.ExecuteQuery(cliCtx, request, &response)
-
+	err = client.ExecuteQuery(cliCtx, request, &response)
 	return response["result"], err
 }
 
@@ -131,6 +148,28 @@ func Instances(cliCtx *cli.Context, serviceID string, duration api.Duration) ([]
 	request.Var("duration", duration)
 
 	err = client.ExecuteQuery(cliCtx, request, &response)
+
+	return response["result"], err
+}
+
+func GetInstance(cliCtx *cli.Context, instanceID string) (api.ServiceInstance, error) {
+	var response map[string]api.ServiceInstance
+
+	request := graphql.NewRequest(assets.Read("graphqls/metadata/v2/GetInstance.graphql"))
+	request.Var("instanceId", instanceID)
+
+	err := client.ExecuteQuery(cliCtx, request, &response)
+
+	return response["result"], err
+}
+
+func GetEndpointInfo(cliCtx *cli.Context, endpointID string) (api.EndpointInfo, error) {
+	var response map[string]api.EndpointInfo
+
+	request := graphql.NewRequest(assets.Read("graphqls/metadata/v2/GetEndpointInfo.graphql"))
+	request.Var("endpointId", endpointID)
+
+	err := client.ExecuteQuery(cliCtx, request, &response)
 
 	return response["result"], err
 }

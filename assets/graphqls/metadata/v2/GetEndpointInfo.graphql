@@ -15,8 +15,12 @@
 # specific language governing permissions and limitations
 # under the License.
 
-query searchService($serviceCode: String!) {
-    result: searchService(serviceCode: $serviceCode) {
-        id name group shortName layers
+
+query ($endpointId: ID!) {
+    result: getEndpointInfo(endpointId: $endpointId) {
+        id
+        name
+        serviceId
+        serviceName
     }
 }

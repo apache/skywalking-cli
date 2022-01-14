@@ -51,6 +51,8 @@ verify:
 
     - query: swctl --display yaml --base-url=http://${oap_host}:${oap_12800}/graphql endpoint ls --service-name provider
       expected: expected/endpoint-list.yml
+    - query: swctl --display yaml --base-url=http://${oap_host}:${oap_12800}/graphql endpoint get cHJvdmlkZXI=.1_L3VzZXJz
+      expected: expected/endpoint-get.yml
 
     - query: swctl --display yaml --base-url=http://${oap_host}:${oap_12800}/graphql instance ls --service-name provider
       expected: expected/instance-list.yml
@@ -58,6 +60,8 @@ verify:
       expected: expected/instance-list.yml
     - query: swctl --display yaml --base-url=http://${oap_host}:${oap_12800}/graphql instance search --service-name provider --regex not-exist
       expected: expected/empty-array.yml
+    - query: swctl --display yaml --base-url=http://${oap_host}:${oap_12800}/graphql instance get cHJvdmlkZXI=.1_cHJvdmlkZXIx
+      expected: expected/instance-get.yml
 
     - query: swctl --display yaml --base-url=http://${oap_host}:${oap_12800}/graphql metrics top --name service_sla 5
       expected: expected/metrics-top-service-sla.yml

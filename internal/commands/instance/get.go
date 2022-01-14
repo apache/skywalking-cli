@@ -15,18 +15,36 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package endpoint
+package instance
 
 import (
+	"fmt"
+
 	"github.com/urfave/cli/v2"
+
+	"github.com/apache/skywalking-cli/pkg/display"
+	"github.com/apache/skywalking-cli/pkg/display/displayable"
+	"github.com/apache/skywalking-cli/pkg/graphql/metadata"
 )
 
-var Command = &cli.Command{
-	Name:    "endpoint",
-	Aliases: []string{"e"},
-	Usage:   "Endpoint related sub-command",
-	Subcommands: cli.Commands{
-		ListCommand,
-		GetCommand,
+var GetCommand = &cli.Command{
+	Name:  "get",
+	Usage: `get monitored instance of the given <instance-id>`,
+	UsageText: `This command get single instance, via instance-id.
+
+Examples:
+1. get single instance by instance id "cHJvdmlkZXI=.1_cHJvdmlkZXIx":
+$ swctl instance get cHJvdmlkZXI=.1_cHJvdmlkZXIx`,
+	Action: func(ctx *cli.Context) error {
+		if ctx.Args().Len() == 0 {
+			return fmt.Errorf("instance-id must be provide")
+		}
+
+		instance, err := metadata.GetInstance(ctx, ctx.Args().First())
+		if err != nil {
+			return err
+		}
+
+		return display.Display(ctx, &displayable.Displayable{Data: instance})
 	},
 }

@@ -18,15 +18,33 @@
 package endpoint
 
 import (
+	"fmt"
+
 	"github.com/urfave/cli/v2"
+
+	"github.com/apache/skywalking-cli/pkg/display"
+	"github.com/apache/skywalking-cli/pkg/display/displayable"
+	"github.com/apache/skywalking-cli/pkg/graphql/metadata"
 )
 
-var Command = &cli.Command{
-	Name:    "endpoint",
-	Aliases: []string{"e"},
-	Usage:   "Endpoint related sub-command",
-	Subcommands: cli.Commands{
-		ListCommand,
-		GetCommand,
+var GetCommand = &cli.Command{
+	Name:  "get",
+	Usage: `get monitored endpoint of the given <endpoint-id>`,
+	UsageText: `This command get single endpoint, via endpoint-id.
+
+Examples:
+1. get single endpoint by endpoint id "cHJvdmlkZXI=.1_L3VzZXJz":
+$ swctl endpoint get cHJvdmlkZXI=.1_L3VzZXJz`,
+	Action: func(ctx *cli.Context) error {
+		if ctx.Args().Len() == 0 {
+			return fmt.Errorf("endpoint-id must be provide")
+		}
+
+		endpointInfo, err := metadata.GetEndpointInfo(ctx, ctx.Args().First())
+		if err != nil {
+			return err
+		}
+
+		return display.Display(ctx, &displayable.Displayable{Data: endpointInfo})
 	},
 }
