@@ -16,8 +16,8 @@
 # under the License.
 
 
-query ($serviceId: ID!, $duration: Duration!) {
-    result: listInstances(duration: $duration, serviceId: $serviceId) {
+query ($instanceId: String!) {
+    result: getInstance(instanceId: $instanceId) {
         id
         name
         language

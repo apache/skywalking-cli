@@ -15,17 +15,8 @@
 # specific language governing permissions and limitations
 # under the License.
 
-
-query ($serviceId: ID!, $duration: Duration!) {
-    result: listInstances(duration: $duration, serviceId: $serviceId) {
-        id
-        name
-        language
-        instanceUUID
-        layer
-        attributes {
-            name
-            value
-        }
+query ($keyword: String!, $serviceId: ID!, $limit: Int!) {
+    result: findEndpoint(keyword: $keyword, serviceId: $serviceId, limit: $limit) {
+        id name
     }
 }

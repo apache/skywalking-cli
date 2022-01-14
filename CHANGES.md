@@ -10,6 +10,9 @@ Release Notes.
 - Add the sub-command `dependency instance` to query instance relationships (#117)
 - Add the sub-command `service layer` to query services according to layer.(#133)
 - Add the sub-command `layer list` to query layer list.(#133)
+- Add the sub-command `instance get` to query single instance.(#134)
+- Add the sub-command `endpoint get` to query single endpoint info.(#134)
+- Change the GraphQL method to the v9 version according to the server version.(#134)
 
 ### Bug Fixes
 
