@@ -17,6 +17,6 @@
 
 query ($duration: Duration!) {
     result: getAllBrowserServices(duration: $duration) {
-        id name group shortName layers
+        id name group shortName layers normal
     }
 }

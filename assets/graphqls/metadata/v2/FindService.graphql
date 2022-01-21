@@ -17,6 +17,6 @@
 
 query findService($serviceName: String!) {
     result: findService(serviceName: $serviceName) {
-        id name group shortName layers
+        id name group shortName layers normal
     }
 }

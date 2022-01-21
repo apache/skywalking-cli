@@ -20,10 +20,12 @@
   shortname: provider
   layers:
     - GENERAL
+  normal: true
 - id: {{ b64enc "consumer" }}.1
   name: consumer
   group: ""
   shortname: consumer
   layers:
     - GENERAL
+  normal: true
   {{- end }}
