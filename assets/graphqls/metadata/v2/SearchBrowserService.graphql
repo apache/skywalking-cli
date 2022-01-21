@@ -17,6 +17,6 @@
 
 query ($serviceCode: String!) {
     result: searchBrowserService(serviceCode: $serviceCode) {
-        id name group shortName layers
+        id name group shortName layers normal
     }
 }

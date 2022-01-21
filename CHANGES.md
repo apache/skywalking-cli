@@ -13,6 +13,7 @@ Release Notes.
 - Add the sub-command `instance get` to query single instance.(#134)
 - Add the sub-command `endpoint get` to query single endpoint info.(#134)
 - Change the GraphQL method to the v9 version according to the server version.(#134)
+- Add `normal` field to Service entity.(#136)
 
 ### Bug Fixes
 

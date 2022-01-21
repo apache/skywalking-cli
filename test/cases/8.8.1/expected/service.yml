@@ -19,9 +19,11 @@
   group: ""
   shortname: ""
   layers: []
+  normal: null
 - id: {{ b64enc "consumer" }}.1
   name: consumer
   group: ""
   shortname: ""
   layers: []
+  normal: null
   {{- end }}

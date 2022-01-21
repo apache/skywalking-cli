@@ -20,7 +20,7 @@ services:
     extends:
       file: ../../base/docker-compose.yml
       service: oap
-    image: ghcr.io/apache/skywalking/oap:e97b2d2165703c9d5bcdb0556134aa7cbd1382f5
+    image: ghcr.io/apache/skywalking/oap:012d58a8fe29295b41246c20b399283fa9c1305b
     ports:
       - 12800
     healthcheck:

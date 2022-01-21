@@ -19,3 +19,4 @@
   shortname: provider
   layers:
     - GENERAL
+  normal: true
