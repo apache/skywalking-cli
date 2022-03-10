@@ -46,7 +46,7 @@ $ swctl process ls --service-id YnVzaW5lc3Mtem9uZTo6cHJvamVjdEM=.1
 $ swctl process ls --instance-name provider-01 --service-name provider
 
 4. List all processes by instance id "cHJvdmlkZXI=.1_cHJvdmlkZXIx":
-$ swctl process ls --service-id cHJvdmlkZXI=.1_cHJvdmlkZXIx`,
+$ swctl process ls --instance-id cHJvdmlkZXI=.1_cHJvdmlkZXIx`,
 	Flags: flags.Flags(
 		flags.ServiceFlags,
 		flags.InstanceFlags,

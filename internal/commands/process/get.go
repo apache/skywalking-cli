@@ -37,7 +37,7 @@ Examples:
 $ swctl process get 2b9e46c13c91803695a4364257415e523af7cbf17bf4058e025c16b944a6a85b`,
 	Action: func(ctx *cli.Context) error {
 		if ctx.Args().Len() == 0 {
-			return fmt.Errorf("process-id must be provide")
+			return fmt.Errorf("process-id must be provided")
 		}
 
 		instance, err := metadata.GetProcess(ctx, ctx.Args().First())
