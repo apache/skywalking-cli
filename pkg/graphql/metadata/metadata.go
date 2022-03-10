@@ -174,6 +174,29 @@ func GetEndpointInfo(cliCtx *cli.Context, endpointID string) (api.EndpointInfo, 
 	return response["result"], err
 }
 
+func Processes(cliCtx *cli.Context, serviceID, instanceID string) ([]api.Process, error) {
+	var response map[string][]api.Process
+
+	request := graphql.NewRequest(assets.Read("graphqls/metadata/v2/Processes.graphql"))
+	request.Var("serviceId", serviceID)
+	request.Var("instanceID", instanceID)
+
+	err := client.ExecuteQuery(cliCtx, request, &response)
+
+	return response["result"], err
+}
+
+func GetProcess(cliCtx *cli.Context, processID string) (api.Process, error) {
+	var response map[string]api.Process
+
+	request := graphql.NewRequest(assets.Read("graphqls/metadata/v2/GetProcess.graphql"))
+	request.Var("processId", processID)
+
+	err := client.ExecuteQuery(cliCtx, request, &response)
+
+	return response["result"], err
+}
+
 func ServerTimeInfo(cliCtx *cli.Context) (api.TimeInfo, error) {
 	var response map[string]api.TimeInfo
 
