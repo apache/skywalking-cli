@@ -15,6 +15,7 @@ Release Notes.
 - Change the GraphQL method to the v9 version according to the server version.(#134)
 - Add `normal` field to Service entity.(#136)
 - Add the command `process` for query Process metadata.(#137)
+- Add the command `ebpf-profiling` for process ebpf profiling.(#138)
 
 ### Bug Fixes
 

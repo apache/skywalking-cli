@@ -26,6 +26,7 @@ import (
 	"github.com/apache/skywalking-cli/internal/commands/completion"
 	"github.com/apache/skywalking-cli/internal/commands/dashboard"
 	"github.com/apache/skywalking-cli/internal/commands/dependency"
+	"github.com/apache/skywalking-cli/internal/commands/ebpf/profiling"
 	"github.com/apache/skywalking-cli/internal/commands/endpoint"
 	"github.com/apache/skywalking-cli/internal/commands/event"
 	"github.com/apache/skywalking-cli/internal/commands/healthcheck"
@@ -102,6 +103,7 @@ services, service instances, etc.`
 		alarm.Command,
 		layer.Command,
 		process.Command,
+		profiling.Command,
 	}
 
 	app.Before = interceptor.BeforeChain(
