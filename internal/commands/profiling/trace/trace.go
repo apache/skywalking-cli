@@ -15,15 +15,15 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package profile
+package trace
 
 import (
 	"github.com/urfave/cli/v2"
 )
 
 var Command = &cli.Command{
-	Name:  "profile",
-	Usage: "Profile related sub-command",
+	Name:  "trace",
+	Usage: "trace profiling related sub-command",
 	UsageText: `If your endpoint has performance issue and could not use tracing to find out what's happening,
 you could try to profile. You could get more information
 on https://github.com/apache/skywalking/blob/master/docs/en/guides/backend-profile.md.

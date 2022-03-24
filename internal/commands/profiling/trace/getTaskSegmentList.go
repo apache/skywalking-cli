@@ -15,46 +15,39 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package profile
+package trace
 
 import (
-	"github.com/apache/skywalking-cli/internal/commands/interceptor"
-	"github.com/apache/skywalking-cli/internal/flags"
 	"github.com/apache/skywalking-cli/pkg/display"
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
-	"github.com/apache/skywalking-cli/pkg/graphql/profile"
+	"github.com/apache/skywalking-cli/pkg/graphql/profiling"
 
 	"github.com/urfave/cli/v2"
 )
 
-var getTaskListCommand = &cli.Command{
-	Name:    "list",
-	Aliases: []string{"l"},
-	Usage:   "Query profile task list",
-	UsageText: `Query profile task list
+var getTaskSegmentListCommand = &cli.Command{
+	Name:    "segment-list",
+	Aliases: []string{"sl"},
+	Usage:   "Query profiling trace task segment list",
+	UsageText: `Query profiling trace task segment list
 
 Examples:
-1. Query all profiling tasks
-$ swctl profile list --service-name=service-name --endpoint-name=endpoint
-
-2. Query profiling tasks of service "business-zone::projectC", endpoint "/projectC/{value}"
-$ swctl profile list --service-name=business-zone::projectC --endpoint-name=/projectC/{value}`,
-	Flags: flags.Flags(
-		flags.EndpointFlags,
-	),
-	Before: interceptor.BeforeChain(
-		interceptor.ParseEndpoint(false),
-	),
+1. Query profiled segment list
+$ swctl profiling trace segment-list --service-name=service-name --endpoint-name=endpoint`,
+	Flags: []cli.Flag{
+		&cli.StringFlag{
+			Name:  "task-id",
+			Usage: "`<task id>` whose profiled segment are to be searched",
+		},
+	},
 	Action: func(ctx *cli.Context) error {
-		serviceID := ctx.String("service-id")
-		endpoint := ctx.String("endpoint-name")
-
-		task, err := profile.GetTaskList(ctx, serviceID, endpoint)
+		taskID := ctx.String("task-id")
+		segmentList, err := profiling.GetTraceProfilingTaskSegmentList(ctx, taskID)
 
 		if err != nil {
 			return err
 		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: task, Condition: serviceID})
+		return display.Display(ctx, &displayable.Displayable{Data: segmentList, Condition: taskID})
 	},
 }

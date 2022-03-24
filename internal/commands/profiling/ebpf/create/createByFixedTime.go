@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package profiling
+package create
 
 import (
 	"time"
@@ -24,22 +24,22 @@ import (
 	"github.com/apache/skywalking-cli/internal/model/ebpf"
 	"github.com/apache/skywalking-cli/pkg/display"
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
-	ebpf_graphql "github.com/apache/skywalking-cli/pkg/graphql/ebpf"
+	"github.com/apache/skywalking-cli/pkg/graphql/profiling"
 
 	"github.com/urfave/cli/v2"
 
 	api "skywalking.apache.org/repo/goapi/query"
 )
 
-var CreateCommand = &cli.Command{
-	Name:    "createByFixedTime",
+var FixedTimeCreateCommand = &cli.Command{
+	Name:    "fixed",
 	Aliases: []string{"cft"},
 	Usage:   "Create a new ebpf profiling fixed time task",
 	UsageText: `Create a new ebpf profiling fixed time task
 
 Examples:
 1. Create ebpf profiling fixed time task
-$ swctl ebpf-profiling createByFixedTime --process-finder=PROCESS_ID --process-id=abc --duration=1m target-type=ON_CPU`,
+$ swctl ebpf-profiling createByFixedTime --process-finder=PROCESS_ID --process-id=abc --duration=1m --target-type=ON_CPU`,
 	Flags: flags.Flags(
 		[]cli.Flag{
 			&cli.GenericFlag{
@@ -92,7 +92,7 @@ $ swctl ebpf-profiling createByFixedTime --process-finder=PROCESS_ID --process-i
 			TargetType: ctx.Generic("target-type").(*ebpf.ProfilingTargetTypeEnumValue).Selected,
 		}
 
-		task, err := ebpf_graphql.CreateEBPFProfilingFixedTimeTask(ctx, request)
+		task, err := profiling.CreateEBPFProfilingFixedTimeTask(ctx, request)
 
 		if err != nil {
 			return err

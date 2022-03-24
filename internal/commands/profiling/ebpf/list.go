@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package profiling
+package ebpf
 
 import (
 	"fmt"
@@ -28,7 +28,7 @@ import (
 	"github.com/apache/skywalking-cli/internal/flags"
 	"github.com/apache/skywalking-cli/pkg/display"
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
-	ebpf_graphql "github.com/apache/skywalking-cli/pkg/graphql/ebpf"
+	"github.com/apache/skywalking-cli/pkg/graphql/profiling"
 )
 
 var ListTaskCommand = &cli.Command{
@@ -39,13 +39,13 @@ var ListTaskCommand = &cli.Command{
 
 Example：
 1. Query profiling tasks of service "business-zone::projectC"
-$ swctl ebpf-profiling list --service-name=service-name
+$ swctl profiling ebpf list --service-name=service-name
 
 2. Query profiling tasks of instance name "provider-01" and service name "provider":
-$ swctl ebpf-profiling list --instance-name provider-01 --service-name provider
+$ swctl profiling ebpf list --instance-name provider-01 --service-name provider
 
-2. Query profiling tasks of process id "abc"
-$ swctl ebpf-profiling list --process-id=abc
+3. Query profiling tasks of process id "abc"
+$ swctl profiling ebpf list --process-id=abc
 `,
 	Flags: flags.Flags(
 		flags.ServiceFlags,
@@ -70,7 +70,7 @@ $ swctl ebpf-profiling list --process-id=abc
 			return fmt.Errorf("service, instance, or process must provide one")
 		}
 
-		processes, err := ebpf_graphql.QueryEBPFProfilingTaskList(ctx, &api.EBPFProfilingTaskCondition{
+		processes, err := profiling.QueryEBPFProfilingTaskList(ctx, &api.EBPFProfilingTaskCondition{
 			FinderType: nil,
 			ServiceID:  &serviceID,
 			InstanceID: &instanceID,

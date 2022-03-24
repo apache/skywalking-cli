@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package ebpf
+package profiling
 
 import (
 	"github.com/apache/skywalking-cli/assets"
@@ -32,7 +32,7 @@ func CreateEBPFProfilingFixedTimeTask(ctx *cli.Context,
 	condition *api.EBPFProfilingTaskFixedTimeCreationRequest) (api.EBPFProfilingTaskCreationResult, error) {
 	var response map[string]api.EBPFProfilingTaskCreationResult
 
-	request := graphql.NewRequest(assets.Read("graphqls/ebpf/CreateEBPFProfilingFixedTimeTask.graphql"))
+	request := graphql.NewRequest(assets.Read("graphqls/profiling/ebpf/CreateEBPFProfilingFixedTimeTask.graphql"))
 	request.Var("request", condition)
 
 	err := client.ExecuteQuery(ctx, request, &response)
@@ -44,7 +44,7 @@ func QueryEBPFProfilingTaskList(ctx *cli.Context,
 	condition *api.EBPFProfilingTaskCondition) ([]*api.EBPFProfilingTask, error) {
 	var response map[string][]*api.EBPFProfilingTask
 
-	request := graphql.NewRequest(assets.Read("graphqls/ebpf/QueryEBPFProfilingTaskList.graphql"))
+	request := graphql.NewRequest(assets.Read("graphqls/profiling/ebpf/QueryEBPFProfilingTaskList.graphql"))
 	request.Var("query", condition)
 
 	err := client.ExecuteQuery(ctx, request, &response)
@@ -56,7 +56,7 @@ func QueryEBPFProfilingScheduleList(ctx *cli.Context, taskID string,
 	duration *api.Duration) ([]*api.EBPFProfilingSchedule, error) {
 	var response map[string][]*api.EBPFProfilingSchedule
 
-	request := graphql.NewRequest(assets.Read("graphqls/ebpf/QueryEBPFProfilingScheduleList.graphql"))
+	request := graphql.NewRequest(assets.Read("graphqls/profiling/ebpf/QueryEBPFProfilingScheduleList.graphql"))
 	request.Var("taskID", taskID)
 	request.Var("duration", duration)
 
@@ -69,7 +69,7 @@ func QueryEBPFProfilingAnalyzation(ctx *cli.Context, taskID string,
 	timeRanges []*api.EBPFProfilingAnalyzeTimeRange) (*api.EBPFProfilingAnalyzation, error) {
 	var response map[string]*api.EBPFProfilingAnalyzation
 
-	request := graphql.NewRequest(assets.Read("graphqls/ebpf/QueryEBPFProflingAnalyzation.graphql"))
+	request := graphql.NewRequest(assets.Read("graphqls/profiling/ebpf/QueryEBPFProflingAnalyzation.graphql"))
 	request.Var("taskID", taskID)
 	request.Var("timeRanges", timeRanges)
 

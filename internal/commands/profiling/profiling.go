@@ -15,40 +15,22 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package profile
+package profiling
 
 import (
-	"github.com/apache/skywalking-cli/pkg/display"
-	"github.com/apache/skywalking-cli/pkg/display/displayable"
-	"github.com/apache/skywalking-cli/pkg/graphql/profile"
-
 	"github.com/urfave/cli/v2"
+
+	"github.com/apache/skywalking-cli/internal/commands/profiling/ebpf"
+	"github.com/apache/skywalking-cli/internal/commands/profiling/trace"
 )
 
-var getTaskLogListCommand = &cli.Command{
-	Name:    "logs",
-	Aliases: []string{"logs"},
-	Flags: []cli.Flag{
-		&cli.StringFlag{
-			Name:  "task-id",
-			Usage: "profile task id.",
-		},
-	},
-	Usage: "Query profile task log list",
-	UsageText: `Query profile task log list
-
-Examples:
-1. Query all profile logs of task id "task-id"
-$ swctl profile logs --task-id=task-id`,
-	Action: func(ctx *cli.Context) error {
-		taskID := ctx.String("task-id")
-
-		task, err := profile.GetTaskLogList(ctx, taskID)
-
-		if err != nil {
-			return err
-		}
-
-		return display.Display(ctx, &displayable.Displayable{Data: task, Condition: taskID})
+var Command = &cli.Command{
+	Name:  "profiling",
+	Usage: "profiling related sub-command",
+	UsageText: `If your application has performance issue, you could try to profiling. 
+Please following sub-command to get more information.`,
+	Subcommands: []*cli.Command{
+		trace.Command,
+		ebpf.Command,
 	},
 }

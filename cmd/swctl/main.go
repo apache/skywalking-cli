@@ -18,6 +18,7 @@
 package main
 
 import (
+	_ "embed"
 	"os"
 	"runtime"
 
@@ -26,7 +27,6 @@ import (
 	"github.com/apache/skywalking-cli/internal/commands/completion"
 	"github.com/apache/skywalking-cli/internal/commands/dashboard"
 	"github.com/apache/skywalking-cli/internal/commands/dependency"
-	"github.com/apache/skywalking-cli/internal/commands/ebpf/profiling"
 	"github.com/apache/skywalking-cli/internal/commands/endpoint"
 	"github.com/apache/skywalking-cli/internal/commands/event"
 	"github.com/apache/skywalking-cli/internal/commands/healthcheck"
@@ -37,7 +37,7 @@ import (
 	"github.com/apache/skywalking-cli/internal/commands/logs"
 	"github.com/apache/skywalking-cli/internal/commands/metrics"
 	"github.com/apache/skywalking-cli/internal/commands/process"
-	"github.com/apache/skywalking-cli/internal/commands/profile"
+	"github.com/apache/skywalking-cli/internal/commands/profiling"
 	"github.com/apache/skywalking-cli/internal/commands/service"
 	"github.com/apache/skywalking-cli/internal/commands/trace"
 	"github.com/apache/skywalking-cli/internal/logger"
@@ -97,7 +97,6 @@ services, service instances, etc.`
 		install.Command,
 		event.Command,
 		logs.Command,
-		profile.Command,
 		completion.Command,
 		dependency.Command,
 		alarm.Command,

@@ -15,14 +15,14 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package profile
+package trace
 
 import (
 	"github.com/apache/skywalking-cli/internal/commands/interceptor"
 	"github.com/apache/skywalking-cli/internal/flags"
 	"github.com/apache/skywalking-cli/pkg/display"
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
-	"github.com/apache/skywalking-cli/pkg/graphql/profile"
+	"github.com/apache/skywalking-cli/pkg/graphql/profiling"
 
 	api "skywalking.apache.org/repo/goapi/query"
 
@@ -32,12 +32,12 @@ import (
 var createCommand = &cli.Command{
 	Name:    "create",
 	Aliases: []string{"c"},
-	Usage:   "Create a new profile task",
-	UsageText: `Create a new profile task
+	Usage:   "Create a new trace profiling task",
+	UsageText: `Create a new trace profiling task
 
 Examples:
-1. Create profile task
-$ swctl profile create --service-name=service-name --endpoint=endpoint --start-time=1627656127860 --duration=5 \
+1. Create trace profiling task
+$ swctl profiling trace create --service-name=service-name --endpoint=endpoint --start-time=1627656127860 --duration=5 \
 	--min-duration-threshold=0 --dump-period=10 --max-sampling-count=9`,
 	Flags: flags.Flags(
 		flags.EndpointFlags,
@@ -81,7 +81,7 @@ $ swctl profile create --service-name=service-name --endpoint=endpoint --start-t
 			MaxSamplingCount:     ctx.Int("max-sampling-count"),
 		}
 
-		task, err := profile.CreateTask(ctx, request)
+		task, err := profiling.CreateTraceTask(ctx, request)
 
 		if err != nil {
 			return err

@@ -49,6 +49,8 @@ var style = map[string]string{"dashboard global": "graph",
 	"service list":             "table",
 	"t":                        "graph",
 	"trace":                    "graph",
+	"ebpf analysis":            "graph",
+	"trace analysis":           "graph",
 }
 
 // Display the object in the style specified in flag --display

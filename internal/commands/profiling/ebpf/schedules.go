@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package profiling
+package ebpf
 
 import (
 	api "skywalking.apache.org/repo/goapi/query"
@@ -27,7 +27,7 @@ import (
 	"github.com/apache/skywalking-cli/internal/model"
 	"github.com/apache/skywalking-cli/pkg/display"
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
-	ebpf_graphql "github.com/apache/skywalking-cli/pkg/graphql/ebpf"
+	"github.com/apache/skywalking-cli/pkg/graphql/profiling"
 )
 
 var ListScheduleCommand = &cli.Command{
@@ -38,7 +38,7 @@ var ListScheduleCommand = &cli.Command{
 
 Example：
 1. Query profiling schedules of task id "abc"
-$ swctl ebpf-profiling schedules --task-id=abc
+$ swctl profiling ebpf schedules --task-id=abc
 `,
 	Flags: flags.Flags(
 		flags.DurationFlags,
@@ -59,7 +59,7 @@ $ swctl ebpf-profiling schedules --task-id=abc
 		end := ctx.String("end")
 		step := ctx.Generic("step")
 
-		schedules, err := ebpf_graphql.QueryEBPFProfilingScheduleList(ctx, taskID, &api.Duration{
+		schedules, err := profiling.QueryEBPFProfilingScheduleList(ctx, taskID, &api.Duration{
 			Start: start,
 			End:   end,
 			Step:  step.(*model.StepEnumValue).Selected,

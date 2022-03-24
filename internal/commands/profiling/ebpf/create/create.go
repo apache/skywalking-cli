@@ -15,17 +15,14 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package profiling
+package create
 
 import "github.com/urfave/cli/v2"
 
-var Command = &cli.Command{
-	Name:  "ebpf-profiling",
-	Usage: "eBPF Profiling related sub-command",
+var CreateCommand = &cli.Command{
+	Name:  "create",
+	Usage: "eBPF Profiling task create related sub-command",
 	Subcommands: []*cli.Command{
-		CreateCommand,
-		ListTaskCommand,
-		ListScheduleCommand,
-		AnalyzationCommand,
+		FixedTimeCreateCommand,
 	},
 }

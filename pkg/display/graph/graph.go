@@ -21,6 +21,8 @@ import (
 	"fmt"
 	"reflect"
 
+	"github.com/apache/skywalking-cli/pkg/display/graph/flamegraph"
+
 	api "skywalking.apache.org/repo/goapi/query"
 
 	"github.com/urfave/cli/v2"
@@ -35,23 +37,27 @@ import (
 )
 
 type (
-	Thermodynamic      = api.HeatMap
-	LinearMetrics      = map[string]float64
-	MultiLinearMetrics = map[string]LinearMetrics
-	Trace              = api.Trace
-	TraceBrief         = api.TraceBrief
-	GlobalMetrics      = [][]*api.SelectedRecord
-	GlobalData         = dashboard.GlobalData
+	Thermodynamic          = api.HeatMap
+	LinearMetrics          = map[string]float64
+	MultiLinearMetrics     = map[string]LinearMetrics
+	Trace                  = api.Trace
+	TraceBrief             = api.TraceBrief
+	GlobalMetrics          = [][]*api.SelectedRecord
+	GlobalData             = dashboard.GlobalData
+	EBPFProfilingAnalysis  = api.EBPFProfilingAnalyzation
+	TraceProfilingAnalysis = api.ProfileAnalyzation
 )
 
 var (
-	ThermodynamicType      = reflect.TypeOf(Thermodynamic{})
-	LinearMetricsType      = reflect.TypeOf(LinearMetrics{})
-	MultiLinearMetricsType = reflect.TypeOf(MultiLinearMetrics{})
-	TraceType              = reflect.TypeOf(Trace{})
-	TraceBriefType         = reflect.TypeOf(TraceBrief{})
-	GlobalMetricsType      = reflect.TypeOf(GlobalMetrics{})
-	GlobalDataType         = reflect.TypeOf(&GlobalData{})
+	ThermodynamicType              = reflect.TypeOf(Thermodynamic{})
+	LinearMetricsType              = reflect.TypeOf(LinearMetrics{})
+	MultiLinearMetricsType         = reflect.TypeOf(MultiLinearMetrics{})
+	TraceType                      = reflect.TypeOf(Trace{})
+	TraceBriefType                 = reflect.TypeOf(TraceBrief{})
+	GlobalMetricsType              = reflect.TypeOf(GlobalMetrics{})
+	GlobalDataType                 = reflect.TypeOf(&GlobalData{})
+	EBPFProfilingAnalysisDataType  = reflect.TypeOf(&EBPFProfilingAnalysis{})
+	TraceProfilingAnalysisDataType = reflect.TypeOf(TraceProfilingAnalysis{})
 )
 
 func Display(ctx *cli.Context, displayable *d.Displayable) error {
@@ -79,6 +85,12 @@ func Display(ctx *cli.Context, displayable *d.Displayable) error {
 
 	case GlobalDataType:
 		return db.Display(ctx, data.(*GlobalData))
+
+	case EBPFProfilingAnalysisDataType:
+		return flamegraph.DisplayByEBPF(ctx, data.(*EBPFProfilingAnalysis))
+
+	case TraceProfilingAnalysisDataType:
+		return flamegraph.DisplayByTrace(ctx, data.(api.ProfileAnalyzation))
 
 	default:
 		return fmt.Errorf("type of %T is not supported to be displayed as ascii graph", reflect.TypeOf(data))

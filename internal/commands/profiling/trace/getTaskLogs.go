@@ -15,39 +15,40 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package profile
+package trace
 
 import (
 	"github.com/apache/skywalking-cli/pkg/display"
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
-	"github.com/apache/skywalking-cli/pkg/graphql/profile"
+	"github.com/apache/skywalking-cli/pkg/graphql/profiling"
 
 	"github.com/urfave/cli/v2"
 )
 
-var getProfiledSegmentCommand = &cli.Command{
-	Name:    "profiled-segment",
-	Aliases: []string{"ps"},
-	Usage:   "Analyze profiled segment with time ranges",
-	UsageText: `Analyze profiled segment with time ranges.
-
-Examples:
-1. Analyze profiled segment with time ranges.
-$ swctl profile profiled-segment --segment-id=<segment-id>`,
+var getTaskLogListCommand = &cli.Command{
+	Name:    "logs",
+	Aliases: []string{"logs"},
 	Flags: []cli.Flag{
 		&cli.StringFlag{
-			Name:  "segment-id",
-			Usage: "profiled segment id.",
+			Name:  "task-id",
+			Usage: "profile task id.",
 		},
 	},
+	Usage: "Query trace profiling task log list",
+	UsageText: `Query trace profiling task log list
+
+Examples:
+1. Query all trace profiling logs of task id "task-id"
+$ swctl profiling trace logs --task-id=task-id`,
 	Action: func(ctx *cli.Context) error {
-		segmentID := ctx.String("segment-id")
-		segment, err := profile.GetProfiledSegment(ctx, segmentID)
+		taskID := ctx.String("task-id")
+
+		task, err := profiling.GetTraceProfilingTaskLogList(ctx, taskID)
 
 		if err != nil {
 			return err
 		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: segment, Condition: segmentID})
+		return display.Display(ctx, &displayable.Displayable{Data: task, Condition: taskID})
 	},
 }

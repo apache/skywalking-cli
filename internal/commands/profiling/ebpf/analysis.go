@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package profiling
+package ebpf
 
 import (
 	"strconv"
@@ -28,7 +28,7 @@ import (
 	"github.com/apache/skywalking-cli/internal/flags"
 	"github.com/apache/skywalking-cli/pkg/display"
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
-	ebpf_graphql "github.com/apache/skywalking-cli/pkg/graphql/ebpf"
+	"github.com/apache/skywalking-cli/pkg/graphql/profiling"
 )
 
 var AnalyzationCommand = &cli.Command{
@@ -39,7 +39,7 @@ var AnalyzationCommand = &cli.Command{
 
 Example:
 1. Analysis profiling tasks of task id "abc" and time range in 1648020042869 to 1648020100764.
-$ swctl ebpf-profiling analysis --task-id=abc --time-ranges=1648020042869-1648020100764
+$ swctl profiling ebpf analysis --task-id=abc --time-ranges=1648020042869-1648020100764
 `,
 	Flags: flags.Flags(
 		flags.DurationFlags,
@@ -58,10 +58,10 @@ $ swctl ebpf-profiling analysis --task-id=abc --time-ranges=1648020042869-164802
 	Action: func(ctx *cli.Context) error {
 		taskID := ctx.String("task-id")
 
-		tagStr := ctx.String("time-ranges")
+		timeRangeStr := ctx.String("time-ranges")
 		var timeRanges []*api.EBPFProfilingAnalyzeTimeRange = nil
-		if tagStr != "" {
-			tagArr := strings.Split(tagStr, ",")
+		if timeRangeStr != "" {
+			tagArr := strings.Split(timeRangeStr, ",")
 			for _, tag := range tagArr {
 				kv := strings.Split(tag, "-")
 				start, err := strconv.ParseInt(kv[0], 10, 64)
@@ -76,7 +76,7 @@ $ swctl ebpf-profiling analysis --task-id=abc --time-ranges=1648020042869-164802
 			}
 		}
 
-		analyzation, err := ebpf_graphql.QueryEBPFProfilingAnalyzation(ctx, taskID, timeRanges)
+		analyzation, err := profiling.QueryEBPFProfilingAnalyzation(ctx, taskID, timeRanges)
 		if err != nil {
 			return err
 		}
