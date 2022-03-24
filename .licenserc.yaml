@@ -31,5 +31,6 @@ header:
     - '.gitignore'
     - 'go.mod'
     - 'go.sum'
+    - 'pkg/display/graph/flamegraph/flamegraph.html'
 
   comment: on-failure
