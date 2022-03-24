@@ -15,63 +15,39 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package profile
+package trace
 
 import (
-	"strconv"
-	"strings"
-
 	"github.com/apache/skywalking-cli/pkg/display"
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
-	"github.com/apache/skywalking-cli/pkg/graphql/profile"
+	"github.com/apache/skywalking-cli/pkg/graphql/profiling"
 
 	"github.com/urfave/cli/v2"
-
-	api "skywalking.apache.org/repo/goapi/query"
 )
 
-var getProfiledAnalyzeCommand = &cli.Command{
-	Name:      "profiled-analyze",
-	Aliases:   []string{"pa"},
-	Usage:     "Analyze profiled segment.",
-	ArgsUsage: "[parameters...]",
+var getProfiledSegmentCommand = &cli.Command{
+	Name:    "profiled-segment",
+	Aliases: []string{"ps"},
+	Usage:   "Analyze profiled segment with time ranges",
+	UsageText: `Analyze profiled segment with time ranges.
+
+Examples:
+1. Analyze profiled segment with time ranges.
+$ swctl profiling trace profiled-segment --segment-id=<segment-id>`,
 	Flags: []cli.Flag{
 		&cli.StringFlag{
 			Name:  "segment-id",
 			Usage: "profiled segment id.",
 		},
-		&cli.StringFlag{
-			Name:  "time-ranges",
-			Usage: "need to analyze time ranges in the segment: start-end,start-end",
-		},
 	},
 	Action: func(ctx *cli.Context) error {
 		segmentID := ctx.String("segment-id")
-
-		tagStr := ctx.String("time-ranges")
-		var timeRanges []*api.ProfileAnalyzeTimeRange = nil
-		if tagStr != "" {
-			tagArr := strings.Split(tagStr, ",")
-			for _, tag := range tagArr {
-				kv := strings.Split(tag, "-")
-				start, err := strconv.ParseInt(kv[0], 10, 64)
-				if err != nil {
-					return err
-				}
-				end, err := strconv.ParseInt(kv[1], 10, 64)
-				if err != nil {
-					return err
-				}
-				timeRanges = append(timeRanges, &api.ProfileAnalyzeTimeRange{Start: start, End: end})
-			}
-		}
-
-		analysis, err := profile.GetProfileAnalyze(ctx, segmentID, timeRanges)
+		segment, err := profiling.GetTraceProfilingSegment(ctx, segmentID)
 
 		if err != nil {
 			return err
 		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: analysis, Condition: segmentID})
+		return display.Display(ctx, &displayable.Displayable{Data: segment, Condition: segmentID})
 	},
 }

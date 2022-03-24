@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package profile
+package profiling
 
 import (
 	"github.com/apache/skywalking-cli/assets"
@@ -28,10 +28,10 @@ import (
 	api "skywalking.apache.org/repo/goapi/query"
 )
 
-func CreateTask(ctx *cli.Context, condition *api.ProfileTaskCreationRequest) (api.ProfileTaskCreationResult, error) {
+func CreateTraceTask(ctx *cli.Context, condition *api.ProfileTaskCreationRequest) (api.ProfileTaskCreationResult, error) {
 	var response map[string]api.ProfileTaskCreationResult
 
-	request := graphql.NewRequest(assets.Read("graphqls/profile/CreateTask.graphql"))
+	request := graphql.NewRequest(assets.Read("graphqls/profiling/trace/CreateTask.graphql"))
 	request.Var("condition", condition)
 
 	err := client.ExecuteQuery(ctx, request, &response)
@@ -39,10 +39,10 @@ func CreateTask(ctx *cli.Context, condition *api.ProfileTaskCreationRequest) (ap
 	return response["result"], err
 }
 
-func GetTaskList(ctx *cli.Context, serviceID, endpointName string) ([]*api.ProfileTask, error) {
+func GetTraceProfilingTaskList(ctx *cli.Context, serviceID, endpointName string) ([]*api.ProfileTask, error) {
 	var response map[string][]*api.ProfileTask
 
-	request := graphql.NewRequest(assets.Read("graphqls/profile/GetTaskList.graphql"))
+	request := graphql.NewRequest(assets.Read("graphqls/profiling/trace/GetTaskList.graphql"))
 	request.Var("serviceId", serviceID)
 	request.Var("endpointName", endpointName)
 
@@ -51,10 +51,10 @@ func GetTaskList(ctx *cli.Context, serviceID, endpointName string) ([]*api.Profi
 	return response["result"], err
 }
 
-func GetTaskLogList(ctx *cli.Context, taskID string) ([]*api.ProfileTaskLog, error) {
+func GetTraceProfilingTaskLogList(ctx *cli.Context, taskID string) ([]*api.ProfileTaskLog, error) {
 	var response map[string][]*api.ProfileTaskLog
 
-	request := graphql.NewRequest(assets.Read("graphqls/profile/GetProfileTaskLogs.graphql"))
+	request := graphql.NewRequest(assets.Read("graphqls/profiling/trace/GetProfileTaskLogs.graphql"))
 	request.Var("taskID", taskID)
 
 	err := client.ExecuteQuery(ctx, request, &response)
@@ -62,10 +62,10 @@ func GetTaskLogList(ctx *cli.Context, taskID string) ([]*api.ProfileTaskLog, err
 	return response["result"], err
 }
 
-func GetTaskSegmentList(ctx *cli.Context, taskID string) ([]*api.BasicTrace, error) {
+func GetTraceProfilingTaskSegmentList(ctx *cli.Context, taskID string) ([]*api.BasicTrace, error) {
 	var response map[string][]*api.BasicTrace
 
-	request := graphql.NewRequest(assets.Read("graphqls/profile/GetTaskSegmentList.graphql"))
+	request := graphql.NewRequest(assets.Read("graphqls/profiling/trace/GetTaskSegmentList.graphql"))
 	request.Var("taskId", taskID)
 
 	err := client.ExecuteQuery(ctx, request, &response)
@@ -73,10 +73,10 @@ func GetTaskSegmentList(ctx *cli.Context, taskID string) ([]*api.BasicTrace, err
 	return response["result"], err
 }
 
-func GetProfiledSegment(ctx *cli.Context, segmentID string) (api.ProfiledSegment, error) {
+func GetTraceProfilingSegment(ctx *cli.Context, segmentID string) (api.ProfiledSegment, error) {
 	var response map[string]api.ProfiledSegment
 
-	request := graphql.NewRequest(assets.Read("graphqls/profile/GetProfiledSegment.graphql"))
+	request := graphql.NewRequest(assets.Read("graphqls/profiling/trace/GetProfiledSegment.graphql"))
 	request.Var("segmentId", segmentID)
 
 	err := client.ExecuteQuery(ctx, request, &response)
@@ -84,10 +84,10 @@ func GetProfiledSegment(ctx *cli.Context, segmentID string) (api.ProfiledSegment
 	return response["result"], err
 }
 
-func GetProfileAnalyze(ctx *cli.Context, segmentID string, timeRanges []*api.ProfileAnalyzeTimeRange) (api.ProfileAnalyzation, error) {
+func GetTraceProfilingAnalyze(ctx *cli.Context, segmentID string, timeRanges []*api.ProfileAnalyzeTimeRange) (api.ProfileAnalyzation, error) {
 	var response map[string]api.ProfileAnalyzation
 
-	request := graphql.NewRequest(assets.Read("graphqls/profile/GetProfileAnalyze.graphql"))
+	request := graphql.NewRequest(assets.Read("graphqls/profiling/trace/GetProfileAnalyze.graphql"))
 	request.Var("segmentId", segmentID)
 	request.Var("timeRanges", timeRanges)
 
