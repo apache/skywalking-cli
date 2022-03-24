@@ -74,6 +74,7 @@ func display(_ *cli.Context, trees []*ProfilingDataTree) error {
 	elements, maxDepth := buildFlameGraphElements(trees)
 	data["elements"] = elements
 	data["maxDepth"] = maxDepth + 1
+	data["canvasHeight"] = maxDepth*16 + 30
 
 	// render template
 	return renderFlameGraphAndWrite(flameGraphPath, data)
