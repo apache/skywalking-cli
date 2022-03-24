@@ -113,7 +113,7 @@ func generateFlameGraphFile() (string, error) {
 }
 
 func buildFileName() string {
-	return fmt.Sprintf("flame_graph_%d.html", time.Now().UnixMilli())
+	return fmt.Sprintf("flame_graph_%d.html", time.Now().Unix())
 }
 
 func buildFlameGraphElements(trees []*ProfilingDataTree) (result []*StackElement, maxDepth int64) {
