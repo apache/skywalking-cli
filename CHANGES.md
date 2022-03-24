@@ -15,7 +15,9 @@ Release Notes.
 - Change the GraphQL method to the v9 version according to the server version.(#134)
 - Add `normal` field to Service entity.(#136)
 - Add the command `process` for query Process metadata.(#137)
-- Add the command `ebpf-profiling` for process ebpf profiling.(#138)
+- Add the command `profiling ebpf` for process ebpf profiling.(#138)
+- [Break Change] Update the command `profile` as a sub-command `profiling trace`, and update `profiled-analyze` command to `analysis`.(#138)
+- `profiling ebpf/trace analysis` generates the profiling graph HTML on default and saves it to the current work directory.(#138)
 
 ### Bug Fixes
 
