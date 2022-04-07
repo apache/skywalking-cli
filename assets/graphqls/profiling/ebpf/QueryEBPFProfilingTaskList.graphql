@@ -15,16 +15,12 @@
 # specific language governing permissions and limitations
 # under the License.
 
-query ($query: EBPFProfilingTaskCondition){
-    result: queryEBPFProfilingTasks(query: $query) {
+query ($serviceId: ID!){
+    result: queryEBPFProfilingTasks(serviceId: $serviceId) {
         taskId
-        processFinderType
         serviceId
         serviceName
-        instanceId
-        instanceName
-        processId
-        processName
+        processLabels
         taskStartTime
         triggerType
         fixedTriggerDuration

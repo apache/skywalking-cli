@@ -17,6 +17,6 @@
 
 query ($processId: ID!) {
     result: getProcess(processId: $processId) {
-        id name serviceId serviceName instanceId instanceName layer agentId detectType attributes { name value }
+        id name serviceId serviceName instanceId instanceName layer agentId detectType labels attributes { name value }
     }
 }

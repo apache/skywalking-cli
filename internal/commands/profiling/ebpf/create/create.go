@@ -23,6 +23,7 @@ var CreateCommand = &cli.Command{
 	Name:  "create",
 	Usage: "eBPF Profiling task create related sub-command",
 	Subcommands: []*cli.Command{
+		PrepareCreateCommand,
 		FixedTimeCreateCommand,
 	},
 }

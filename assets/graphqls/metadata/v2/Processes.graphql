@@ -17,6 +17,6 @@
 
 query ($serviceId: ID, $instanceId: ID) {
     result: listProcesses(serviceId: $serviceId, instanceId: $instanceId) {
-        id name serviceId serviceName instanceId instanceName layer agentId detectType attributes { name value }
+        id name serviceId serviceName instanceId instanceName layer agentId detectType labels attributes { name value }
     }
 }

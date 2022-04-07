@@ -39,14 +39,14 @@ var AnalyzationCommand = &cli.Command{
 
 Example:
 1. Analysis profiling tasks of task id "abc" and time range in 1648020042869 to 1648020100764.
-$ swctl profiling ebpf analysis --task-id=abc --time-ranges=1648020042869-1648020100764
+$ swctl profiling ebpf analysis --schedule-id=abc --time-ranges=1648020042869-1648020100764
 `,
 	Flags: flags.Flags(
 		flags.DurationFlags,
 		[]cli.Flag{
 			&cli.StringFlag{
-				Name:     "task-id",
-				Usage:    "the `task-id` by which task are scheduled",
+				Name:     "schedule-id",
+				Usage:    "the `schedule-id` list by which task are scheduled, multiple schedule split by ',': schedule-id,schedule-id",
 				Required: true,
 			},
 			&cli.StringFlag{
@@ -56,7 +56,8 @@ $ swctl profiling ebpf analysis --task-id=abc --time-ranges=1648020042869-164802
 		},
 	),
 	Action: func(ctx *cli.Context) error {
-		taskID := ctx.String("task-id")
+		scheduleIDListStr := ctx.String("schedule-id")
+		scheduleIDList := strings.Split(scheduleIDListStr, ",")
 
 		timeRangeStr := ctx.String("time-ranges")
 		var timeRanges []*api.EBPFProfilingAnalyzeTimeRange = nil
@@ -76,7 +77,7 @@ $ swctl profiling ebpf analysis --task-id=abc --time-ranges=1648020042869-164802
 			}
 		}
 
-		analyzation, err := profiling.QueryEBPFProfilingAnalyzation(ctx, taskID, timeRanges)
+		analyzation, err := profiling.AnalysisEBPFProfilingResult(ctx, scheduleIDList, timeRanges)
 		if err != nil {
 			return err
 		}
