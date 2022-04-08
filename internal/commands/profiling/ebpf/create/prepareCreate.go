@@ -15,28 +15,27 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package ebpf
+package create
 
 import (
-	"github.com/urfave/cli/v2"
-
 	"github.com/apache/skywalking-cli/internal/commands/interceptor"
 	"github.com/apache/skywalking-cli/internal/flags"
 	"github.com/apache/skywalking-cli/pkg/display"
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
 	"github.com/apache/skywalking-cli/pkg/graphql/profiling"
+
+	"github.com/urfave/cli/v2"
 )
 
-var ListTaskCommand = &cli.Command{
-	Name:    "list",
-	Aliases: []string{"ls"},
-	Usage:   `query ebpf profiling task list`,
-	UsageText: `This command lists all ebpf profiling task, via id or name in service, instance or process.
+var PrepareCreateCommand = &cli.Command{
+	Name:    "prepare",
+	Aliases: []string{"pre"},
+	Usage:   "Prepare to a new ebpf profiling task, typically used to query data before creating a task",
+	UsageText: `Prepare to a new ebpf profiling task, typically used to query data before creating a task
 
-Example：
-1. Query profiling tasks of service "business-zone::projectC"
-$ swctl profiling ebpf list --service-name=service-name
-`,
+Examples:
+1. Prepare ebpf profiling fixed time task
+$ swctl profiling ebpf create prepare --service-id=abc`,
 	Flags: flags.Flags(
 		flags.ServiceFlags,
 	),
@@ -46,11 +45,11 @@ $ swctl profiling ebpf list --service-name=service-name
 	Action: func(ctx *cli.Context) error {
 		serviceID := ctx.String("service-id")
 
-		processes, err := profiling.QueryEBPFProfilingTaskList(ctx, serviceID)
+		prepare, err := profiling.QueryPrepareCreateEBPFProfilingTaskData(ctx, serviceID)
 		if err != nil {
 			return err
 		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: processes})
+		return display.Display(ctx, &displayable.Displayable{Data: prepare, Condition: serviceID})
 	},
 }

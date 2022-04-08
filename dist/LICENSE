@@ -239,4 +239,4 @@ The following components are provided under a BSD license. See project link for 
 The text of each license is also included at licenses/LICENSE-[project].txt.
 
 	pkg (errors) 0.8.1 https://github.com/pkg/errors BSD 2-Clause
-	Google (protobuf) v1.25.0 https://github.com/protocolbuffers/protobuf-go BSD-3-Clause
+	Google (protobuf) v1.28.0 https://github.com/protocolbuffers/protobuf-go BSD-3-Clause

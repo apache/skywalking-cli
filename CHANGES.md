@@ -2,6 +2,15 @@ Changes by Version
 ==================
 Release Notes.
 
+0.11.0
+------------------
+
+### Features
+
+- Update the `profiling ebpf create` task relate to the service level.(#141)
+- Update the sub-command `process list/get` to add the `labels` field.(#141)
+- Add the sub-command `profiling ebpf create prepare` to query data for prepare creating task.(#141)
+
 0.10.0
 ------------------
 

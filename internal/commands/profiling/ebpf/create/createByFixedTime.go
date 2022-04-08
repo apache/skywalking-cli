@@ -18,8 +18,10 @@
 package create
 
 import (
+	"strings"
 	"time"
 
+	"github.com/apache/skywalking-cli/internal/commands/interceptor"
 	"github.com/apache/skywalking-cli/internal/flags"
 	"github.com/apache/skywalking-cli/internal/model/ebpf"
 	"github.com/apache/skywalking-cli/pkg/display"
@@ -33,28 +35,19 @@ import (
 
 var FixedTimeCreateCommand = &cli.Command{
 	Name:    "fixed",
-	Aliases: []string{"cft"},
+	Aliases: []string{"ft"},
 	Usage:   "Create a new ebpf profiling fixed time task",
 	UsageText: `Create a new ebpf profiling fixed time task
 
 Examples:
 1. Create ebpf profiling fixed time task
-$ swctl ebpf-profiling createByFixedTime --process-finder=PROCESS_ID --process-id=abc --duration=1m --target-type=ON_CPU`,
+$ swctl profiling ebpf fixed --service-id=abc --process-id=abc --duration=1m --target-type=ON_CPU`,
 	Flags: flags.Flags(
+		flags.ServiceFlags,
 		[]cli.Flag{
-			&cli.GenericFlag{
-				Name:  "process-finder",
-				Usage: "the `process-finder` by the way to address the target process",
-				Value: &ebpf.ProfilingProcessFinderTypeEnumValue{
-					Enum:     api.AllEBPFProfilingProcessFinderType,
-					Default:  api.EBPFProfilingProcessFinderTypeProcessID,
-					Selected: api.EBPFProfilingProcessFinderTypeProcessID,
-				},
-			},
 			&cli.StringFlag{
-				Name:     "process-id",
-				Usage:    "the `process-id` by which process ID need to be profiling",
-				Required: false,
+				Name:  "labels",
+				Usage: "the `labels` by which labels of the process need to be profiling, multiple labels split by ',': l1,l2",
 			},
 			&cli.StringFlag{
 				Name:     "duration",
@@ -76,20 +69,24 @@ $ swctl ebpf-profiling createByFixedTime --process-finder=PROCESS_ID --process-i
 			},
 		},
 	),
+	Before: interceptor.BeforeChain(
+		interceptor.ParseService(true),
+	),
 	Action: func(ctx *cli.Context) error {
-		processID := ctx.String("process-id")
+		serviceID := ctx.String("service-id")
+		labelStr := ctx.String("labels")
+		labels := strings.Split(labelStr, ",")
+
 		duration, err := time.ParseDuration(ctx.String("duration"))
 		if err != nil {
 			return err
 		}
 		request := &api.EBPFProfilingTaskFixedTimeCreationRequest{
-			ProcessFinder: &api.EBPFProfilingProcessFinder{
-				FinderType: ctx.Generic("process-finder").(*ebpf.ProfilingProcessFinderTypeEnumValue).Selected,
-				ProcessID:  &processID,
-			},
-			StartTime:  ctx.Int64("start-time"),
-			Duration:   int(duration.Seconds()),
-			TargetType: ctx.Generic("target-type").(*ebpf.ProfilingTargetTypeEnumValue).Selected,
+			ServiceID:     serviceID,
+			ProcessLabels: labels,
+			StartTime:     ctx.Int64("start-time"),
+			Duration:      int(duration.Seconds()),
+			TargetType:    ctx.Generic("target-type").(*ebpf.ProfilingTargetTypeEnumValue).Selected,
 		}
 
 		task, err := profiling.CreateEBPFProfilingFixedTimeTask(ctx, request)

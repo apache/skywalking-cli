@@ -15,27 +15,8 @@
 # specific language governing permissions and limitations
 # under the License.
 
-query ($taskID: ID!, $duration: Duration!){
-    result: queryEBPFProfilingSchedules(taskId: $taskID, duration: $duration) {
-        scheduleId
-        taskId
-        startTime
-        endTime
-        process {
-            id
-            name
-            serviceId
-            serviceName
-            instanceId
-            instanceName
-            layer
-            agentId
-            detectType
-            labels
-            attributes {
-                name
-                value
-            }
-        }
+query ($serviceId: ID!){
+    result: queryPrepareCreateEBPFProfilingTaskData(serviceId: $serviceId) {
+        couldProfiling processLabels
     }
 }

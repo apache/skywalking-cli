@@ -40,12 +40,22 @@ func CreateEBPFProfilingFixedTimeTask(ctx *cli.Context,
 	return response["result"], err
 }
 
-func QueryEBPFProfilingTaskList(ctx *cli.Context,
-	condition *api.EBPFProfilingTaskCondition) ([]*api.EBPFProfilingTask, error) {
+func QueryPrepareCreateEBPFProfilingTaskData(ctx *cli.Context, serviceID string) (*api.EBPFProfilingTaskPrepare, error) {
+	var response map[string]*api.EBPFProfilingTaskPrepare
+
+	request := graphql.NewRequest(assets.Read("graphqls/profiling/ebpf/QueryPrepareCreateEBPFProfilingTaskData.graphql"))
+	request.Var("serviceId", serviceID)
+
+	err := client.ExecuteQuery(ctx, request, &response)
+
+	return response["result"], err
+}
+
+func QueryEBPFProfilingTaskList(ctx *cli.Context, serviceID string) ([]*api.EBPFProfilingTask, error) {
 	var response map[string][]*api.EBPFProfilingTask
 
 	request := graphql.NewRequest(assets.Read("graphqls/profiling/ebpf/QueryEBPFProfilingTaskList.graphql"))
-	request.Var("query", condition)
+	request.Var("serviceId", serviceID)
 
 	err := client.ExecuteQuery(ctx, request, &response)
 
@@ -65,12 +75,12 @@ func QueryEBPFProfilingScheduleList(ctx *cli.Context, taskID string,
 	return response["result"], err
 }
 
-func QueryEBPFProfilingAnalyzation(ctx *cli.Context, taskID string,
+func AnalysisEBPFProfilingResult(ctx *cli.Context, scheduleIDList []string,
 	timeRanges []*api.EBPFProfilingAnalyzeTimeRange) (*api.EBPFProfilingAnalyzation, error) {
 	var response map[string]*api.EBPFProfilingAnalyzation
 
-	request := graphql.NewRequest(assets.Read("graphqls/profiling/ebpf/QueryEBPFProflingAnalyzation.graphql"))
-	request.Var("taskID", taskID)
+	request := graphql.NewRequest(assets.Read("graphqls/profiling/ebpf/AnalysisEBPFProfilingResult.graphql"))
+	request.Var("scheduleIdList", scheduleIDList)
 	request.Var("timeRanges", timeRanges)
 
 	err := client.ExecuteQuery(ctx, request, &response)
