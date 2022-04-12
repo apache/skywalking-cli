@@ -197,6 +197,19 @@ func GetProcess(cliCtx *cli.Context, processID string) (api.Process, error) {
 	return response["result"], err
 }
 
+func EstimateProcessScale(cliCtx *cli.Context, serviceID string, labels []string, duration api.Duration) (int64, error) {
+	var response map[string]int64
+
+	request := graphql.NewRequest(assets.Read("graphqls/metadata/v2/EstimateProcessScale.graphql"))
+	request.Var("serviceId", serviceID)
+	request.Var("labels", labels)
+	request.Var("duration", duration)
+
+	err := client.ExecuteQuery(cliCtx, request, &response)
+
+	return response["result"], err
+}
+
 func ServerTimeInfo(cliCtx *cli.Context) (api.TimeInfo, error) {
 	var response map[string]api.TimeInfo
 
