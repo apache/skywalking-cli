@@ -15,21 +15,14 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package process
+package estimate
 
-import (
-	"github.com/apache/skywalking-cli/internal/commands/process/estimate"
+import "github.com/urfave/cli/v2"
 
-	"github.com/urfave/cli/v2"
-)
-
-var Command = &cli.Command{
-	Name:    "process",
-	Aliases: []string{"p"},
-	Usage:   "Process related sub-command",
-	Subcommands: cli.Commands{
-		ListCommand,
-		GetCommand,
-		estimate.EstimateCommand,
+var EstimateCommand = &cli.Command{
+	Name:  "estimate",
+	Usage: "Process estimate related sub-command",
+	Subcommands: []*cli.Command{
+		ScaleCommand,
 	},
 }
