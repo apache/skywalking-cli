@@ -18,12 +18,13 @@
 package process
 
 import (
-	"fmt"
-
 	"github.com/urfave/cli/v2"
+
+	api "skywalking.apache.org/repo/goapi/query"
 
 	"github.com/apache/skywalking-cli/internal/commands/interceptor"
 	"github.com/apache/skywalking-cli/internal/flags"
+	"github.com/apache/skywalking-cli/internal/model"
 	"github.com/apache/skywalking-cli/pkg/display"
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
 	"github.com/apache/skywalking-cli/pkg/graphql/metadata"
@@ -32,16 +33,10 @@ import (
 var ListCommand = &cli.Command{
 	Name:    "list",
 	Aliases: []string{"ls"},
-	Usage:   `list all monitored processes of the given id or name in service or instance`,
-	UsageText: `This command lists all processes of the service-instance, via id or name in service or instance.
+	Usage:   `list all monitored processes under the instance`,
+	UsageText: `This command lists all processes of the service-instance.
 
 Examples:
-1. List all processes by service name "provider":
-$ swctl process ls --service-name provider
-
-2. List all processes by service id "YnVzaW5lc3Mtem9uZTo6cHJvamVjdEM=.1":
-$ swctl process ls --service-id YnVzaW5lc3Mtem9uZTo6cHJvamVjdEM=.1
-
 3. List all processes by instance name "provider-01" and service name "provider":
 $ swctl process ls --instance-name provider-01 --service-name provider
 
@@ -50,19 +45,23 @@ $ swctl process ls --instance-id cHJvdmlkZXI=.1_cHJvdmlkZXIx`,
 	Flags: flags.Flags(
 		flags.ServiceFlags,
 		flags.InstanceFlags,
+		flags.DurationFlags,
 	),
 	Before: interceptor.BeforeChain(
-		interceptor.ParseService(false),
-		interceptor.ParseInstance(false),
+		interceptor.ParseInstance(true),
+		interceptor.DurationInterceptor,
 	),
 	Action: func(ctx *cli.Context) error {
-		serviceID := ctx.String("service-id")
 		instanceID := ctx.String("instance-id")
-		if serviceID == "" && instanceID == "" {
-			return fmt.Errorf("service or instance must provide one")
-		}
+		end := ctx.String("end")
+		start := ctx.String("start")
+		step := ctx.Generic("step")
 
-		processes, err := metadata.Processes(ctx, serviceID, instanceID)
+		processes, err := metadata.Processes(ctx, instanceID, api.Duration{
+			Start: start,
+			End:   end,
+			Step:  step.(*model.StepEnumValue).Selected,
+		})
 		if err != nil {
 			return err
 		}

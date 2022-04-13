@@ -15,8 +15,8 @@
 # specific language governing permissions and limitations
 # under the License.
 
-query ($serviceId: ID, $instanceId: ID) {
-    result: listProcesses(serviceId: $serviceId, instanceId: $instanceId) {
+query ($instanceId: ID!, $duration: Duration!) {
+    result: listProcesses(instanceId: $instanceId, duration: $duration) {
         id name serviceId serviceName instanceId instanceName layer agentId detectType labels attributes { name value }
     }
 }

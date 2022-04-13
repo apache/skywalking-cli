@@ -15,6 +15,6 @@
 # specific language governing permissions and limitations
 # under the License.
 
-query ($serviceId: ID!, $labels: [String!]!, $duration: Duration!) {
-    result: estimateProcessScale(serviceId: $serviceId, labels: $labels, duration: $duration)
+query ($serviceId: ID!, $labels: [String!]!) {
+    result: estimateProcessScale(serviceId: $serviceId, labels: $labels)
 }
