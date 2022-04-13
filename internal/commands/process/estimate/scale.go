@@ -20,13 +20,10 @@ package estimate
 import (
 	"strings"
 
-	api "skywalking.apache.org/repo/goapi/query"
-
 	"github.com/urfave/cli/v2"
 
 	"github.com/apache/skywalking-cli/internal/commands/interceptor"
 	"github.com/apache/skywalking-cli/internal/flags"
-	"github.com/apache/skywalking-cli/internal/model"
 	"github.com/apache/skywalking-cli/pkg/display"
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
 	"github.com/apache/skywalking-cli/pkg/graphql/metadata"
@@ -42,7 +39,6 @@ Examples:
 $ swctl process estimate scale --service-name abc --labels t1,t2`,
 	Flags: flags.Flags(
 		flags.ServiceFlags,
-		flags.DurationFlags,
 		[]cli.Flag{
 			&cli.StringFlag{
 				Name:  "labels",
@@ -52,12 +48,8 @@ $ swctl process estimate scale --service-name abc --labels t1,t2`,
 	),
 	Before: interceptor.BeforeChain(
 		interceptor.ParseService(true),
-		interceptor.DurationInterceptor,
 	),
 	Action: func(ctx *cli.Context) error {
-		end := ctx.String("end")
-		start := ctx.String("start")
-		step := ctx.Generic("step")
 		serviceID := ctx.String("service-id")
 		labelString := ctx.String("labels")
 		labels := make([]string, 0)
@@ -65,11 +57,7 @@ $ swctl process estimate scale --service-name abc --labels t1,t2`,
 			labels = strings.Split(labelString, ",")
 		}
 
-		scale, err := metadata.EstimateProcessScale(ctx, serviceID, labels, api.Duration{
-			Start: start,
-			End:   end,
-			Step:  step.(*model.StepEnumValue).Selected,
-		})
+		scale, err := metadata.EstimateProcessScale(ctx, serviceID, labels)
 
 		if err != nil {
 			return err
