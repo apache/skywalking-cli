@@ -45,6 +45,9 @@ inputs:
     description: The parameters in the message
     required: false
     default: ""
+  layer:
+    description: Name of the layer to which the event belongs (case-insensitive)
+    required: true
 
 runs:
   using: docker
@@ -58,5 +61,6 @@ runs:
     ENDPOINT: ${{ inputs.endpoint }}
     MESSAGE: ${{ inputs.message }}
     PARAMETERS: ${{ inputs.parameters }}
+    LAYER: ${{ inputs.layer }}
   entrypoint: /entrypoint.sh
   post-entrypoint: /post-entrypoint.sh

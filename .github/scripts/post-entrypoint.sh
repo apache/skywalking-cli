@@ -31,4 +31,5 @@ echo "Reporting event..."
     --message="$MESSAGE" \
     --startTime="$STATE_START_TIME" \
     --endTime=$(date +%s)000 \
+    --layer="$LAYER" \
     $PARAMETERS

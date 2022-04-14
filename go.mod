@@ -7,6 +7,7 @@ replace golang.org/x/crypto v0.0.0-20201002170205-7f63de1d35b0 => golang.org/x/c
 require (
 	github.com/apache/skywalking-swck v0.2.0
 	github.com/gizak/termui/v3 v3.1.0
+	github.com/google/uuid v1.3.0
 	github.com/machinebox/graphql v0.2.2
 	github.com/mattn/go-runewidth v0.0.9
 	github.com/mitchellh/mapstructure v1.4.0 // indirect
@@ -20,5 +21,5 @@ require (
 	gopkg.in/yaml.v2 v2.4.0
 	k8s.io/apimachinery v0.21.1
 	sigs.k8s.io/controller-runtime v0.7.0
-	skywalking.apache.org/repo/goapi v0.0.0-20220407130404-69485e13dbb3
+	skywalking.apache.org/repo/goapi v0.0.0-20220412071816-33e4ea2a99b4
 )

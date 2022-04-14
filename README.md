@@ -147,6 +147,7 @@ jobs:
           endpoint: ""                                          # Optional. Endpoint of the service, if any
           message: "Upgrade from {fromVersion} to {toVersion}"  # Optional. The message of the event
           parameters: ""                                        # Optional. The parameters in the message, if any
+          layer: "GENERAL"                                      # Required. Name of the layer to which the event belongs (case-insensitive)
 
       # your package / deployment steps... 
 ```
