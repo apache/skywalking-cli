@@ -174,12 +174,12 @@ func GetEndpointInfo(cliCtx *cli.Context, endpointID string) (api.EndpointInfo, 
 	return response["result"], err
 }
 
-func Processes(cliCtx *cli.Context, serviceID, instanceID string) ([]api.Process, error) {
+func Processes(cliCtx *cli.Context, instanceID string, duration api.Duration) ([]api.Process, error) {
 	var response map[string][]api.Process
 
 	request := graphql.NewRequest(assets.Read("graphqls/metadata/v2/Processes.graphql"))
-	request.Var("serviceId", serviceID)
-	request.Var("instanceID", instanceID)
+	request.Var("instanceId", instanceID)
+	request.Var("duration", duration)
 
 	err := client.ExecuteQuery(cliCtx, request, &response)
 
@@ -191,6 +191,18 @@ func GetProcess(cliCtx *cli.Context, processID string) (api.Process, error) {
 
 	request := graphql.NewRequest(assets.Read("graphqls/metadata/v2/GetProcess.graphql"))
 	request.Var("processId", processID)
+
+	err := client.ExecuteQuery(cliCtx, request, &response)
+
+	return response["result"], err
+}
+
+func EstimateProcessScale(cliCtx *cli.Context, serviceID string, labels []string) (int64, error) {
+	var response map[string]int64
+
+	request := graphql.NewRequest(assets.Read("graphqls/metadata/v2/EstimateProcessScale.graphql"))
+	request.Var("serviceId", serviceID)
+	request.Var("labels", labels)
 
 	err := client.ExecuteQuery(cliCtx, request, &response)
 

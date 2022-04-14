@@ -10,6 +10,8 @@ Release Notes.
 - Update the `profiling ebpf create` task relate to the service level.(#141)
 - Update the sub-command `process list/get` to add the `labels` field.(#141)
 - Add the sub-command `profiling ebpf create prepare` to query data for prepare creating task.(#141)
+- Add the sub-command `process estimate scale` to estimate the process scale.(#142)
+- Update the `process list` to must be provided the instance and duration.(#144)
 
 0.10.0
 ------------------

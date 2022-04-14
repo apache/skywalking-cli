@@ -51,7 +51,7 @@ done
 OS=$(echo $OS | awk '{print tolower($0)}')
 
 # Get the latest version of swctl.
-VERSION=$(curl "https://raw.githubusercontent.com/apache/skywalking-website/master/data/releases.yml" | grep --after-context=7 "name: SkyWalking CLI" | grep "version" | grep -o "[0-9].[0-9].[0-9]")
+VERSION=$(curl "https://raw.githubusercontent.com/apache/skywalking-website/master/data/releases.yml" | grep --after-context=7 "name: SkyWalking CLI" | grep "version" | grep -Eo "[0-9]+.[0-9]+.[0-9]+")
 if [ "$VERSION" != "" ]; then
     echo "The latest version of swctl is $VERSION"
     

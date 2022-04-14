@@ -15,8 +15,6 @@
 # specific language governing permissions and limitations
 # under the License.
 
-query ($instanceId: ID!, $duration: Duration!) {
-    result: listProcesses(instanceId: $instanceId, duration: $duration) {
-        id name serviceId serviceName instanceId instanceName layer agentId detectType labels attributes { name value }
-    }
+query ($serviceId: ID!, $labels: [String!]!) {
+    result: estimateProcessScale(serviceId: $serviceId, labels: $labels)
 }

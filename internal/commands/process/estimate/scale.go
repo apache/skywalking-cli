@@ -15,57 +15,54 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package process
+package estimate
 
 import (
-	"github.com/urfave/cli/v2"
+	"strings"
 
-	api "skywalking.apache.org/repo/goapi/query"
+	"github.com/urfave/cli/v2"
 
 	"github.com/apache/skywalking-cli/internal/commands/interceptor"
 	"github.com/apache/skywalking-cli/internal/flags"
-	"github.com/apache/skywalking-cli/internal/model"
 	"github.com/apache/skywalking-cli/pkg/display"
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
 	"github.com/apache/skywalking-cli/pkg/graphql/metadata"
 )
 
-var ListCommand = &cli.Command{
-	Name:    "list",
-	Aliases: []string{"ls"},
-	Usage:   `list all monitored processes under the instance`,
-	UsageText: `This command lists all processes of the service-instance.
+var ScaleCommand = &cli.Command{
+	Name:  "scale",
+	Usage: `estimate monitored process scale of the given id or name in service and labels`,
+	UsageText: `This command estimate monitored process scale, via id or name in service and labels.
 
 Examples:
-3. List all processes by instance name "provider-01" and service name "provider":
-$ swctl process ls --instance-name provider-01 --service-name provider
-
-4. List all processes by instance id "cHJvdmlkZXI=.1_cHJvdmlkZXIx":
-$ swctl process ls --instance-id cHJvdmlkZXI=.1_cHJvdmlkZXIx`,
+1. Estimate process scale by service name "abc" with labels "t1,t2":
+$ swctl process estimate scale --service-name abc --labels t1,t2`,
 	Flags: flags.Flags(
 		flags.ServiceFlags,
-		flags.InstanceFlags,
-		flags.DurationFlags,
+		[]cli.Flag{
+			&cli.StringFlag{
+				Name:  "labels",
+				Usage: "the `labels` by which labels of the process, multiple labels split by ',': l1,l2",
+			},
+		},
 	),
 	Before: interceptor.BeforeChain(
-		interceptor.ParseInstance(true),
-		interceptor.DurationInterceptor,
+		interceptor.ParseService(true),
 	),
 	Action: func(ctx *cli.Context) error {
-		instanceID := ctx.String("instance-id")
-		end := ctx.String("end")
-		start := ctx.String("start")
-		step := ctx.Generic("step")
+		serviceID := ctx.String("service-id")
+		labelString := ctx.String("labels")
+		labels := make([]string, 0)
+		if labelString != "" {
+			labels = strings.Split(labelString, ",")
+		}
 
-		processes, err := metadata.Processes(ctx, instanceID, api.Duration{
-			Start: start,
-			End:   end,
-			Step:  step.(*model.StepEnumValue).Selected,
-		})
+		scale, err := metadata.EstimateProcessScale(ctx, serviceID, labels)
+
 		if err != nil {
 			return err
 		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: processes})
+		return display.Display(ctx, &displayable.Displayable{Data: scale})
 	},
 }
