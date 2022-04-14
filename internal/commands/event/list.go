@@ -18,6 +18,8 @@
 package event
 
 import (
+	"strings"
+
 	event "skywalking.apache.org/repo/goapi/collect/event/v3"
 	api "skywalking.apache.org/repo/goapi/query"
 
@@ -90,7 +92,7 @@ $ swctl event list
 		endpointName := ctx.String("endpoint-name")
 		name := ctx.String("name")
 		eventType := api.EventType(ctx.Generic("type").(*model.EventTypeEnumValue).String())
-		// layer := strings.ToUpper(ctx.String("layer"))
+		layer := strings.ToUpper(ctx.String("layer"))
 		pageNum := 1
 		needTotal := true
 
@@ -105,10 +107,10 @@ $ swctl event list
 				ServiceInstance: &serviceInstanceName,
 				Endpoint:        &endpointName,
 			},
-			Name: &name,
-			Type: &eventType,
-			Time: &duration,
-			// Layer:  &layer,
+			Name:   &name,
+			Type:   &eventType,
+			Time:   &duration,
+			Layer:  &layer,
 			Order:  nil,
 			Paging: &paging,
 		}
