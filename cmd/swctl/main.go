@@ -63,6 +63,7 @@ func init() {
 
 func main() {
 	app := cli.NewApp()
+	app.Name = "swctl"
 	app.Usage = "The CLI (Command Line Interface) for Apache SkyWalking."
 	app.UsageText = `Commands in SkyWalking CLI are organized into two levels,
 in the form of "swctl --option <level1> --option <level2> --option",

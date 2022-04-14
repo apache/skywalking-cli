@@ -18,31 +18,37 @@
 package event
 
 import (
+	"strings"
+
+	"github.com/google/uuid"
+	"github.com/urfave/cli/v2"
 	event "skywalking.apache.org/repo/goapi/collect/event/v3"
 
+	"github.com/apache/skywalking-cli/internal/commands/interceptor"
 	"github.com/apache/skywalking-cli/internal/flags"
 	"github.com/apache/skywalking-cli/internal/logger"
 	"github.com/apache/skywalking-cli/internal/model"
-	pkgevent "github.com/apache/skywalking-cli/pkg/commands/event"
 	"github.com/apache/skywalking-cli/pkg/display"
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
-
-	"github.com/urfave/cli/v2"
+	"github.com/apache/skywalking-cli/pkg/grpc"
 )
 
 var reportCommand = &cli.Command{
-	Name:      "report",
-	Aliases:   []string{"r"},
-	Usage:     "Report an event to OAP server via gRPC",
-	ArgsUsage: "[parameters...]",
+	Name:        "report",
+	Aliases:     []string{"r"},
+	Usage:       "Report an event to OAP server via gRPC",
+	Description: "When reporting an event, you typically execute the command twice, one for starting of the event (--start-time is required) and the other one for ending of the event (--uuid and --end-time are required).\n You can also report an event once with start time and end time.",
+	ArgsUsage:   "[parameters...]",
 	Flags: flags.Flags(
 		flags.InstanceFlags,
 		flags.EndpointFlags,
 
 		[]cli.Flag{
 			&cli.StringFlag{
-				Name:  "uuid",
-				Usage: "Unique `ID` of the event.",
+				Name:        "uuid",
+				Usage:       "Unique `ID` of the event, if not specified, a random one will be generated.",
+				Value:       uuid.New().String(),
+				DefaultText: "",
 			},
 			&cli.StringFlag{
 				Name:  "name",
@@ -69,15 +75,41 @@ var reportCommand = &cli.Command{
 				Name:  "end-time",
 				Usage: "The end time (in milliseconds) of the event, measured between the current time and midnight, January 1, 1970 UTC.",
 			},
+			&cli.StringFlag{
+				Name:     "layer",
+				Usage:    "Name of the layer to which the event belongs (case-insensitive), which can be queried via 'swctl layer list'",
+				Required: true,
+			},
 		},
 	),
 	Action: func(ctx *cli.Context) error {
-		reply, err := pkgevent.Report(ctx)
+		parameters, err := interceptor.ParseParameters(ctx.Args())
 		if err != nil {
 			return err
 		}
 
-		logger.Log.Println("Report the event successfully, whose uuid is ", ctx.String("uuid"))
+		e := event.Event{
+			Uuid: ctx.String("uuid"),
+			Source: &event.Source{
+				Service:         ctx.String("service-name"),
+				ServiceInstance: ctx.String("instance-name"),
+				Endpoint:        ctx.String("endpoint-name"),
+			},
+			Name:       ctx.String("name"),
+			Type:       ctx.Generic("type").(*model.EventTypeEnumValue).Selected,
+			Message:    ctx.String("message"),
+			Parameters: parameters,
+			StartTime:  ctx.Int64("start-time"),
+			EndTime:    ctx.Int64("end-time"),
+			Layer:      strings.ToUpper(ctx.String("layer")),
+		}
+
+		reply, err := grpc.ReportEvent(ctx.String("grpc-addr"), &e)
+		if err != nil {
+			return err
+		}
+
+		logger.Log.Printf("Report the event successfully, whose uuid is %s\n", ctx.String("uuid"))
 		return display.Display(ctx, &displayable.Displayable{Data: reply})
 	},
 }

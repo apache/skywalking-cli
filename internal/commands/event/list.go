@@ -53,6 +53,11 @@ $ swctl event list
 				Usage:    "event name",
 				Required: false,
 			},
+			&cli.StringFlag{
+				Name:     "layer",
+				Usage:    "Name of the layer to which the event belongs (case-insensitive), which can be queried via 'swctl layer list'",
+				Required: false,
+			},
 			&cli.GenericFlag{
 				Name:  "type",
 				Usage: "the type of the event",
@@ -85,6 +90,7 @@ $ swctl event list
 		endpointName := ctx.String("endpoint-name")
 		name := ctx.String("name")
 		eventType := api.EventType(ctx.Generic("type").(*model.EventTypeEnumValue).String())
+		// layer := strings.ToUpper(ctx.String("layer"))
 		pageNum := 1
 		needTotal := true
 
@@ -99,9 +105,10 @@ $ swctl event list
 				ServiceInstance: &serviceInstanceName,
 				Endpoint:        &endpointName,
 			},
-			Name:   &name,
-			Type:   &eventType,
-			Time:   &duration,
+			Name: &name,
+			Type: &eventType,
+			Time: &duration,
+			// Layer:  &layer,
 			Order:  nil,
 			Paging: &paging,
 		}

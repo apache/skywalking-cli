@@ -27,7 +27,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-// ReportEvent creates a grpc client and report an event.
+// ReportEvent creates a grpc client and reports an event to OAP.
 func ReportEvent(addr string, e *event.Event) (*common.Commands, error) {
 	conn, err := grpc.Dial(addr, grpc.WithInsecure())
 	if err != nil {
