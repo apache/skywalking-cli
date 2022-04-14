@@ -34,11 +34,13 @@ import (
 )
 
 var reportCommand = &cli.Command{
-	Name:        "report",
-	Aliases:     []string{"r"},
-	Usage:       "Report an event to OAP server via gRPC",
-	Description: "When reporting an event, you typically execute the command twice, one for starting of the event (--start-time is required) and the other one for ending of the event (--uuid and --end-time are required).\n You can also report an event once with start time and end time.",
-	ArgsUsage:   "[parameters...]",
+	Name:    "report",
+	Aliases: []string{"r"},
+	Usage:   "Report an event to OAP server via gRPC",
+	Description: `When reporting an event, you typically execute the command twice, 
+one for starting of the event (--start-time is required) and the other one for ending of the event 
+(--uuid and --end-time are required).\n You can also report an event once with start time and end time.`,
+	ArgsUsage: "[parameters...]",
 	Flags: flags.Flags(
 		flags.InstanceFlags,
 		flags.EndpointFlags,
