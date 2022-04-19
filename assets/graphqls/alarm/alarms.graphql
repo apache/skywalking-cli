@@ -38,6 +38,7 @@ query ($duration: Duration!, $scope: Scope, $keyword: String, $paging: Paginatio
                     key value
                 }
                 uuid
+                layer
             }
         }
     }
