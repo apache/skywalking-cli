@@ -22,7 +22,6 @@ query ($serviceId: ID!, $duration: Duration!) {
         name
         language
         instanceUUID
-        layer
         attributes {
             name
             value

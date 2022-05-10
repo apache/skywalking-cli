@@ -22,7 +22,6 @@ query ($instanceId: String!) {
         name
         language
         instanceUUID
-        layer
         attributes {
             name
             value

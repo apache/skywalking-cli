@@ -23,5 +23,4 @@
     {{- end }}
   language: {{ .language }}
   instanceuuid: {{ b64enc "provider" }}.1_{{ b64enc "provider1" }}
-  layer: ""
   {{- end }}
