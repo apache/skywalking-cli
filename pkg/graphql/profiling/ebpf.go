@@ -62,13 +62,11 @@ func QueryEBPFProfilingTaskList(ctx *cli.Context, serviceID string) ([]*api.EBPF
 	return response["result"], err
 }
 
-func QueryEBPFProfilingScheduleList(ctx *cli.Context, taskID string,
-	duration *api.Duration) ([]*api.EBPFProfilingSchedule, error) {
+func QueryEBPFProfilingScheduleList(ctx *cli.Context, taskID string) ([]*api.EBPFProfilingSchedule, error) {
 	var response map[string][]*api.EBPFProfilingSchedule
 
 	request := graphql.NewRequest(assets.Read("graphqls/profiling/ebpf/QueryEBPFProfilingScheduleList.graphql"))
 	request.Var("taskID", taskID)
-	request.Var("duration", duration)
 
 	err := client.ExecuteQuery(ctx, request, &response)
 

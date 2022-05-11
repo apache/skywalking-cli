@@ -18,13 +18,9 @@
 package ebpf
 
 import (
-	api "skywalking.apache.org/repo/goapi/query"
-
 	"github.com/urfave/cli/v2"
 
-	"github.com/apache/skywalking-cli/internal/commands/interceptor"
 	"github.com/apache/skywalking-cli/internal/flags"
-	"github.com/apache/skywalking-cli/internal/model"
 	"github.com/apache/skywalking-cli/pkg/display"
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
 	"github.com/apache/skywalking-cli/pkg/graphql/profiling"
@@ -41,7 +37,6 @@ Example：
 $ swctl profiling ebpf schedules --task-id=abc
 `,
 	Flags: flags.Flags(
-		flags.DurationFlags,
 		[]cli.Flag{
 			&cli.StringFlag{
 				Name:     "task-id",
@@ -50,20 +45,10 @@ $ swctl profiling ebpf schedules --task-id=abc
 			},
 		},
 	),
-	Before: interceptor.BeforeChain(
-		interceptor.DurationInterceptor,
-	),
 	Action: func(ctx *cli.Context) error {
 		taskID := ctx.String("task-id")
-		start := ctx.String("start")
-		end := ctx.String("end")
-		step := ctx.Generic("step")
 
-		schedules, err := profiling.QueryEBPFProfilingScheduleList(ctx, taskID, &api.Duration{
-			Start: start,
-			End:   end,
-			Step:  step.(*model.StepEnumValue).Selected,
-		})
+		schedules, err := profiling.QueryEBPFProfilingScheduleList(ctx, taskID)
 		if err != nil {
 			return err
 		}
