@@ -15,8 +15,8 @@
 # specific language governing permissions and limitations
 # under the License.
 
-query ($taskID: ID!, $duration: Duration!){
-    result: queryEBPFProfilingSchedules(taskId: $taskID, duration: $duration) {
+query ($taskID: ID!){
+    result: queryEBPFProfilingSchedules(taskId: $taskID) {
         scheduleId
         taskId
         startTime
@@ -28,7 +28,6 @@ query ($taskID: ID!, $duration: Duration!){
             serviceName
             instanceId
             instanceName
-            layer
             agentId
             detectType
             labels
