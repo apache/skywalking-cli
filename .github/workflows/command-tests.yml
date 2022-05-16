@@ -50,6 +50,6 @@ jobs:
 
       - name: Test commands
         if: steps.changes.outputs.src == 'true'
-        uses: apache/skywalking-infra-e2e@d714677324e31cd4ab45782e58cea0946a065132
+        uses: apache/skywalking-infra-e2e@42b8ed4dd4b7ddfe00dd02df0b3b778469a2695f
         with:
           e2e-file: test/cases/${{ matrix.oap }}/test.yaml
