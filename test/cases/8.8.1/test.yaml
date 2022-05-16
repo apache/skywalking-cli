@@ -18,7 +18,7 @@
 setup:
   env: compose
   file: docker-compose.yml
-  timeout: 1200
+  timeout: 20m
   steps:
     - name: install yq
       command: yq > /dev/null 2>&1 || go install github.com/mikefarah/yq/v4@latest
