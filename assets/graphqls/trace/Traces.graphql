@@ -17,7 +17,6 @@
 
 query ($condition: TraceQueryCondition!){
     result: queryBasicTraces(condition: $condition){
-        total
         traces {
             segmentId
             endpointNames

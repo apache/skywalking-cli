@@ -105,12 +105,10 @@ $ swctl trace ls --trace-id "321661b1-9a31-4e12-ad64-c8f6711f108d"
 			}
 		}
 		pageNum := 1
-		needTotal := true
 
 		paging := api.Pagination{
-			PageNum:   &pageNum,
-			PageSize:  DefaultPageSize,
-			NeedTotal: &needTotal,
+			PageNum:  &pageNum,
+			PageSize: DefaultPageSize,
 		}
 
 		var order api.QueryOrder

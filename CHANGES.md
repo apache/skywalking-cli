@@ -14,6 +14,7 @@ Release Notes.
 - Update the `process list` to must be provided the instance and duration.(#144)
 - Remove `layer` field in the `instance` and `process` commands for 9.1.0 GraphQL query protocol's breaking changes (#149)
 - Remove `duration` flag in `profiling ebpf schedules`.(#150)
+- [Breaking Change] Remove `total` field in `trace list` and `logs list` commands.(#152)
 
 0.10.0
 ------------------

@@ -67,12 +67,10 @@ $ swctl browser logs list`,
 		pageID := ctx.String("page-id")
 
 		pageNum := 1
-		needTotal := true
 
 		paging := api.Pagination{
-			PageNum:   &pageNum,
-			PageSize:  DefaultPageSize,
-			NeedTotal: &needTotal,
+			PageNum:  &pageNum,
+			PageSize: DefaultPageSize,
 		}
 		condition := &api.BrowserErrorLogQueryCondition{
 			ServiceID:        &serviceID,
