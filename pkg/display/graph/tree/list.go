@@ -91,13 +91,13 @@ func DisplayList(ctx *cli.Context, displayable *d.Displayable) error {
 }
 
 func draw(list *widgets.List, tree *widgets.Tree, detail, help *widgets.Paragraph, data api.TraceBrief,
-	ctx *cli.Context, condition *api.TraceQueryCondition) {
+	ctx *cli.Context, _ *api.TraceQueryCondition) {
 	x, y := ui.TerminalDimensions()
 
 	if len(data.Traces) != 0 {
 		showIndex := list.SelectedRow
 		var traceID = data.Traces[showIndex].TraceIds[0]
-		list.Title = fmt.Sprintf("[%s]", len(data.Traces), traceID)
+		list.Title = fmt.Sprintf("[%s]", traceID)
 		nodes, serviceNames := getNodeData(ctx, traceID)
 		tree.Title = fmt.Sprintf("[%s]", strings.Join(serviceNames, "->"))
 		tree.SetNodes(nodes)
@@ -117,12 +117,6 @@ func draw(list *widgets.List, tree *widgets.Tree, detail, help *widgets.Paragrap
 	help.SetRect(x-x/5, y/2, x, y)
 	tree.ExpandAll()
 	ui.Render(list, tree, detail, help)
-}
-func totalPages(total int) int {
-	if total%DefaultPageSize == 0 {
-		return total / DefaultPageSize
-	}
-	return total/DefaultPageSize + 1
 }
 
 func listenTracesKeyboard(list *widgets.List, tree *widgets.Tree, data api.TraceBrief, ctx *cli.Context,
