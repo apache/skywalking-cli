@@ -94,12 +94,10 @@ $ swctl event list
 		eventType := api.EventType(ctx.Generic("type").(*model.EventTypeEnumValue).String())
 		layer := strings.ToUpper(ctx.String("layer"))
 		pageNum := 1
-		needTotal := true
 
 		paging := api.Pagination{
-			PageNum:   &pageNum,
-			PageSize:  DefaultPageSize,
-			NeedTotal: &needTotal,
+			PageNum:  &pageNum,
+			PageSize: DefaultPageSize,
 		}
 		condition := &api.EventQueryCondition{
 			Source: &api.SourceInput{

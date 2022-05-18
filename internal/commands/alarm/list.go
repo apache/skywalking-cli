@@ -100,11 +100,9 @@ $ swctl alarm list
 		}
 
 		pageNum := 1
-		needTotal := true
 		paging := api.Pagination{
-			PageNum:   &pageNum,
-			PageSize:  DefaultPageSize,
-			NeedTotal: &needTotal,
+			PageNum:  &pageNum,
+			PageSize: DefaultPageSize,
 		}
 
 		condition := &alarm.ListAlarmCondition{

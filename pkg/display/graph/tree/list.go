@@ -94,10 +94,10 @@ func draw(list *widgets.List, tree *widgets.Tree, detail, help *widgets.Paragrap
 	ctx *cli.Context, condition *api.TraceQueryCondition) {
 	x, y := ui.TerminalDimensions()
 
-	if data.Total != 0 {
+	if len(data.Traces) != 0 {
 		showIndex := list.SelectedRow
 		var traceID = data.Traces[showIndex].TraceIds[0]
-		list.Title = fmt.Sprintf("[ %d/%d  %s]", *condition.Paging.PageNum, totalPages(data.Total), traceID)
+		list.Title = fmt.Sprintf("[%s]", len(data.Traces), traceID)
 		nodes, serviceNames := getNodeData(ctx, traceID)
 		tree.Title = fmt.Sprintf("[%s]", strings.Join(serviceNames, "->"))
 		tree.SetNodes(nodes)
@@ -149,13 +149,11 @@ func listenTracesKeyboard(list *widgets.List, tree *widgets.Tree, data api.Trace
 			tree.SelectedRow = 0
 		case "<C-f>", "n":
 			pageNum := *condition.Paging.PageNum
-			if pageNum < totalPages(data.Total) {
-				pageNum++
-				condition.Paging.PageNum = &pageNum
-				data, err = trace.Traces(ctx, condition)
-				if err != nil {
-					logger.Log.Fatalln(err)
-				}
+			pageNum++
+			condition.Paging.PageNum = &pageNum
+			data, err = trace.Traces(ctx, condition)
+			if err != nil {
+				logger.Log.Fatalln(err)
 			}
 			tree.SelectedRow = 0
 		case "<Right>":

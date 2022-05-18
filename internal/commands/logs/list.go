@@ -83,7 +83,6 @@ $ swctl logs list --trace-id 3d56f33f-bcd3-4e40-9e4f-5dc547998ef5`,
 		endpointID := ctx.String("endpoint-id")
 		traceID := ctx.String("trace-id")
 		pageNum := 1
-		needTotal := true
 
 		tagStr := ctx.String("tags")
 		var tags []*api.LogTag = nil
@@ -96,9 +95,8 @@ $ swctl logs list --trace-id 3d56f33f-bcd3-4e40-9e4f-5dc547998ef5`,
 		}
 
 		paging := api.Pagination{
-			PageNum:   &pageNum,
-			PageSize:  DefaultPageSize,
-			NeedTotal: &needTotal,
+			PageNum:  &pageNum,
+			PageSize: DefaultPageSize,
 		}
 
 		condition := &api.LogQueryCondition{
