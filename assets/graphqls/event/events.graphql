@@ -17,7 +17,6 @@
 
 query ($condition: EventQueryCondition) {
     result: queryEvents(condition: $condition) {
-        total
         events {
             uuid
             source {

@@ -17,7 +17,6 @@
 
 query ($duration: Duration!, $scope: Scope, $keyword: String, $paging: Pagination!, $tags: [AlarmTag]) {
     result: getAlarm(duration: $duration, scope: $scope, keyword: $keyword, paging: $paging, tags: $tags) {
-        total
         msgs {
             startTime
             scope
