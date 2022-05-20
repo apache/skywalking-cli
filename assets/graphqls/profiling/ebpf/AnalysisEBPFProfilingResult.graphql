@@ -15,8 +15,8 @@
 # specific language governing permissions and limitations
 # under the License.
 
-query ($scheduleIdList: [ID!]!, $timeRanges: [EBPFProfilingAnalyzeTimeRange!]!){
-    result: analysisEBPFProfilingResult(scheduleIdList: $scheduleIdList, timeRanges: $timeRanges) {
+query ($scheduleIdList: [ID!]!, $timeRanges: [EBPFProfilingAnalyzeTimeRange!]!, $aggregateType: EBPFProfilingAnalyzeAggregateType){
+    result: analysisEBPFProfilingResult(scheduleIdList: $scheduleIdList, timeRanges: $timeRanges, aggregateType: $aggregateType) {
         tip
         trees {
             elements {

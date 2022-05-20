@@ -74,12 +74,13 @@ func QueryEBPFProfilingScheduleList(ctx *cli.Context, taskID string) ([]*api.EBP
 }
 
 func AnalysisEBPFProfilingResult(ctx *cli.Context, scheduleIDList []string,
-	timeRanges []*api.EBPFProfilingAnalyzeTimeRange) (*api.EBPFProfilingAnalyzation, error) {
+	timeRanges []*api.EBPFProfilingAnalyzeTimeRange, aggregateType api.EBPFProfilingAnalyzeAggregateType) (*api.EBPFProfilingAnalyzation, error) {
 	var response map[string]*api.EBPFProfilingAnalyzation
 
 	request := graphql.NewRequest(assets.Read("graphqls/profiling/ebpf/AnalysisEBPFProfilingResult.graphql"))
 	request.Var("scheduleIdList", scheduleIDList)
 	request.Var("timeRanges", timeRanges)
+	request.Var("aggregateType", aggregateType)
 
 	err := client.ExecuteQuery(ctx, request, &response)
 
