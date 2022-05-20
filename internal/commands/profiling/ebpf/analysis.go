@@ -26,6 +26,7 @@ import (
 	"github.com/urfave/cli/v2"
 
 	"github.com/apache/skywalking-cli/internal/flags"
+	"github.com/apache/skywalking-cli/internal/model/ebpf"
 	"github.com/apache/skywalking-cli/pkg/display"
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
 	"github.com/apache/skywalking-cli/pkg/graphql/profiling"
@@ -53,6 +54,15 @@ $ swctl profiling ebpf analysis --schedule-id=abc --time-ranges=1648020042869-16
 				Name:  "time-ranges",
 				Usage: "need to analyze time ranges in the segment: start-end,start-end",
 			},
+			&cli.GenericFlag{
+				Name:  "aggregate",
+				Usage: "the aggregate type for the profiling data anlysis",
+				Value: &ebpf.ProfilingAnalyzeAggregateTypeEnumValue{
+					Enum:     api.AllEBPFProfilingAnalyzeAggregateType,
+					Default:  api.EBPFProfilingAnalyzeAggregateTypeCount,
+					Selected: api.EBPFProfilingAnalyzeAggregateTypeCount,
+				},
+			},
 		},
 	),
 	Action: func(ctx *cli.Context) error {
@@ -77,7 +87,8 @@ $ swctl profiling ebpf analysis --schedule-id=abc --time-ranges=1648020042869-16
 			}
 		}
 
-		analyzation, err := profiling.AnalysisEBPFProfilingResult(ctx, scheduleIDList, timeRanges)
+		aggregateType := ctx.Generic("aggregate").(*ebpf.ProfilingAnalyzeAggregateTypeEnumValue).Selected
+		analyzation, err := profiling.AnalysisEBPFProfilingResult(ctx, scheduleIDList, timeRanges, aggregateType)
 		if err != nil {
 			return err
 		}

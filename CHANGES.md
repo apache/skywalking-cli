@@ -16,6 +16,7 @@ Release Notes.
 - Remove `duration` flag in `profiling ebpf schedules`.(#150)
 - [Breaking Change] Remove `total` field in `trace list` and `logs list` commands.(#152)
 - [Breaking Change] Remove `total` field in `event list`, `browser logs list`, `alarm list` commands.(#153)
+- Add `aggregate` flag in `profiling ebpf analysis` commands.(#154)
 
 0.10.0
 ------------------
