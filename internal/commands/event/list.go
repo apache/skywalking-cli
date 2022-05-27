@@ -34,6 +34,12 @@ import (
 )
 
 const DefaultPageSize = 15
+const EventTypeAll event.Type = -1
+
+func init() {
+	event.Type_name[-1] = "All"
+	event.Type_value["All"] = -1
+}
 
 var listCommand = &cli.Command{
 	Name:    "list",
@@ -65,8 +71,8 @@ $ swctl event list
 				Usage: "the type of the event",
 				Value: &model.EventTypeEnumValue{
 					Enum:     []event.Type{event.Type_Normal, event.Type_Error},
-					Default:  event.Type_Normal,
-					Selected: event.Type_Normal,
+					Default:  EventTypeAll,
+					Selected: EventTypeAll,
 				},
 			},
 		},
@@ -91,7 +97,7 @@ $ swctl event list
 		serviceInstanceName := ctx.String("instance-name")
 		endpointName := ctx.String("endpoint-name")
 		name := ctx.String("name")
-		eventType := api.EventType(ctx.Generic("type").(*model.EventTypeEnumValue).String())
+		eventType := ctx.Generic("type").(*model.EventTypeEnumValue).Selected
 		layer := strings.ToUpper(ctx.String("layer"))
 		pageNum := 1
 
@@ -106,11 +112,14 @@ $ swctl event list
 				Endpoint:        &endpointName,
 			},
 			Name:   &name,
-			Type:   &eventType,
 			Time:   &duration,
 			Layer:  &layer,
 			Order:  nil,
 			Paging: &paging,
+		}
+		if eventType != EventTypeAll {
+			t := api.EventType(eventType.String())
+			condition.Type = &t
 		}
 
 		events, err := eventQl.Events(ctx, condition)
