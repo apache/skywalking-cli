@@ -261,7 +261,11 @@ func backendMajorVersion(cliCtx *cli.Context) (int, error) {
 	if version == "" {
 		return 0, fmt.Errorf("failed to detect OAP version")
 	}
-	majorVersion := version[:strings.Index(version, ".")]
+	idx := strings.Index(version, ".")
+	if idx < 0 {
+		idx = 0
+	}
+	majorVersion := version[:idx]
 	atoi, err := strconv.Atoi(majorVersion)
 	if err != nil {
 		return 0, err
