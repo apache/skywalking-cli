@@ -27,7 +27,9 @@ import (
 func ParseScope(entity *api.Entity) api.Scope {
 	scope := api.ScopeAll
 
-	if *entity.DestEndpointName != "" {
+	if *entity.DestProcessName != "" {
+		scope = api.ScopeProcessRelation
+	} else if *entity.DestEndpointName != "" {
 		scope = api.ScopeEndpointRelation
 	} else if *entity.DestServiceInstanceName != "" {
 		scope = api.ScopeServiceInstanceRelation

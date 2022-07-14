@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package linear
+package dependency
 
 import (
 	"github.com/apache/skywalking-cli/internal/commands/interceptor"
@@ -23,53 +23,33 @@ import (
 	"github.com/apache/skywalking-cli/internal/model"
 	"github.com/apache/skywalking-cli/pkg/display"
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
-	"github.com/apache/skywalking-cli/pkg/graphql/metrics"
-	"github.com/apache/skywalking-cli/pkg/graphql/utils"
-
-	api "skywalking.apache.org/repo/goapi/query"
+	"github.com/apache/skywalking-cli/pkg/graphql/dependency"
 
 	"github.com/urfave/cli/v2"
+
+	api "skywalking.apache.org/repo/goapi/query"
 )
 
-var Single = &cli.Command{
-	Name:  "linear",
-	Usage: "Query linear-type metrics defined in backend OAL",
-	UsageText: `Query linear-type metrics defined in backend OAL
-
-Examples:
-1. Query the response time of service "business-zone::projectB"
-$ swctl metrics linear --name=service_resp_time --service-name business-zone::projectB
-
-2. Query the response time of service instance
-$ swctl metrics linear --name=service_instance_resp_time --service-name business-zone::projectB \
-	--instance-name d708c6bfea9f4d50902d1743302a6f50@10.170.0.12
-
-3. Query the traffic (calls per minutes) between service "consumer" to service "provider"
-$ swctl metrics linear --name=service_relation_client_cpm --service-name consumer --dest-service-name provider
-`,
+var ProcessCommand = &cli.Command{
+	Name:    "process",
+	Aliases: []string{"pros"},
+	Usage:   "Query the process topology, based on the given service instance",
 	Flags: flags.Flags(
 		flags.DurationFlags,
-		flags.MetricsFlags,
+		flags.ServiceRelationFlags,
 		flags.InstanceRelationFlags,
-		flags.EndpointRelationFlags,
-		flags.ProcessRelationFlags,
 	),
 	Before: interceptor.BeforeChain(
 		interceptor.DurationInterceptor,
-		interceptor.ParseEndpointRelation(false),
-		interceptor.ParseInstanceRelation(false),
-		interceptor.ParseProcessRelation(false),
+		interceptor.ParseInstance(true),
 	),
+
 	Action: func(ctx *cli.Context) error {
+		instanceID := ctx.String("instance-id")
+
 		end := ctx.String("end")
 		start := ctx.String("start")
 		step := ctx.Generic("step")
-
-		metricsName := ctx.String("name")
-		entity, err := interceptor.ParseEntity(ctx)
-		if err != nil {
-			return err
-		}
 
 		duration := api.Duration{
 			Start: start,
@@ -77,15 +57,11 @@ $ swctl metrics linear --name=service_relation_client_cpm --service-name consume
 			Step:  step.(*model.StepEnumValue).Selected,
 		}
 
-		metricsValues, err := metrics.LinearIntValues(ctx, api.MetricsCondition{
-			Name:   metricsName,
-			Entity: entity,
-		}, duration)
-
+		dependency, err := dependency.ProcessTopology(ctx, instanceID, duration)
 		if err != nil {
 			return err
 		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: utils.MetricsValuesToMap(duration, metricsValues)})
+		return display.Display(ctx, &displayable.Displayable{Data: dependency})
 	},
 }

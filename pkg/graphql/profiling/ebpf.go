@@ -40,6 +40,17 @@ func CreateEBPFProfilingFixedTimeTask(ctx *cli.Context,
 	return response["result"], err
 }
 
+func CreateEBPFNetworkProfilingTask(ctx *cli.Context, condition *api.EBPFProfilingNetworkTaskRequest) (api.EBPFProfilingTaskCreationResult, error) {
+	var response map[string]api.EBPFProfilingTaskCreationResult
+
+	request := graphql.NewRequest(assets.Read("graphqls/profiling/ebpf/CreateEBPFNetworkProfilingTask.graphql"))
+	request.Var("request", condition)
+
+	err := client.ExecuteQuery(ctx, request, &response)
+
+	return response["result"], err
+}
+
 func QueryPrepareCreateEBPFProfilingTaskData(ctx *cli.Context, serviceID string) (*api.EBPFProfilingTaskPrepare, error) {
 	var response map[string]*api.EBPFProfilingTaskPrepare
 
@@ -81,6 +92,17 @@ func AnalysisEBPFProfilingResult(ctx *cli.Context, scheduleIDList []string,
 	request.Var("scheduleIdList", scheduleIDList)
 	request.Var("timeRanges", timeRanges)
 	request.Var("aggregateType", aggregateType)
+
+	err := client.ExecuteQuery(ctx, request, &response)
+
+	return response["result"], err
+}
+
+func KeepNetworkProfilingTask(ctx *cli.Context, taskID string) (*api.EBPFNetworkKeepProfilingResult, error) {
+	var response map[string]*api.EBPFNetworkKeepProfilingResult
+
+	request := graphql.NewRequest(assets.Read("graphqls/profiling/ebpf/KeepNetworkProfilingTask.graphql"))
+	request.Var("taskId", taskID)
 
 	err := client.ExecuteQuery(ctx, request, &response)
 

@@ -17,6 +17,9 @@ Release Notes.
 - [Breaking Change] Remove `total` field in `trace list` and `logs list` commands.(#152)
 - [Breaking Change] Remove `total` field in `event list`, `browser logs list`, `alarm list` commands.(#153)
 - Add `aggregate` flag in `profiling ebpf analysis` commands.(#154)
+- Add the sub-command `profiling ebpf create network` and `profiling ebpf keep network` to create and keep the network eBPF profiling task.(#158)
+- Add the sub-command `dependency process` to query the process relation.(#158)
+- Support query the metrics of process relation.(#158)
 
 0.10.0
 ------------------

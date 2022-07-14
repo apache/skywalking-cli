@@ -29,5 +29,6 @@ var Command = &cli.Command{
 		EndpointCommand,
 		ServiceCommand,
 		InstanceCommand,
+		ProcessCommand,
 	},
 }

@@ -36,10 +36,12 @@ func ParseEntity(ctx *cli.Context) (*api.Entity, error) {
 	serviceID := ctx.String("service-id")
 	instance := ctx.String("instance-name")
 	endpoint := ctx.String("endpoint-name")
+	process := ctx.String("process-name")
 
 	destServiceID := ctx.String("dest-service-id")
 	destInstance := ctx.String("dest-instance-name")
 	destEndpoint := ctx.String("dest-endpoint-name")
+	destProcess := ctx.String("dest-process-name")
 
 	serviceName, isNormal, err := ParseServiceID(serviceID)
 	if err != nil {
@@ -56,12 +58,22 @@ func ParseEntity(ctx *cli.Context) (*api.Entity, error) {
 		Normal:                  &isNormal,
 		ServiceInstanceName:     &instance,
 		EndpointName:            &endpoint,
+		ProcessName:             &process,
 		DestServiceName:         &destServiceName,
 		DestNormal:              &destIsNormal,
 		DestServiceInstanceName: &destInstance,
 		DestEndpointName:        &destEndpoint,
+		DestProcessName:         &destProcess,
 	}
 	entity.Scope = utils.ParseScope(entity)
+
+	// adapt for the old version of backend
+	if *entity.ProcessName == "" {
+		entity.ProcessName = nil
+	}
+	if *entity.DestProcessName == "" {
+		entity.DestProcessName = nil
+	}
 
 	if logger.Log.GetLevel() <= logrus.DebugLevel {
 		s, _ := json.Marshal(&entity)
