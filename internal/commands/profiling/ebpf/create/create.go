@@ -25,5 +25,6 @@ var CreateCommand = &cli.Command{
 	Subcommands: []*cli.Command{
 		PrepareCreateCommand,
 		FixedTimeCreateCommand,
+		NetworkCreateCommand,
 	},
 }

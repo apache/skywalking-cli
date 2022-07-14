@@ -15,23 +15,32 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package ebpf
+package flags
 
-import (
-	"github.com/apache/skywalking-cli/internal/commands/profiling/ebpf/create"
-	"github.com/apache/skywalking-cli/internal/commands/profiling/ebpf/keep"
+import "github.com/urfave/cli/v2"
 
-	"github.com/urfave/cli/v2"
-)
-
-var Command = &cli.Command{
-	Name:  "ebpf",
-	Usage: "eBPF Profiling related sub-command",
-	Subcommands: []*cli.Command{
-		create.CreateCommand,
-		keep.KeepCommand,
-		ListTaskCommand,
-		ListScheduleCommand,
-		AnalyzationCommand,
+// ProcessFlags take either process id or process name as input,
+// and transform to the other one.
+var ProcessFlags = []cli.Flag{
+	&cli.StringFlag{
+		Name:     "process-id",
+		Usage:    "`process id`, if you don't have process id, use `--process-name` instead",
+		Required: false,
+	},
+	&cli.StringFlag{
+		Name:     "process-name",
+		Usage:    "`process name`",
+		Required: false,
 	},
 }
+
+// ProcessRelationFlags take either destination process name as input,
+var ProcessRelationFlags = append(
+	ProcessFlags,
+
+	&cli.StringFlag{
+		Name:     "dest-process-name",
+		Usage:    "`destination` process name",
+		Required: false,
+	},
+)

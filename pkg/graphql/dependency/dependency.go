@@ -63,3 +63,15 @@ func InstanceTopology(ctx *cli.Context, clientServiceID, serverServiceID string,
 
 	return response["result"], err
 }
+
+func ProcessTopology(ctx *cli.Context, instanceID string, duration api.Duration) (api.ProcessTopology, error) {
+	var response map[string]api.ProcessTopology
+
+	request := graphql.NewRequest(assets.Read("graphqls/dependency/ProcessTopology.graphql"))
+	request.Var("serviceInstanceId", instanceID)
+	request.Var("duration", duration)
+
+	err := client.ExecuteQuery(ctx, request, &response)
+
+	return response["result"], err
+}

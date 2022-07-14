@@ -15,23 +15,14 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package ebpf
+package keep
 
-import (
-	"github.com/apache/skywalking-cli/internal/commands/profiling/ebpf/create"
-	"github.com/apache/skywalking-cli/internal/commands/profiling/ebpf/keep"
+import "github.com/urfave/cli/v2"
 
-	"github.com/urfave/cli/v2"
-)
-
-var Command = &cli.Command{
-	Name:  "ebpf",
-	Usage: "eBPF Profiling related sub-command",
+var KeepCommand = &cli.Command{
+	Name:  "keep",
+	Usage: "eBPF Profiling task keep-alive related sub-command",
 	Subcommands: []*cli.Command{
-		create.CreateCommand,
-		keep.KeepCommand,
-		ListTaskCommand,
-		ListScheduleCommand,
-		AnalyzationCommand,
+		NetworkKeepCommand,
 	},
 }

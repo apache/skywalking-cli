@@ -51,6 +51,7 @@ $ swctl metrics multiple-linear --name all_percentile --labels=0,1,2,3,4 --relab
 		flags.MetricsFlags,
 		flags.InstanceRelationFlags,
 		flags.EndpointRelationFlags,
+		flags.ProcessRelationFlags,
 		[]cli.Flag{
 			&cli.StringFlag{
 				Name:     "labels",
@@ -71,6 +72,7 @@ $ swctl metrics multiple-linear --name all_percentile --labels=0,1,2,3,4 --relab
 		interceptor.DurationInterceptor,
 		interceptor.ParseEndpointRelation(false),
 		interceptor.ParseInstanceRelation(false),
+		interceptor.ParseProcessRelation(false),
 	),
 	Action: func(ctx *cli.Context) error {
 		end := ctx.String("end")

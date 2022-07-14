@@ -46,11 +46,13 @@ $ swctl metrics single --name endpoint_cpm --service-name business-zone::project
 		flags.MetricsFlags,
 		flags.InstanceRelationFlags,
 		flags.EndpointRelationFlags,
+		flags.ProcessRelationFlags,
 	),
 	Before: interceptor.BeforeChain(
 		interceptor.DurationInterceptor,
 		interceptor.ParseEndpointRelation(false),
 		interceptor.ParseInstanceRelation(false),
+		interceptor.ParseProcessRelation(false),
 	),
 	Action: func(ctx *cli.Context) error {
 		end := ctx.String("end")

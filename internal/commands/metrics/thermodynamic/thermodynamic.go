@@ -45,11 +45,13 @@ $ swctl metrics thermodynamic --scope all --name all_heatmap
 		flags.MetricsFlags,
 		flags.InstanceRelationFlags,
 		flags.EndpointRelationFlags,
+		flags.ProcessRelationFlags,
 	),
 	Before: interceptor.BeforeChain(
 		interceptor.DurationInterceptor,
 		interceptor.ParseEndpointRelation(false),
 		interceptor.ParseInstanceRelation(false),
+		interceptor.ParseProcessRelation(false),
 	),
 	Action: func(ctx *cli.Context) error {
 		end := ctx.String("end")
