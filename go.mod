@@ -24,5 +24,5 @@ require (
 	gopkg.in/yaml.v2 v2.4.0
 	k8s.io/apimachinery v0.21.1
 	sigs.k8s.io/controller-runtime v0.7.0
-	skywalking.apache.org/repo/goapi v0.0.0-20220713141736-9874f2f4f8cc
+	skywalking.apache.org/repo/goapi v0.0.0-20220714130828-0d56d1f4c592
 )

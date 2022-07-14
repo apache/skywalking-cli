@@ -67,6 +67,14 @@ func ParseEntity(ctx *cli.Context) (*api.Entity, error) {
 	}
 	entity.Scope = utils.ParseScope(entity)
 
+	// adapt for the old version of backend
+	if *entity.ProcessName == "" {
+		entity.ProcessName = nil
+	}
+	if *entity.DestProcessName == "" {
+		entity.DestProcessName = nil
+	}
+
 	if logger.Log.GetLevel() <= logrus.DebugLevel {
 		s, _ := json.Marshal(&entity)
 		logger.Log.Debugf("entity: %+v", string(s))
