@@ -23,6 +23,7 @@ import (
 	api "skywalking.apache.org/repo/goapi/query"
 )
 
+//nolint:funlen // disable function length check for the test case count
 func TestParseScope(t *testing.T) {
 	empty := ""
 	nonEmpty := "test"
