@@ -23,6 +23,8 @@ import (
 	"strings"
 	"sync"
 
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 	api "skywalking.apache.org/repo/goapi/query"
 
 	"github.com/spf13/viper"
@@ -134,7 +136,7 @@ func getButtonTexts(byteValue []byte) ([]string, error) {
 
 	for s := range c {
 		if s != "style" {
-			ret = append(ret, strings.Title(s))
+			ret = append(ret, cases.Title(language.Und).String(s))
 		}
 	}
 	return ret, nil

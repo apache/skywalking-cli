@@ -83,11 +83,11 @@ func DurationInterceptor(ctx *cli.Context) error {
 // ParseDuration parses the `start` and `end` to a triplet, (startTime, endTime, step),
 // based on the given `timezone`, however, if the given `timezone` is empty, UTC becomes the default timezone.
 // if --start and --end are both absent,
-//   then: start := now - 30min; end := now
+// then: start := now - 30min; end := now
 // if --start is given, --end is absent,
-//   then: end := now + 30 units, where unit is the precision of `start`, (hours, minutes, etc.)
+// then: end := now + 30 units, where unit is the precision of `start`, (hours, minutes, etc.)
 // if --start is absent, --end is given,
-//   then: start := end - 30 units, where unit is the precision of `end`, (hours, minutes, etc.)
+// then: start := end - 30 units, where unit is the precision of `end`, (hours, minutes, etc.)
 func ParseDuration(start, end string, userStep api.Step) (startTime, endTime time.Time, step api.Step, dt utils.DurationType) {
 	logger.Log.Debugln("Start time:", start, "end time:", end, "timezone:", time.Local)
 
