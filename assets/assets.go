@@ -19,6 +19,7 @@ package assets
 
 import (
 	"embed"
+	"strings"
 
 	"github.com/apache/skywalking-cli/internal/logger"
 )
@@ -26,11 +27,22 @@ import (
 //go:embed *
 var assets embed.FS
 
-// Read reads all content from a file under assets, which is packed in to the binary
+// Read reads all content from a file under assets, which is packed in to the binary.
+// It will also trim the consecutive lines starting with #.
 func Read(filename string) string {
 	content, err := assets.ReadFile(filename)
 	if err != nil {
 		logger.Log.Fatalln("failed to read asset: ", filename, err)
 	}
-	return string(content)
+	var lines []string
+	stop := false
+	for _, line := range strings.Split(string(content), "\n") {
+		if !stop && strings.HasPrefix(line, "#") {
+			continue
+		}
+		stop = true
+		lines = append(lines, line)
+	}
+
+	return strings.Join(lines, "\n")
 }
