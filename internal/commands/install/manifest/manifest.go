@@ -24,8 +24,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/apache/skywalking-swck/pkg/kubernetes"
-	"github.com/apache/skywalking-swck/pkg/operator/repo"
+	"github.com/apache/skywalking-swck/operator/pkg/kubernetes"
+	repo "github.com/apache/skywalking-swck/operator/pkg/operator/manifests"
 	"github.com/urfave/cli/v2"
 	"gopkg.in/yaml.v2"
 	"k8s.io/apimachinery/pkg/runtime"
