@@ -20,7 +20,7 @@ package manifest
 import (
 	"fmt"
 
-	operatorv1alpha1 "github.com/apache/skywalking-swck/apis/operator/v1alpha1"
+	operatorv1alpha1 "github.com/apache/skywalking-swck/operator/apis/operator/v1alpha1"
 	"github.com/urfave/cli/v2"
 	"gopkg.in/yaml.v2"
 	controllerruntime "sigs.k8s.io/controller-runtime"
