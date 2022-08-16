@@ -5,7 +5,7 @@ go 1.16
 replace golang.org/x/crypto v0.0.0-20201002170205-7f63de1d35b0 => golang.org/x/crypto v0.0.0-20201216223049-8b5274cf687f
 
 require (
-	github.com/apache/skywalking-swck/operator v0.0.0-20220720103355-e822fca26c0f
+	github.com/apache/skywalking-swck/operator v0.0.0-20220815142653-ed08076b7433
 	github.com/gizak/termui/v3 v3.1.0
 	github.com/google/uuid v1.3.0
 	github.com/machinebox/graphql v0.2.2
