@@ -38,6 +38,8 @@ var Command = &cli.Command{
 		linear.Multiple,
 		thermodynamic.Command,
 		aggregation.TopN,
+		aggregation.SortedMetrics,
+		aggregation.SampledRecords,
 		list.Command,
 	},
 }

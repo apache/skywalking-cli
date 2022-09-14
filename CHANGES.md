@@ -20,6 +20,7 @@ Release Notes.
 - Add the sub-command `profiling ebpf create network` and `profiling ebpf keep network` to create and keep the network eBPF profiling task.(#158)
 - Add the sub-command `dependency process` to query the process relation.(#158)
 - Support query the metrics of process relation.(#158)
+- Add the sub-command `metrics sorted` and `metrics sampled-record` to query the sorted metrics/records.(#163)
 
 0.10.0
 ------------------
