@@ -44,6 +44,7 @@ const (
 var style = map[string]string{"dashboard global": "graph",
 	"dashboard global-metrics": "graph",
 	"metrics top":              "table",
+	"metrics sorted":           "table",
 	"metrics linear":           "graph",
 	"metrics list":             "table",
 	"service list":             "table",

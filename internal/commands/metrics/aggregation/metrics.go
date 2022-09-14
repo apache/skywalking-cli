@@ -31,21 +31,21 @@ import (
 	"github.com/apache/skywalking-cli/pkg/graphql/metrics"
 )
 
-var TopN = &cli.Command{
-	Name:      "top",
+var SortedMetrics = &cli.Command{
+	Name:      "sorted",
 	Usage:     "query the top <n> entities sorted by the specified metrics",
 	ArgsUsage: "<n>",
 	UsageText: `Query the top <n> entities sorted by the specified metrics.
 
 Examples:
 1. Query the top 5 services whose sla are largest:
-$ swctl metrics top --name service_sla 5
+$ swctl metrics sorted --name service_sla 5
 
 2. Query the top 5 endpoints whose sla is largest:
-$ swctl metrics top --name endpoint_sla 5
+$ swctl metrics sorted --name endpoint_sla 5
 
 3. Query the top 5 instances of service "boutique::adservice" whose sla are largest:
-$ swctl metrics top --name service_instance_sla --service-name boutique::adservice 5
+$ swctl metrics sorted --name service_instance_sla --service-name boutique::adservice 5
 `,
 	Flags: flags.Flags(
 		flags.DurationFlags,
