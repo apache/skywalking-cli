@@ -31,8 +31,19 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Check License Header
-        uses: apache/skywalking-eyes@main
+        uses: apache/skywalking-eyes@d38fe0561d1140b010bddccb5fbfa3db7c12caf1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Setup Go
+        uses: actions/setup-go@v3
         with:
-          log: info
+          go-version: "1.16"
+      - name: Check Dependencies License
+        run: |
+          go install github.com/apache/skywalking-eyes/cmd/license-eye@d38fe0561d1140b010bddccb5fbfa3db7c12caf1
+          license-eye dependency resolve --summary ./dist/LICENSE.tpl --output ./dist/licenses || exit 1
+          if [ ! -z "$(git diff -U0 ./dist)" ]; then
+            echo "LICENSE file is not updated correctly"
+            git diff -U0 ./dist
+            exit 1
+          fi

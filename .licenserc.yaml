@@ -34,3 +34,14 @@ header:
     - 'pkg/display/graph/flamegraph/flamegraph.html'
 
   comment: on-failure
+
+dependency:
+  files:
+    - go.mod
+  licenses:
+    - name: github.com/kr/logfmt
+      license: MIT
+    - name: github.com/pascaldekloe/goe
+      license: CC0-1.0
+    - name: github.com/chzyer/logex
+      license: MIT
