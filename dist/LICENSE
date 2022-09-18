@@ -357,10 +357,10 @@ The text of each license is also included at licenses/license-[project].txt.
     golang.org/x/lint v0.0.0-20210508222113-6edffad5e616 BSD-3-Clause
     golang.org/x/mobile v0.0.0-20190719004257-d2bd2a29d028 BSD-3-Clause
     golang.org/x/mod v0.4.2 BSD-3-Clause
-    golang.org/x/net v0.0.0-20220421235706-1d1ef9303861 BSD-3-Clause
+    golang.org/x/net v0.0.0-20220909164309-bea034e7d591 BSD-3-Clause
     golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d BSD-3-Clause
     golang.org/x/sync v0.0.0-20210220032951-036812b2e83c BSD-3-Clause
-    golang.org/x/sys v0.0.0-20220422013727-9388b58f7150 BSD-3-Clause
+    golang.org/x/sys v0.0.0-20220728004956-3c1f35247d10 BSD-3-Clause
     golang.org/x/term v0.0.0-20220411215600-e5f449aeb171 BSD-3-Clause
     golang.org/x/text v0.3.7 BSD-3-Clause
     golang.org/x/time v0.0.0-20210723032227-1f47c861a9ac BSD-3-Clause

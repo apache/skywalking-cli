@@ -60,7 +60,7 @@ deps:
 $(GO_LINT):
 	@$(GO_LINT) version > /dev/null 2>&1 || go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 $(LICENSE_EYE):
-	@$(LICENSE_EYE) --version > /dev/null 2>&1 || go install github.com/apache/skywalking-eyes/cmd/license-eye@latest
+	@$(LICENSE_EYE) --version > /dev/null 2>&1 || go install github.com/apache/skywalking-eyes/cmd/license-eye@d38fe05
 
 .PHONY: lint
 lint: $(GO_LINT)
@@ -69,12 +69,29 @@ lint: $(GO_LINT)
 fix-lint: $(GO_LINT)
 	$(GO_LINT) run -v --fix ./...
 
-.PHONY: license
-license: clean $(LICENSE_EYE)
+.PHONY: license-header
+license-header: clean $(LICENSE_EYE)
 	@$(LICENSE_EYE) header check
-.PHONY: fix-license
-fix-license: clean $(LICENSE_EYE)
+
+.PHONY: fix-license-header
+fix-license-header: clean $(LICENSE_EYE)
 	@$(LICENSE_EYE) header fix
+
+.PHONY: dependency-license
+dependency-license: clean $(LICENSE_EYE)
+	@$(LICENSE_EYE) dependency resolve --summary ./dist/LICENSE.tpl --output ./dist/licenses || exit 1
+	@if [ ! -z "`git diff -U0 ./dist`" ]; then \
+		echo "LICENSE file is not updated correctly"; \
+		git diff -U0 ./dist; \
+		exit 1; \
+	fi
+
+.PHONY: fix-dependency-license
+fix-dependency-license: clean $(LICENSE_EYE)
+	@$(LICENSE_EYE) dependency resolve --summary ./dist/LICENSE.tpl --output ./dist/licenses
+
+.PHONY: fix-license
+fix-license: fix-license-header fix-dependency-license
 
 .PHONY: fix
 fix: fix-lint fix-license
