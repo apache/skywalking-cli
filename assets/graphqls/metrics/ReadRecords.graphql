@@ -15,8 +15,8 @@
 # specific language governing permissions and limitations
 # under the License.
 
-query ($condition:TopNCondition!, $duration: Duration!) {
-    result: readSampledRecords(condition: $condition, duration: $duration) {
+query ($condition: RecordCondition!, $duration: Duration!) {
+    result: readRecords(condition: $condition, duration: $duration) {
         name
         id
         value

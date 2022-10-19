@@ -19,20 +19,20 @@ package metadata
 
 import (
 	"fmt"
+	"regexp"
 	"strconv"
-	"strings"
-
-	"github.com/apache/skywalking-cli/pkg/graphql/common"
 
 	api "skywalking.apache.org/repo/goapi/query"
-
-	"github.com/apache/skywalking-cli/assets"
 
 	"github.com/machinebox/graphql"
 	"github.com/urfave/cli/v2"
 
+	"github.com/apache/skywalking-cli/assets"
 	"github.com/apache/skywalking-cli/pkg/graphql/client"
+	"github.com/apache/skywalking-cli/pkg/graphql/common"
 )
+
+var backendVersion = regexp.MustCompile(`^(?P<Major>\d+)\.(?P<Minor>\d+)`)
 
 func AllServices(cliCtx *cli.Context, duration api.Duration) ([]api.Service, error) {
 	var response map[string][]api.Service
@@ -52,7 +52,7 @@ func AllServices(cliCtx *cli.Context, duration api.Duration) ([]api.Service, err
 func SearchService(cliCtx *cli.Context, serviceCode string) (service api.Service, err error) {
 	var response map[string]api.Service
 
-	majorVersion, err := backendMajorVersion(cliCtx)
+	majorVersion, _, err := BackendVersion(cliCtx)
 	if err != nil {
 		return api.Service{}, err
 	}
@@ -115,7 +115,7 @@ func SearchBrowserService(cliCtx *cli.Context, serviceCode string) (service api.
 func SearchEndpoints(cliCtx *cli.Context, serviceID, keyword string, limit int) ([]api.Endpoint, error) {
 	var response map[string][]api.Endpoint
 
-	majorVersion, err := backendMajorVersion(cliCtx)
+	majorVersion, _, err := BackendVersion(cliCtx)
 	if err != nil {
 		return nil, err
 	}
@@ -244,31 +244,35 @@ func ListLayerService(cliCtx *cli.Context, layer string) ([]api.Service, error) 
 	return response["result"], err
 }
 
+func BackendVersion(cliCtx *cli.Context) (major, minor int, err error) {
+	version, err := common.Version(cliCtx)
+	if err != nil {
+		return 0, 0, err
+	}
+	if version == "" {
+		return 0, 0, fmt.Errorf("failed to detect OAP version")
+	}
+
+	versions := backendVersion.FindStringSubmatch(version)
+	if len(versions) != 3 {
+		return 0, 0, fmt.Errorf("parsing OAP version failure: %s", version)
+	}
+	major, err = strconv.Atoi(versions[1])
+	if err != nil {
+		return 0, 0, fmt.Errorf("parse major failure: %s", version)
+	}
+	minor, err = strconv.Atoi(versions[2])
+	if err != nil {
+		return 0, 0, fmt.Errorf("parse minor failure: %s", version)
+	}
+	return major, minor, nil
+}
+
 func protocolVersion(cliCtx *cli.Context) (string, error) {
-	if majorVersion, err := backendMajorVersion(cliCtx); err != nil {
+	if majorVersion, _, err := BackendVersion(cliCtx); err != nil {
 		return "", err
 	} else if majorVersion >= 9 {
 		return "v2", nil
 	}
 	return "v1", nil
-}
-
-func backendMajorVersion(cliCtx *cli.Context) (int, error) {
-	version, err := common.Version(cliCtx)
-	if err != nil {
-		return 0, err
-	}
-	if version == "" {
-		return 0, fmt.Errorf("failed to detect OAP version")
-	}
-	idx := strings.Index(version, ".")
-	if idx < 0 {
-		idx = 0
-	}
-	majorVersion := version[:idx]
-	atoi, err := strconv.Atoi(majorVersion)
-	if err != nil {
-		return 0, err
-	}
-	return atoi, nil
 }

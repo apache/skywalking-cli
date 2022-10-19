@@ -71,3 +71,36 @@ func buildSortedCondition(ctx *cli.Context, parseScope bool) (*api.TopNCondition
 			Step:  step,
 		}, nil
 }
+
+func buildReadRecordsCondition(ctx *cli.Context) (*api.RecordCondition, *api.Duration, error) {
+	start := ctx.String("start")
+	end := ctx.String("end")
+	step := ctx.Generic("step").(*model.StepEnumValue).Selected
+
+	metricsName := ctx.String("name")
+	order := ctx.Generic("order").(*model.OrderEnumValue).Selected
+	topN := 5
+	entity, err := interceptor.ParseEntity(ctx)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	if ctx.NArg() > 0 {
+		nn, err2 := strconv.Atoi(ctx.Args().First())
+		if err2 != nil {
+			return nil, nil, fmt.Errorf("the 1st argument must be a number: %v", err2)
+		}
+		topN = nn
+	}
+
+	return &api.RecordCondition{
+			Name:         metricsName,
+			ParentEntity: entity,
+			TopN:         topN,
+			Order:        order,
+		}, &api.Duration{
+			Start: start,
+			End:   end,
+			Step:  step,
+		}, nil
+}
