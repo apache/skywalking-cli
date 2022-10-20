@@ -104,6 +104,18 @@ func SampledRecords(ctx *cli.Context, condition api.TopNCondition, duration api.
 	return response["result"], err
 }
 
+func ReadRecords(ctx *cli.Context, condition api.RecordCondition, duration api.Duration) ([]*api.Record, error) {
+	var response map[string][]*api.Record
+
+	request := graphql.NewRequest(assets.Read("graphqls/metrics/ReadRecords.graphql"))
+	request.Var("condition", condition)
+	request.Var("duration", duration)
+
+	err := client.ExecuteQuery(ctx, request, &response)
+
+	return response["result"], err
+}
+
 func ListMetrics(ctx *cli.Context, regex string) ([]*api.MetricDefinition, error) {
 	var response map[string][]*api.MetricDefinition
 	request := graphql.NewRequest(assets.Read("graphqls/metrics/ListMetrics.graphql"))

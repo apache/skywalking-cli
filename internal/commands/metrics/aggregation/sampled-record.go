@@ -18,6 +18,8 @@
 package aggregation
 
 import (
+	"fmt"
+
 	api "skywalking.apache.org/repo/goapi/query"
 
 	"github.com/urfave/cli/v2"
@@ -28,6 +30,7 @@ import (
 	"github.com/apache/skywalking-cli/internal/model"
 	"github.com/apache/skywalking-cli/pkg/display"
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
+	"github.com/apache/skywalking-cli/pkg/graphql/metadata"
 	"github.com/apache/skywalking-cli/pkg/graphql/metrics"
 )
 
@@ -44,7 +47,9 @@ $ swctl metrics sampled-record --name top_n_database_statement 5
 	Flags: flags.Flags(
 		flags.DurationFlags,
 		flags.MetricsFlags,
-		flags.ServiceFlags,
+		flags.InstanceRelationFlags,
+		flags.EndpointRelationFlags,
+		flags.ProcessRelationFlags,
 		[]cli.Flag{
 			&cli.GenericFlag{
 				Name:  "order",
@@ -59,9 +64,33 @@ $ swctl metrics sampled-record --name top_n_database_statement 5
 	),
 	Before: interceptor.BeforeChain(
 		interceptor.DurationInterceptor,
-		interceptor.ParseService(false),
+		interceptor.ParseEndpointRelation(false),
+		interceptor.ParseInstanceRelation(false),
+		interceptor.ParseProcessRelation(false),
 	),
 	Action: func(ctx *cli.Context) error {
+		// read OAP version
+		major, minor, err := metadata.BackendVersion(ctx)
+		if err != nil {
+			return fmt.Errorf("read backend version failure: %v", err)
+		}
+
+		// since 9.3.0, use new record query API
+		if major >= 9 && minor >= 3 {
+			condition, duration, err1 := buildReadRecordsCondition(ctx)
+			if err1 != nil {
+				return err1
+			}
+			logger.Log.Debugln(condition.Name, condition.TopN)
+
+			records, err1 := metrics.ReadRecords(ctx, *condition, *duration)
+			if err1 != nil {
+				return err1
+			}
+
+			return display.Display(ctx, &displayable.Displayable{Data: records})
+		}
+
 		condition, duration, err := buildSortedCondition(ctx, false)
 		if err != nil {
 			return err

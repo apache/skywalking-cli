@@ -38,6 +38,7 @@ import (
 	"github.com/apache/skywalking-cli/internal/commands/metrics"
 	"github.com/apache/skywalking-cli/internal/commands/process"
 	"github.com/apache/skywalking-cli/internal/commands/profiling"
+	"github.com/apache/skywalking-cli/internal/commands/records"
 	"github.com/apache/skywalking-cli/internal/commands/service"
 	"github.com/apache/skywalking-cli/internal/commands/trace"
 	"github.com/apache/skywalking-cli/internal/logger"
@@ -104,6 +105,7 @@ services, service instances, etc.`
 		layer.Command,
 		process.Command,
 		profiling.Command,
+		records.Command,
 	}
 
 	app.Before = interceptor.BeforeChain(
