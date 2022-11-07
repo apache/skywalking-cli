@@ -32,6 +32,7 @@ Release Notes.
 * Add the sub-commands for query sorted metrics/records by @mrproliu in https://github.com/apache/skywalking-cli/pull/163
 * Add compatibility documentation by @mrproliu in https://github.com/apache/skywalking-cli/pull/164
 * Add the sub-command `records list` for adapt the new record query API by @mrproliu in https://github.com/apache/skywalking-cli/pull/167
+* Add the attached events fields into the `trace` sub-command by @mrproliu in https://github.com/apache/skywalking-cli/pull/169
 
 0.10.0
 ------------------

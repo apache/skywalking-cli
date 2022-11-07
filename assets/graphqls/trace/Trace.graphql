@@ -46,6 +46,21 @@ query ($traceId: ID!) {
                     key value
                 }
             }
+            attachedEvents {
+                startTime {
+                    seconds nanos
+                }
+                event
+                endTime {
+                    seconds nanos
+                }
+                tags {
+                    key value
+                }
+                summary {
+                    key value
+                }
+            }
         }
     }
 }
