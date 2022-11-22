@@ -68,25 +68,3 @@ metrics:
       topN: 10
       order: "DES"
     title: "    Slow Endpoints (ms)   "
-
-# Global response latency.
-responseLatency:
-  condition:
-    name: "all_percentile"
-    entity:
-      scope: "All"
-      normal: true
-  relabels: "P50, P75, P90, P95, P99"
-  labels: "0,1,2,3,4"
-  title: "Global Response Latency"
-  unit: "percentile in ms"
-
-# Global heat map.
-heatMap:
-  condition:
-    name: "all_heatmap"
-    entity:
-      scope: "All"
-      normal: true
-  title: "Global Heatmap"
-  unit: "ms"
