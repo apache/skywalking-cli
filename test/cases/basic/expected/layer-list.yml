@@ -13,28 +13,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM golang:1.18 AS builder
-
-ARG VERSION
-
-ENV VERSION=$VERSION
-ENV CGO_ENABLED=0
-ENV GO111MODULE=on
-
-WORKDIR /cli
-
-COPY go.* ./
-
-RUN go mod download
-
-COPY . .
-
-RUN make install DESTDIR=/
-
-FROM alpine
-
-COPY --from=builder /swctl /swctl
-
-COPY .github/scripts/* /
-
-ENTRYPOINT [ "/swctl" ]
+- BROWSER
+- VIRTUAL_GATEWAY
+- MQ
+- MYSQL
+- VIRTUAL_DATABASE
+- K8S
+- VIRTUAL_MQ
+- MESH
+- GENERAL
+- CACHE
+- FAAS
+- MESH_CP
+- MESH_DP
+- SO11Y_OAP
+- DATABASE
+- OS_LINUX
+- SO11Y_SATELLITE
+- K8S_SERVICE
+- APISIX
+- VIRTUAL_CACHE
+- POSTGRESQL

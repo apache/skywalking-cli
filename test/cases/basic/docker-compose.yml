@@ -13,28 +13,33 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM golang:1.18 AS builder
+version: '2.1'
 
-ARG VERSION
+services:
+  oap:
+    extends:
+      file: ../../base/docker-compose.yml
+      service: oap
+    ports:
+      - 12800
 
-ENV VERSION=$VERSION
-ENV CGO_ENABLED=0
-ENV GO111MODULE=on
+  provider:
+    extends:
+      file: ../../base/docker-compose.yml
+      service: provider
+    depends_on:
+      oap:
+        condition: service_healthy
 
-WORKDIR /cli
+  consumer:
+    extends:
+      file: ../../base/docker-compose.yml
+      service: consumer
+    ports:
+      - 9090
+    depends_on:
+      provider:
+        condition: service_healthy
 
-COPY go.* ./
-
-RUN go mod download
-
-COPY . .
-
-RUN make install DESTDIR=/
-
-FROM alpine
-
-COPY --from=builder /swctl /swctl
-
-COPY .github/scripts/* /
-
-ENTRYPOINT [ "/swctl" ]
+networks:
+  test:

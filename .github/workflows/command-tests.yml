@@ -31,8 +31,7 @@ jobs:
     strategy:
       matrix:
         oap:
-          - 8.8.1
-          - 9.0.0
+          - e5950cc06279a83c64089f94613b06ec0ef0d911
     steps:
       - uses: actions/checkout@v2
       - name: Check for go file changes
@@ -42,14 +41,15 @@ jobs:
           token: ${{ github.token }}
           filters: .github/file-filters.yml
 
-      - name: setup go
-        if: steps.changes.outputs.src == 'true'
+      - name: Set up Go
         uses: actions/setup-go@v2
         with:
-          go-version: '1.16'
+          go-version: 1.18
 
       - name: Test commands
         if: steps.changes.outputs.src == 'true'
-        uses: apache/skywalking-infra-e2e@d714677324e31cd4ab45782e58cea0946a065132
+        uses: apache/skywalking-infra-e2e@964ede199fe199e166920169dc5f8c9b214cfac5
+        env:
+          OAP_TAG: ${{ matrix.oap }}
         with:
-          e2e-file: test/cases/${{ matrix.oap }}/test.yaml
+          e2e-file: test/cases/basic/test.yaml

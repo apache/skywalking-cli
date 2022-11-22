@@ -13,28 +13,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM golang:1.18 AS builder
-
-ARG VERSION
-
-ENV VERSION=$VERSION
-ENV CGO_ENABLED=0
-ENV GO111MODULE=on
-
-WORKDIR /cli
-
-COPY go.* ./
-
-RUN go mod download
-
-COPY . .
-
-RUN make install DESTDIR=/
-
-FROM alpine
-
-COPY --from=builder /swctl /swctl
-
-COPY .github/scripts/* /
-
-ENTRYPOINT [ "/swctl" ]
+metrics:
+  {{- contains .metrics }}
+- {{- contains . }}
+  - name: consumer
+    id: "{{ .id }}"
+    value: '{{ gt .value "0" }}'
+    refid: ~
+  - name: provider
+    id: "{{ .id }}"
+    value: '{{ gt .value "0" }}'
+    refid: ~
+  {{- end }}
+  {{- end }}
