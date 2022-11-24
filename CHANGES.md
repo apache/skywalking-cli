@@ -33,6 +33,7 @@ Release Notes.
 * Add compatibility documentation by @mrproliu in https://github.com/apache/skywalking-cli/pull/164
 * Add the sub-command `records list` for adapt the new record query API by @mrproliu in https://github.com/apache/skywalking-cli/pull/167
 * Add the attached events fields into the `trace` sub-command by @mrproliu in https://github.com/apache/skywalking-cli/pull/169
+* Add the sampling config file into the `profiling ebpf create network` sub-command by @mrproliu in https://github.com/apache/skywalking-cli/pull/171
 
 0.10.0
 ------------------

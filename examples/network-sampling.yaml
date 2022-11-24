@@ -1,0 +1,49 @@
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# The command `dashboard global` supports displaying three kinds of data:
+# `global metrics`, `global response latency`, `Global heat map`.
+# If you don't want to display an item, you can just delete or comment its whole configuration below.
+# Generally, there is no need to modify properties unless there is a explanatory comment.
+
+# Sampling config
+# samplings: the sampling config list
+# - uri_pattern: <optional> string. The match pattern for HTTP request. This is HTTP URI-oriented. matches all requests if not set
+#   min_duration: <optional> int(ms). The minimal request duration to activate the network data(HTTP request/response raw data) sampling.
+#   when_4xx: <required> bool. Collecting requests when the response code is 400-499.
+#   when_5xx: <required> bool. Collecting requests when the response code is 500-599.
+#   setting: define how to collect sampled data
+#     require_request: <required> bool. Require to collect the complete request.
+#     max_request_size: <optional> int. The max size of request context. The unit is byte.
+#     require_response: <required> bool. Require to collect the complete response.
+#     max_response_size: <optional> int. The max size of response context. The unit is byte.
+
+samplings:
+  # define collecting full request data when the response code is 400-499 and 500-599 .
+  - when_4xx: true
+    when_5xx: true
+    setting:
+      require_request: true
+      require_response: false
+  # define collecting first 1KB response data when the response code is 500-599 and the duration bigger than or equals 10ms.
+  - uri_pattern: /index.html
+    when_4xx: false
+    when_5xx: true
+    min_duration: 10
+    setting:
+      require_request: false
+      require_response: true
+      max_response_size: 1024
