@@ -24,7 +24,7 @@ import (
 )
 
 // ParseScope defines the scope based on the input parameters.
-func ParseScope(entity *api.Entity) api.Scope {
+func ParseScope(entity *api.Entity) *api.Scope {
 	scope := api.ScopeAll
 
 	if *entity.DestProcessName != "" {
@@ -37,13 +37,15 @@ func ParseScope(entity *api.Entity) api.Scope {
 		scope = api.ScopeServiceRelation
 	} else if *entity.EndpointName != "" {
 		scope = api.ScopeEndpoint
+	} else if *entity.ProcessName != "" {
+		scope = api.ScopeProcess
 	} else if *entity.ServiceInstanceName != "" {
 		scope = api.ScopeServiceInstance
 	} else if *entity.ServiceName != "" {
 		scope = api.ScopeService
 	}
 
-	return scope
+	return &scope
 }
 
 // ParseScopeInTop defines the scope based on the metrics' name.

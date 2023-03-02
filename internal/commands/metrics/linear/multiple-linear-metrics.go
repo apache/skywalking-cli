@@ -103,7 +103,7 @@ $ swctl metrics multiple-linear --name all_percentile --labels=0,1,2,3,4 --relab
 			return err
 		}
 
-		if *entity.ServiceName == "" && entity.Scope != api.ScopeAll {
+		if *entity.ServiceName == "" && *entity.Scope != api.ScopeAll {
 			return fmt.Errorf("the name of service should be specified when metrics' scope is not `All`")
 		}
 

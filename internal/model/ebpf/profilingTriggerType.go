@@ -15,24 +15,36 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package profiling
+package ebpf
 
 import (
-	"github.com/urfave/cli/v2"
+	"fmt"
+	"strings"
 
-	"github.com/apache/skywalking-cli/internal/commands/profiling/continuous"
-	"github.com/apache/skywalking-cli/internal/commands/profiling/ebpf"
-	"github.com/apache/skywalking-cli/internal/commands/profiling/trace"
+	api "skywalking.apache.org/repo/goapi/query"
 )
 
-var Command = &cli.Command{
-	Name:  "profiling",
-	Usage: "profiling related sub-command",
-	UsageText: `If your application has performance issue, you could try to profiling. 
-Please following sub-command to get more information.`,
-	Subcommands: []*cli.Command{
-		trace.Command,
-		ebpf.Command,
-		continuous.Command,
-	},
+type ProfilingTriggerTypeEnumValue struct {
+	Enum     []api.EBPFProfilingTriggerType
+	Default  api.EBPFProfilingTriggerType
+	Selected api.EBPFProfilingTriggerType
+}
+
+func (s *ProfilingTriggerTypeEnumValue) Set(value string) error {
+	for _, enum := range s.Enum {
+		if strings.EqualFold(enum.String(), value) {
+			s.Selected = enum
+			return nil
+		}
+	}
+	orders := make([]string, len(api.AllEBPFProfilingTargetType))
+	for i, order := range api.AllEBPFProfilingTargetType {
+		orders[i] = order.String()
+	}
+	return fmt.Errorf("allowed trigger type are %s", strings.Join(orders, ", "))
+}
+
+// String representation of the order
+func (s ProfilingTriggerTypeEnumValue) String() string {
+	return s.Selected.String()
 }
