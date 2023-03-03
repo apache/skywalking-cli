@@ -15,24 +15,15 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package profiling
+package continuous
 
-import (
-	"github.com/urfave/cli/v2"
-
-	"github.com/apache/skywalking-cli/internal/commands/profiling/continuous"
-	"github.com/apache/skywalking-cli/internal/commands/profiling/ebpf"
-	"github.com/apache/skywalking-cli/internal/commands/profiling/trace"
-)
+import "github.com/urfave/cli/v2"
 
 var Command = &cli.Command{
-	Name:  "profiling",
-	Usage: "profiling related sub-command",
-	UsageText: `If your application has performance issue, you could try to profiling. 
-Please following sub-command to get more information.`,
+	Name:  "continuous",
+	Usage: "Continuous Profiling related sub-command",
 	Subcommands: []*cli.Command{
-		trace.Command,
-		ebpf.Command,
-		continuous.Command,
+		SetPolicyCommand,
+		ListCommand,
 	},
 }

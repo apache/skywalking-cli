@@ -62,11 +62,12 @@ func QueryPrepareCreateEBPFProfilingTaskData(ctx *cli.Context, serviceID string)
 	return response["result"], err
 }
 
-func QueryEBPFProfilingTaskList(ctx *cli.Context, serviceID string) ([]*api.EBPFProfilingTask, error) {
+func QueryEBPFProfilingTaskList(ctx *cli.Context, serviceID string, triggerType api.EBPFProfilingTriggerType) ([]*api.EBPFProfilingTask, error) {
 	var response map[string][]*api.EBPFProfilingTask
 
 	request := graphql.NewRequest(assets.Read("graphqls/profiling/ebpf/QueryEBPFProfilingTaskList.graphql"))
 	request.Var("serviceId", serviceID)
+	request.Var("triggerType", triggerType)
 
 	err := client.ExecuteQuery(ctx, request, &response)
 

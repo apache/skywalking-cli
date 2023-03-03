@@ -148,7 +148,7 @@ func TestParseScope(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := ParseScope(tt.args); got != tt.want {
+			if got := ParseScope(tt.args); *got != tt.want {
 				t.Errorf("ParseScope() = %v, want %v", got, tt.want)
 			}
 		})

@@ -15,25 +15,9 @@
 # specific language governing permissions and limitations
 # under the License.
 
-query ($serviceId: ID!, $triggerType: EBPFProfilingTriggerType){
-    result: queryEBPFProfilingTasks(serviceId: $serviceId, triggerType: $triggerType) {
-        taskId
-        serviceId
-        serviceName
-        serviceInstanceId
-        serviceInstanceName
-        processLabels
-        processId
-        processName
-        taskStartTime
-        triggerType
-        fixedTriggerDuration
-        continuousProfilingCauses {
-            type
-            singleValue {threshold current}
-            uri {uriRegex uriPath threshold current}
-        }
-        targetType
-        createTime
+mutation ($request: ContinuousProfilingPolicyCreation!){
+    result: setContinuousProfilingPolicy(request: $request) {
+        status
+        errorReason
     }
 }
