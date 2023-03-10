@@ -31,9 +31,11 @@ nodes:
 calls:
   {{- contains .calls }}
 - source: {{ b64enc "consumer" }}.1_{{ b64enc "consumer1" }}
-  sourcecomponents: [ ]
+  sourcecomponents:
+    - Python
   target: {{ b64enc "provider" }}.1_{{ b64enc "provider1" }}
-  targetcomponents: [ ]
+  targetcomponents:
+    - Python
   id: {{ b64enc "consumer" }}.1_{{ b64enc "consumer1" }}-{{ b64enc "provider" }}.1_{{ b64enc "provider1" }}
   detectpoints:
     {{- contains .detectpoints }}

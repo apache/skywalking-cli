@@ -49,6 +49,8 @@ query ($endpointId:ID!, $duration: Duration!) {
             source
             target
             detectPoints
+            sourceComponents
+            targetComponents
         }
     }
 }
