@@ -28,6 +28,8 @@ query ($serviceId: ID!, $duration: Duration!) {
             source
             detectPoints
             target
+            sourceComponents
+            targetComponents
         }
     }
 }
