@@ -34,6 +34,7 @@ var Command = &cli.Command{
 	Usage: "Query metrics defined in backend OAL",
 	Subcommands: cli.Commands{
 		single.Command,
+		single.NullableCommand,
 		linear.Single,
 		linear.Multiple,
 		thermodynamic.Command,

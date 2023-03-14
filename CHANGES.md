@@ -37,6 +37,7 @@ Release Notes.
 * Add the sub-command `profiling continuous` for adapt the new continuous profiling API by @mrproliu in https://github.com/apache/skywalking-cli/pull/173
 * Adapt the sub-command `metrics` for deprecate scope fron entity by @mrproliu in https://github.com/apache/skywalking-cli/pull/173
 * Add components in topology related sub-commands. @mrproliu in https://github.com/apache/skywalking-cli/pull/175
+* Add the sub-command `metrics nullable` for query the nullable metrics value. @mrproliu in https://github.com/apache/skywalking-cli/pull/176
 
 0.10.0
 ------------------

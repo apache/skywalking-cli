@@ -40,6 +40,19 @@ func IntValues(ctx *cli.Context, condition api.MetricsCondition, duration api.Du
 	return response["result"], err
 }
 
+func NullableIntValue(ctx *cli.Context, condition api.MetricsCondition, duration api.Duration) (api.NullableValue, error) {
+	var response map[string]api.NullableValue
+
+	request := graphql.NewRequest(assets.Read("graphqls/metrics/NullableMetricsValue.graphql"))
+
+	request.Var("condition", condition)
+	request.Var("duration", duration)
+
+	err := client.ExecuteQuery(ctx, request, &response)
+
+	return response["result"], err
+}
+
 func LinearIntValues(ctx *cli.Context, condition api.MetricsCondition, duration api.Duration) (api.MetricsValues, error) {
 	var response map[string]api.MetricsValues
 
