@@ -38,6 +38,7 @@ Release Notes.
 * Adapt the sub-command `metrics` for deprecate scope fron entity by @mrproliu in https://github.com/apache/skywalking-cli/pull/173
 * Add components in topology related sub-commands. @mrproliu in https://github.com/apache/skywalking-cli/pull/175
 * Add the sub-command `metrics nullable` for query the nullable metrics value. @mrproliu in https://github.com/apache/skywalking-cli/pull/176
+* Adapt the sub-command `profiling trace` for adapt the new trace profiling protocol. @mrproliu in https://github.com/apache/skywalking-cli/pull/177
 
 0.10.0
 ------------------

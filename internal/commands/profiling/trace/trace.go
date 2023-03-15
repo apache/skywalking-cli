@@ -33,7 +33,6 @@ on https://github.com/apache/skywalking/blob/master/docs/en/guides/backend-profi
 		getTaskListCommand,
 		getTaskLogListCommand,
 		getTaskSegmentListCommand,
-		getProfiledSegmentCommand,
 		getProfiledAnalyzeCommand,
 	},
 }

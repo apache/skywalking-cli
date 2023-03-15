@@ -37,8 +37,8 @@ var getProfiledAnalyzeCommand = &cli.Command{
 	ArgsUsage: "[parameters...]",
 	Flags: []cli.Flag{
 		&cli.StringFlag{
-			Name:  "segment-id",
-			Usage: "profiled segment id.",
+			Name:  "segment-ids",
+			Usage: "profiled segment ids, multiple id split by ',': s1,s2",
 		},
 		&cli.StringFlag{
 			Name:  "time-ranges",
@@ -46,10 +46,11 @@ var getProfiledAnalyzeCommand = &cli.Command{
 		},
 	},
 	Action: func(ctx *cli.Context) error {
-		segmentID := ctx.String("segment-id")
+		segmentIDs := ctx.String("segment-ids")
+		segmentIDList := strings.Split(segmentIDs, ",")
 
 		tagStr := ctx.String("time-ranges")
-		var timeRanges []*api.ProfileAnalyzeTimeRange = nil
+		var queries []*api.SegmentProfileAnalyzeQuery = nil
 		if tagStr != "" {
 			tagArr := strings.Split(tagStr, ",")
 			for _, tag := range tagArr {
@@ -62,16 +63,25 @@ var getProfiledAnalyzeCommand = &cli.Command{
 				if err != nil {
 					return err
 				}
-				timeRanges = append(timeRanges, &api.ProfileAnalyzeTimeRange{Start: start, End: end})
+
+				// adding time range to each segments
+				for _, segmentID := range segmentIDList {
+					queries = append(queries, &api.SegmentProfileAnalyzeQuery{
+						SegmentID: segmentID,
+						TimeRange: &api.ProfileAnalyzeTimeRange{
+							Start: start, End: end,
+						},
+					})
+				}
 			}
 		}
 
-		analysis, err := profiling.GetTraceProfilingAnalyze(ctx, segmentID, timeRanges)
+		analysis, err := profiling.GetTraceProfilingAnalyze(ctx, queries)
 
 		if err != nil {
 			return err
 		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: analysis, Condition: segmentID})
+		return display.Display(ctx, &displayable.Displayable{Data: analysis, Condition: segmentIDs})
 	},
 }
