@@ -15,16 +15,12 @@
 # specific language governing permissions and limitations
 # under the License.
 
-query ($segmentId: String!, $timeRanges: [ProfileAnalyzeTimeRange!]!) {
-    result: getProfileAnalyze(segmentId: $segmentId, timeRanges: $timeRanges) {
+query ($queries: [SegmentProfileAnalyzeQuery!]!) {
+    result: getSegmentsProfileAnalyze(queries: $queries) {
+        tip
         trees {
             elements {
-                id
-                parentId
-                codeSignature
-                duration
-                durationChildExcluded
-                count
+                id parentId codeSignature duration durationChildExcluded count
             }
         }
     }

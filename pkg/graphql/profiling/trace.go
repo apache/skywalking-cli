@@ -62,10 +62,10 @@ func GetTraceProfilingTaskLogList(ctx *cli.Context, taskID string) ([]*api.Profi
 	return response["result"], err
 }
 
-func GetTraceProfilingTaskSegmentList(ctx *cli.Context, taskID string) ([]*api.BasicTrace, error) {
-	var response map[string][]*api.BasicTrace
+func GetTraceProfilingTaskSegmentList(ctx *cli.Context, taskID string) ([]*api.ProfiledTraceSegments, error) {
+	var response map[string][]*api.ProfiledTraceSegments
 
-	request := graphql.NewRequest(assets.Read("graphqls/profiling/trace/GetTaskSegmentList.graphql"))
+	request := graphql.NewRequest(assets.Read("graphqls/profiling/trace/GetTaskSegmentsList.graphql"))
 	request.Var("taskId", taskID)
 
 	err := client.ExecuteQuery(ctx, request, &response)
@@ -73,23 +73,11 @@ func GetTraceProfilingTaskSegmentList(ctx *cli.Context, taskID string) ([]*api.B
 	return response["result"], err
 }
 
-func GetTraceProfilingSegment(ctx *cli.Context, segmentID string) (api.ProfiledSegment, error) {
-	var response map[string]api.ProfiledSegment
-
-	request := graphql.NewRequest(assets.Read("graphqls/profiling/trace/GetProfiledSegment.graphql"))
-	request.Var("segmentId", segmentID)
-
-	err := client.ExecuteQuery(ctx, request, &response)
-
-	return response["result"], err
-}
-
-func GetTraceProfilingAnalyze(ctx *cli.Context, segmentID string, timeRanges []*api.ProfileAnalyzeTimeRange) (api.ProfileAnalyzation, error) {
+func GetTraceProfilingAnalyze(ctx *cli.Context, queries []*api.SegmentProfileAnalyzeQuery) (api.ProfileAnalyzation, error) {
 	var response map[string]api.ProfileAnalyzation
 
-	request := graphql.NewRequest(assets.Read("graphqls/profiling/trace/GetProfileAnalyze.graphql"))
-	request.Var("segmentId", segmentID)
-	request.Var("timeRanges", timeRanges)
+	request := graphql.NewRequest(assets.Read("graphqls/profiling/trace/GetSegmentsProfileAnalyze.graphql"))
+	request.Var("queries", queries)
 
 	err := client.ExecuteQuery(ctx, request, &response)
 

@@ -15,13 +15,39 @@
 # specific language governing permissions and limitations
 # under the License.
 
-query ($taskId: String!) {
-    result: getProfileTaskSegmentList(taskID: $taskId) {
-        segmentId
+query ($taskId: ID!) {
+    result: getProfileTaskSegments(taskID: $taskId) {
+        traceId
+        instanceId
+        instanceName
         endpointNames
         duration
         start
-        isError
-        traceIds
+        spans {
+            spanId
+            parentSpanId
+            segmentId
+            refs {
+                traceId parentSegmentId parentSpanId type
+            }
+            serviceCode
+            serviceInstanceName
+            startTime
+            endTime
+            endpointName
+            type
+            peer
+            component
+            isError
+            layer
+            tags {
+                key value
+            }
+            logs {
+                time
+                data { key value }
+            }
+            profiled
+        }
     }
 }

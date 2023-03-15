@@ -28,11 +28,11 @@ import (
 var getTaskSegmentListCommand = &cli.Command{
 	Name:    "segment-list",
 	Aliases: []string{"sl"},
-	Usage:   "Query profiling trace task segment list",
-	UsageText: `Query profiling trace task segment list
+	Usage:   "Query profiling trace task segments list",
+	UsageText: `Query profiling trace task segments list
 
 Examples:
-1. Query profiled segment list
+1. Query profiled segments list
 $ swctl profiling trace segment-list --service-name=service-name --endpoint-name=endpoint`,
 	Flags: []cli.Flag{
 		&cli.StringFlag{
