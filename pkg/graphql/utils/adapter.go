@@ -20,14 +20,17 @@ package utils
 import (
 	"time"
 
+	"github.com/apache/skywalking-cli/pkg/display/displayable"
+
 	api "skywalking.apache.org/repo/goapi/query"
 
 	"github.com/apache/skywalking-cli/internal/logger"
 )
 
 // MetricsValuesArrayToMap converts Array of MetricsValues into a map that uses time as key.
-func MetricsValuesArrayToMap(duration api.Duration, mvArray []api.MetricsValues, labelsMap map[string]string) map[string]map[string]float64 {
-	ret := make(map[string]map[string]float64, len(mvArray))
+func MetricsValuesArrayToMap(duration api.Duration, mvArray []api.MetricsValues,
+	labelsMap map[string]string) map[string]map[string]*displayable.MetricValue {
+	ret := make(map[string]map[string]*displayable.MetricValue, len(mvArray))
 	for _, mvs := range mvArray {
 		label := *mvs.Label
 		if l, ok := labelsMap[label]; ok {
@@ -39,9 +42,9 @@ func MetricsValuesArrayToMap(duration api.Duration, mvArray []api.MetricsValues,
 }
 
 // MetricsValuesToMap converts MetricsValues into a map that uses time as key.
-func MetricsValuesToMap(duration api.Duration, metricsValues api.MetricsValues) map[string]float64 {
+func MetricsValuesToMap(duration api.Duration, metricsValues api.MetricsValues) map[string]*displayable.MetricValue {
 	kvInts := metricsValues.Values.Values
-	ret := map[string]float64{}
+	ret := map[string]*displayable.MetricValue{}
 	format := StepFormats[duration.Step]
 	startTime, err := time.Parse(format, duration.Start)
 
@@ -51,7 +54,10 @@ func MetricsValuesToMap(duration api.Duration, metricsValues api.MetricsValues) 
 
 	step := StepDuration[duration.Step]
 	for idx, value := range kvInts {
-		ret[startTime.Add(time.Duration(idx)*step).Format(format)] = float64(value.Value)
+		ret[startTime.Add(time.Duration(idx)*step).Format(format)] = &displayable.MetricValue{
+			Value:        float64(value.Value),
+			IsEmptyValue: value.IsEmptyValue,
+		}
 	}
 
 	return ret

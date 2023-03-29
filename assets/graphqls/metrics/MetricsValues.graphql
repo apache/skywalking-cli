@@ -21,6 +21,7 @@ query ($condition: MetricsCondition!, $duration: Duration!) {
         values {
             values {
                 value
+                isEmptyValue
             }
         }
     }

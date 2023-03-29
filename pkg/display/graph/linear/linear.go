@@ -24,6 +24,8 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/apache/skywalking-cli/pkg/display/displayable"
+
 	"github.com/mum4k/termdash"
 	"github.com/mum4k/termdash/container"
 	"github.com/mum4k/termdash/container/grid"
@@ -39,7 +41,7 @@ const RootID = "root"
 
 const defaultSeriesLabel = "linear"
 
-func NewLineChart(inputs map[string]float64) (lineChart *linechart.LineChart, err error) {
+func NewLineChart(inputs map[string]*displayable.MetricValue) (lineChart *linechart.LineChart, err error) {
 	if lineChart, err = linechart.New(linechart.YAxisAdaptive()); err != nil {
 		return
 	}
@@ -49,13 +51,13 @@ func NewLineChart(inputs map[string]float64) (lineChart *linechart.LineChart, er
 	return lineChart, err
 }
 
-func SetLineChartSeries(lc *linechart.LineChart, inputs map[string]float64) error {
+func SetLineChartSeries(lc *linechart.LineChart, inputs map[string]*displayable.MetricValue) error {
 	xLabels, yValues := processInputs(inputs)
 	return lc.Series(defaultSeriesLabel, yValues, linechart.SeriesXLabels(xLabels))
 }
 
 // processInputs converts inputs into xLabels and yValues for line charts.
-func processInputs(inputs map[string]float64) (xLabels map[int]string, yValues []float64) {
+func processInputs(inputs map[string]*displayable.MetricValue) (xLabels map[int]string, yValues []float64) {
 	index := 0
 
 	xLabels = map[int]string{}
@@ -70,7 +72,7 @@ func processInputs(inputs map[string]float64) (xLabels map[int]string, yValues [
 
 	for _, name := range names {
 		xLabels[index] = name
-		yValues[index] = inputs[name]
+		yValues[index] = inputs[name].Value
 		index++
 	}
 	return
@@ -131,7 +133,7 @@ func layout(rows [][]grid.Element) ([]container.Option, error) {
 	return builder.Build()
 }
 
-func Display(cliCtx *cli.Context, inputs map[string]map[string]float64) error {
+func Display(cliCtx *cli.Context, inputs map[string]map[string]*displayable.MetricValue) error {
 	t, err := termbox.New()
 	if err != nil {
 		return err

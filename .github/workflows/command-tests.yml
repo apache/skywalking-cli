@@ -31,7 +31,7 @@ jobs:
     strategy:
       matrix:
         oap:
-          - e5950cc06279a83c64089f94613b06ec0ef0d911
+          - 6fa89c79917cb10dbf48591c46abee3b513a2bab
     steps:
       - uses: actions/checkout@v2
       - name: Check for go file changes
