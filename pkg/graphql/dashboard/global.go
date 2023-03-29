@@ -23,6 +23,8 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/apache/skywalking-cli/pkg/display/displayable"
+
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 	api "skywalking.apache.org/repo/goapi/query"
@@ -67,9 +69,9 @@ type GlobalTemplate struct {
 }
 
 type GlobalData struct {
-	Metrics         [][]*api.SelectedRecord       `json:"metrics"`
-	ResponseLatency map[string]map[string]float64 `json:"responseLatency"`
-	HeatMap         api.HeatMap                   `json:"heatMap"`
+	Metrics         [][]*api.SelectedRecord                        `json:"metrics"`
+	ResponseLatency map[string]map[string]*displayable.MetricValue `json:"responseLatency"`
+	HeatMap         api.HeatMap                                    `json:"heatMap"`
 }
 
 // Use singleton pattern to make sure to load template only once.
@@ -166,7 +168,7 @@ func Metrics(ctx *cli.Context, duration api.Duration) ([][]*api.SelectedRecord, 
 	return ret, nil
 }
 
-func responseLatency(ctx *cli.Context, duration api.Duration) map[string]map[string]float64 {
+func responseLatency(ctx *cli.Context, duration api.Duration) map[string]map[string]*displayable.MetricValue {
 	template, err := LoadTemplate(ctx.String("template"))
 	if err != nil {
 		return nil
@@ -232,7 +234,7 @@ func Global(ctx *cli.Context, duration api.Duration) (*GlobalData, error) {
 		}
 		wg.Done()
 	}()
-	var rl map[string]map[string]float64
+	var rl map[string]map[string]*displayable.MetricValue
 	go func() {
 		rl = responseLatency(ctx, duration)
 		wg.Done()

@@ -18,5 +18,6 @@
 query ($condition: MetricsCondition!, $duration: Duration!) {
     result: readNullableMetricsValue(condition: $condition, duration: $duration) {
         value
+        isEmptyValue
     }
 }

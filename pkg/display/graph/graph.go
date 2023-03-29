@@ -38,7 +38,7 @@ import (
 
 type (
 	Thermodynamic          = api.HeatMap
-	LinearMetrics          = map[string]float64
+	LinearMetrics          = map[string]*d.MetricValue
 	MultiLinearMetrics     = map[string]LinearMetrics
 	Trace                  = api.Trace
 	TraceBrief             = api.TraceBrief

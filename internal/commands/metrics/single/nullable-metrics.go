@@ -80,6 +80,6 @@ $ swctl metrics nullable --name endpoint_cpm --service-name business-zone::proje
 			return err
 		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: metricsValue.Value})
+		return display.Display(ctx, &displayable.Displayable{Data: metricsValue})
 	},
 }

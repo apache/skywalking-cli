@@ -39,6 +39,7 @@ Release Notes.
 * Add components in topology related sub-commands. @mrproliu in https://github.com/apache/skywalking-cli/pull/175
 * Add the sub-command `metrics nullable` for query the nullable metrics value. @mrproliu in https://github.com/apache/skywalking-cli/pull/176
 * Adapt the sub-command `profiling trace` for adapt the new trace profiling protocol. @mrproliu in https://github.com/apache/skywalking-cli/pull/177
+* Add `isEmptyValue` field in metrics related sub-commands. @mrproliu in https://github.com/apache/skywalking-cli/pull/180
 
 0.10.0
 ------------------
