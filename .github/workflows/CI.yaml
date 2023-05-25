@@ -88,7 +88,6 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version: 1.18
-          cache: false
 
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v3
@@ -110,7 +109,6 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version: 1.18
-          #cache: false
 
       - name: Check code generation
         run: make check-codegen
@@ -145,7 +143,6 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version: 1.18
-          #cache: false
 
       - name: Test commands
         uses: apache/skywalking-infra-e2e@2b3aa53dbba73909730b211d5b8065abc74b56ad
