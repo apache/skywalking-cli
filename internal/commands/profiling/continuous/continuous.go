@@ -25,5 +25,6 @@ var Command = &cli.Command{
 	Subcommands: []*cli.Command{
 		SetPolicyCommand,
 		ListCommand,
+		Monitoring,
 	},
 }

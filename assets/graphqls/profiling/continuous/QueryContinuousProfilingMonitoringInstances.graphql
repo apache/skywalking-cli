@@ -15,18 +15,24 @@
 # specific language governing permissions and limitations
 # under the License.
 
-query ($serviceId: ID!){
-    result: queryContinuousProfilingServiceTargets(serviceId: $serviceId) {
-        type
-        checkItems {
-            type
-            threshold
-            period
-            count
-            uriList
-            uriRegex
+query ($serviceId: ID!, $target: ContinuousProfilingTargetType!){
+    result: queryContinuousProfilingMonitoringInstances(serviceId: $serviceId, target: $target) {
+        id
+        name
+        attributes {
+            name
+            value
         }
         triggeredCount
         lastTriggerTimestamp
+
+        processes {
+            id
+            name
+            detectType
+            labels
+            triggeredCount
+            lastTriggerTimestamp
+        }
     }
 }

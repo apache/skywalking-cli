@@ -25,6 +25,7 @@ import (
 
 	"github.com/apache/skywalking-cli/internal/commands/metrics/thermodynamic"
 
+	"github.com/apache/skywalking-cli/internal/commands/metrics/expression"
 	"github.com/apache/skywalking-cli/internal/commands/metrics/linear"
 	"github.com/apache/skywalking-cli/internal/commands/metrics/single"
 )
@@ -42,5 +43,6 @@ var Command = &cli.Command{
 		aggregation.SortedMetrics,
 		aggregation.SampledRecords,
 		list.Command,
+		expression.ExecCommand,
 	},
 }
