@@ -213,7 +213,7 @@ The text of each license is also included at licenses/license-[project].txt.
     k8s.io/utils v0.0.0-20210802155522-efc7438f0176 Apache-2.0
     sigs.k8s.io/controller-runtime v0.10.0 Apache-2.0
     sigs.k8s.io/structured-merge-diff/v4 v4.1.2 Apache-2.0
-    skywalking.apache.org/repo/goapi v0.0.0-20230314034821-0c5a44bb767a Apache-2.0
+    skywalking.apache.org/repo/goapi v0.0.0-20230608051849-a29bda277aac Apache-2.0
 
 ========================================================================
 BSD-2-Clause licenses
@@ -250,7 +250,7 @@ The text of each license is also included at licenses/license-[project].txt.
     golang.org/x/term v0.5.0 BSD-3-Clause
     golang.org/x/text v0.7.0 BSD-3-Clause
     golang.org/x/time v0.0.0-20210723032227-1f47c861a9ac BSD-3-Clause
-    google.golang.org/protobuf v1.29.0 BSD-3-Clause
+    google.golang.org/protobuf v1.30.0 BSD-3-Clause
     gopkg.in/inf.v0 v0.9.1 BSD-3-Clause
 
 ========================================================================
