@@ -138,3 +138,16 @@ func ListMetrics(ctx *cli.Context, regex string) ([]*api.MetricDefinition, error
 
 	return response["result"], err
 }
+
+func Execute(ctx *cli.Context, expression string, entity *api.Entity, duration api.Duration) (api.ExpressionResult, error) {
+	var response map[string]api.ExpressionResult
+
+	request := graphql.NewRequest(assets.Read("graphqls/metrics/ExecuteExpression.graphql"))
+	request.Var("expression", expression)
+	request.Var("entity", *entity)
+	request.Var("duration", duration)
+
+	err := client.ExecuteQuery(ctx, request, &response)
+
+	return response["result"], err
+}

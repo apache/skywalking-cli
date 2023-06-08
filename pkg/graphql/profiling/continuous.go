@@ -49,3 +49,16 @@ func QueryContinuousProfilingServiceTargets(ctx *cli.Context, serviceID string) 
 
 	return response["result"], err
 }
+
+func QueryContinuousProfilingMonitoringInstances(ctx *cli.Context, serviceID string,
+	target api.ContinuousProfilingTargetType) ([]api.ContinuousProfilingMonitoringInstance, error) {
+	var response map[string][]api.ContinuousProfilingMonitoringInstance
+
+	request := graphql.NewRequest(assets.Read("graphqls/profiling/continuous/QueryContinuousProfilingMonitoringInstances.graphql"))
+	request.Var("serviceId", serviceID)
+	request.Var("target", target)
+
+	err := client.ExecuteQuery(ctx, request, &response)
+
+	return response["result"], err
+}
