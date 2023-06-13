@@ -42,6 +42,7 @@ Release Notes.
 * Add `isEmptyValue` field in metrics related sub-commands. @mrproliu in https://github.com/apache/skywalking-cli/pull/180
 * Add the sub-command `metrics execute` for execute the metrics query. @mrproliu in https://github.com/apache/skywalking-cli/pull/182
 * Add the sub-command `profiling continuous monitoring` for query all continuous profiling monitoring instances. @mrproliu in https://github.com/apache/skywalking-cli/pull/182
+* Add `continuousProfilingCauses.message` field in the `profiling ebpf list` comamnds by @mrproliu in https://github.com/apache/skywalking-cli/pull/184
 
 0.10.0
 ------------------
