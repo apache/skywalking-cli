@@ -163,6 +163,7 @@ SkyWalking CLI and SkyWalking OAP communicate with different query version, here
 | \> = 0.11.0    | \> = 9.2.0    |
 | \> = 0.12.0    | \> = 9.3.0    |
 | \> = 0.12.0    | \> = 9.5.0    |
+| \> = 0.13.0    | \> = 9.6.0    |
 
 # Contributing
 
