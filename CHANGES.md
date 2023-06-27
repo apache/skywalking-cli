@@ -2,7 +2,15 @@ Changes by Version
 ==================
 Release Notes.
 
-0.11.0
+0.13.0
+------------------
+
+### Features
+## What's Changed
+
+* Add the sub-command `menu get` for get the ui menu items by @mrproliu in https://github.com/apache/skywalking-cli/pull/187
+
+0.12.0
 ------------------
 
 ### Features
