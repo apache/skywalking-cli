@@ -17,14 +17,14 @@
 
 query {
     result: getMenuItems {
-        name
+        title
         icon
-        path
+        layer
         activate
         subItems {
-            name
+            title
             icon
-            path
+            layer
             activate
         }
     }
