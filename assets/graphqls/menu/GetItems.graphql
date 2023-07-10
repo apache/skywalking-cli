@@ -22,14 +22,14 @@ query {
         layer
         activate
         description
-        link
+        documentLink
         subItems {
             title
             icon
             layer
             activate
             description
-            link
+            documentLink
         }
     }
 }

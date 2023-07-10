@@ -213,7 +213,7 @@ The text of each license is also included at licenses/license-[project].txt.
     k8s.io/utils v0.0.0-20210802155522-efc7438f0176 Apache-2.0
     sigs.k8s.io/controller-runtime v0.10.0 Apache-2.0
     sigs.k8s.io/structured-merge-diff/v4 v4.1.2 Apache-2.0
-    skywalking.apache.org/repo/goapi v0.0.0-20230710120752-361d7874883a Apache-2.0
+    skywalking.apache.org/repo/goapi v0.0.0-20230710130615-14cf1582ae32 Apache-2.0
 
 ========================================================================
 BSD-2-Clause licenses
