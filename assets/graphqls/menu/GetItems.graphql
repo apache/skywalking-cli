@@ -21,11 +21,15 @@ query {
         icon
         layer
         activate
+        description
+        link
         subItems {
             title
             icon
             layer
             activate
+            description
+            link
         }
     }
 }
