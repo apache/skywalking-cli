@@ -23,6 +23,7 @@ query {
         activate
         description
         documentLink
+        i18nKey
         subItems {
             title
             icon
@@ -30,6 +31,7 @@ query {
             activate
             description
             documentLink
+            i18nKey
         }
     }
 }
