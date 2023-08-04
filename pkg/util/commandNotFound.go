@@ -19,6 +19,7 @@ package util
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/urfave/cli/v2"
 )
@@ -55,6 +56,7 @@ func CommandNotFound(c *cli.Context, s string) {
 	} else {
 		fmt.Printf("Run 'swctl %s --help' for usage.\n", parentCommand)
 	}
+	os.Exit(1)
 }
 
 // minEditDistance calculates the edit distance of two strings.
