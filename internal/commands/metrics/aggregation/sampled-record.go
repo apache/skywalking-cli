@@ -76,7 +76,7 @@ $ swctl metrics sampled-record --name top_n_database_statement 5
 		}
 
 		// since 9.3.0, use new record query API
-		if major >= 9 && minor >= 3 {
+		if (major == 9 && minor >= 3) || major > 9 {
 			condition, duration, err1 := buildReadRecordsCondition(ctx)
 			if err1 != nil {
 				return err1

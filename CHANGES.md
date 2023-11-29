@@ -6,6 +6,11 @@ Release Notes.
 ------------------
 
 ### Features
+
+### Bug Fixes
+
+* Fix the record list query does not support new OAP versions (with major version number > 9).
+
 ## What's Changed
 
 * Add the sub-command `menu get` for get the ui menu items by @mrproliu in https://github.com/apache/skywalking-cli/pull/187
