@@ -18,6 +18,8 @@
 package dependency
 
 import (
+	"fmt"
+
 	"github.com/urfave/cli/v2"
 
 	"github.com/apache/skywalking-cli/internal/commands/interceptor"
@@ -26,6 +28,7 @@ import (
 	"github.com/apache/skywalking-cli/pkg/display"
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
 	"github.com/apache/skywalking-cli/pkg/graphql/dependency"
+	"github.com/apache/skywalking-cli/pkg/graphql/metadata"
 
 	api "skywalking.apache.org/repo/goapi/query"
 )
@@ -59,12 +62,25 @@ var GlobalCommand = &cli.Command{
 			Step:  step.(*model.StepEnumValue).Selected,
 		}
 
-		dependency, err := dependency.GlobalTopology(ctx, layer, duration)
+		major, _, err := metadata.BackendVersion(ctx)
+		if err != nil {
+			return err
+		}
+
+		var topology api.Topology
+		if major >= 10 {
+			topology, err = dependency.GlobalTopology(ctx, layer, duration)
+		} else {
+			if layer != "" {
+				return fmt.Errorf("the layer parameter only available when OAP version >= 10.0.0")
+			}
+			topology, err = dependency.GlobalTopologyWithoutLayer(ctx, duration)
+		}
 
 		if err != nil {
 			return err
 		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: dependency})
+		return display.Display(ctx, &displayable.Displayable{Data: topology})
 	},
 }

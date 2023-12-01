@@ -51,6 +51,17 @@ func GlobalTopology(ctx *cli.Context, layer string, duration api.Duration) (api.
 	return response["result"], err
 }
 
+func GlobalTopologyWithoutLayer(ctx *cli.Context, duration api.Duration) (api.Topology, error) {
+	var response map[string]api.Topology
+
+	request := graphql.NewRequest(assets.Read("graphqls/dependency/GlobalTopologyWithoutLayer.graphql"))
+	request.Var("duration", duration)
+
+	err := client.ExecuteQuery(ctx, request, &response)
+
+	return response["result"], err
+}
+
 func ServiceTopology(ctx *cli.Context, serviceID string, duration api.Duration) (api.Topology, error) {
 	var response map[string]api.Topology
 
