@@ -2,6 +2,15 @@ Changes by Version
 ==================
 Release Notes.
 
+0.14.0
+------------------
+
+### Features
+
+* Add the sub-command `dependency global` for adapt the global dependency query API by @mrproliu in https://github.com/apache/skywalking-cli/pull/198
+
+### Bug Fixes
+
 0.13.0
 ------------------
 
