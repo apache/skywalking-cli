@@ -30,6 +30,7 @@ import (
 	"github.com/apache/skywalking-cli/internal/commands/endpoint"
 	"github.com/apache/skywalking-cli/internal/commands/event"
 	"github.com/apache/skywalking-cli/internal/commands/healthcheck"
+	"github.com/apache/skywalking-cli/internal/commands/hierarchy"
 	"github.com/apache/skywalking-cli/internal/commands/install"
 	"github.com/apache/skywalking-cli/internal/commands/instance"
 	"github.com/apache/skywalking-cli/internal/commands/interceptor"
@@ -108,6 +109,7 @@ services, service instances, etc.`
 		profiling.Command,
 		records.Command,
 		menu.Command,
+		hierarchy.Command,
 	}
 
 	app.Before = interceptor.BeforeChain(
