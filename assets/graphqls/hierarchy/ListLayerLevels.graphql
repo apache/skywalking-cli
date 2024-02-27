@@ -15,22 +15,8 @@
 # specific language governing permissions and limitations
 # under the License.
 
-query ($serviceId: ID!, $duration: Duration!) {
-    result: getServiceTopology(duration: $duration, serviceId: $serviceId) {
-        nodes {
-            id
-            name
-            type
-            layers
-            isReal
-        }
-        calls {
-            id
-            source
-            detectPoints
-            target
-            sourceComponents
-            targetComponents
-        }
+query {
+    result: listLayerLevels {
+        layer level
     }
 }

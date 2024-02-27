@@ -136,7 +136,7 @@ jobs:
     strategy:
       matrix:
         oap:
-          - 6fa89c79917cb10dbf48591c46abee3b513a2bab # March 28th
+          - a65a6e0ff2ef9c716131b36172399076307c35f1 # Feb 27th, 2024
     steps:
       - uses: actions/checkout@v3
       - name: Set up Go
