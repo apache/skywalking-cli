@@ -8,6 +8,7 @@ Release Notes.
 ### Features
 
 * Add the sub-command `dependency global` for adapt the global dependency query API by @mrproliu in https://github.com/apache/skywalking-cli/pull/198
+* Upgrade crypto lib to fix cve by @mrproliu in https://github.com/apache/skywalking-cli/pull/199
 
 ### Bug Fixes
 
