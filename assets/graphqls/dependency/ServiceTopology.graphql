@@ -21,6 +21,7 @@ query ($serviceId: ID!, $duration: Duration!) {
             id
             name
             type
+            layers
             isReal
         }
         calls {
