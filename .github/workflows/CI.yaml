@@ -145,7 +145,7 @@ jobs:
           go-version: 1.18
 
       - name: Test commands
-        uses: apache/skywalking-infra-e2e@2b3aa53dbba73909730b211d5b8065abc74b56ad
+        uses: apache/skywalking-infra-e2e@cf589b4a0b9f8e6f436f78e9cfd94a1ee5494180
         env:
           OAP_TAG: ${{ matrix.oap }}
         with:
