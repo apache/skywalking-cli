@@ -65,7 +65,7 @@ jobs:
       - name: Check for CLI source changes
         id: filter-cli
         # The GHA version is pinned by infra
-        uses: tj-actions/changed-files@b2d17f51244a144849c6b37a3a6791b98a51d86f # v35.9.2
+        uses: tj-actions/changed-files@v43.0.0
         with:
           files_from_source_file: .github/file-filters.txt
       - name: List all modified files
