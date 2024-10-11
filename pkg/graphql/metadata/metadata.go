@@ -112,7 +112,7 @@ func SearchBrowserService(cliCtx *cli.Context, serviceCode string) (service api.
 	return service, err
 }
 
-func SearchEndpoints(cliCtx *cli.Context, serviceID, keyword string, limit int) ([]api.Endpoint, error) {
+func SearchEndpoints(cliCtx *cli.Context, serviceID, keyword string, limit int, duration *api.Duration) ([]api.Endpoint, error) {
 	var response map[string][]api.Endpoint
 
 	majorVersion, _, err := BackendVersion(cliCtx)
@@ -125,6 +125,7 @@ func SearchEndpoints(cliCtx *cli.Context, serviceID, keyword string, limit int) 
 		request.Var("serviceId", serviceID)
 		request.Var("keyword", keyword)
 		request.Var("limit", limit)
+		request.Var("duration", duration)
 	} else {
 		request = graphql.NewRequest(assets.Read("graphqls/metadata/v1/SearchEndpoints.graphql"))
 		request.Var("serviceId", serviceID)

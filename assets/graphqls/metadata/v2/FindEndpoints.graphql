@@ -15,8 +15,8 @@
 # specific language governing permissions and limitations
 # under the License.
 
-query ($keyword: String!, $serviceId: ID!, $limit: Int!) {
-    result: findEndpoint(keyword: $keyword, serviceId: $serviceId, limit: $limit) {
+query ($keyword: String!, $serviceId: ID!, $limit: Int!, $duration: Duration) {
+    result: findEndpoint(keyword: $keyword, serviceId: $serviceId, limit: $limit, duration: $duration) {
         id name
     }
 }

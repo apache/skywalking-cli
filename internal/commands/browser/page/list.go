@@ -58,7 +58,7 @@ $ swctl browser page ls --service-id dGVzdC11aQ==.1`,
 		serviceID := ctx.String("service-id")
 		limit := ctx.Int("limit")
 
-		endpoints, err := metadata.SearchEndpoints(ctx, serviceID, "", limit)
+		endpoints, err := metadata.SearchEndpoints(ctx, serviceID, "", limit, nil)
 
 		if err != nil {
 			return err
