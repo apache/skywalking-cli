@@ -112,16 +112,22 @@ func SearchBrowserService(cliCtx *cli.Context, serviceCode string) (service api.
 	return service, err
 }
 
-func SearchEndpoints(cliCtx *cli.Context, serviceID, keyword string, limit int) ([]api.Endpoint, error) {
+func SearchEndpoints(cliCtx *cli.Context, serviceID, keyword string, limit int, duration *api.Duration) ([]api.Endpoint, error) {
 	var response map[string][]api.Endpoint
 
-	majorVersion, _, err := BackendVersion(cliCtx)
+	majorVersion, minorVersion, err := BackendVersion(cliCtx)
 	if err != nil {
 		return nil, err
 	}
 	var request *graphql.Request
-	if majorVersion >= 9 {
-		request = graphql.NewRequest(assets.Read("graphqls/metadata/v2/FindEndpoints.graphql"))
+	if majorVersion >= 10 && minorVersion >= 2 {
+		request = graphql.NewRequest(assets.Read("graphqls/metadata/v2/FindEndpointsWithDuration.graphql"))
+		request.Var("serviceId", serviceID)
+		request.Var("keyword", keyword)
+		request.Var("limit", limit)
+		request.Var("duration", duration)
+	} else if majorVersion >= 9 {
+		request = graphql.NewRequest(assets.Read("graphqls/metadata/v2/FindEndpointsWithoutDuration.graphql"))
 		request.Var("serviceId", serviceID)
 		request.Var("keyword", keyword)
 		request.Var("limit", limit)

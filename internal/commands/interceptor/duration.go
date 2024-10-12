@@ -80,6 +80,11 @@ func DurationInterceptor(ctx *cli.Context) error {
 	return nil
 }
 
+// IsSetDurationFlags checks if the duration flags are set
+func IsSetDurationFlags(ctx *cli.Context) bool {
+	return ctx.IsSet("start") || ctx.IsSet("end") || ctx.IsSet("step")
+}
+
 // ParseDuration parses the `start` and `end` to a triplet, (startTime, endTime, step),
 // based on the given `timezone`, however, if the given `timezone` is empty, UTC becomes the default timezone.
 // if --start and --end are both absent,

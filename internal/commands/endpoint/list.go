@@ -20,8 +20,11 @@ package endpoint
 import (
 	"github.com/urfave/cli/v2"
 
+	api "skywalking.apache.org/repo/goapi/query"
+
 	"github.com/apache/skywalking-cli/internal/commands/interceptor"
 	"github.com/apache/skywalking-cli/internal/flags"
+	"github.com/apache/skywalking-cli/internal/model"
 
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
 
@@ -47,6 +50,7 @@ $ swctl endpoint ls --service-id YnVzaW5lc3Mtem9uZTo6cHJvamVjdEM=.1
 $ swctl endpoint ls --service-name business-zone::projectC --keyword projectC`,
 	Flags: flags.Flags(
 		flags.ServiceFlags,
+		flags.DurationFlags,
 
 		[]cli.Flag{
 			&cli.IntFlag{
@@ -71,8 +75,22 @@ $ swctl endpoint ls --service-name business-zone::projectC --keyword projectC`,
 		limit := ctx.Int("limit")
 		keyword := ctx.String("keyword")
 
-		endpoints, err := metadata.SearchEndpoints(ctx, serviceID, keyword, limit)
+		var duration *api.Duration
+		if interceptor.IsSetDurationFlags(ctx) {
+			if err := interceptor.DurationInterceptor(ctx); err != nil {
+				return err
+			}
+			end := ctx.String("end")
+			start := ctx.String("start")
+			step := ctx.Generic("step")
+			duration = &api.Duration{
+				Start: start,
+				End:   end,
+				Step:  step.(*model.StepEnumValue).Selected,
+			}
+		}
 
+		endpoints, err := metadata.SearchEndpoints(ctx, serviceID, keyword, limit, duration)
 		if err != nil {
 			return err
 		}
