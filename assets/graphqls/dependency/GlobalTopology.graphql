@@ -22,6 +22,7 @@ query ($layer: String, $duration: Duration!) {
             name
             type
             isReal
+            layers
         }
         calls {
             id
