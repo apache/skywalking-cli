@@ -12,7 +12,7 @@ import (
 
 var analysisCommand = &cli.Command{
 	Name:      "analysis",
-	Aliases:   []string{"pa"},
+	Aliases:   []string{"a"},
 	Usage:     "Analyze profiled stacktrace",
 	UsageText: ``,
 	Flags: flags.Flags(

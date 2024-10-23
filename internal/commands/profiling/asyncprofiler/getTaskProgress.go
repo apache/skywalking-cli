@@ -9,7 +9,7 @@ import (
 
 var getTaskProgressCommand = &cli.Command{
 	Name:    "progress",
-	Aliases: []string{"logs,p"},
+	Aliases: []string{"logs", "p"},
 	Flags: []cli.Flag{
 		&cli.StringFlag{
 			Name:  "task-id",
