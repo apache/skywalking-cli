@@ -18,6 +18,7 @@
 package profiling
 
 import (
+	"github.com/apache/skywalking-cli/internal/commands/profiling/asyncprofiler"
 	"github.com/urfave/cli/v2"
 
 	"github.com/apache/skywalking-cli/internal/commands/profiling/continuous"
@@ -34,5 +35,6 @@ Please following sub-command to get more information.`,
 		trace.Command,
 		ebpf.Command,
 		continuous.Command,
+		asyncprofiler.Command,
 	},
 }

@@ -879,5 +879,7 @@ sigs.k8s.io/structured-merge-diff/v4 v4.1.2 h1:Hr/htKFmJEbtMgS/UD0N+gtgctAqz81t3
 sigs.k8s.io/structured-merge-diff/v4 v4.1.2/go.mod h1:j/nl6xW8vLS49O8YvXW1ocPhZawJtm+Yrr7PPRQ0Vg4=
 sigs.k8s.io/yaml v1.2.0 h1:kr/MCeFWJWTwyaHoR9c8EjH9OumOmoF9YGiZd7lFm/Q=
 sigs.k8s.io/yaml v1.2.0/go.mod h1:yfXDCHCao9+ENCvLSE62v9VSji2MKu5jeNfTrofGhJc=
-skywalking.apache.org/repo/goapi v0.0.0-20240227092755-edee3273b361 h1:FCGGU4Tut3LI/zMRXSgJgUL/kmSQ4b7QktFgRBhqaDs=
-skywalking.apache.org/repo/goapi v0.0.0-20240227092755-edee3273b361/go.mod h1:+n8BMuS8eRdzdnGh15ElRGBXPi0eYZSs2TKySBDmRTE=
+skywalking.apache.org/repo/goapi v0.0.0-20240920052516-d4a23d9da0e0 h1:7IW+T+mciD/GJXvgglZho414N30KSWgUTzBmEP867eI=
+skywalking.apache.org/repo/goapi v0.0.0-20240920052516-d4a23d9da0e0/go.mod h1:+n8BMuS8eRdzdnGh15ElRGBXPi0eYZSs2TKySBDmRTE=
+skywalking.apache.org/repo/goapi v0.0.0-20241023080050-2514649a8007 h1:MQU9yOZxgbs7fU145wd400/E3ES/HWoxTtTCudaCBoA=
+skywalking.apache.org/repo/goapi v0.0.0-20241023080050-2514649a8007/go.mod h1:+n8BMuS8eRdzdnGh15ElRGBXPi0eYZSs2TKySBDmRTE=
