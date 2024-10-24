@@ -44,7 +44,7 @@ func GetAsyncProfilerTaskProgress(ctx *cli.Context, taskID string) (api.AsyncPro
 func GetAsyncProfilerAnalyze(ctx *cli.Context, condition *api.AsyncProfilerAnalyzationRequest) (api.AsyncProfilerAnalyzation, error) {
 	var response map[string]api.AsyncProfilerAnalyzation
 
-	request := graphql.NewRequest(assets.Read("graphqls/profiling/trace/GetAnalysis.graphql"))
+	request := graphql.NewRequest(assets.Read("graphqls/profiling/asyncprofiler/GetAnalysis.graphql"))
 	request.Var("condition", condition)
 
 	err := client.ExecuteQuery(ctx, request, &response)

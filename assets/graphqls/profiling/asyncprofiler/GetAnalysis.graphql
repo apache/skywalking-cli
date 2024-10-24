@@ -15,9 +15,8 @@
 # specific language governing permissions and limitations
 # under the License.
 
-query ($condition: AsyncProfilerAnalyzationRequest) {
-    result queryAsyncProfilerAnalyze(request: $condition) {
-        errorReason
+query ($condition: AsyncProfilerAnalyzationRequest!) {
+    result: queryAsyncProfilerAnalyze(request: $condition) {
         tree {
             type
             elements {

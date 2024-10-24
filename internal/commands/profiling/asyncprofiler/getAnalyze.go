@@ -11,30 +11,35 @@ import (
 )
 
 var analysisCommand = &cli.Command{
-	Name:      "analysis",
-	Aliases:   []string{"a"},
-	Usage:     "Analyze profiled stacktrace",
-	UsageText: ``,
-	Flags: flags.Flags(
-		flags.EndpointFlags,
+	Name:    "analysis",
+	Aliases: []string{"a"},
+	Usage:   "Query async-profiler analysis",
+	UsageText: `Query async-profiler analysis
 
+Examples:
+1. Query the flame graph produced by async-profiler
+$ /swctl-dev-37550c6-darwin-arm64 profiling asyncprofiler analysis  --task-id=task-id --service-instance-ids=instanceIds --event=execution_sample`,
+	Flags: flags.Flags(
 		[]cli.Flag{
-			&cli.IntFlag{
-				Name:  "task-id",
-				Usage: "async-profiler task id",
+			&cli.StringFlag{
+				Name:     "task-id",
+				Usage:    "async-profiler task id",
+				Required: true,
 			},
 			&cli.StringSliceFlag{
-				Name:  "service-instance-ids",
-				Usage: "select which service instances' jfr files to analyze",
+				Name:     "service-instance-ids",
+				Usage:    "select which service instances' jfr files to analyze",
+				Required: true,
 			},
 			&cli.StringFlag{
-				Name:  "event",
-				Usage: "which event types this task needs to collect.",
+				Name:     "event",
+				Usage:    "which event types this task needs to collect.",
+				Required: true,
 			},
 		},
 	),
 	Action: func(ctx *cli.Context) error {
-		event := ctx.String("events")
+		event := ctx.String("event")
 		eventType := query.JFREventType(strings.ToUpper(event))
 
 		request := &query.AsyncProfilerAnalyzationRequest{

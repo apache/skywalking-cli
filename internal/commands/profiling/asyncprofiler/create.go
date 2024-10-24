@@ -1,6 +1,7 @@
 package asyncprofiler
 
 import (
+	"github.com/apache/skywalking-cli/internal/commands/interceptor"
 	"github.com/apache/skywalking-cli/internal/flags"
 	"github.com/apache/skywalking-cli/pkg/display"
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
@@ -18,28 +19,33 @@ var createCommand = &cli.Command{
 
 Examples:
 1. Create async-profiler task
-$ swctl profiling asyncprofiler create todo`,
+$ swctl profiling asyncprofiler create --service-name=someservicename --duration=60 --events=cpu --service-instance-ids=someinstance`,
 	Flags: flags.Flags(
-		flags.EndpointFlags,
-
+		flags.ServiceFlags,
 		[]cli.Flag{
 			&cli.StringSliceFlag{
-				Name:  "service-instance-ids",
-				Usage: "which instances to execute task.",
+				Name:     "service-instance-ids",
+				Usage:    "which instances to execute task.",
+				Required: true,
 			},
 			&cli.IntFlag{
-				Name:  "duration",
-				Usage: "task continuous time(second).",
+				Name:     "duration",
+				Usage:    "task continuous time(second).",
+				Required: true,
 			},
 			&cli.StringSliceFlag{
-				Name:  "events",
-				Usage: "which event types this task needs to collect.",
+				Name:     "events",
+				Usage:    "which event types this task needs to collect.",
+				Required: true,
 			},
 			&cli.StringFlag{
 				Name:  "exec-args",
 				Usage: "other async-profiler execution options, e.g. alloc=2k,lock=2s.",
 			},
 		},
+	),
+	Before: interceptor.BeforeChain(
+		interceptor.ParseService(false),
 	),
 	Action: func(ctx *cli.Context) error {
 		serviceID := ctx.String("service-id")
@@ -57,7 +63,7 @@ $ swctl profiling asyncprofiler create todo`,
 			ServiceID:          serviceID,
 			ServiceInstanceIds: ctx.StringSlice("service-instance-ids"),
 			Duration:           ctx.Int("duration"),
-			Events:             make([]query.AsyncProfilerEventType, 0),
+			Events:             eventTypes,
 			ExecArgs:           &execArgs,
 		}
 		task, err := profiling.CreateAsyncProfilerTask(ctx, request)

@@ -15,8 +15,8 @@
 # specific language governing permissions and limitations
 # under the License.
 
-query ($taskId: String){
-    result queryAsyncProfilerTaskProgress(taskId: $taskId) {
+query ($taskId: String!){
+    result: queryAsyncProfilerTaskProgress(taskId: $taskId) {
         errorInstanceIds
         successInstanceIds
         logs {
