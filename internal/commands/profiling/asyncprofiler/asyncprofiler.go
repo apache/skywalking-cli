@@ -22,9 +22,11 @@ import (
 )
 
 var Command = &cli.Command{
-	Name:      "asyncprofiler",
-	Usage:     "async profiler related sub-command",
-	UsageText: `todo`,
+	Name:  "async",
+	Usage: "async profiler related sub-command",
+	UsageText: `If your endpoint has performance issue and could not use tracing to find out what's happening,
+you could try it. You could get more information
+on https://skywalking.apache.org/docs/main/next/en/concepts-and-designs/profiling.`,
 	Subcommands: []*cli.Command{
 		createCommand,
 		getTaskListCommand,

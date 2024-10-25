@@ -20,6 +20,7 @@ package asyncprofiler
 import (
 	"github.com/apache/skywalking-cli/internal/commands/interceptor"
 	"github.com/apache/skywalking-cli/internal/flags"
+	"github.com/apache/skywalking-cli/internal/model/asyncprofiler"
 	"github.com/apache/skywalking-cli/pkg/display"
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
 	"github.com/apache/skywalking-cli/pkg/graphql/profiling"
@@ -36,11 +37,12 @@ var createCommand = &cli.Command{
 
 Examples:
 1. Create async-profiler task
-$ swctl profiling asyncprofiler create --service-name=someservicename --duration=60 --events=cpu --service-instance-ids=someinstance`,
+$ swctl profiling asyncprofiler create --service-name=someservicename --duration=60 --events=cpu,alloc \ 
+	--service-instance-ids=someinstance1,someinstance2 --exec-args=interval=50ms`,
 	Flags: flags.Flags(
 		flags.ServiceFlags,
 		[]cli.Flag{
-			&cli.StringSliceFlag{
+			&cli.StringFlag{
 				Name:     "service-instance-ids",
 				Usage:    "which instances to execute task.",
 				Required: true,
@@ -50,10 +52,13 @@ $ swctl profiling asyncprofiler create --service-name=someservicename --duration
 				Usage:    "task continuous time(second).",
 				Required: true,
 			},
-			&cli.StringSliceFlag{
+			&cli.GenericFlag{
 				Name:     "events",
 				Usage:    "which event types this task needs to collect.",
 				Required: true,
+				Value: &asyncprofiler.AsyncProfilerEventTypeEnumValue{
+					Enum: query.AllAsyncProfilerEventType,
+				},
 			},
 			&cli.StringFlag{
 				Name:  "exec-args",
@@ -66,22 +71,27 @@ $ swctl profiling asyncprofiler create --service-name=someservicename --duration
 	),
 	Action: func(ctx *cli.Context) error {
 		serviceID := ctx.String("service-id")
+		instanceIds := strings.Split(ctx.String("service-instance-ids"), ",")
+		duration := ctx.Int("duration")
+		//events := strings.Split(ctx.String("events"), ",")
+		//eventTypes := make([]query.AsyncProfilerEventType, 0)
+		//for _, event := range events {
+		//	upperCaseEvent := strings.ToUpper(event)
+		//	eventTypes = append(eventTypes, query.AsyncProfilerEventType(upperCaseEvent))
+		//}
+		eventTypes := ctx.Generic("events").(*asyncprofiler.AsyncProfilerEventTypeEnumValue).Selected
 
-		events := ctx.StringSlice("events")
-		eventTypes := make([]query.AsyncProfilerEventType, 0)
-		for _, event := range events {
-			upperCaseEvent := strings.ToUpper(event)
-			eventTypes = append(eventTypes, query.AsyncProfilerEventType(upperCaseEvent))
+		var execArgs *string
+		if args := ctx.String("exec-args"); args != "" {
+			execArgs = &args
 		}
-
-		execArgs := ctx.String("exec-args")
 
 		request := &query.AsyncProfilerTaskCreationRequest{
 			ServiceID:          serviceID,
-			ServiceInstanceIds: ctx.StringSlice("service-instance-ids"),
-			Duration:           ctx.Int("duration"),
+			ServiceInstanceIds: instanceIds,
+			Duration:           duration,
 			Events:             eventTypes,
-			ExecArgs:           &execArgs,
+			ExecArgs:           execArgs,
 		}
 		task, err := profiling.CreateAsyncProfilerTask(ctx, request)
 		if err != nil {

@@ -58,14 +58,24 @@ $ swctl profiling asyncprofiler list --service-name=TEST_AGENT`,
 	),
 	Action: func(ctx *cli.Context) error {
 		serviceID := ctx.String("service-id")
-		startTime := ctx.Int64("start-time")
-		endTime := ctx.Int64("end-time")
-		limit := ctx.Int("limit")
+		var startTime *int64
+		if startTimeArg := ctx.Int64("start-time"); startTimeArg != 0 {
+			startTime = &startTimeArg
+		}
+		var endTime *int64
+		if endTimeArg := ctx.Int64("end-time"); endTimeArg != 0 {
+			endTime = &endTimeArg
+		}
+		var limit *int
+		if limitArg := ctx.Int("limit"); limitArg != 0 {
+			limit = &limitArg
+		}
+
 		request := &query.AsyncProfilerTaskListRequest{
 			ServiceID: serviceID,
-			StartTime: &startTime,
-			EndTime:   &endTime,
-			Limit:     &limit,
+			StartTime: startTime,
+			EndTime:   endTime,
+			Limit:     limit,
 		}
 
 		tasks, err := profiling.GetAsyncProfilerTaskList(ctx, request)

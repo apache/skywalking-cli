@@ -26,11 +26,12 @@ import (
 
 var getTaskProgressCommand = &cli.Command{
 	Name:    "progress",
-	Aliases: []string{"logs", "p"},
+	Aliases: []string{"p"},
 	Flags: []cli.Flag{
 		&cli.StringFlag{
-			Name:  "task-id",
-			Usage: "async profiler task id.",
+			Name:     "task-id",
+			Usage:    "async profiler task id.",
+			Required: true,
 		},
 	},
 	Usage: "Query async-profiler task progress",
