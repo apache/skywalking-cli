@@ -38,7 +38,7 @@ var getTaskProgressCommand = &cli.Command{
 
 Examples:
 1. Query task progress, including task logs and successInstances and errorInstances
-$ swctl-dev-37550c6-darwin-arm64 profiling asyncprofiler progress --task-id=task-id`,
+$ swctl profiling asyncprofiler progress --task-id=task-id`,
 	Action: func(ctx *cli.Context) error {
 		taskID := ctx.String("task-id")
 
