@@ -18,7 +18,7 @@ var analysisCommand = &cli.Command{
 
 Examples:
 1. Query the flame graph produced by async-profiler
-$ /swctl-dev-37550c6-darwin-arm64 profiling asyncprofiler analysis  --task-id=task-id --service-instance-ids=instanceIds --event=execution_sample`,
+$ swctl profiling asyncprofiler analysis  --task-id=task-id --service-instance-ids=instanceIds --event=execution_sample`,
 	Flags: flags.Flags(
 		[]cli.Flag{
 			&cli.StringFlag{
