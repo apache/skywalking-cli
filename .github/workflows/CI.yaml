@@ -90,9 +90,9 @@ jobs:
           go-version: 1.18
 
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v3
+        uses: golangci/golangci-lint-action@v6
         with:
-          version: v6.1.1
+          version: v1.50.0
           args: --timeout 5m
 
 
