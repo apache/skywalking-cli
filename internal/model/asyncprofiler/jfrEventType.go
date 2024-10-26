@@ -19,8 +19,9 @@ package asyncprofiler
 
 import (
 	"fmt"
-	api "skywalking.apache.org/repo/goapi/query"
 	"strings"
+
+	api "skywalking.apache.org/repo/goapi/query"
 )
 
 type JFREventTypeEnumValue struct {

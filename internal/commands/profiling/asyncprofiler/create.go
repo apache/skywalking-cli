@@ -38,16 +38,12 @@ var createCommand = &cli.Command{
 
 Examples:
 1. Create async-profiler task
-$ swctl profiling asyncprofiler create --service-name=someservicename --duration=60 --events=cpu,alloc \ 
-	--service-instance-ids=someinstance1,someinstance2 --exec-args=interval=50ms`,
+$ swctl profiling async create --service-name=service-name --duration=60 --events=cpu,alloc \ 
+	--instance-name-slice=instance-name1,instance-name2 --exec-args=interval=50ms`,
 	Flags: flags.Flags(
 		flags.ServiceFlags,
+		flags.InstanceSliceFlags,
 		[]cli.Flag{
-			&cli.StringFlag{
-				Name:     "service-instance-ids",
-				Usage:    "which instances to execute task.",
-				Required: true,
-			},
 			&cli.IntFlag{
 				Name:     "duration",
 				Usage:    "task continuous time(second).",
@@ -57,7 +53,7 @@ $ swctl profiling asyncprofiler create --service-name=someservicename --duration
 				Name:     "events",
 				Usage:    "which event types this task needs to collect.",
 				Required: true,
-				Value: &asyncprofiler.AsyncProfilerEventTypeEnumValue{
+				Value: &asyncprofiler.ProfilerEventTypeEnumValue{
 					Enum: query.AllAsyncProfilerEventType,
 				},
 			},
@@ -68,13 +64,13 @@ $ swctl profiling asyncprofiler create --service-name=someservicename --duration
 		},
 	),
 	Before: interceptor.BeforeChain(
-		interceptor.ParseService(false),
+		interceptor.ParseInstanceSlice(true),
 	),
 	Action: func(ctx *cli.Context) error {
 		serviceID := ctx.String("service-id")
-		instanceIds := strings.Split(ctx.String("service-instance-ids"), ",")
+		instanceIds := strings.Split(ctx.String("instance-id-slice"), ",")
 		duration := ctx.Int("duration")
-		eventTypes := ctx.Generic("events").(*asyncprofiler.AsyncProfilerEventTypeEnumValue).Selected
+		eventTypes := ctx.Generic("events").(*asyncprofiler.ProfilerEventTypeEnumValue).Selected
 
 		var execArgs *string
 		if args := ctx.String("exec-args"); args != "" {

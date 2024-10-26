@@ -52,3 +52,18 @@ var InstanceRelationFlags = append(
 		Required: false,
 	},
 )
+
+// InstanceSliceFlags take either service instance id list or service instance name list as input,
+// and transform to the other one.
+var InstanceSliceFlags = []cli.Flag{
+	&cli.StringFlag{
+		Name:     "instance-id-slice",
+		Usage:    "`instance id slice`, if you don't have instance id slice, use `--instances-name` instead",
+		Required: false,
+	},
+	&cli.StringFlag{
+		Name:     "instance-name-slice",
+		Usage:    "`instance name slice`, if you already have instance id slice, prefer to use `--instances-id`",
+		Required: false,
+	},
+}

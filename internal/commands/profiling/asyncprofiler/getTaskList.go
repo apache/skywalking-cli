@@ -35,7 +35,7 @@ var getTaskListCommand = &cli.Command{
 
 Examples:
 1. Query all async-profiler tasks
-$ swctl profiling asyncprofiler list --service-name=TEST_AGENT`,
+$ swctl profiling async list --service-name=service-name`,
 	Flags: flags.Flags(
 		flags.ServiceFlags,
 		[]cli.Flag{

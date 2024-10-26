@@ -26,10 +26,12 @@ import (
 )
 
 const (
-	instanceIDFlagName       = "instance-id"
-	instanceNameFlagName     = "instance-name"
-	destInstanceIDFlagName   = "dest-instance-id"
-	destInstanceNameFlagName = "dest-instance-name"
+	instanceIDFlagName        = "instance-id"
+	instanceNameFlagName      = "instance-name"
+	destInstanceIDFlagName    = "dest-instance-id"
+	destInstanceNameFlagName  = "dest-instance-name"
+	InstanceIDSliceFlagName   = "instance-id-slice"
+	instanceNameSliceFlagName = "instance-name-slice"
 )
 
 // ParseInstance parses the service instance id or service instance name,
@@ -41,6 +43,18 @@ func ParseInstance(required bool) func(*cli.Context) error {
 			return err
 		}
 		return parseInstance(required, instanceIDFlagName, instanceNameFlagName, serviceIDFlagName)(ctx)
+	}
+}
+
+// ParseInstanceSlice parses the service instance id slice or service instance name slice,
+// and converts the present one to the missing one.
+// See flags.InstanceSliceFlags.
+func ParseInstanceSlice(required bool) func(*cli.Context) error {
+	return func(ctx *cli.Context) error {
+		if err := ParseService(required)(ctx); err != nil {
+			return err
+		}
+		return parseInstanceSlice(required, InstanceIDSliceFlagName, instanceNameSliceFlagName, serviceIDFlagName)(ctx)
 	}
 }
 
@@ -72,21 +86,9 @@ func parseInstance(required bool, idFlagName, nameFlagName, serviceIDFlagName st
 			return nil
 		}
 
-		if id != "" {
-			parts := strings.Split(id, "_")
-			if len(parts) != 2 {
-				return fmt.Errorf("invalid instance id, cannot be splitted into 2 parts. %v", id)
-			}
-			s, err := base64.StdEncoding.DecodeString(parts[1])
-			if err != nil {
-				return err
-			}
-			name = string(s)
-		} else if name != "" {
-			if serviceID == "" {
-				return fmt.Errorf(`"--%s" is specified but its related service name or id is not given`, nameFlagName)
-			}
-			id = serviceID + "_" + b64enc(name)
+		id, name, err := encode(serviceID, nameFlagName, id, name)
+		if err != nil {
+			return err
 		}
 
 		if err := ctx.Set(idFlagName, id); err != nil {
@@ -94,4 +96,75 @@ func parseInstance(required bool, idFlagName, nameFlagName, serviceIDFlagName st
 		}
 		return ctx.Set(nameFlagName, name)
 	}
+}
+
+func parseInstanceSlice(required bool, idSliceFlagName, nameSliceFlagName, serviceIDFlagName string) func(*cli.Context) error {
+	return func(ctx *cli.Context) error {
+		idsArg := ctx.String(idSliceFlagName)
+		namesArgs := ctx.String(nameSliceFlagName)
+		serviceID := ctx.String(serviceIDFlagName)
+
+		if idsArg == "" && namesArgs == "" {
+			if required {
+				return fmt.Errorf(`either flags "--%s" or "--%s" must be given`, idSliceFlagName, nameSliceFlagName)
+			}
+			return nil
+		}
+
+		ids := strings.Split(idsArg, ",")
+		names := strings.Split(namesArgs, ",")
+		var sliceSize int
+		if l := len(ids); idsArg != "" && l != 0 {
+			sliceSize = l
+		} else {
+			sliceSize = len(names)
+		}
+		instanceIDSlice := make([]string, sliceSize)
+		instanceNameSlice := make([]string, sliceSize)
+		for i := 0; i < sliceSize; i++ {
+			id := ""
+			name := ""
+			if len(ids) > i {
+				id = ids[i]
+			}
+			if len(names) > i {
+				name = names[i]
+			}
+
+			id, name, err := encode(serviceID, nameSliceFlagName, id, name)
+			if err != nil {
+				return err
+			}
+
+			instanceIDSlice[i] = id
+			instanceNameSlice[i] = name
+		}
+
+		instanceIDSliceString := strings.Join(instanceIDSlice, ",")
+		instanceNameSliceString := strings.Join(instanceNameSlice, ",")
+		if err := ctx.Set(idSliceFlagName, instanceIDSliceString); err != nil {
+			return err
+		}
+		return ctx.Set(nameSliceFlagName, instanceNameSliceString)
+	}
+}
+
+func encode(serviceID, nameFlagName, id, name string) (string, string, error) {
+	if id != "" {
+		parts := strings.Split(id, "_")
+		if len(parts) != 2 {
+			return "", "", fmt.Errorf("invalid instance id, cannot be splitted into 2 parts. %v", id)
+		}
+		s, err := base64.StdEncoding.DecodeString(parts[1])
+		if err != nil {
+			return "", "", err
+		}
+		name = string(s)
+	} else if name != "" {
+		if serviceID == "" {
+			return "", "", fmt.Errorf(`"--%s" is specified but its related service name or id is not given`, nameFlagName)
+		}
+		id = serviceID + "_" + b64enc(name)
+	}
+	return id, name, nil
 }

@@ -19,17 +19,18 @@ package asyncprofiler
 
 import (
 	"fmt"
-	api "skywalking.apache.org/repo/goapi/query"
 	"strings"
+
+	api "skywalking.apache.org/repo/goapi/query"
 )
 
-type AsyncProfilerEventTypeEnumValue struct {
+type ProfilerEventTypeEnumValue struct {
 	Enum     []api.AsyncProfilerEventType
 	Default  []api.AsyncProfilerEventType
 	Selected []api.AsyncProfilerEventType
 }
 
-func (e *AsyncProfilerEventTypeEnumValue) Set(value string) error {
+func (e *ProfilerEventTypeEnumValue) Set(value string) error {
 	values := strings.Split(value, ",")
 	types := make([]api.AsyncProfilerEventType, 0)
 	for _, v := range values {
@@ -53,7 +54,7 @@ func (e *AsyncProfilerEventTypeEnumValue) Set(value string) error {
 	return fmt.Errorf("allowed analysis aggregate type are %s", strings.Join(orders, ", "))
 }
 
-func (e *AsyncProfilerEventTypeEnumValue) String() string {
+func (e *ProfilerEventTypeEnumValue) String() string {
 	selected := make([]string, len(e.Selected))
 	for i, item := range e.Selected {
 		selected[i] = item.String()
