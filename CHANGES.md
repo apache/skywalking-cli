@@ -7,6 +7,8 @@ Release Notes.
 
 ### Features
 
+* add the sub-command `profiling async` for async-profiler query API by @zhengziyi0117 in https://github.com/apache/skywalking-cli/pull/203
+
 ### Bug Fixes
 
 0.14.0
