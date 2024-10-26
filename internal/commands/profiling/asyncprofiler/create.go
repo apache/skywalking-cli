@@ -18,6 +18,8 @@
 package asyncprofiler
 
 import (
+	"strings"
+
 	"github.com/apache/skywalking-cli/internal/commands/interceptor"
 	"github.com/apache/skywalking-cli/internal/flags"
 	"github.com/apache/skywalking-cli/internal/model/asyncprofiler"
@@ -26,7 +28,6 @@ import (
 	"github.com/apache/skywalking-cli/pkg/graphql/profiling"
 	"github.com/urfave/cli/v2"
 	"skywalking.apache.org/repo/goapi/query"
-	"strings"
 )
 
 var createCommand = &cli.Command{
@@ -73,12 +74,6 @@ $ swctl profiling asyncprofiler create --service-name=someservicename --duration
 		serviceID := ctx.String("service-id")
 		instanceIds := strings.Split(ctx.String("service-instance-ids"), ",")
 		duration := ctx.Int("duration")
-		//events := strings.Split(ctx.String("events"), ",")
-		//eventTypes := make([]query.AsyncProfilerEventType, 0)
-		//for _, event := range events {
-		//	upperCaseEvent := strings.ToUpper(event)
-		//	eventTypes = append(eventTypes, query.AsyncProfilerEventType(upperCaseEvent))
-		//}
 		eventTypes := ctx.Generic("events").(*asyncprofiler.AsyncProfilerEventTypeEnumValue).Selected
 
 		var execArgs *string

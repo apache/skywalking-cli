@@ -18,6 +18,8 @@
 package asyncprofiler
 
 import (
+	"strings"
+
 	"github.com/apache/skywalking-cli/internal/flags"
 	"github.com/apache/skywalking-cli/internal/model/asyncprofiler"
 	"github.com/apache/skywalking-cli/pkg/display"
@@ -25,7 +27,6 @@ import (
 	"github.com/apache/skywalking-cli/pkg/graphql/profiling"
 	"github.com/urfave/cli/v2"
 	query "skywalking.apache.org/repo/goapi/query"
-	"strings"
 )
 
 var analysisCommand = &cli.Command{
