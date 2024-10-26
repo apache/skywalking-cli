@@ -18,9 +18,9 @@
 package profiling
 
 import (
-	"github.com/apache/skywalking-cli/internal/commands/profiling/asyncprofiler"
 	"github.com/urfave/cli/v2"
 
+	"github.com/apache/skywalking-cli/internal/commands/profiling/asyncprofiler"
 	"github.com/apache/skywalking-cli/internal/commands/profiling/continuous"
 	"github.com/apache/skywalking-cli/internal/commands/profiling/ebpf"
 	"github.com/apache/skywalking-cli/internal/commands/profiling/trace"

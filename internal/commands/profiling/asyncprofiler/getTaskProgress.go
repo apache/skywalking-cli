@@ -18,10 +18,11 @@
 package asyncprofiler
 
 import (
+	"github.com/urfave/cli/v2"
+
 	"github.com/apache/skywalking-cli/pkg/display"
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
 	"github.com/apache/skywalking-cli/pkg/graphql/profiling"
-	"github.com/urfave/cli/v2"
 )
 
 var getTaskProgressCommand = &cli.Command{

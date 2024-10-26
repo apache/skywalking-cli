@@ -18,11 +18,12 @@
 package profiling
 
 import (
-	"github.com/apache/skywalking-cli/assets"
-	"github.com/apache/skywalking-cli/pkg/graphql/client"
 	"github.com/machinebox/graphql"
 	"github.com/urfave/cli/v2"
 	api "skywalking.apache.org/repo/goapi/query"
+
+	"github.com/apache/skywalking-cli/assets"
+	"github.com/apache/skywalking-cli/pkg/graphql/client"
 )
 
 func CreateAsyncProfilerTask(ctx *cli.Context, condition *api.AsyncProfilerTaskCreationRequest) (api.AsyncProfilerTaskCreationResult, error) {

@@ -20,14 +20,15 @@ package asyncprofiler
 import (
 	"strings"
 
+	"github.com/urfave/cli/v2"
+	"skywalking.apache.org/repo/goapi/query"
+
 	"github.com/apache/skywalking-cli/internal/commands/interceptor"
 	"github.com/apache/skywalking-cli/internal/flags"
 	"github.com/apache/skywalking-cli/internal/model/asyncprofiler"
 	"github.com/apache/skywalking-cli/pkg/display"
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
 	"github.com/apache/skywalking-cli/pkg/graphql/profiling"
-	"github.com/urfave/cli/v2"
-	query "skywalking.apache.org/repo/goapi/query"
 )
 
 var analysisCommand = &cli.Command{
@@ -38,7 +39,8 @@ var analysisCommand = &cli.Command{
 
 Examples:
 1. Query the flame graph produced by async-profiler
-$ swctl profiling async analysis --service-name=service-name --task-id=task-id --service-instance-ids=instance-name1,instance-name2 --event=execution_sample`,
+$ swctl profiling async analysis --service-name=service-name --task-id=task-id \
+	--service-instance-ids=instance-name1,instance-name2 --event=execution_sample`,
 	Flags: flags.Flags(
 		flags.ServiceFlags,
 		flags.InstanceSliceFlags,
