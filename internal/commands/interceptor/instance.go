@@ -149,7 +149,7 @@ func parseInstanceSlice(required bool, idSliceFlagName, nameSliceFlagName, servi
 	}
 }
 
-func encode(serviceID, nameFlagName, id, name string) (string, string, error) {
+func encode(serviceID, nameFlagName, id, name string) (encodedId, encodedName string, err error) {
 	if id != "" {
 		parts := strings.Split(id, "_")
 		if len(parts) != 2 {

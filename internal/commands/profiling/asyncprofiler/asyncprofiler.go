@@ -17,9 +17,7 @@
 
 package asyncprofiler
 
-import (
-	"github.com/urfave/cli/v2"
-)
+import "github.com/urfave/cli/v2"
 
 var Command = &cli.Command{
 	Name:  "async",
