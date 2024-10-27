@@ -26,12 +26,12 @@ import (
 )
 
 const (
-	instanceIDFlagName        = "instance-id"
-	instanceNameFlagName      = "instance-name"
-	destInstanceIDFlagName    = "dest-instance-id"
-	destInstanceNameFlagName  = "dest-instance-name"
-	InstanceIDSliceFlagName   = "instance-id-slice"
-	instanceNameSliceFlagName = "instance-name-slice"
+	instanceIDFlagName       = "instance-id"
+	instanceNameFlagName     = "instance-name"
+	destInstanceIDFlagName   = "dest-instance-id"
+	destInstanceNameFlagName = "dest-instance-name"
+	InstanceIDListFlagName   = "instance-id-list"
+	instanceNameListFlagName = "instance-name-list"
 )
 
 // ParseInstance parses the service instance id or service instance name,
@@ -54,7 +54,7 @@ func ParseInstanceList(required bool) func(*cli.Context) error {
 		if err := ParseService(required)(ctx); err != nil {
 			return err
 		}
-		return parseInstanceList(required, InstanceIDSliceFlagName, instanceNameSliceFlagName, serviceIDFlagName)(ctx)
+		return parseInstanceList(required, InstanceIDListFlagName, instanceNameListFlagName, serviceIDFlagName)(ctx)
 	}
 }
 
