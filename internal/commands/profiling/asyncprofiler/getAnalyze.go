@@ -40,10 +40,10 @@ var analysisCommand = &cli.Command{
 Examples:
 1. Query the flame graph produced by async-profiler
 $ swctl profiling async analysis --service-name=service-name --task-id=task-id \
-	--service-instance-ids=instance-name1,instance-name2 --event=execution_sample`,
+	--instance-name-list=instance-name1,instance-name2 --event=execution_sample`,
 	Flags: flags.Flags(
 		flags.ServiceFlags,
-		flags.InstanceSliceFlags,
+		flags.InstanceListFlags,
 		[]cli.Flag{
 			&cli.StringFlag{
 				Name:     "task-id",
@@ -61,11 +61,11 @@ $ swctl profiling async analysis --service-name=service-name --task-id=task-id \
 		},
 	),
 	Before: interceptor.BeforeChain(
-		interceptor.ParseInstanceSlice(true),
+		interceptor.ParseInstanceList(true),
 	),
 	Action: func(ctx *cli.Context) error {
 		taskID := ctx.String("task-id")
-		instances := strings.Split(ctx.String("instance-id-slice"), ",")
+		instances := strings.Split(ctx.String("instance-id-list"), ",")
 		eventType := ctx.Generic("event").(*asyncprofiler.JFREventTypeEnumValue).Selected
 
 		request := &query.AsyncProfilerAnalyzationRequest{

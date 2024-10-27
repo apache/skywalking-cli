@@ -40,10 +40,10 @@ var createCommand = &cli.Command{
 Examples:
 1. Create async-profiler task
 $ swctl profiling async create --service-name=service-name --duration=60 --events=cpu,alloc \ 
-	--instance-name-slice=instance-name1,instance-name2 --exec-args=interval=50ms`,
+	--instance-name-list=instance-name1,instance-name2 --exec-args=interval=50ms`,
 	Flags: flags.Flags(
 		flags.ServiceFlags,
-		flags.InstanceSliceFlags,
+		flags.InstanceListFlags,
 		[]cli.Flag{
 			&cli.IntFlag{
 				Name:     "duration",
@@ -65,11 +65,11 @@ $ swctl profiling async create --service-name=service-name --duration=60 --event
 		},
 	),
 	Before: interceptor.BeforeChain(
-		interceptor.ParseInstanceSlice(true),
+		interceptor.ParseInstanceList(true),
 	),
 	Action: func(ctx *cli.Context) error {
 		serviceID := ctx.String("service-id")
-		instanceIds := strings.Split(ctx.String("instance-id-slice"), ",")
+		instanceIds := strings.Split(ctx.String("instance-id-list"), ",")
 		duration := ctx.Int("duration")
 		eventTypes := ctx.Generic("events").(*asyncprofiler.ProfilerEventTypeEnumValue).Selected
 

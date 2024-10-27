@@ -46,15 +46,15 @@ func ParseInstance(required bool) func(*cli.Context) error {
 	}
 }
 
-// ParseInstanceSlice parses the service instance id slice or service instance name slice,
+// ParseInstanceList parses the service instance id slice or service instance name slice,
 // and converts the present one to the missing one.
 // See flags.InstanceSliceFlags.
-func ParseInstanceSlice(required bool) func(*cli.Context) error {
+func ParseInstanceList(required bool) func(*cli.Context) error {
 	return func(ctx *cli.Context) error {
 		if err := ParseService(required)(ctx); err != nil {
 			return err
 		}
-		return parseInstanceSlice(required, InstanceIDSliceFlagName, instanceNameSliceFlagName, serviceIDFlagName)(ctx)
+		return parseInstanceList(required, InstanceIDSliceFlagName, instanceNameSliceFlagName, serviceIDFlagName)(ctx)
 	}
 }
 
@@ -98,15 +98,15 @@ func parseInstance(required bool, idFlagName, nameFlagName, serviceIDFlagName st
 	}
 }
 
-func parseInstanceSlice(required bool, idSliceFlagName, nameSliceFlagName, serviceIDFlagName string) func(*cli.Context) error {
+func parseInstanceList(required bool, idListFlagName, nameListFlagName, serviceIDFlagName string) func(*cli.Context) error {
 	return func(ctx *cli.Context) error {
-		idsArg := ctx.String(idSliceFlagName)
-		namesArgs := ctx.String(nameSliceFlagName)
+		idsArg := ctx.String(idListFlagName)
+		namesArgs := ctx.String(nameListFlagName)
 		serviceID := ctx.String(serviceIDFlagName)
 
 		if idsArg == "" && namesArgs == "" {
 			if required {
-				return fmt.Errorf(`either flags "--%s" or "--%s" must be given`, idSliceFlagName, nameSliceFlagName)
+				return fmt.Errorf(`either flags "--%s" or "--%s" must be given`, idListFlagName, nameListFlagName)
 			}
 			return nil
 		}
@@ -131,7 +131,7 @@ func parseInstanceSlice(required bool, idSliceFlagName, nameSliceFlagName, servi
 				name = names[i]
 			}
 
-			id, name, err := encode(serviceID, nameSliceFlagName, id, name)
+			id, name, err := encode(serviceID, nameListFlagName, id, name)
 			if err != nil {
 				return err
 			}
@@ -142,10 +142,10 @@ func parseInstanceSlice(required bool, idSliceFlagName, nameSliceFlagName, servi
 
 		instanceIDSliceString := strings.Join(instanceIDSlice, ",")
 		instanceNameSliceString := strings.Join(instanceNameSlice, ",")
-		if err := ctx.Set(idSliceFlagName, instanceIDSliceString); err != nil {
+		if err := ctx.Set(idListFlagName, instanceIDSliceString); err != nil {
 			return err
 		}
-		return ctx.Set(nameSliceFlagName, instanceNameSliceString)
+		return ctx.Set(nameListFlagName, instanceNameSliceString)
 	}
 }
 
