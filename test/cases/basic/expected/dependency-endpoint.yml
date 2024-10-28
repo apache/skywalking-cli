@@ -28,7 +28,7 @@ nodes:
   serviceid: {{ b64enc "consumer" }}.1
   servicename: consumer
   {{- end }}
-debuggingtrace: {}
+debuggingtrace: null
 calls:
   {{- contains .calls }}
 - source: {{ b64enc "consumer" }}.1_{{ b64enc "/users" }}
