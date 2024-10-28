@@ -15,26 +15,35 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package profiling
+package asyncprofiler
 
 import (
-	"github.com/urfave/cli/v2"
+	"fmt"
+	"strings"
 
-	"github.com/apache/skywalking-cli/internal/commands/profiling/asyncprofiler"
-	"github.com/apache/skywalking-cli/internal/commands/profiling/continuous"
-	"github.com/apache/skywalking-cli/internal/commands/profiling/ebpf"
-	"github.com/apache/skywalking-cli/internal/commands/profiling/trace"
+	api "skywalking.apache.org/repo/goapi/query"
 )
 
-var Command = &cli.Command{
-	Name:  "profiling",
-	Usage: "profiling related sub-command",
-	UsageText: `If your application has performance issue, you could try to profiling. 
-Please following sub-command to get more information.`,
-	Subcommands: []*cli.Command{
-		trace.Command,
-		ebpf.Command,
-		continuous.Command,
-		asyncprofiler.Command,
-	},
+type JFREventTypeEnumValue struct {
+	Enum     []api.JFREventType
+	Default  api.JFREventType
+	Selected api.JFREventType
+}
+
+func (e *JFREventTypeEnumValue) Set(value string) error {
+	for _, enum := range e.Enum {
+		if strings.EqualFold(enum.String(), value) {
+			e.Selected = enum
+			return nil
+		}
+	}
+	orders := make([]string, len(api.AllJFREventType))
+	for i, order := range api.AllJFREventType {
+		orders[i] = order.String()
+	}
+	return fmt.Errorf("allowed analysis aggregate type are %s", strings.Join(orders, ", "))
+}
+
+func (e *JFREventTypeEnumValue) String() string {
+	return e.Selected.String()
 }

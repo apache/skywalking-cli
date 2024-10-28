@@ -15,26 +15,20 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package profiling
+package asyncprofiler
 
-import (
-	"github.com/urfave/cli/v2"
-
-	"github.com/apache/skywalking-cli/internal/commands/profiling/asyncprofiler"
-	"github.com/apache/skywalking-cli/internal/commands/profiling/continuous"
-	"github.com/apache/skywalking-cli/internal/commands/profiling/ebpf"
-	"github.com/apache/skywalking-cli/internal/commands/profiling/trace"
-)
+import "github.com/urfave/cli/v2"
 
 var Command = &cli.Command{
-	Name:  "profiling",
-	Usage: "profiling related sub-command",
-	UsageText: `If your application has performance issue, you could try to profiling. 
-Please following sub-command to get more information.`,
+	Name:  "async",
+	Usage: "async profiler related sub-command",
+	UsageText: `If your endpoint has performance issue and could not use tracing to find out what's happening,
+you could try it. You could get more information
+on https://skywalking.apache.org/docs/main/next/en/concepts-and-designs/profiling.`,
 	Subcommands: []*cli.Command{
-		trace.Command,
-		ebpf.Command,
-		continuous.Command,
-		asyncprofiler.Command,
+		createCommand,
+		getTaskListCommand,
+		getTaskProgressCommand,
+		analysisCommand,
 	},
 }
