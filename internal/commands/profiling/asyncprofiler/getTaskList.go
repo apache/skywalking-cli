@@ -23,6 +23,7 @@ import (
 
 	"github.com/apache/skywalking-cli/internal/commands/interceptor"
 	"github.com/apache/skywalking-cli/internal/flags"
+	"github.com/apache/skywalking-cli/internal/model"
 	"github.com/apache/skywalking-cli/pkg/display"
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
 	"github.com/apache/skywalking-cli/pkg/graphql/profiling"
@@ -39,15 +40,8 @@ Examples:
 $ swctl profiling async list --service-name=service-name`,
 	Flags: flags.Flags(
 		flags.ServiceFlags,
+		flags.DurationFlags,
 		[]cli.Flag{
-			&cli.Int64Flag{
-				Name:  "start-time",
-				Usage: "The start time (in milliseconds) of the event, measured between the current time and midnight, January 1, 1970 UTC.",
-			},
-			&cli.Int64Flag{
-				Name:  "end-time",
-				Usage: "The end time (in milliseconds) of the event, measured between the current time and midnight, January 1, 1970 UTC.",
-			},
 			&cli.IntFlag{
 				Name:  "limit",
 				Usage: "Limit defines the number of the tasks to be returned.",
@@ -56,16 +50,17 @@ $ swctl profiling async list --service-name=service-name`,
 	),
 	Before: interceptor.BeforeChain(
 		interceptor.ParseService(true),
+		interceptor.DurationInterceptor,
 	),
 	Action: func(ctx *cli.Context) error {
 		serviceID := ctx.String("service-id")
-		var startTime *int64
-		if startTimeArg := ctx.Int64("start-time"); startTimeArg != 0 {
-			startTime = &startTimeArg
-		}
-		var endTime *int64
-		if endTimeArg := ctx.Int64("end-time"); endTimeArg != 0 {
-			endTime = &endTimeArg
+		start := ctx.String("start")
+		end := ctx.String("end")
+		step := ctx.Generic("step")
+		duration := query.Duration{
+			Start: start,
+			End:   end,
+			Step:  step.(*model.StepEnumValue).Selected,
 		}
 		var limit *int
 		if limitArg := ctx.Int("limit"); limitArg != 0 {
@@ -73,10 +68,9 @@ $ swctl profiling async list --service-name=service-name`,
 		}
 
 		request := &query.AsyncProfilerTaskListRequest{
-			ServiceID: serviceID,
-			StartTime: startTime,
-			EndTime:   endTime,
-			Limit:     limit,
+			ServiceID:     serviceID,
+			QueryDuration: &duration,
+			Limit:         limit,
 		}
 
 		tasks, err := profiling.GetAsyncProfilerTaskList(ctx, request)
