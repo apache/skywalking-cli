@@ -18,14 +18,15 @@
 package asyncprofiler
 
 import (
+	"github.com/urfave/cli/v2"
+	"skywalking.apache.org/repo/goapi/query"
+
 	"github.com/apache/skywalking-cli/internal/commands/interceptor"
 	"github.com/apache/skywalking-cli/internal/flags"
 	"github.com/apache/skywalking-cli/internal/model"
 	"github.com/apache/skywalking-cli/pkg/display"
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
 	"github.com/apache/skywalking-cli/pkg/graphql/profiling"
-	"github.com/urfave/cli/v2"
-	"skywalking.apache.org/repo/goapi/query"
 )
 
 var getTaskListCommand = &cli.Command{
