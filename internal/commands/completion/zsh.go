@@ -18,16 +18,34 @@
 package completion
 
 import (
+	"fmt"
+
 	"github.com/urfave/cli/v2"
 )
 
-var Command = &cli.Command{
-	Name:  "completion",
-	Usage: "Output shell completion code for bash, zsh, fish, and powershell",
-	Subcommands: []*cli.Command{
-		bashCommand,
-		fishCommand,
-		zshCommand,
-		powershellCommand,
+var zshCommand = &cli.Command{
+	Name:      "zsh",
+	Aliases:   []string{"z"},
+	Usage:     "Output shell completion code for zsh",
+	ArgsUsage: "[parameters...]",
+	Action: func(ctx *cli.Context) error {
+		fmt.Print(zshScript)
+		return nil
 	},
 }
+
+const zshScript = `
+#compdef swctl
+
+_cli_zsh_autocomplete() {
+    local -a completions
+    local word
+
+    word="${words[CURRENT]}"
+    completions=("${(@f)$( ${words[1,CURRENT-1]} --auto_complete )}")
+
+    _describe -t commands 'swctl commands' completions
+}
+
+compdef _cli_zsh_autocomplete swctl
+`

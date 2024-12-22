@@ -18,16 +18,38 @@
 package completion
 
 import (
+	"fmt"
+
 	"github.com/urfave/cli/v2"
 )
 
-var Command = &cli.Command{
-	Name:  "completion",
-	Usage: "Output shell completion code for bash, zsh, fish, and powershell",
-	Subcommands: []*cli.Command{
-		bashCommand,
-		fishCommand,
-		zshCommand,
-		powershellCommand,
+var fishCommand = &cli.Command{
+	Name:      "fish",
+	Aliases:   []string{"f"},
+	Usage:     "Output shell completion code for fish",
+	ArgsUsage: "[parameters...]",
+	Action: func(ctx *cli.Context) error {
+		fmt.Print(fishScript)
+		return nil
 	},
 }
+
+const fishScript = `
+function __fish_swctl_complete
+    set -l command (commandline -cp)
+    set -l last_token (commandline -ct)
+
+    if test "$last_token" = ""
+        return
+    end
+
+    # Get completions using the auto-complete flag
+    set -l completions (eval "$command --auto_complete" 2> /dev/null)
+
+    for completion in $completions
+        echo -e "$completion\t(swctl suggestion)"
+    end
+end
+
+complete -c swctl -f -a "(__fish_swctl_complete)"
+`
