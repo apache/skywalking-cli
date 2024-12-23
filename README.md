@@ -156,7 +156,9 @@ jobs:
 
 # Compatibility
 
-SkyWalking CLI and SkyWalking OAP communicate with different query version, here is a summary of the compatible version of both.
+SkyWalking CLI and SkyWalking OAP communicate with different query versions, here is a summary of the compatible versions of both.
+Note that many queries in older CLI releases can still work with new OAP versions and vice versa because most query APIs are forward-compatible.
+The compatibility table here only lists fully compatible OAP versions, which mean new query APIs are implemented in this specific version.
 
 | SkyWalking CLI | OAP Server Version |
 |----------------|---------------|
@@ -164,6 +166,7 @@ SkyWalking CLI and SkyWalking OAP communicate with different query version, here
 | \> = 0.12.0    | \> = 9.3.0    |
 | \> = 0.12.0    | \> = 9.5.0    |
 | \> = 0.13.0    | \> = 9.6.0    |
+| \> = 0.14.0    | \> = 10.2.0   |
 
 # Contributing
 
