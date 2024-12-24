@@ -16,13 +16,24 @@ same as GUI.
 
 ### Quick install
 
-#### Linux or macOS
+#### Linux
 
 Install the latest version with the following command:
 
 ```shell
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/apache/skywalking-cli/master/scripts/install.sh)"
 ```
+
+#### MacOS
+
+Use [Homebrew](https://brew.sh/) to install swctl on the macOS.
+
+```shell
+brew update
+brew install swctl
+```
+
+Besides that, you could still use the same command in Linux to install it.
 
 #### Windows
 
