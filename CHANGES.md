@@ -9,6 +9,9 @@ Release Notes.
 
 * Add the sub-command `profiling async` for async-profiler query API by @zhengziyi0117 in https://github.com/apache/skywalking-cli/pull/203
 * Support the owner in MQE response by using [10.2 MQE query protocol](https://github.com/apache/skywalking-query-protocol/pull/141) by @zhengziyi0117 in https://github.com/apache/skywalking-cli/pull/203
+* Add the sub-command `alarm autocomplete-keys` and `alarm auto-complete-values` for alarm query API by @mrproliu in https://github.com/apache/skywalking-cli/pull/210
+* Adapt the alarm message query API by @mrproliu in https://github.com/apache/skywalking-cli/pull/210
+* Add the owner field in the `metrics exec` query API by @mrproliu in https://github.com/apache/skywalking-cli/pull/210
 
 ### Bug Fixes
 

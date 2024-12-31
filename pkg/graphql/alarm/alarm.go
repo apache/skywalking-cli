@@ -52,3 +52,26 @@ func Alarms(ctx *cli.Context, condition *ListAlarmCondition) (api.Alarms, error)
 
 	return response["result"], err
 }
+
+func TagAutocompleteKeys(ctx *cli.Context, duration api.Duration) ([]string, error) {
+	var response map[string][]string
+
+	request := graphql.NewRequest(assets.Read("graphqls/alarm/tagAutocompleteKeys.graphql"))
+	request.Var("duration", duration)
+
+	err := client.ExecuteQuery(ctx, request, &response)
+
+	return response["result"], err
+}
+
+func TagAutocompleteValues(ctx *cli.Context, duration api.Duration, key string) ([]string, error) {
+	var response map[string][]string
+
+	request := graphql.NewRequest(assets.Read("graphqls/alarm/tagAutocompleteValues.graphql"))
+	request.Var("duration", duration)
+	request.Var("tagKey", key)
+
+	err := client.ExecuteQuery(ctx, request, &response)
+
+	return response["result"], err
+}

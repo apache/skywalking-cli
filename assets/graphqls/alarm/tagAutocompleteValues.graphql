@@ -15,24 +15,6 @@
 # specific language governing permissions and limitations
 # under the License.
 
-query ($expression: String!, $entity: Entity!, $duration: Duration!) {
-    result: execExpression(expression: $expression, entity: $entity, duration: $duration) {
-        type
-        results {
-            metric {
-                labels {
-                    key value
-                }
-            }
-            values {
-                id
-                value
-                traceID
-                owner {
-                    scope serviceID serviceName normal serviceInstanceID serviceInstanceName endpointID endpointName
-                }
-            }
-        }
-        error
-    }
+query ($tagKey: String!, $duration: Duration!) {
+    result: queryAlarmTagAutocompleteValues(tagKey: $tagKey, duration: $duration)
 }

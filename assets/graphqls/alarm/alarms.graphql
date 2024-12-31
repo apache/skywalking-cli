@@ -21,6 +21,7 @@ query ($duration: Duration!, $scope: Scope, $keyword: String, $paging: Paginatio
             startTime
             scope
             id
+            name
             message
             tags {
               key, value
@@ -38,6 +39,27 @@ query ($duration: Duration!, $scope: Scope, $keyword: String, $paging: Paginatio
                 }
                 uuid
                 layer
+            }
+            snapshot {
+                expression
+                metrics {
+                    name
+                    results {
+                        metric {
+                            labels {
+                                key value
+                            }
+                        }
+                        values {
+                            id
+                            value
+                            traceID
+                            owner {
+                                scope serviceID serviceName normal serviceInstanceID serviceInstanceName endpointID endpointName
+                            }
+                        }
+                    }
+                }
             }
         }
     }

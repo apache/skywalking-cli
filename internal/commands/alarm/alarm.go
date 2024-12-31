@@ -26,5 +26,7 @@ var Command = &cli.Command{
 	Usage: "Alarm related sub-command",
 	Subcommands: []*cli.Command{
 		listCommand,
+		autocompleteKeysCommand,
+		autocompleteValuesCommand,
 	},
 }
