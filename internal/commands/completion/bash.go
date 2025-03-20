@@ -28,7 +28,7 @@ var bashCommand = &cli.Command{
 	Aliases:   []string{"b"},
 	Usage:     "Output shell completion code for bash",
 	ArgsUsage: "[parameters...]",
-	Action: func(ctx *cli.Context) error {
+	Action: func(_ *cli.Context) error {
 		fmt.Print(bashScript)
 		return nil
 	},

@@ -44,8 +44,8 @@ type YDetails struct {
 
 // RequiredWidth calculates the minimum width required
 // in order to draw the Y axis and its labels.
-func RequiredWidth(max string) int {
-	return runewidth.StringWidth(max) + AxisWidth
+func RequiredWidth(mx string) int {
+	return runewidth.StringWidth(mx) + AxisWidth
 }
 
 // NewYDetails retrieves details about the Y axis required
@@ -100,7 +100,7 @@ type XDetails struct {
 // plotted.
 // customLabels are the desired labels for the X axis, these are preferred if
 // provided.
-func NewXDetails(cvsAr image.Rectangle, yEnd image.Point, stringLabels []string, cellWidth int) (*XDetails, error) {
+func NewXDetails(_ image.Rectangle, yEnd image.Point, stringLabels []string, cellWidth int) (*XDetails, error) {
 	// The space between the start of the axis and the end of the canvas.
 	// graphWidth := cvsAr.Dx() - yEnd.X - 1
 	graphWidth := len(stringLabels) * cellWidth

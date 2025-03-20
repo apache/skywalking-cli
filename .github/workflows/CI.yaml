@@ -65,7 +65,7 @@ jobs:
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v6
         with:
-          version: v1.50.0
+          version: v1.64.0
           args: --timeout 5m
 
 
@@ -110,6 +110,9 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: 1.24
+
+      - name: Install swctl
+        run: make install DESTDIR=/usr/local/bin
 
       - name: Test commands
         uses: apache/skywalking-infra-e2e@cf589b4a0b9f8e6f436f78e9cfd94a1ee5494180
