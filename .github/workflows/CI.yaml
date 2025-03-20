@@ -33,7 +33,7 @@ concurrency:
 jobs:
   check-license:
     name: License header
-    if: (github.event_name == 'schedule' && github.repository == 'apache/skywalking-cli') || (github.event_name != 'schedule')
+    if: github.repository == 'apache/skywalking-cli'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -54,9 +54,7 @@ jobs:
   golang-lint:
     name: Golang Lint
     runs-on: ubuntu-latest
-    if: |
-      ( always() && ! cancelled() ) &&
-      ((github.event_name == 'schedule' && github.repository == 'apache/skywalking-cli'))
+    if: github.repository == 'apache/skywalking-cli'
     steps:
       - uses: actions/checkout@v5
       - name: Set up Go
@@ -74,9 +72,7 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    if: |
-      ( always() && ! cancelled() ) &&
-      ((github.event_name == 'schedule' && github.repository == 'apache/skywalking-cli'))
+    if: github.repository == 'apache/skywalking-cli'
     steps:
       - uses: actions/checkout@v4
       - name: Set up Go
@@ -103,9 +99,7 @@ jobs:
   command-tests:
     name: Command Tests
     runs-on: ubuntu-latest
-    if: |
-      ( always() && ! cancelled() ) &&
-      ((github.event_name == 'schedule' && github.repository == 'apache/skywalking-cli'))
+    if: github.repository == 'apache/skywalking-cli'
     strategy:
       matrix:
         oap:
@@ -128,9 +122,7 @@ jobs:
   unit-tests:
     name: Unit Tests
     runs-on: ubuntu-latest
-    if: |
-      ( always() && ! cancelled() ) &&
-      ((github.event_name == 'schedule' && github.repository == 'apache/skywalking-cli'))
+    if: github.repository == 'apache/skywalking-cli'
     steps:
       - uses: actions/checkout@v4
       - name: setup go
@@ -158,13 +150,13 @@ jobs:
       - name: Merge Requirement
         run: |
           checkLicense=${{ needs.check-license.result }}
-          [[ ${checkLicense} == 'success' ]] || exit -1;
+          [[ ${checkLicense} == 'success' ]] || exit 1;
           golangLint=${{ needs.golang-lint.result }};
           build=${{ needs.build.result }};
           commandTests=${{ needs.command-tests.result }};
           unitTests=${{ needs.unit-tests.result }};
-          [[ ${golangLint} == 'success' ]] || [[ ${golangLint} == 'skipped' ]] || exit -2;
-          [[ ${build} == 'success' ]] || [[ ${build} == 'skipped' ]] || exit -3;
-          [[ ${commandTests} == 'success' ]] || [[ ${commandTests} == 'skipped' ]] || exit -4;
-          [[ ${unitTests} == 'success' ]] || [[ ${unitTests} == 'skipped' ]] || exit -5;
+          [[ ${golangLint} == 'success' ]] || [[ ${golangLint} == 'skipped' ]] || exit 2;
+          [[ ${build} == 'success' ]] || [[ ${build} == 'skipped' ]] || exit 3;
+          [[ ${commandTests} == 'success' ]] || [[ ${commandTests} == 'skipped' ]] || exit 4;
+          [[ ${unitTests} == 'success' ]] || [[ ${unitTests} == 'skipped' ]] || exit 5;
           exit 0;
