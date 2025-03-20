@@ -36,7 +36,7 @@ jobs:
     if: (github.event_name == 'schedule' && github.repository == 'apache/skywalking-cli') || (github.event_name != 'schedule')
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Check License Header
         uses: apache/skywalking-eyes@5dfa68f93380a5e57259faaf95088b7f133b5778
@@ -44,9 +44,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
-          go-version: "1.18"
+          go-version: "1.24"
 
       - name: Check Dependencies License
         run: make dependency-license
@@ -59,7 +59,7 @@ jobs:
     outputs:
       cli: ${{ steps.filter-cli.outputs.any_modified }}
     steps:
-      - uses: actions/checkout@v3 # required for push event
+      - uses: actions/checkout@v4 # required for push event
         with:
           fetch-depth: 0
       - name: Check for CLI source changes
@@ -83,11 +83,11 @@ jobs:
       ( always() && ! cancelled() ) &&
       ((github.event_name == 'schedule' && github.repository == 'apache/skywalking-cli') || needs.changes.outputs.cli == 'true')
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v5
       - name: Set up Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
-          go-version: 1.18
+          go-version: 1.24
 
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v6
@@ -104,16 +104,16 @@ jobs:
       ( always() && ! cancelled() ) &&
       ((github.event_name == 'schedule' && github.repository == 'apache/skywalking-cli') || needs.changes.outputs.cli == 'true')
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
-          go-version: 1.18
+          go-version: 1.24
 
       - name: Check code generation
         run: make check-codegen
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: check-diff
@@ -138,11 +138,11 @@ jobs:
         oap:
           - a65a6e0ff2ef9c716131b36172399076307c35f1 # Feb 27th, 2024
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
-          go-version: 1.18
+          go-version: 1.24
 
       - name: Test commands
         uses: apache/skywalking-infra-e2e@cf589b4a0b9f8e6f436f78e9cfd94a1ee5494180
@@ -160,11 +160,11 @@ jobs:
       ( always() && ! cancelled() ) &&
       ((github.event_name == 'schedule' && github.repository == 'apache/skywalking-cli') || needs.changes.outputs.cli == 'true')
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: setup go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
-          go-version: '1.18'
+          go-version: '1.24'
 
       - name: run unit tests and report coverage
         working-directory: ./
