@@ -28,7 +28,7 @@ var powershellCommand = &cli.Command{
 	Aliases:   []string{"p"},
 	Usage:     "Output shell completion code for powershell",
 	ArgsUsage: "[parameters...]",
-	Action: func(ctx *cli.Context) error {
+	Action: func(_ *cli.Context) error {
 		fmt.Print(powershellScript)
 		return nil
 	},

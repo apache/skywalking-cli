@@ -22,8 +22,6 @@ setup:
   steps:
     - name: install yq
       command: yq > /dev/null 2>&1 || go install github.com/mikefarah/yq/v4@latest
-    - name: install swctl
-      command: make install DESTDIR=/usr/local/bin > /dev/null 2>&1
 
 trigger:
   action: http

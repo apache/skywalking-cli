@@ -106,7 +106,7 @@ func ParseDuration(start, end string, userStep api.Step) (startTime, endTime tim
 	var err error
 
 	// both are present
-	if len(start) > 0 && len(end) > 0 {
+	if start != "" && end != "" {
 		if userStep, startTime, err = TryParseTime(start, userStep); err != nil {
 			logger.Log.Fatalln("Unsupported time format:", start, err)
 		}
@@ -120,12 +120,12 @@ func ParseDuration(start, end string, userStep api.Step) (startTime, endTime tim
 			logger.Log.Fatalln("Unsupported time format:", start, err)
 		}
 		return startTime, startTime.Add(30 * utils.StepDuration[step]), step, utils.EndAbsent
-	} else { // start is absent
-		if step, endTime, err = TryParseTime(end, userStep); err != nil {
-			logger.Log.Fatalln("Unsupported time format:", end, err)
-		}
-		return endTime.Add(-30 * utils.StepDuration[step]), endTime, step, utils.StartAbsent
 	}
+	// start is absent
+	if step, endTime, err = TryParseTime(end, userStep); err != nil {
+		logger.Log.Fatalln("Unsupported time format:", end, err)
+	}
+	return endTime.Add(-30 * utils.StepDuration[step]), endTime, step, utils.StartAbsent
 }
 
 // AlignPrecision aligns the two time strings to same precision

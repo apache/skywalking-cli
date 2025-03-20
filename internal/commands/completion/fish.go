@@ -28,7 +28,7 @@ var fishCommand = &cli.Command{
 	Aliases:   []string{"f"},
 	Usage:     "Output shell completion code for fish",
 	ArgsUsage: "[parameters...]",
-	Action: func(ctx *cli.Context) error {
+	Action: func(_ *cli.Context) error {
 		fmt.Print(fishScript)
 		return nil
 	},

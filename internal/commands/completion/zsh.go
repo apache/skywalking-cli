@@ -28,7 +28,7 @@ var zshCommand = &cli.Command{
 	Aliases:   []string{"z"},
 	Usage:     "Output shell completion code for zsh",
 	ArgsUsage: "[parameters...]",
-	Action: func(ctx *cli.Context) error {
+	Action: func(_ *cli.Context) error {
 		fmt.Print(zshScript)
 		return nil
 	},

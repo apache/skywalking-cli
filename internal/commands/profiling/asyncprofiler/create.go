@@ -69,7 +69,7 @@ $ swctl profiling async create --service-name=service-name --duration=60 --event
 	),
 	Action: func(ctx *cli.Context) error {
 		serviceID := ctx.String("service-id")
-		instanceIds := strings.Split(ctx.String("instance-id-list"), ",")
+		instanceIDs := strings.Split(ctx.String("instance-id-list"), ",")
 		duration := ctx.Int("duration")
 		eventTypes := ctx.Generic("events").(*asyncprofiler.ProfilerEventTypeEnumValue).Selected
 
@@ -80,7 +80,7 @@ $ swctl profiling async create --service-name=service-name --duration=60 --event
 
 		request := &query.AsyncProfilerTaskCreationRequest{
 			ServiceID:          serviceID,
-			ServiceInstanceIds: instanceIds,
+			ServiceInstanceIds: instanceIDs,
 			Duration:           duration,
 			Events:             eventTypes,
 			ExecArgs:           execArgs,
