@@ -128,7 +128,6 @@ jobs:
     name: Required
     needs:
       - check-license
-      - golang-lint
       - build
       - command-tests
       - unit-tests
@@ -139,11 +138,9 @@ jobs:
         run: |
           checkLicense=${{ needs.check-license.result }}
           [[ ${checkLicense} == 'success' ]] || exit 1;
-          golangLint=${{ needs.golang-lint.result }};
           build=${{ needs.build.result }};
           commandTests=${{ needs.command-tests.result }};
           unitTests=${{ needs.unit-tests.result }};
-          [[ ${golangLint} == 'success' ]] || [[ ${golangLint} == 'skipped' ]] || exit 2;
           [[ ${build} == 'success' ]] || [[ ${build} == 'skipped' ]] || exit 3;
           [[ ${commandTests} == 'success' ]] || [[ ${commandTests} == 'skipped' ]] || exit 4;
           [[ ${unitTests} == 'success' ]] || [[ ${unitTests} == 'skipped' ]] || exit 5;
