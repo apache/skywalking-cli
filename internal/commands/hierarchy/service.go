@@ -48,10 +48,10 @@ var serviceCommand = &cli.Command{
 		serviceID := ctx.String("service-id")
 		layer := ctx.String("layer")
 
-		hierarchy, err := hierarchy.ServiceHierarchy(ctx, serviceID, layer)
+		hierarchy, err := hierarchy.ServiceHierarchy(ctx.Context, serviceID, layer)
 		if err != nil {
 			return err
 		}
-		return display.Display(ctx, &displayable.Displayable{Data: hierarchy, Condition: serviceID})
+		return display.Display(ctx.Context, &displayable.Displayable{Data: hierarchy, Condition: serviceID})
 	},
 }

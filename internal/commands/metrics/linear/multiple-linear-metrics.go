@@ -93,7 +93,7 @@ $ swctl metrics multiple-linear --name all_percentile --labels=0,1,2,3,4 --relab
 		case labelsString != "" && relabelsString != "" && len(labels) != len(relabels):
 			return fmt.Errorf(`"--labels" and "--relabels" must be in same size if both specified, but was %v != %v`, len(labels), len(relabels))
 		case relabelsString != "":
-			for i := 0; i < len(labels); i++ {
+			for i := range labels {
 				labelMapping[labels[i]] = relabels[i]
 			}
 		}
@@ -113,16 +113,15 @@ $ swctl metrics multiple-linear --name all_percentile --labels=0,1,2,3,4 --relab
 			Step:  step.(*model.StepEnumValue).Selected,
 		}
 
-		metricsValuesArray, err := metrics.MultipleLinearIntValues(ctx, api.MetricsCondition{
+		metricsValuesArray, err := metrics.MultipleLinearIntValues(ctx.Context, api.MetricsCondition{
 			Name:   metricsName,
 			Entity: entity,
 		}, labels, duration)
-
 		if err != nil {
 			return err
 		}
 
 		reshaped := utils.MetricsValuesArrayToMap(duration, metricsValuesArray, labelMapping)
-		return display.Display(ctx, &displayable.Displayable{Data: reshaped})
+		return display.Display(ctx.Context, &displayable.Displayable{Data: reshaped})
 	},
 }

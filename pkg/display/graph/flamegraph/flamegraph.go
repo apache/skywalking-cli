@@ -19,6 +19,7 @@ package flamegraph
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"html/template"
 	"os"
@@ -28,11 +29,9 @@ import (
 	"github.com/apache/skywalking-cli/internal/logger"
 
 	api "skywalking.apache.org/repo/goapi/query"
-
-	"github.com/urfave/cli/v2"
 )
 
-func DisplayByTrace(ctx *cli.Context, analysis api.ProfileAnalyzation) error {
+func DisplayByTrace(ctx context.Context, analysis api.ProfileAnalyzation) error {
 	trees := make([]*ProfilingDataTree, 0)
 	for _, tree := range analysis.Trees {
 		elements := make([]ProfilingDataStackElement, 0)
@@ -45,7 +44,7 @@ func DisplayByTrace(ctx *cli.Context, analysis api.ProfileAnalyzation) error {
 	return display(ctx, trees)
 }
 
-func DisplayByEBPF(ctx *cli.Context, analysis *api.EBPFProfilingAnalyzation) error {
+func DisplayByEBPF(ctx context.Context, analysis *api.EBPFProfilingAnalyzation) error {
 	trees := make([]*ProfilingDataTree, 0)
 	for _, tree := range analysis.Trees {
 		elements := make([]ProfilingDataStackElement, 0)
@@ -58,7 +57,7 @@ func DisplayByEBPF(ctx *cli.Context, analysis *api.EBPFProfilingAnalyzation) err
 	return display(ctx, trees)
 }
 
-func display(_ *cli.Context, trees []*ProfilingDataTree) error {
+func display(_ context.Context, trees []*ProfilingDataTree) error {
 	if len(trees) == 0 {
 		return fmt.Errorf("could not find the analysis data")
 	}
@@ -70,7 +69,7 @@ func display(_ *cli.Context, trees []*ProfilingDataTree) error {
 	}
 
 	// build data
-	data := make(map[string]interface{})
+	data := make(map[string]any)
 	elements, maxDepth := buildFlameGraphElements(trees)
 	data["elements"] = elements
 	data["maxDepth"] = maxDepth + 1
@@ -80,7 +79,7 @@ func display(_ *cli.Context, trees []*ProfilingDataTree) error {
 	return renderFlameGraphAndWrite(flameGraphPath, data)
 }
 
-func renderFlameGraphAndWrite(path string, data map[string]interface{}) error {
+func renderFlameGraphAndWrite(path string, data map[string]any) error {
 	// render template
 	var b bytes.Buffer
 	tmpl, err := template.New("flameGraphTemplate").Parse(flameGraphHTML)
@@ -141,7 +140,8 @@ func buildFlameGraphElements(trees []*ProfilingDataTree) (result []*StackElement
 }
 
 func buildFlameGraphChildElements(renderElements []*StackElement, dataElements []ProfilingDataStackElement,
-	parent *StackElement, relativeLeft int64) (result []*StackElement, left int64) {
+	parent *StackElement, relativeLeft int64,
+) (result []*StackElement, left int64) {
 	parentID := "0"
 	var depth int64 = 1
 	left = relativeLeft

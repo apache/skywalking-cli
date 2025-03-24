@@ -77,15 +77,14 @@ $ swctl metrics linear --name=service_relation_client_cpm --service-name consume
 			Step:  step.(*model.StepEnumValue).Selected,
 		}
 
-		metricsValues, err := metrics.LinearIntValues(ctx, api.MetricsCondition{
+		metricsValues, err := metrics.LinearIntValues(ctx.Context, api.MetricsCondition{
 			Name:   metricsName,
 			Entity: entity,
 		}, duration)
-
 		if err != nil {
 			return err
 		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: utils.MetricsValuesToMap(duration, metricsValues)})
+		return display.Display(ctx.Context, &displayable.Displayable{Data: utils.MetricsValuesToMap(duration, metricsValues)})
 	},
 }

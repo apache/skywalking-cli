@@ -18,17 +18,17 @@
 package hierarchy
 
 import (
+	"context"
+
 	"github.com/apache/skywalking-cli/assets"
 	"github.com/apache/skywalking-cli/pkg/graphql/client"
 
 	"github.com/machinebox/graphql"
 
-	"github.com/urfave/cli/v2"
-
 	api "skywalking.apache.org/repo/goapi/query"
 )
 
-func ServiceHierarchy(ctx *cli.Context, serviceID, layer string) (api.ServiceHierarchy, error) {
+func ServiceHierarchy(ctx context.Context, serviceID, layer string) (api.ServiceHierarchy, error) {
 	var response map[string]api.ServiceHierarchy
 
 	request := graphql.NewRequest(assets.Read("graphqls/hierarchy/ServiceHierarchy.graphql"))
@@ -40,7 +40,7 @@ func ServiceHierarchy(ctx *cli.Context, serviceID, layer string) (api.ServiceHie
 	return response["result"], err
 }
 
-func InstanceHierarchy(ctx *cli.Context, instanceID, layer string) (api.InstanceHierarchy, error) {
+func InstanceHierarchy(ctx context.Context, instanceID, layer string) (api.InstanceHierarchy, error) {
 	var response map[string]api.InstanceHierarchy
 
 	request := graphql.NewRequest(assets.Read("graphqls/hierarchy/InstanceHierarchy.graphql"))
@@ -52,7 +52,7 @@ func InstanceHierarchy(ctx *cli.Context, instanceID, layer string) (api.Instance
 	return response["result"], err
 }
 
-func ListLayerLevels(ctx *cli.Context) ([]api.LayerLevel, error) {
+func ListLayerLevels(ctx context.Context) ([]api.LayerLevel, error) {
 	var response map[string][]api.LayerLevel
 
 	request := graphql.NewRequest(assets.Read("graphqls/hierarchy/ListLayerLevels.graphql"))

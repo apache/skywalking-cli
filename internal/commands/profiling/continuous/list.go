@@ -46,11 +46,11 @@ $ swctl profiling continuous list --service-name=business-zone::projectC
 	Action: func(ctx *cli.Context) error {
 		serviceID := ctx.String("service-id")
 
-		result, err := profiling.QueryContinuousProfilingServiceTargets(ctx, serviceID)
+		result, err := profiling.QueryContinuousProfilingServiceTargets(ctx.Context, serviceID)
 		if err != nil {
 			return err
 		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: result})
+		return display.Display(ctx.Context, &displayable.Displayable{Data: result})
 	},
 }

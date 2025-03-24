@@ -18,15 +18,14 @@
 package display
 
 import (
+	"context"
 	"fmt"
-
 	"strings"
 
+	"github.com/apache/skywalking-cli/pkg/contextkey"
 	d "github.com/apache/skywalking-cli/pkg/display/displayable"
 
 	"github.com/apache/skywalking-cli/pkg/display/graph"
-
-	"github.com/urfave/cli/v2"
 
 	"github.com/apache/skywalking-cli/pkg/display/json"
 	"github.com/apache/skywalking-cli/pkg/display/table"
@@ -40,36 +39,9 @@ const (
 	GRAPH = "graph"
 )
 
-// The variable style sets the output style for the command.
-var style = map[string]string{"dashboard global": "graph",
-	"dashboard global-metrics": "graph",
-	"metrics top":              "table",
-	"metrics sorted":           "table",
-	"metrics linear":           "graph",
-	"metrics list":             "table",
-	"service list":             "table",
-	"t":                        "graph",
-	"trace":                    "graph",
-	"ebpf analysis":            "graph",
-	"trace analysis":           "graph",
-}
-
 // Display the object in the style specified in flag --display
-func Display(ctx *cli.Context, displayable *d.Displayable) error {
-	displayStyle := ctx.String("display")
-	if displayStyle == "" {
-		commandFullName := ctx.Command.FullName()
-		if commandFullName != "" {
-			displayStyle = getDisplayStyle(commandFullName)
-		} else {
-			for _, c := range ctx.Lineage() {
-				if s := getDisplayStyle(c.Args().First()); s != "" {
-					displayStyle = s
-					break
-				}
-			}
-		}
-	}
+func Display(ctx context.Context, displayable *d.Displayable) error {
+	displayStyle := ctx.Value(contextkey.Display{}).(string)
 	if displayStyle == "" {
 		displayStyle = "json"
 	}
@@ -85,12 +57,4 @@ func Display(ctx *cli.Context, displayable *d.Displayable) error {
 	default:
 		return fmt.Errorf("unsupported display style: %s", displayStyle)
 	}
-}
-
-// getDisplayStyle gets the default display settings.
-func getDisplayStyle(fullName string) string {
-	if command, ok := style[fullName]; ok {
-		return command
-	}
-	return ""
 }

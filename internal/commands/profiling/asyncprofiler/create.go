@@ -85,11 +85,11 @@ $ swctl profiling async create --service-name=service-name --duration=60 --event
 			Events:             eventTypes,
 			ExecArgs:           execArgs,
 		}
-		task, err := profiling.CreateAsyncProfilerTask(ctx, request)
+		task, err := profiling.CreateAsyncProfilerTask(ctx.Context, request)
 		if err != nil {
 			return err
 		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: task, Condition: request})
+		return display.Display(ctx.Context, &displayable.Displayable{Data: task, Condition: request})
 	},
 }

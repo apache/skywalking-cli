@@ -57,12 +57,11 @@ $ swctl process estimate scale --service-name abc --labels t1,t2`,
 			labels = strings.Split(labelString, ",")
 		}
 
-		scale, err := metadata.EstimateProcessScale(ctx, serviceID, labels)
-
+		scale, err := metadata.EstimateProcessScale(ctx.Context, serviceID, labels)
 		if err != nil {
 			return err
 		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: scale})
+		return display.Display(ctx.Context, &displayable.Displayable{Data: scale})
 	},
 }

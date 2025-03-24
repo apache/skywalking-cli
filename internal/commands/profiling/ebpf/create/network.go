@@ -82,7 +82,7 @@ $ swctl profiling ebpf create network --service-instance-id=abc`,
 		samplingConfigFile := ctx.String("sampling-config")
 
 		// convert the sampling rule
-		var samplings = make([]*api.EBPFNetworkSamplingRule, 0)
+		samplings := make([]*api.EBPFNetworkSamplingRule, 0)
 		if samplingConfigFile != "" {
 			config, err := os.ReadFile(samplingConfigFile)
 			if err != nil {
@@ -104,13 +104,12 @@ $ swctl profiling ebpf create network --service-instance-id=abc`,
 			Samplings:  samplings,
 		}
 
-		task, err := profiling.CreateEBPFNetworkProfilingTask(ctx, request)
-
+		task, err := profiling.CreateEBPFNetworkProfilingTask(ctx.Context, request)
 		if err != nil {
 			return err
 		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: task, Condition: request})
+		return display.Display(ctx.Context, &displayable.Displayable{Data: task, Condition: request})
 	},
 }
 

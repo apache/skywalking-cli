@@ -74,12 +74,11 @@ $ swctl profiling async analysis --service-name=service-name --task-id=task-id \
 			EventType:   eventType,
 		}
 
-		analyze, err := profiling.GetAsyncProfilerAnalyze(ctx, request)
-
+		analyze, err := profiling.GetAsyncProfilerAnalyze(ctx.Context, request)
 		if err != nil {
 			return err
 		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: analyze, Condition: request})
+		return display.Display(ctx.Context, &displayable.Displayable{Data: analyze, Condition: request})
 	},
 }

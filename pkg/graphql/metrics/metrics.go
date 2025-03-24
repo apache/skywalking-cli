@@ -18,8 +18,9 @@
 package metrics
 
 import (
+	"context"
+
 	"github.com/machinebox/graphql"
-	"github.com/urfave/cli/v2"
 
 	"github.com/apache/skywalking-cli/assets"
 	"github.com/apache/skywalking-cli/pkg/graphql/client"
@@ -27,7 +28,7 @@ import (
 	api "skywalking.apache.org/repo/goapi/query"
 )
 
-func IntValues(ctx *cli.Context, condition api.MetricsCondition, duration api.Duration) (int, error) {
+func IntValues(ctx context.Context, condition api.MetricsCondition, duration api.Duration) (int, error) {
 	var response map[string]int
 
 	request := graphql.NewRequest(assets.Read("graphqls/metrics/MetricsValue.graphql"))
@@ -40,7 +41,7 @@ func IntValues(ctx *cli.Context, condition api.MetricsCondition, duration api.Du
 	return response["result"], err
 }
 
-func NullableIntValue(ctx *cli.Context, condition api.MetricsCondition, duration api.Duration) (api.NullableValue, error) {
+func NullableIntValue(ctx context.Context, condition api.MetricsCondition, duration api.Duration) (api.NullableValue, error) {
 	var response map[string]api.NullableValue
 
 	request := graphql.NewRequest(assets.Read("graphqls/metrics/NullableMetricsValue.graphql"))
@@ -53,7 +54,7 @@ func NullableIntValue(ctx *cli.Context, condition api.MetricsCondition, duration
 	return response["result"], err
 }
 
-func LinearIntValues(ctx *cli.Context, condition api.MetricsCondition, duration api.Duration) (api.MetricsValues, error) {
+func LinearIntValues(ctx context.Context, condition api.MetricsCondition, duration api.Duration) (api.MetricsValues, error) {
 	var response map[string]api.MetricsValues
 
 	request := graphql.NewRequest(assets.Read("graphqls/metrics/MetricsValues.graphql"))
@@ -66,7 +67,12 @@ func LinearIntValues(ctx *cli.Context, condition api.MetricsCondition, duration 
 	return response["result"], err
 }
 
-func MultipleLinearIntValues(ctx *cli.Context, condition api.MetricsCondition, labels []string, duration api.Duration) ([]api.MetricsValues, error) {
+func MultipleLinearIntValues(
+	ctx context.Context,
+	condition api.MetricsCondition,
+	labels []string,
+	duration api.Duration,
+) ([]api.MetricsValues, error) {
 	var response map[string][]api.MetricsValues
 
 	request := graphql.NewRequest(assets.Read("graphqls/metrics/LabeledMetricsValues.graphql"))
@@ -80,7 +86,7 @@ func MultipleLinearIntValues(ctx *cli.Context, condition api.MetricsCondition, l
 	return response["result"], err
 }
 
-func Thermodynamic(ctx *cli.Context, condition api.MetricsCondition, duration api.Duration) (api.HeatMap, error) {
+func Thermodynamic(ctx context.Context, condition api.MetricsCondition, duration api.Duration) (api.HeatMap, error) {
 	var response map[string]api.HeatMap
 
 	request := graphql.NewRequest(assets.Read("graphqls/metrics/HeatMap.graphql"))
@@ -93,7 +99,7 @@ func Thermodynamic(ctx *cli.Context, condition api.MetricsCondition, duration ap
 	return response["result"], err
 }
 
-func SortMetrics(ctx *cli.Context, condition api.TopNCondition, duration api.Duration) ([]*api.SelectedRecord, error) {
+func SortMetrics(ctx context.Context, condition api.TopNCondition, duration api.Duration) ([]*api.SelectedRecord, error) {
 	var response map[string][]*api.SelectedRecord
 
 	request := graphql.NewRequest(assets.Read("graphqls/metrics/SortMetrics.graphql"))
@@ -105,7 +111,7 @@ func SortMetrics(ctx *cli.Context, condition api.TopNCondition, duration api.Dur
 	return response["result"], err
 }
 
-func SampledRecords(ctx *cli.Context, condition api.TopNCondition, duration api.Duration) ([]*api.SelectedRecord, error) {
+func SampledRecords(ctx context.Context, condition api.TopNCondition, duration api.Duration) ([]*api.SelectedRecord, error) {
 	var response map[string][]*api.SelectedRecord
 
 	request := graphql.NewRequest(assets.Read("graphqls/metrics/SampledRecords.graphql"))
@@ -117,7 +123,7 @@ func SampledRecords(ctx *cli.Context, condition api.TopNCondition, duration api.
 	return response["result"], err
 }
 
-func ReadRecords(ctx *cli.Context, condition api.RecordCondition, duration api.Duration) ([]*api.Record, error) {
+func ReadRecords(ctx context.Context, condition api.RecordCondition, duration api.Duration) ([]*api.Record, error) {
 	var response map[string][]*api.Record
 
 	request := graphql.NewRequest(assets.Read("graphqls/metrics/ReadRecords.graphql"))
@@ -129,7 +135,7 @@ func ReadRecords(ctx *cli.Context, condition api.RecordCondition, duration api.D
 	return response["result"], err
 }
 
-func ListMetrics(ctx *cli.Context, regex string) ([]*api.MetricDefinition, error) {
+func ListMetrics(ctx context.Context, regex string) ([]*api.MetricDefinition, error) {
 	var response map[string][]*api.MetricDefinition
 	request := graphql.NewRequest(assets.Read("graphqls/metrics/ListMetrics.graphql"))
 	request.Var("regex", regex)
@@ -139,7 +145,7 @@ func ListMetrics(ctx *cli.Context, regex string) ([]*api.MetricDefinition, error
 	return response["result"], err
 }
 
-func Execute(ctx *cli.Context, expression string, entity *api.Entity, duration api.Duration) (api.ExpressionResult, error) {
+func Execute(ctx context.Context, expression string, entity *api.Entity, duration api.Duration) (api.ExpressionResult, error) {
 	var response map[string]api.ExpressionResult
 
 	request := graphql.NewRequest(assets.Read("graphqls/metrics/ExecuteExpression.graphql"))

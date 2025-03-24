@@ -18,15 +18,15 @@
 package common
 
 import (
-	"github.com/machinebox/graphql"
+	"context"
 
-	"github.com/urfave/cli/v2"
+	"github.com/machinebox/graphql"
 
 	"github.com/apache/skywalking-cli/assets"
 	"github.com/apache/skywalking-cli/pkg/graphql/client"
 )
 
-func Version(ctx *cli.Context) (string, error) {
+func Version(ctx context.Context) (string, error) {
 	var response map[string]string
 
 	request := graphql.NewRequest(assets.Read("graphqls/common/version.graphql"))

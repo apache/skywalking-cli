@@ -70,16 +70,15 @@ $ swctl metrics thermodynamic --scope all --name all_heatmap
 			Step:  step.(*model.StepEnumValue).Selected,
 		}
 
-		metricsValues, err := metrics.Thermodynamic(ctx, api.MetricsCondition{
+		metricsValues, err := metrics.Thermodynamic(ctx.Context, api.MetricsCondition{
 			Name:   metricsName,
 			Entity: entity,
 		}, duration)
-
 		if err != nil {
 			return err
 		}
 
-		return display.Display(ctx, &displayable.Displayable{
+		return display.Display(ctx.Context, &displayable.Displayable{
 			Data:     metricsValues,
 			Duration: duration,
 			Title:    metricsName,

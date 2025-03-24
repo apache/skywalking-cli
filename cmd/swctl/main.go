@@ -44,6 +44,7 @@ import (
 	"github.com/apache/skywalking-cli/internal/commands/service"
 	"github.com/apache/skywalking-cli/internal/commands/trace"
 	"github.com/apache/skywalking-cli/internal/logger"
+	intutil "github.com/apache/skywalking-cli/internal/util"
 	"github.com/apache/skywalking-cli/pkg/util"
 
 	"github.com/sirupsen/logrus"
@@ -51,8 +52,10 @@ import (
 	"github.com/urfave/cli/v2/altsrc"
 )
 
-var log *logrus.Logger
-var version string // Will be initialized when building
+var (
+	log     *logrus.Logger
+	version string // Will be initialized when building
+)
 
 func init() {
 	log = logger.Log
@@ -119,7 +122,7 @@ services, service instances, etc.`
 	)
 
 	app.Flags = flags
-	app.CommandNotFound = util.CommandNotFound
+	app.CommandNotFound = intutil.CommandNotFound
 
 	// Enable auto-completion.
 	app.EnableBashCompletion = true

@@ -26,8 +26,7 @@ import (
 
 	api "skywalking.apache.org/repo/goapi/query"
 
-	"github.com/urfave/cli/v2"
-
+	"github.com/apache/skywalking-cli/pkg/contextkey"
 	"github.com/apache/skywalking-cli/pkg/graphql/dashboard"
 	"github.com/apache/skywalking-cli/pkg/util"
 
@@ -162,7 +161,7 @@ func MetricColumnsElement(columns []*MetricColumn) []grid.Element {
 		columnWidthPerc = 99
 	}
 
-	for i := 0; i < columnNum; i++ {
+	for i := range columnNum {
 		var column []grid.Element
 		column = append(column, grid.RowHeightPerc(TitleHeight, grid.Widget(columns[i].title)))
 
@@ -171,7 +170,7 @@ func MetricColumnsElement(columns []*MetricColumn) []grid.Element {
 		gaugeNum := int(math.Min(MaxGaugeNum, float64(len(columns[i].gauges))))
 		gaugeHeight := int(math.Floor(float64(99-TitleHeight) / float64(gaugeNum)))
 
-		for j := 0; j < gaugeNum; j++ {
+		for j := range gaugeNum {
 			column = append(column, grid.RowHeightPerc(gaugeHeight, grid.Widget(columns[i].gauges[j])))
 		}
 		metricColumns = append(metricColumns, grid.ColWidthPerc(columnWidthPerc, column...))
@@ -194,7 +193,7 @@ func layout(columns []grid.Element) ([]container.Option, error) {
 	return gridOpts, nil
 }
 
-func Display(ctx *cli.Context, metrics [][]*api.SelectedRecord) error {
+func Display(ctx context.Context, metrics [][]*api.SelectedRecord) error {
 	t, err := termbox.New()
 	if err != nil {
 		return err
@@ -211,7 +210,7 @@ func Display(ctx *cli.Context, metrics [][]*api.SelectedRecord) error {
 
 	var columns []*MetricColumn
 
-	configs, err := dashboard.LoadTemplate(ctx.String("template"))
+	configs, err := dashboard.LoadTemplate(ctx.Value(contextkey.DashboardTemplate{}).(string))
 	if err != nil {
 		return nil
 	}
@@ -234,7 +233,6 @@ func Display(ctx *cli.Context, metrics [][]*api.SelectedRecord) error {
 		container.Border(linestyle.Light),
 		container.BorderTitle("[Global Metrics]-PRESS Q TO QUIT"))...,
 	)
-
 	if err != nil {
 		return err
 	}

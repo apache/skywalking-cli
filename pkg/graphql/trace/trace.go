@@ -18,8 +18,9 @@
 package trace
 
 import (
+	"context"
+
 	"github.com/machinebox/graphql"
-	"github.com/urfave/cli/v2"
 
 	api "skywalking.apache.org/repo/goapi/query"
 
@@ -27,7 +28,7 @@ import (
 	"github.com/apache/skywalking-cli/pkg/graphql/client"
 )
 
-func Trace(ctx *cli.Context, traceID string) (api.Trace, error) {
+func Trace(ctx context.Context, traceID string) (api.Trace, error) {
 	var response map[string]api.Trace
 
 	request := graphql.NewRequest(assets.Read("graphqls/trace/Trace.graphql"))
@@ -38,7 +39,7 @@ func Trace(ctx *cli.Context, traceID string) (api.Trace, error) {
 	return response["result"], err
 }
 
-func Traces(ctx *cli.Context, condition *api.TraceQueryCondition) (api.TraceBrief, error) {
+func Traces(ctx context.Context, condition *api.TraceQueryCondition) (api.TraceBrief, error) {
 	var response map[string]api.TraceBrief
 
 	request := graphql.NewRequest(assets.Read("graphqls/trace/Traces.graphql"))

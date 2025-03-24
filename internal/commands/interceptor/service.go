@@ -94,9 +94,9 @@ func parseService(required bool, idFlagName, nameFlagName string, nodeType nodeT
 			var err error
 			switch nodeType {
 			case normal:
-				service, err = metadata.SearchService(ctx, name)
+				service, err = metadata.SearchService(ctx.Context, name)
 			case browser:
-				service, err = metadata.SearchBrowserService(ctx, name)
+				service, err = metadata.SearchBrowserService(ctx.Context, name)
 			}
 			if err != nil {
 				return err

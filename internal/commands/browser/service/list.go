@@ -56,7 +56,7 @@ $ swctl browser svc ls test-ui`,
 		var err error
 
 		if args := ctx.Args(); args.Len() == 0 {
-			services, err = metadata.AllBrowserServices(ctx, api.Duration{
+			services, err = metadata.AllBrowserServices(ctx.Context, api.Duration{
 				Start: start,
 				End:   end,
 				Step:  step.(*model.StepEnumValue).Selected,
@@ -65,13 +65,13 @@ $ swctl browser svc ls test-ui`,
 				return err
 			}
 		} else {
-			service, err := metadata.SearchBrowserService(ctx, args.First())
+			service, err := metadata.SearchBrowserService(ctx.Context, args.First())
 			if err != nil {
 				return err
 			}
 			services = []api.Service{service}
 		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: services})
+		return display.Display(ctx.Context, &displayable.Displayable{Data: services})
 	},
 }

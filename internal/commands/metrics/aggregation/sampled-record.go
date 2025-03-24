@@ -70,7 +70,7 @@ $ swctl metrics sampled-record --name top_n_database_statement 5
 	),
 	Action: func(ctx *cli.Context) error {
 		// read OAP version
-		major, minor, err := metadata.BackendVersion(ctx)
+		major, minor, err := metadata.BackendVersion(ctx.Context)
 		if err != nil {
 			return fmt.Errorf("read backend version failure: %v", err)
 		}
@@ -83,12 +83,12 @@ $ swctl metrics sampled-record --name top_n_database_statement 5
 			}
 			logger.Log.Debugln(condition.Name, condition.TopN)
 
-			records, err1 := metrics.ReadRecords(ctx, *condition, *duration)
+			records, err1 := metrics.ReadRecords(ctx.Context, *condition, *duration)
 			if err1 != nil {
 				return err1
 			}
 
-			return display.Display(ctx, &displayable.Displayable{Data: records})
+			return display.Display(ctx.Context, &displayable.Displayable{Data: records})
 		}
 
 		condition, duration, err := buildSortedCondition(ctx, false)
@@ -97,11 +97,11 @@ $ swctl metrics sampled-record --name top_n_database_statement 5
 		}
 
 		logger.Log.Debugln(condition.Name, condition.Scope, condition.TopN)
-		sampledRecords, err := metrics.SampledRecords(ctx, *condition, *duration)
+		sampledRecords, err := metrics.SampledRecords(ctx.Context, *condition, *duration)
 		if err != nil {
 			return err
 		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: sampledRecords})
+		return display.Display(ctx.Context, &displayable.Displayable{Data: sampledRecords})
 	},
 }

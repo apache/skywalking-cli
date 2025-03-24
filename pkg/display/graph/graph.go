@@ -18,14 +18,13 @@
 package graph
 
 import (
+	"context"
 	"fmt"
 	"reflect"
 
 	"github.com/apache/skywalking-cli/pkg/display/graph/flamegraph"
 
 	api "skywalking.apache.org/repo/goapi/query"
-
-	"github.com/urfave/cli/v2"
 
 	d "github.com/apache/skywalking-cli/pkg/display/displayable"
 	db "github.com/apache/skywalking-cli/pkg/display/graph/dashboard"
@@ -60,7 +59,7 @@ var (
 	TraceProfilingAnalysisDataType = reflect.TypeOf(TraceProfilingAnalysis{})
 )
 
-func Display(ctx *cli.Context, displayable *d.Displayable) error {
+func Display(ctx context.Context, displayable *d.Displayable) error {
 	data := displayable.Data
 
 	switch reflect.TypeOf(data) {

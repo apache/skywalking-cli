@@ -40,11 +40,11 @@ $ swctl endpoint get cHJvdmlkZXI=.1_L3VzZXJz`,
 			return fmt.Errorf("endpoint-id must be provide")
 		}
 
-		endpointInfo, err := metadata.GetEndpointInfo(ctx, ctx.Args().First())
+		endpointInfo, err := metadata.GetEndpointInfo(ctx.Context, ctx.Args().First())
 		if err != nil {
 			return err
 		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: endpointInfo})
+		return display.Display(ctx.Context, &displayable.Displayable{Data: endpointInfo})
 	},
 }

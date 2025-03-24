@@ -35,8 +35,7 @@ func TimezoneInterceptor(ctx *cli.Context) error {
 		return nil
 	}
 
-	serverTimeInfo, err := metadata.ServerTimeInfo(ctx)
-
+	serverTimeInfo, err := metadata.ServerTimeInfo(ctx.Context)
 	if err != nil {
 		logger.Log.Debugf("Failed to get server time info: %v\n", err)
 		return nil

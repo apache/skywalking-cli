@@ -90,11 +90,11 @@ $ swctl endpoint ls --service-name business-zone::projectC --keyword projectC`,
 			}
 		}
 
-		endpoints, err := metadata.SearchEndpoints(ctx, serviceID, keyword, limit, duration)
+		endpoints, err := metadata.SearchEndpoints(ctx.Context, serviceID, keyword, limit, duration)
 		if err != nil {
 			return err
 		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: endpoints})
+		return display.Display(ctx.Context, &displayable.Displayable{Data: endpoints})
 	},
 }

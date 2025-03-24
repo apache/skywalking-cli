@@ -101,12 +101,12 @@ $ swctl profiling continuous set --service-name=abc --config=/path/to/config.yam
 			Targets:   targets,
 		}
 
-		result, err := profiling.SetContinuousProfilingPolicy(ctx, request)
+		result, err := profiling.SetContinuousProfilingPolicy(ctx.Context, request)
 		if err != nil {
 			return err
 		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: result, Condition: request})
+		return display.Display(ctx.Context, &displayable.Displayable{Data: result, Condition: request})
 	},
 }
 

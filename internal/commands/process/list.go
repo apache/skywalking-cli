@@ -57,7 +57,7 @@ $ swctl process ls --instance-id cHJvdmlkZXI=.1_cHJvdmlkZXIx`,
 		start := ctx.String("start")
 		step := ctx.Generic("step")
 
-		processes, err := metadata.Processes(ctx, instanceID, api.Duration{
+		processes, err := metadata.Processes(ctx.Context, instanceID, api.Duration{
 			Start: start,
 			End:   end,
 			Step:  step.(*model.StepEnumValue).Selected,
@@ -66,6 +66,6 @@ $ swctl process ls --instance-id cHJvdmlkZXI=.1_cHJvdmlkZXIx`,
 			return err
 		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: processes})
+		return display.Display(ctx.Context, &displayable.Displayable{Data: processes})
 	},
 }

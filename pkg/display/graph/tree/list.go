@@ -18,6 +18,7 @@
 package tree
 
 import (
+	"context"
 	"fmt"
 	"strings"
 
@@ -28,17 +29,18 @@ import (
 
 	ui "github.com/gizak/termui/v3"
 	"github.com/gizak/termui/v3/widgets"
-	"github.com/urfave/cli/v2"
 
 	"github.com/apache/skywalking-cli/internal/logger"
 )
 
-const DefaultPageSize = 15
-const KeyMap = " Keymap "
-const Detail = " Detail "
-const Quit = "<C-c>"
+const (
+	DefaultPageSize = 15
+	KeyMap          = " Keymap "
+	Detail          = " Detail "
+	Quit            = "<C-c>"
+)
 
-func DisplayList(ctx *cli.Context, displayable *d.Displayable) error {
+func DisplayList(ctx context.Context, displayable *d.Displayable) error {
 	data := displayable.Data.(api.TraceBrief)
 	condition := displayable.Condition.(*api.TraceQueryCondition)
 	if err := ui.Init(); err != nil {
@@ -84,19 +86,20 @@ func DisplayList(ctx *cli.Context, displayable *d.Displayable) error {
 	detail.Title = Detail
 	detail.WrapText = false
 
-	draw(list, tree, detail, help, data, ctx, condition)
-	listenTracesKeyboard(list, tree, data, ctx, detail, help, condition)
+	draw(ctx, list, tree, detail, help, data, condition)
+	listenTracesKeyboard(ctx, list, tree, data, detail, help, condition)
 
 	return nil
 }
 
-func draw(list *widgets.List, tree *widgets.Tree, detail, help *widgets.Paragraph, data api.TraceBrief,
-	ctx *cli.Context, _ *api.TraceQueryCondition) {
+func draw(ctx context.Context, list *widgets.List, tree *widgets.Tree, detail, help *widgets.Paragraph, data api.TraceBrief,
+	_ *api.TraceQueryCondition,
+) {
 	x, y := ui.TerminalDimensions()
 
 	if len(data.Traces) != 0 {
 		showIndex := list.SelectedRow
-		var traceID = data.Traces[showIndex].TraceIds[0]
+		traceID := data.Traces[showIndex].TraceIds[0]
 		list.Title = fmt.Sprintf("[%s]", traceID)
 		nodes, serviceNames := getNodeData(ctx, traceID)
 		tree.Title = fmt.Sprintf("[%s]", strings.Join(serviceNames, "->"))
@@ -119,8 +122,9 @@ func draw(list *widgets.List, tree *widgets.Tree, detail, help *widgets.Paragrap
 	ui.Render(list, tree, detail, help)
 }
 
-func listenTracesKeyboard(list *widgets.List, tree *widgets.Tree, data api.TraceBrief, ctx *cli.Context,
-	detail, help *widgets.Paragraph, condition *api.TraceQueryCondition) {
+func listenTracesKeyboard(ctx context.Context, list *widgets.List, tree *widgets.Tree, data api.TraceBrief,
+	detail, help *widgets.Paragraph, condition *api.TraceQueryCondition,
+) {
 	uiEvents := ui.PollEvents()
 	listActive := true
 	var err error
@@ -160,7 +164,7 @@ func listenTracesKeyboard(list *widgets.List, tree *widgets.Tree, data api.Trace
 			}
 		}
 
-		draw(list, tree, detail, help, data, ctx, condition)
+		draw(ctx, list, tree, detail, help, data, condition)
 	}
 }
 
@@ -198,9 +202,8 @@ func listActions(key string, list *widgets.List, tree *widgets.Tree, listActive 
 	return f
 }
 
-func getNodeData(ctx *cli.Context, traceID string) (nodes []*widgets.TreeNode, serviceNames []string) {
+func getNodeData(ctx context.Context, traceID string) (nodes []*widgets.TreeNode, serviceNames []string) {
 	data, err := trace.Trace(ctx, traceID)
-
 	if err != nil {
 		logger.Log.Fatalln(err)
 	}

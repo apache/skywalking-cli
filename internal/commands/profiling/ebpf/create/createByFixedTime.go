@@ -89,12 +89,11 @@ $ swctl profiling ebpf fixed --service-id=abc --process-id=abc --duration=1m --t
 			TargetType:    ctx.Generic("target-type").(*ebpf.ProfilingTargetTypeEnumValue).Selected,
 		}
 
-		task, err := profiling.CreateEBPFProfilingFixedTimeTask(ctx, request)
-
+		task, err := profiling.CreateEBPFProfilingFixedTimeTask(ctx.Context, request)
 		if err != nil {
 			return err
 		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: task, Condition: request})
+		return display.Display(ctx.Context, &displayable.Displayable{Data: task, Condition: request})
 	},
 }

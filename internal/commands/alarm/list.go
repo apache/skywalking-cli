@@ -89,8 +89,8 @@ $ swctl alarm list
 
 		var tags []*api.AlarmTag
 		if tagStr != "" {
-			tagArr := strings.Split(tagStr, ",")
-			for _, tag := range tagArr {
+			tagArr := strings.SplitSeq(tagStr, ",")
+			for tag := range tagArr {
 				kv := strings.SplitN(tag, "=", 2)
 				if len(kv) != 2 {
 					return fmt.Errorf("invalid tag, cannot be splitted into 2 parts. %s", tag)
@@ -112,11 +112,11 @@ $ swctl alarm list
 			Tags:     tags,
 			Paging:   &paging,
 		}
-		alarms, err := alarm.Alarms(ctx, condition)
+		alarms, err := alarm.Alarms(ctx.Context, condition)
 		if err != nil {
 			return err
 		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: alarms, Condition: condition})
+		return display.Display(ctx.Context, &displayable.Displayable{Data: alarms, Condition: condition})
 	},
 }

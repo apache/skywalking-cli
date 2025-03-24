@@ -45,11 +45,11 @@ $ swctl profiling ebpf create prepare --service-id=abc`,
 	Action: func(ctx *cli.Context) error {
 		serviceID := ctx.String("service-id")
 
-		prepare, err := profiling.QueryPrepareCreateEBPFProfilingTaskData(ctx, serviceID)
+		prepare, err := profiling.QueryPrepareCreateEBPFProfilingTaskData(ctx.Context, serviceID)
 		if err != nil {
 			return err
 		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: prepare, Condition: serviceID})
+		return display.Display(ctx.Context, &displayable.Displayable{Data: prepare, Condition: serviceID})
 	},
 }

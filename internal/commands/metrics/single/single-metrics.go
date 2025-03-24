@@ -71,15 +71,14 @@ $ swctl metrics single --name endpoint_cpm --service-name business-zone::project
 			Step:  step.(*model.StepEnumValue).Selected,
 		}
 
-		metricsValue, err := metrics.IntValues(ctx, api.MetricsCondition{
+		metricsValue, err := metrics.IntValues(ctx.Context, api.MetricsCondition{
 			Name:   metricsName,
 			Entity: entity,
 		}, duration)
-
 		if err != nil {
 			return err
 		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: metricsValue})
+		return display.Display(ctx.Context, &displayable.Displayable{Data: metricsValue})
 	},
 }

@@ -22,13 +22,13 @@ import (
 	"encoding/base64"
 
 	"github.com/machinebox/graphql"
-	"github.com/urfave/cli/v2"
 
 	"github.com/apache/skywalking-cli/internal/logger"
+	"github.com/apache/skywalking-cli/pkg/contextkey"
 )
 
-func newClient(cliCtx *cli.Context) (client *graphql.Client) {
-	client = graphql.NewClient(cliCtx.String("base-url"))
+func newClient(ctx context.Context) (client *graphql.Client) {
+	client = graphql.NewClient(ctx.Value(contextkey.BaseURL{}).(string))
 	client.Log = func(msg string) {
 		logger.Log.Debugln(msg)
 	}
@@ -36,10 +36,10 @@ func newClient(cliCtx *cli.Context) (client *graphql.Client) {
 }
 
 // ExecuteQuery executes the `request` and parse to the `response`, returning `error` if there is any.
-func ExecuteQuery(cliCtx *cli.Context, request *graphql.Request, response interface{}) error {
-	username := cliCtx.String("username")
-	password := cliCtx.String("password")
-	authorization := cliCtx.String("authorization")
+func ExecuteQuery(ctx context.Context, request *graphql.Request, response any) error {
+	username := ctx.Value(contextkey.Username{}).(string)
+	password := ctx.Value(contextkey.Password{}).(string)
+	authorization := ctx.Value(contextkey.Authorization{}).(string)
 	if authorization == "" && username != "" && password != "" {
 		authorization = "Basic " + base64.StdEncoding.EncodeToString([]byte(username+":"+password))
 	}
@@ -47,8 +47,7 @@ func ExecuteQuery(cliCtx *cli.Context, request *graphql.Request, response interf
 		request.Header.Set("Authorization", authorization)
 	}
 
-	client := newClient(cliCtx)
-	ctx := context.Background()
+	client := newClient(ctx)
 	err := client.Run(ctx, request, response)
 	return err
 }
