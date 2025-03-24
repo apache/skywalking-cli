@@ -45,11 +45,11 @@ $ swctl svc ly GENERAL`,
 		if args := ctx.Args(); args.Len() == 0 {
 			return fmt.Errorf("layer must be provide")
 		}
-		services, err := metadata.ListLayerService(ctx, ctx.Args().First())
+		services, err := metadata.ListLayerService(ctx.Context, ctx.Args().First())
 		if err != nil {
 			return err
 		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: services})
+		return display.Display(ctx.Context, &displayable.Displayable{Data: services})
 	},
 }

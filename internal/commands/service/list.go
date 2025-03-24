@@ -57,7 +57,7 @@ $ swctl svc ls projectC`,
 		var err error
 
 		if args := ctx.Args(); args.Len() == 0 {
-			services, err = metadata.AllServices(ctx, api.Duration{
+			services, err = metadata.AllServices(ctx.Context, api.Duration{
 				Start: start,
 				End:   end,
 				Step:  step.(*model.StepEnumValue).Selected,
@@ -66,13 +66,13 @@ $ swctl svc ls projectC`,
 				return err
 			}
 		} else {
-			service, err := metadata.SearchService(ctx, args.First())
+			service, err := metadata.SearchService(ctx.Context, args.First())
 			if err != nil {
 				return err
 			}
 			services = []api.Service{service}
 		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: services})
+		return display.Display(ctx.Context, &displayable.Displayable{Data: services})
 	},
 }

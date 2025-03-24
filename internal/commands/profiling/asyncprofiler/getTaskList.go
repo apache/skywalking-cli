@@ -73,12 +73,11 @@ $ swctl profiling async list --service-name=service-name`,
 			Limit:         limit,
 		}
 
-		tasks, err := profiling.GetAsyncProfilerTaskList(ctx, request)
-
+		tasks, err := profiling.GetAsyncProfilerTaskList(ctx.Context, request)
 		if err != nil {
 			return err
 		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: tasks, Condition: request})
+		return display.Display(ctx.Context, &displayable.Displayable{Data: tasks, Condition: request})
 	},
 }

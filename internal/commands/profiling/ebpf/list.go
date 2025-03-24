@@ -60,11 +60,13 @@ $ swctl profiling ebpf list --service-name=service-name
 	Action: func(ctx *cli.Context) error {
 		serviceID := ctx.String("service-id")
 
-		processes, err := profiling.QueryEBPFProfilingTaskList(ctx, serviceID, ctx.Generic("trigger").(*ebpf.ProfilingTriggerTypeEnumValue).Selected)
+		processes, err := profiling.QueryEBPFProfilingTaskList(
+			ctx.Context, serviceID,
+			ctx.Generic("trigger").(*ebpf.ProfilingTriggerTypeEnumValue).Selected)
 		if err != nil {
 			return err
 		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: processes})
+		return display.Display(ctx.Context, &displayable.Displayable{Data: processes})
 	},
 }

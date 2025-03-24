@@ -48,11 +48,11 @@ $ swctl profiling ebpf schedules --task-id=abc
 	Action: func(ctx *cli.Context) error {
 		taskID := ctx.String("task-id")
 
-		schedules, err := profiling.QueryEBPFProfilingScheduleList(ctx, taskID)
+		schedules, err := profiling.QueryEBPFProfilingScheduleList(ctx.Context, taskID)
 		if err != nil {
 			return err
 		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: schedules})
+		return display.Display(ctx.Context, &displayable.Displayable{Data: schedules})
 	},
 }

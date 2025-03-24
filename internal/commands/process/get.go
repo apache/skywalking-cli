@@ -40,11 +40,11 @@ $ swctl process get 2b9e46c13c91803695a4364257415e523af7cbf17bf4058e025c16b944a6
 			return fmt.Errorf("process-id must be provided")
 		}
 
-		instance, err := metadata.GetProcess(ctx, ctx.Args().First())
+		instance, err := metadata.GetProcess(ctx.Context, ctx.Args().First())
 		if err != nil {
 			return err
 		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: instance})
+		return display.Display(ctx.Context, &displayable.Displayable{Data: instance})
 	},
 }

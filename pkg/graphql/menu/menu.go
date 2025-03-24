@@ -18,17 +18,17 @@
 package menu
 
 import (
+	"context"
+
 	"github.com/apache/skywalking-cli/assets"
 	"github.com/apache/skywalking-cli/pkg/graphql/client"
 
 	"github.com/machinebox/graphql"
 
-	"github.com/urfave/cli/v2"
-
 	api "skywalking.apache.org/repo/goapi/query"
 )
 
-func GetItems(ctx *cli.Context) ([]*api.MenuItem, error) {
+func GetItems(ctx context.Context) ([]*api.MenuItem, error) {
 	var response map[string][]*api.MenuItem
 
 	request := graphql.NewRequest(assets.Read("graphqls/menu/GetItems.graphql"))

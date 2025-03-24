@@ -15,26 +15,24 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package event
+package contextkey
 
-import (
-	"context"
-
-	"github.com/apache/skywalking-cli/assets"
-	"github.com/apache/skywalking-cli/pkg/graphql/client"
-
-	"github.com/machinebox/graphql"
-
-	api "skywalking.apache.org/repo/goapi/query"
+type (
+	BaseURL       struct{}
+	Username      struct{}
+	Password      struct{}
+	Authorization struct{}
 )
 
-func Events(ctx context.Context, condition *api.EventQueryCondition) (api.Events, error) {
-	var response map[string]api.Events
+type (
+	DurationStart struct{}
+	DurationEnd   struct{}
+	DurationStep  struct{}
+	DurationType  struct{}
+)
 
-	request := graphql.NewRequest(assets.Read("graphqls/event/events.graphql"))
-	request.Var("condition", condition)
-
-	err := client.ExecuteQuery(ctx, request, &response)
-
-	return response["result"], err
-}
+type (
+	Display                  struct{}
+	DashboardTemplate        struct{}
+	DashboardRefreshInterval struct{}
+)

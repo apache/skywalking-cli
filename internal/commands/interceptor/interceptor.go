@@ -18,18 +18,30 @@
 package interceptor
 
 import (
+	"context"
+
+	"github.com/apache/skywalking-cli/pkg/contextkey"
+
 	"github.com/urfave/cli/v2"
 )
 
 // BeforeChain is a convenient function to chain up multiple cli.BeforeFunc
 func BeforeChain(beforeFunctions ...cli.BeforeFunc) cli.BeforeFunc {
-	return func(ctx *cli.Context) error {
+	return func(cliCtx *cli.Context) error {
+		ctx := cliCtx.Context
+		ctx = context.WithValue(ctx, contextkey.BaseURL{}, cliCtx.String("base-url"))
+		ctx = context.WithValue(ctx, contextkey.Username{}, cliCtx.String("username"))
+		ctx = context.WithValue(ctx, contextkey.Password{}, cliCtx.String("password"))
+		ctx = context.WithValue(ctx, contextkey.Authorization{}, cliCtx.String("authorization"))
+		ctx = context.WithValue(ctx, contextkey.Display{}, cliCtx.String("display"))
+		cliCtx.Context = ctx
+
 		// --timezone is global option, it should be applied always.
-		if err := TimezoneInterceptor(ctx); err != nil {
+		if err := TimezoneInterceptor(cliCtx); err != nil {
 			return err
 		}
 		for _, beforeFunc := range beforeFunctions {
-			if err := beforeFunc(ctx); err != nil {
+			if err := beforeFunc(cliCtx); err != nil {
 				return err
 			}
 		}

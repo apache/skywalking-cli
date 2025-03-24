@@ -57,12 +57,11 @@ var ServiceCommand = &cli.Command{
 			Step:  step.(*model.StepEnumValue).Selected,
 		}
 
-		dependency, err := dependency.ServiceTopology(ctx, serviceID, duration)
-
+		dependency, err := dependency.ServiceTopology(ctx.Context, serviceID, duration)
 		if err != nil {
 			return err
 		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: dependency})
+		return display.Display(ctx.Context, &displayable.Displayable{Data: dependency})
 	},
 }

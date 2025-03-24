@@ -44,12 +44,11 @@ $ swctl profiling async progress --task-id=task-id`,
 	Action: func(ctx *cli.Context) error {
 		taskID := ctx.String("task-id")
 
-		data, err := profiling.GetAsyncProfilerTaskProgress(ctx, taskID)
-
+		data, err := profiling.GetAsyncProfilerTaskProgress(ctx.Context, taskID)
 		if err != nil {
 			return err
 		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: data, Condition: taskID})
+		return display.Display(ctx.Context, &displayable.Displayable{Data: data, Condition: taskID})
 	},
 }

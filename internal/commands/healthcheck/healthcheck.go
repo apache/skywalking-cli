@@ -59,8 +59,7 @@ $ swctl health --grpc=false
 		},
 	},
 	Action: func(ctx *cli.Context) error {
-		healthStatus, err := hc.CheckHealth(ctx)
-
+		healthStatus, err := hc.CheckHealth(ctx.Context)
 		if err != nil {
 			return err
 		}

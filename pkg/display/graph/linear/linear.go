@@ -33,8 +33,6 @@ import (
 	"github.com/mum4k/termdash/terminal/termbox"
 	"github.com/mum4k/termdash/terminal/terminalapi"
 	"github.com/mum4k/termdash/widgets/linechart"
-
-	"github.com/urfave/cli/v2"
 )
 
 const RootID = "root"
@@ -95,7 +93,7 @@ func LineChartElements(lineCharts map[string]*linechart.LineChart) [][]grid.Elem
 		charts = append(charts, lineCharts[title])
 	}
 
-	for r := 0; r < len(rows); r++ {
+	for r := range rows {
 		var row []grid.Element
 		for c := 0; c < cols && r*cols+c < len(lineCharts); c++ {
 			percentage := int(math.Floor(float64(100) / float64(cols)))
@@ -133,7 +131,7 @@ func layout(rows [][]grid.Element) ([]container.Option, error) {
 	return builder.Build()
 }
 
-func Display(cliCtx *cli.Context, inputs map[string]map[string]*displayable.MetricValue) error {
+func Display(ctx context.Context, inputs map[string]map[string]*displayable.MetricValue) error {
 	t, err := termbox.New()
 	if err != nil {
 		return err
@@ -166,15 +164,15 @@ func Display(cliCtx *cli.Context, inputs map[string]map[string]*displayable.Metr
 	err = c.Update(RootID, append(
 		gridOpts,
 		container.Border(linestyle.Light),
-		container.BorderTitle(fmt.Sprintf("[%s]-PRESS Q TO QUIT", cliCtx.String("name"))),
+		container.BorderTitle(fmt.Sprintf("[%s]-PRESS Q TO QUIT", ctx.Value("name").(string))),
 		container.BorderTitleAlignLeft())...,
 	)
-
 	if err != nil {
 		return err
 	}
 
-	ctx, cancel := context.WithCancel(context.Background())
+	var cancel context.CancelFunc
+	ctx, cancel = context.WithCancel(ctx)
 	quitter := func(keyboard *terminalapi.Keyboard) {
 		if strings.EqualFold(keyboard.Key.String(), "q") {
 			cancel()

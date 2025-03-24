@@ -47,11 +47,11 @@ $ swctl profiling ebpf keep network --task-id=abc`,
 	Action: func(ctx *cli.Context) error {
 		taskID := ctx.String("task-id")
 
-		keepResult, err := profiling.KeepNetworkProfilingTask(ctx, taskID)
+		keepResult, err := profiling.KeepNetworkProfilingTask(ctx.Context, taskID)
 		if err != nil {
 			return err
 		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: keepResult})
+		return display.Display(ctx.Context, &displayable.Displayable{Data: keepResult})
 	},
 }

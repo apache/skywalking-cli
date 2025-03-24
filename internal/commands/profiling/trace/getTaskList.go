@@ -49,12 +49,11 @@ $ swctl profiling trace list --service-name=business-zone::projectC --endpoint-n
 		serviceID := ctx.String("service-id")
 		endpoint := ctx.String("endpoint-name")
 
-		task, err := profiling.GetTraceProfilingTaskList(ctx, serviceID, endpoint)
-
+		task, err := profiling.GetTraceProfilingTaskList(ctx.Context, serviceID, endpoint)
 		if err != nil {
 			return err
 		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: task, Condition: serviceID})
+		return display.Display(ctx.Context, &displayable.Displayable{Data: task, Condition: serviceID})
 	},
 }

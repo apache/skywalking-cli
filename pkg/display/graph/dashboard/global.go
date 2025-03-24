@@ -27,6 +27,7 @@ import (
 	api "skywalking.apache.org/repo/goapi/query"
 
 	"github.com/apache/skywalking-cli/internal/commands/interceptor"
+	"github.com/apache/skywalking-cli/pkg/contextkey"
 	"github.com/apache/skywalking-cli/pkg/graphql/utils"
 	lib "github.com/apache/skywalking-cli/pkg/heatmap"
 
@@ -36,9 +37,7 @@ import (
 	"github.com/mum4k/termdash/linestyle"
 	"github.com/mum4k/termdash/terminal/termbox"
 	"github.com/mum4k/termdash/terminal/terminalapi"
-	"github.com/urfave/cli/v2"
 
-	"github.com/apache/skywalking-cli/internal/model"
 	"github.com/apache/skywalking-cli/pkg/display/graph/gauge"
 	"github.com/apache/skywalking-cli/pkg/display/graph/heatmap"
 	"github.com/apache/skywalking-cli/pkg/display/graph/linear"
@@ -88,12 +87,16 @@ var template *dashboard.GlobalTemplate
 
 var allWidgets *widgets
 
-var initStartStr string
-var initStep = api.StepMinute
-var initEndStr string
+var (
+	initStartStr string
+	initStep     = api.StepMinute
+	initEndStr   string
+)
 
-var curStartTime time.Time
-var curEndTime time.Time
+var (
+	curStartTime time.Time
+	curEndTime   time.Time
+)
 
 // setLayout sets the specified layout.
 func setLayout(c *container.Container, lt layoutType) error {
@@ -231,7 +234,7 @@ func newWidgets(data *dashboard.GlobalData) error {
 	return nil
 }
 
-func Display(ctx *cli.Context, data *dashboard.GlobalData) error {
+func Display(ctx context.Context, data *dashboard.GlobalData) error {
 	t, err := termbox.New(termbox.ColorMode(terminalapi.ColorMode256))
 	if err != nil {
 		return err
@@ -247,7 +250,7 @@ func Display(ctx *cli.Context, data *dashboard.GlobalData) error {
 		return err
 	}
 
-	te, err := dashboard.LoadTemplate(ctx.String("template"))
+	te, err := dashboard.LoadTemplate(ctx.Value(contextkey.DashboardTemplate{}).(string))
 	if err != nil {
 		return err
 	}
@@ -279,22 +282,23 @@ func Display(ctx *cli.Context, data *dashboard.GlobalData) error {
 		return e
 	}
 
-	con, cancel := context.WithCancel(context.Background())
+	var cancel context.CancelFunc
+	ctx, cancel = context.WithCancel(ctx)
 	quitter := func(keyboard *terminalapi.Keyboard) {
 		if strings.EqualFold(keyboard.Key.String(), "q") {
 			cancel()
 		}
 	}
 
-	refreshInterval := time.Duration(ctx.Int("refresh")) * time.Second
-	dt := utils.DurationType(ctx.String("duration-type"))
+	refreshInterval := time.Duration(ctx.Value(contextkey.DashboardRefreshInterval{}).(int)) * time.Second
+	dt := ctx.Value(contextkey.DurationType{}).(utils.DurationType)
 
 	// Only when users use the relative time, the duration will be adjusted to refresh.
 	if dt != utils.BothPresent {
-		go refresh(con, ctx, refreshInterval)
+		go refresh(ctx, refreshInterval)
 	}
 
-	err = termdash.Run(con, t, c, termdash.KeyboardSubscriber(quitter), termdash.RedrawInterval(refreshInterval))
+	err = termdash.Run(ctx, t, c, termdash.KeyboardSubscriber(quitter), termdash.RedrawInterval(refreshInterval))
 
 	return err
 }
@@ -312,16 +316,13 @@ func longestString(strs []string) (ret string) {
 }
 
 // refresh updates the duration and query the new data to update all of widgets, once every delay.
-func refresh(con context.Context, ctx *cli.Context, interval time.Duration) {
+func refresh(ctx context.Context, interval time.Duration) {
 	ticker := time.NewTicker(interval)
 	defer ticker.Stop()
 
-	initStartStr = ctx.String("start")
-	initEndStr = ctx.String("end")
-
-	if s := ctx.Generic("step"); s != nil {
-		initStep = s.(*model.StepEnumValue).Selected
-	}
+	initStartStr = ctx.Value(contextkey.DurationStart{}).(string)
+	initEndStr = ctx.Value(contextkey.DurationEnd{}).(string)
+	initStep = ctx.Value(contextkey.DurationStep{}).(api.Step)
 
 	_, start, err := interceptor.TryParseTime(initStartStr, initStep)
 	if err != nil {
@@ -351,7 +352,7 @@ func refresh(con context.Context, ctx *cli.Context, interval time.Duration) {
 			if err := updateAllWidgets(data); err != nil {
 				continue
 			}
-		case <-con.Done():
+		case <-ctx.Done():
 			return
 		}
 	}

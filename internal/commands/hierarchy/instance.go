@@ -49,10 +49,10 @@ var instanceCommand = &cli.Command{
 		instanceID := ctx.String("instance-id")
 		layer := ctx.String("layer")
 
-		hierarchy, err := hierarchy.InstanceHierarchy(ctx, instanceID, layer)
+		hierarchy, err := hierarchy.InstanceHierarchy(ctx.Context, instanceID, layer)
 		if err != nil {
 			return err
 		}
-		return display.Display(ctx, &displayable.Displayable{Data: hierarchy, Condition: instanceID})
+		return display.Display(ctx.Context, &displayable.Displayable{Data: hierarchy, Condition: instanceID})
 	},
 }

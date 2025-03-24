@@ -66,11 +66,11 @@ $ swctl alarm autocomplete-values --key=tagKey
 			Step:  step.(*model.StepEnumValue).Selected,
 		}
 
-		autocompleteValues, err := alarm.TagAutocompleteValues(ctx, duration, tagKey)
+		autocompleteValues, err := alarm.TagAutocompleteValues(ctx.Context, duration, tagKey)
 		if err != nil {
 			return err
 		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: autocompleteValues, Condition: tagKey})
+		return display.Display(ctx.Context, &displayable.Displayable{Data: autocompleteValues, Condition: tagKey})
 	},
 }

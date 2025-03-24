@@ -112,6 +112,6 @@ one for starting of the event (--start-time is required) and the other one for e
 		}
 
 		logger.Log.Printf("Report the event successfully, whose uuid is %s\n", ctx.String("uuid"))
-		return display.Display(ctx, &displayable.Displayable{Data: reply})
+		return display.Display(ctx.Context, &displayable.Displayable{Data: reply})
 	},
 }

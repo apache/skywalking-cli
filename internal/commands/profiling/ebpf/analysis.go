@@ -72,8 +72,8 @@ $ swctl profiling ebpf analysis --schedule-id=abc --time-ranges=1648020042869-16
 		timeRangeStr := ctx.String("time-ranges")
 		var timeRanges []*api.EBPFProfilingAnalyzeTimeRange = nil
 		if timeRangeStr != "" {
-			tagArr := strings.Split(timeRangeStr, ",")
-			for _, tag := range tagArr {
+			tagArr := strings.SplitSeq(timeRangeStr, ",")
+			for tag := range tagArr {
 				kv := strings.Split(tag, "-")
 				start, err := strconv.ParseInt(kv[0], 10, 64)
 				if err != nil {
@@ -88,11 +88,11 @@ $ swctl profiling ebpf analysis --schedule-id=abc --time-ranges=1648020042869-16
 		}
 
 		aggregateType := ctx.Generic("aggregate").(*ebpf.ProfilingAnalyzeAggregateTypeEnumValue).Selected
-		analyzation, err := profiling.AnalysisEBPFProfilingResult(ctx, scheduleIDList, timeRanges, aggregateType)
+		analyzation, err := profiling.AnalysisEBPFProfilingResult(ctx.Context, scheduleIDList, timeRanges, aggregateType)
 		if err != nil {
 			return err
 		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: analyzation})
+		return display.Display(ctx.Context, &displayable.Displayable{Data: analyzation})
 	},
 }

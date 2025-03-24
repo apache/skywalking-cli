@@ -42,12 +42,11 @@ $ swctl profiling trace segment-list --service-name=service-name --endpoint-name
 	},
 	Action: func(ctx *cli.Context) error {
 		taskID := ctx.String("task-id")
-		segmentList, err := profiling.GetTraceProfilingTaskSegmentList(ctx, taskID)
-
+		segmentList, err := profiling.GetTraceProfilingTaskSegmentList(ctx.Context, taskID)
 		if err != nil {
 			return err
 		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: segmentList, Condition: taskID})
+		return display.Display(ctx.Context, &displayable.Displayable{Data: segmentList, Condition: taskID})
 	},
 }

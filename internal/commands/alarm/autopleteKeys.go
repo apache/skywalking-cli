@@ -57,11 +57,12 @@ $ swctl alarm autocomplete-keys
 			Step:  step.(*model.StepEnumValue).Selected,
 		}
 
-		autocompleteKeys, err := alarm.TagAutocompleteKeys(ctx, duration)
+		autocompleteKeys, err := alarm.TagAutocompleteKeys(ctx.Context, duration)
 		if err != nil {
 			return err
 		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: autocompleteKeys, Condition: duration})
+		ctx.Lineage()
+		return display.Display(ctx.Context, &displayable.Displayable{Data: autocompleteKeys, Condition: duration})
 	},
 }

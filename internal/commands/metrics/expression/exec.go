@@ -77,11 +77,11 @@ $ swctl metrics execute --expression="service_resp_time" --service-name business
 			Step:  step.(*model.StepEnumValue).Selected,
 		}
 
-		result, err := metrics.Execute(ctx, expression, entity, duration)
+		result, err := metrics.Execute(ctx.Context, expression, entity, duration)
 		if err != nil {
 			return err
 		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: result})
+		return display.Display(ctx.Context, &displayable.Displayable{Data: result})
 	},
 }

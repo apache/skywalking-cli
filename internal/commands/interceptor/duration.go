@@ -18,12 +18,14 @@
 package interceptor
 
 import (
+	"context"
 	"fmt"
 	"strconv"
 	"time"
 
 	api "skywalking.apache.org/repo/goapi/query"
 
+	"github.com/apache/skywalking-cli/pkg/contextkey"
 	"github.com/apache/skywalking-cli/pkg/graphql/utils"
 
 	"github.com/urfave/cli/v2"
@@ -50,11 +52,11 @@ func TryParseTime(unparsed string, userStep api.Step) (api.Step, time.Time, erro
 
 // DurationInterceptor sets the duration if absent, and formats it accordingly,
 // see ParseDuration
-func DurationInterceptor(ctx *cli.Context) error {
-	start := ctx.String("start")
-	end := ctx.String("end")
-	userStep := ctx.Generic("step")
-	if timezone := ctx.String("timezone"); timezone != "" {
+func DurationInterceptor(cliCtx *cli.Context) error {
+	start := cliCtx.String("start")
+	end := cliCtx.String("end")
+	userStep := cliCtx.Generic("step")
+	if timezone := cliCtx.String("timezone"); timezone != "" {
 		if offset, err := strconv.Atoi(timezone); err == nil {
 			// `offset` is in form of "+1300", while `time.FixedZone` takes offset in seconds
 			time.Local = time.FixedZone("", offset/100*60*60)
@@ -68,15 +70,23 @@ func DurationInterceptor(ctx *cli.Context) error {
 
 	startTime, endTime, step, dt := ParseDuration(start, end, s)
 
-	if err := ctx.Set("start", startTime.Format(utils.StepFormats[step])); err != nil {
+	if err := cliCtx.Set("start", startTime.Format(utils.StepFormats[step])); err != nil {
 		return err
-	} else if err := ctx.Set("end", endTime.Format(utils.StepFormats[step])); err != nil {
+	} else if err := cliCtx.Set("end", endTime.Format(utils.StepFormats[step])); err != nil {
 		return err
-	} else if err := ctx.Set("step", step.String()); err != nil {
+	} else if err := cliCtx.Set("step", step.String()); err != nil {
 		return err
-	} else if err := ctx.Set("duration-type", dt.String()); err != nil {
+	} else if err := cliCtx.Set("duration-type", dt.String()); err != nil {
 		return err
 	}
+
+	ctx := cliCtx.Context
+	ctx = context.WithValue(ctx, contextkey.DurationStart{}, startTime.Format(utils.StepFormats[step]))
+	ctx = context.WithValue(ctx, contextkey.DurationEnd{}, endTime.Format(utils.StepFormats[step]))
+	ctx = context.WithValue(ctx, contextkey.DurationStep{}, step)
+	ctx = context.WithValue(ctx, contextkey.DurationType{}, utils.DurationType(dt.String()))
+	cliCtx.Context = ctx
+
 	return nil
 }
 

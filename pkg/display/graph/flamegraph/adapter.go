@@ -63,11 +63,11 @@ func (e *traceStackElementAdapter) ParentID() string {
 }
 
 func (e *traceStackElementAdapter) DumpCount() int64 {
-	return int64(e.ProfileStackElement.Count)
+	return int64(e.Count)
 }
 
 func (e *traceStackElementAdapter) Symbol() string {
-	return e.ProfileStackElement.CodeSignature
+	return e.CodeSignature
 }
 
 func (e *traceStackElementAdapter) StackType() StackType {

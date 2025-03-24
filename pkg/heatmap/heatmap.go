@@ -193,7 +193,7 @@ func (hp *HeatMap) drawColumns(cvs *canvas.Canvas, xd *axes.XDetails, yd *axes.Y
 	for i, xl := range hp.XLabels {
 		cv := hp.columns[xl]
 
-		for j := 0; j < len(cv.values); j++ {
+		for j := range cv.values {
 			v := cv.values[j]
 
 			startX := xd.Start.X + 1 + i*hp.opts.cellWidth

@@ -18,6 +18,8 @@
 package global
 
 import (
+	"context"
+
 	"github.com/urfave/cli/v2"
 
 	api "skywalking.apache.org/repo/goapi/query"
@@ -25,6 +27,7 @@ import (
 	"github.com/apache/skywalking-cli/internal/commands/interceptor"
 	"github.com/apache/skywalking-cli/internal/flags"
 	"github.com/apache/skywalking-cli/internal/model"
+	"github.com/apache/skywalking-cli/pkg/contextkey"
 	"github.com/apache/skywalking-cli/pkg/display"
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
 	"github.com/apache/skywalking-cli/pkg/graphql/dashboard"
@@ -62,22 +65,28 @@ $ swctl dashboard global --template my-global-template.yml
 	),
 	Before: interceptor.BeforeChain(
 		interceptor.DurationInterceptor,
+		func(cliCtx *cli.Context) error {
+			ctx := cliCtx.Context
+			ctx = context.WithValue(ctx, contextkey.DashboardTemplate{}, cliCtx.String("template"))
+			ctx = context.WithValue(ctx, contextkey.DashboardRefreshInterval{}, cliCtx.Int("refresh"))
+			cliCtx.Context = ctx
+			return nil
+		},
 	),
 	Action: func(ctx *cli.Context) error {
 		end := ctx.String("end")
 		start := ctx.String("start")
 		step := ctx.Generic("step")
 
-		globalData, err := dashboard.Global(ctx, api.Duration{
+		globalData, err := dashboard.Global(ctx.Context, api.Duration{
 			Start: start,
 			End:   end,
 			Step:  step.(*model.StepEnumValue).Selected,
 		})
-
 		if err != nil {
 			return err
 		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: globalData})
+		return display.Display(ctx.Context, &displayable.Displayable{Data: globalData})
 	},
 }

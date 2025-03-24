@@ -62,25 +62,25 @@ var GlobalCommand = &cli.Command{
 			Step:  step.(*model.StepEnumValue).Selected,
 		}
 
-		major, _, err := metadata.BackendVersion(ctx)
+		major, _, err := metadata.BackendVersion(ctx.Context)
 		if err != nil {
 			return err
 		}
 
 		var topology api.Topology
 		if major >= 10 {
-			topology, err = dependency.GlobalTopology(ctx, layer, duration)
+			topology, err = dependency.GlobalTopology(ctx.Context, layer, duration)
 		} else {
 			if layer != "" {
 				return fmt.Errorf("the layer parameter only available when OAP version >= 10.0.0")
 			}
-			topology, err = dependency.GlobalTopologyWithoutLayer(ctx, duration)
+			topology, err = dependency.GlobalTopologyWithoutLayer(ctx.Context, duration)
 		}
 
 		if err != nil {
 			return err
 		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: topology})
+		return display.Display(ctx.Context, &displayable.Displayable{Data: topology})
 	},
 }

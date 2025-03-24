@@ -80,11 +80,11 @@ $ swctl browser logs list`,
 			Paging:           &paging,
 		}
 
-		logs, err := log.BrowserLogs(ctx, condition)
+		logs, err := log.BrowserLogs(ctx.Context, condition)
 		if err != nil {
 			return err
 		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: logs, Condition: condition})
+		return display.Display(ctx.Context, &displayable.Displayable{Data: logs, Condition: condition})
 	},
 }

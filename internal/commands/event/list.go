@@ -33,8 +33,10 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-const DefaultPageSize = 15
-const EventTypeAll event.Type = -1
+const (
+	DefaultPageSize            = 15
+	EventTypeAll    event.Type = -1
+)
 
 func init() {
 	event.Type_name[-1] = "All"
@@ -122,12 +124,11 @@ $ swctl event list
 			condition.Type = &t
 		}
 
-		events, err := eventQl.Events(ctx, condition)
-
+		events, err := eventQl.Events(ctx.Context, condition)
 		if err != nil {
 			return err
 		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: events, Condition: condition})
+		return display.Display(ctx.Context, &displayable.Displayable{Data: events, Condition: condition})
 	},
 }

@@ -18,17 +18,17 @@
 package profiling
 
 import (
+	"context"
+
 	"github.com/apache/skywalking-cli/assets"
 	"github.com/apache/skywalking-cli/pkg/graphql/client"
 
 	"github.com/machinebox/graphql"
 
-	"github.com/urfave/cli/v2"
-
 	api "skywalking.apache.org/repo/goapi/query"
 )
 
-func SetContinuousProfilingPolicy(ctx *cli.Context, creation *api.ContinuousProfilingPolicyCreation) (api.ContinuousProfilingSetResult, error) {
+func SetContinuousProfilingPolicy(ctx context.Context, creation *api.ContinuousProfilingPolicyCreation) (api.ContinuousProfilingSetResult, error) {
 	var response map[string]api.ContinuousProfilingSetResult
 
 	request := graphql.NewRequest(assets.Read("graphqls/profiling/continuous/SetContinuousProfilingPolicy.graphql"))
@@ -39,7 +39,7 @@ func SetContinuousProfilingPolicy(ctx *cli.Context, creation *api.ContinuousProf
 	return response["result"], err
 }
 
-func QueryContinuousProfilingServiceTargets(ctx *cli.Context, serviceID string) ([]*api.ContinuousProfilingPolicyTarget, error) {
+func QueryContinuousProfilingServiceTargets(ctx context.Context, serviceID string) ([]*api.ContinuousProfilingPolicyTarget, error) {
 	var response map[string][]*api.ContinuousProfilingPolicyTarget
 
 	request := graphql.NewRequest(assets.Read("graphqls/profiling/continuous/QueryContinuousProfilingServiceTargets.graphql"))
@@ -50,8 +50,9 @@ func QueryContinuousProfilingServiceTargets(ctx *cli.Context, serviceID string) 
 	return response["result"], err
 }
 
-func QueryContinuousProfilingMonitoringInstances(ctx *cli.Context, serviceID string,
-	target api.ContinuousProfilingTargetType) ([]api.ContinuousProfilingMonitoringInstance, error) {
+func QueryContinuousProfilingMonitoringInstances(ctx context.Context, serviceID string,
+	target api.ContinuousProfilingTargetType,
+) ([]api.ContinuousProfilingMonitoringInstance, error) {
 	var response map[string][]api.ContinuousProfilingMonitoringInstance
 
 	request := graphql.NewRequest(assets.Read("graphqls/profiling/continuous/QueryContinuousProfilingMonitoringInstances.graphql"))

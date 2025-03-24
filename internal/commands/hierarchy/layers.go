@@ -34,10 +34,10 @@ var layerCommand = &cli.Command{
 	Flags:   flags.Flags(),
 	Before:  interceptor.BeforeChain(),
 	Action: func(ctx *cli.Context) error {
-		levels, err := hierarchy.ListLayerLevels(ctx)
+		levels, err := hierarchy.ListLayerLevels(ctx.Context)
 		if err != nil {
 			return err
 		}
-		return display.Display(ctx, &displayable.Displayable{Data: levels})
+		return display.Display(ctx.Context, &displayable.Displayable{Data: levels})
 	},
 }

@@ -74,11 +74,11 @@ $ swctl metrics top --name service_instance_sla --service-name boutique::adservi
 		}
 
 		logger.Log.Debugln(condition.Name, condition.Scope, condition.TopN)
-		metricsValues, err := metrics.SortMetrics(ctx, *condition, *duration)
+		metricsValues, err := metrics.SortMetrics(ctx.Context, *condition, *duration)
 		if err != nil {
 			return err
 		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: metricsValues})
+		return display.Display(ctx.Context, &displayable.Displayable{Data: metricsValues})
 	},
 }
