@@ -31,7 +31,7 @@ import (
 
 func newClient(ctx context.Context) (client *graphql.Client) {
 	insecure := ctx.Value(contextkey.Insecure{}).(bool)
-	httpClient := &http.Client{Transport: &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: insecure}}}
+	httpClient := &http.Client{Transport: &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: insecure}}} // #nosec G402
 	client = graphql.NewClient(ctx.Value(contextkey.BaseURL{}).(string), graphql.WithHTTPClient(httpClient))
 	client.Log = func(msg string) {
 		logger.Log.Debugln(msg)
