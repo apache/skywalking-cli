@@ -21,7 +21,7 @@ import (
 	"embed"
 	"strings"
 
-	"github.com/apache/skywalking-cli/internal/logger"
+	"github.com/apache/skywalking-cli/pkg/logger"
 )
 
 //go:embed *

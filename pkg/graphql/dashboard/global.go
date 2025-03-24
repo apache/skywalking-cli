@@ -36,9 +36,9 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/apache/skywalking-cli/assets"
-	"github.com/apache/skywalking-cli/internal/logger"
 	"github.com/apache/skywalking-cli/pkg/graphql/metrics"
 	"github.com/apache/skywalking-cli/pkg/graphql/utils"
+	"github.com/apache/skywalking-cli/pkg/logger"
 )
 
 type ButtonTemplate struct {

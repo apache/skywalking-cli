@@ -30,8 +30,8 @@ import (
 
 	"github.com/urfave/cli/v2"
 
-	"github.com/apache/skywalking-cli/internal/logger"
 	"github.com/apache/skywalking-cli/internal/model"
+	"github.com/apache/skywalking-cli/pkg/logger"
 )
 
 func TryParseTime(unparsed string, userStep api.Step) (api.Step, time.Time, error) {

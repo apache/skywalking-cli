@@ -21,7 +21,7 @@ import (
 	"os/user"
 	"strings"
 
-	"github.com/apache/skywalking-cli/internal/logger"
+	"github.com/apache/skywalking-cli/pkg/logger"
 )
 
 // UserHomeDir returns the current user's home directory absolute path,

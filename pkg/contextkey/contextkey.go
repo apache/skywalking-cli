@@ -19,6 +19,7 @@ package contextkey
 
 type (
 	BaseURL       struct{}
+	Insecure      struct{}
 	Username      struct{}
 	Password      struct{}
 	Authorization struct{}

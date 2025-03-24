@@ -23,8 +23,8 @@ import (
 
 	"github.com/urfave/cli/v2"
 
-	"github.com/apache/skywalking-cli/internal/logger"
 	"github.com/apache/skywalking-cli/pkg/graphql/metadata"
+	"github.com/apache/skywalking-cli/pkg/logger"
 )
 
 // TimezoneInterceptor sets the server timezone if the server supports the API,

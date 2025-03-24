@@ -19,16 +19,20 @@ package client
 
 import (
 	"context"
+	"crypto/tls"
 	"encoding/base64"
+	"net/http"
 
 	"github.com/machinebox/graphql"
 
-	"github.com/apache/skywalking-cli/internal/logger"
 	"github.com/apache/skywalking-cli/pkg/contextkey"
+	"github.com/apache/skywalking-cli/pkg/logger"
 )
 
 func newClient(ctx context.Context) (client *graphql.Client) {
-	client = graphql.NewClient(ctx.Value(contextkey.BaseURL{}).(string))
+	insecure := ctx.Value(contextkey.Insecure{}).(bool)
+	httpClient := &http.Client{Transport: &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: insecure}}}
+	client = graphql.NewClient(ctx.Value(contextkey.BaseURL{}).(string), graphql.WithHTTPClient(httpClient))
 	client.Log = func(msg string) {
 		logger.Log.Debugln(msg)
 	}
