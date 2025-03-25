@@ -22,8 +22,8 @@ import (
 
 	"github.com/apache/skywalking-cli/pkg/healthcheck"
 
-	"github.com/apache/skywalking-cli/internal/logger"
 	hc "github.com/apache/skywalking-cli/pkg/graphql/healthcheck"
+	"github.com/apache/skywalking-cli/pkg/logger"
 )
 
 var Command = &cli.Command{

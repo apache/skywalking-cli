@@ -24,12 +24,13 @@ import (
 
 	api "skywalking.apache.org/repo/goapi/query"
 
-	"github.com/apache/skywalking-cli/internal/logger"
+	"github.com/apache/skywalking-cli/pkg/logger"
 )
 
 // MetricsValuesArrayToMap converts Array of MetricsValues into a map that uses time as key.
 func MetricsValuesArrayToMap(duration api.Duration, mvArray []api.MetricsValues,
-	labelsMap map[string]string) map[string]map[string]*displayable.MetricValue {
+	labelsMap map[string]string,
+) map[string]map[string]*displayable.MetricValue {
 	ret := make(map[string]map[string]*displayable.MetricValue, len(mvArray))
 	for _, mvs := range mvArray {
 		label := *mvs.Label
@@ -47,7 +48,6 @@ func MetricsValuesToMap(duration api.Duration, metricsValues api.MetricsValues) 
 	ret := map[string]*displayable.MetricValue{}
 	format := StepFormats[duration.Step]
 	startTime, err := time.Parse(format, duration.Start)
-
 	if err != nil {
 		logger.Log.Fatalln(err)
 	}

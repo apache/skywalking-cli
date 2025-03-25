@@ -22,7 +22,7 @@ import (
 	"crypto/tls"
 	"time"
 
-	"github.com/apache/skywalking-cli/internal/logger"
+	"github.com/apache/skywalking-cli/pkg/logger"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -43,7 +43,8 @@ func HealthCheck(addr string, enableTLS bool) int {
 
 	opts := []grpc.DialOption{
 		grpc.WithUserAgent("swctl_health_probe"),
-		grpc.WithBlock()}
+		grpc.WithBlock(),
+	}
 	if enableTLS {
 		// #nosec
 		creds := credentials.NewTLS(&tls.Config{

@@ -19,20 +19,32 @@ package client
 
 import (
 	"context"
+	"crypto/tls"
 	"encoding/base64"
+	"net/http"
 
 	"github.com/machinebox/graphql"
 
-	"github.com/apache/skywalking-cli/internal/logger"
 	"github.com/apache/skywalking-cli/pkg/contextkey"
+	"github.com/apache/skywalking-cli/pkg/logger"
 )
 
-func newClient(ctx context.Context) (client *graphql.Client) {
-	client = graphql.NewClient(ctx.Value(contextkey.BaseURL{}).(string))
+func newClient(ctx context.Context) *graphql.Client {
+	options := []graphql.ClientOption{}
+
+	insecure := ctx.Value(contextkey.Insecure{}).(bool)
+	if insecure {
+		customTransport := http.DefaultTransport.(*http.Transport).Clone()
+		customTransport.TLSClientConfig = &tls.Config{InsecureSkipVerify: insecure} // #nosec G402
+		httpClient := &http.Client{Transport: customTransport}
+		options = append(options, graphql.WithHTTPClient(httpClient))
+	}
+
+	client := graphql.NewClient(ctx.Value(contextkey.BaseURL{}).(string), options...)
 	client.Log = func(msg string) {
 		logger.Log.Debugln(msg)
 	}
-	return
+	return client
 }
 
 // ExecuteQuery executes the `request` and parse to the `response`, returning `error` if there is any.
