@@ -83,7 +83,7 @@ func parseProcess(required bool, idFlagName, nameFlagName, instanceIDFlagName st
 			if instanceID == "" {
 				return fmt.Errorf(`"--%s" is specified but its related service name or id is not given`, nameFlagName)
 			}
-			id = fmt.Sprintf("%x", sha256.Sum256([]byte(fmt.Sprintf("%s_%s", instanceID, name))))
+			id = fmt.Sprintf("%x", sha256.Sum256([]byte(fmt.Sprintf("%s_%s", name, instanceID))))
 		}
 
 		return ctx.Set(idFlagName, id)

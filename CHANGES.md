@@ -15,6 +15,8 @@ Release Notes.
 
 ### Bug Fixes
 
+* Fix wrong process id format by @mrproliu in https://github.com/apache/skywalking-cli/pull/215
+
 0.14.0
 ------------------
 
