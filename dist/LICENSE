@@ -181,7 +181,7 @@ The following components are provided under the Apache-2.0 License. See project 
 The text of each license is also included at licenses/license-[project].txt.
 
 
-    github.com/Masterminds/goutils v1.1.0 Apache-2.0
+    github.com/Masterminds/goutils v1.1.1 Apache-2.0
     github.com/apache/skywalking-swck/operator v0.0.0-20220815142653-ed08076b7433 Apache-2.0
     github.com/go-logr/logr v0.4.0 Apache-2.0
     github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da Apache-2.0
