@@ -243,12 +243,12 @@ The text of each license is also included at licenses/license-[project].txt.
     github.com/google/uuid v1.3.0 BSD-3-Clause
     github.com/imdario/mergo v0.3.12 BSD-3-Clause
     github.com/spf13/pflag v1.0.5 BSD-3-Clause
-    golang.org/x/crypto v0.35.0 BSD-3-Clause
-    golang.org/x/net v0.21.0 BSD-3-Clause
+    golang.org/x/crypto v0.36.0 BSD-3-Clause
+    golang.org/x/net v0.38.0 BSD-3-Clause
     golang.org/x/oauth2 v0.7.0 BSD-3-Clause
-    golang.org/x/sys v0.30.0 BSD-3-Clause
-    golang.org/x/term v0.29.0 BSD-3-Clause
-    golang.org/x/text v0.22.0 BSD-3-Clause
+    golang.org/x/sys v0.31.0 BSD-3-Clause
+    golang.org/x/term v0.30.0 BSD-3-Clause
+    golang.org/x/text v0.23.0 BSD-3-Clause
     golang.org/x/time v0.0.0-20210723032227-1f47c861a9ac BSD-3-Clause
     google.golang.org/protobuf v1.32.0 BSD-3-Clause
     gopkg.in/inf.v0 v0.9.1 BSD-3-Clause
