@@ -33,10 +33,10 @@ concurrency:
 jobs:
   check-license:
     name: License header
-    if: (github.event_name == 'schedule' && github.repository == 'apache/skywalking-cli') || (github.event_name != 'schedule')
+    if: github.repository == 'apache/skywalking-cli'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Check License Header
         uses: apache/skywalking-eyes@5dfa68f93380a5e57259faaf95088b7f133b5778
@@ -44,76 +44,31 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
-          go-version: "1.18"
+          go-version: "1.24"
 
       - name: Check Dependencies License
         run: make dependency-license
 
-
-  changes:
-    runs-on: ubuntu-latest
-    if: github.event_name != 'schedule'
-    timeout-minutes: 10
-    outputs:
-      cli: ${{ steps.filter-cli.outputs.any_modified }}
-    steps:
-      - uses: actions/checkout@v3 # required for push event
-        with:
-          fetch-depth: 0
-      - name: Check for CLI source changes
-        id: filter-cli
-        # The GHA version is pinned by infra
-        uses: tj-actions/changed-files@v35.9.2
-        with:
-          files_from_source_file: .github/file-filters.txt
-      - name: List all modified files
-        if: steps.filter-cli.outputs.any_modified == 'true'
-        run: |
-          echo "Files that have changed or modified:"
-          echo "Filter-cli: ${{ steps.filter-cli.outputs.all_changed_and_modified_files }}"
-  
-
-  golang-lint:
-    name: Golang Lint
-    runs-on: ubuntu-latest
-    needs: [changes]
-    if: |
-      ( always() && ! cancelled() ) &&
-      ((github.event_name == 'schedule' && github.repository == 'apache/skywalking-cli') || needs.changes.outputs.cli == 'true')
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: 1.18
-
-      - name: golangci-lint
-        uses: golangci/golangci-lint-action@v3
-        with:
-          version: v1.50.0
-          args: --timeout 5m
-
-
   build:
     name: Build
-    needs: [changes]
     runs-on: ubuntu-latest
-    if: |
-      ( always() && ! cancelled() ) &&
-      ((github.event_name == 'schedule' && github.repository == 'apache/skywalking-cli') || needs.changes.outputs.cli == 'true')
+    if: github.repository == 'apache/skywalking-cli'
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
-          go-version: 1.18
+          go-version: 1.24
 
       - name: Check code generation
         run: make check-codegen
 
-      - uses: actions/upload-artifact@v3
+      - name: Lint
+        run: make lint
+
+      - uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: check-diff
@@ -129,23 +84,23 @@ jobs:
   command-tests:
     name: Command Tests
     runs-on: ubuntu-latest
-    needs: [changes]
-    if: |
-      ( always() && ! cancelled() ) &&
-      ((github.event_name == 'schedule' && github.repository == 'apache/skywalking-cli') || needs.changes.outputs.cli == 'true')
+    if: github.repository == 'apache/skywalking-cli'
     strategy:
       matrix:
         oap:
-          - 6fa89c79917cb10dbf48591c46abee3b513a2bab # March 28th
+          - a65a6e0ff2ef9c716131b36172399076307c35f1 # Feb 27th, 2024
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
-          go-version: 1.18
+          go-version: 1.24
+
+      - name: Install swctl
+        run: make install DESTDIR=/usr/local/bin
 
       - name: Test commands
-        uses: apache/skywalking-infra-e2e@2b3aa53dbba73909730b211d5b8065abc74b56ad
+        uses: apache/skywalking-infra-e2e@cf589b4a0b9f8e6f436f78e9cfd94a1ee5494180
         env:
           OAP_TAG: ${{ matrix.oap }}
         with:
@@ -155,16 +110,13 @@ jobs:
   unit-tests:
     name: Unit Tests
     runs-on: ubuntu-latest
-    needs: [changes]
-    if: |
-      ( always() && ! cancelled() ) &&
-      ((github.event_name == 'schedule' && github.repository == 'apache/skywalking-cli') || needs.changes.outputs.cli == 'true')
+    if: github.repository == 'apache/skywalking-cli'
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: setup go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
-          go-version: '1.18'
+          go-version: '1.24'
 
       - name: run unit tests and report coverage
         working-directory: ./
@@ -176,7 +128,6 @@ jobs:
     name: Required
     needs:
       - check-license
-      - golang-lint
       - build
       - command-tests
       - unit-tests
@@ -185,15 +136,12 @@ jobs:
     steps:
       - name: Merge Requirement
         run: |
-          execute=${{ needs.changes.outputs.cli }}
           checkLicense=${{ needs.check-license.result }}
-          [[ ${checkLicense} == 'success' ]] || exit -1;
-          golangLint=${{ needs.golang-lint.result }};
+          [[ ${checkLicense} == 'success' ]] || exit 1;
           build=${{ needs.build.result }};
           commandTests=${{ needs.command-tests.result }};
           unitTests=${{ needs.unit-tests.result }};
-          [[ ${golangLint} == 'success' ]] || [[ ${execute} != 'true' && ${golangLint} == 'skipped' ]] || exit -2;
-          [[ ${build} == 'success' ]] || [[ ${execute} != 'true' && ${build} == 'skipped' ]] || exit -3;
-          [[ ${commandTests} == 'success' ]] || [[ ${execute} != 'true' && ${commandTests} == 'skipped' ]] || exit -4;
-          [[ ${unitTests} == 'success' ]] || [[ ${execute} != 'true' && ${unitTests} == 'skipped' ]] || exit -5;
+          [[ ${build} == 'success' ]] || [[ ${build} == 'skipped' ]] || exit 3;
+          [[ ${commandTests} == 'success' ]] || [[ ${commandTests} == 'skipped' ]] || exit 4;
+          [[ ${unitTests} == 'success' ]] || [[ ${unitTests} == 'skipped' ]] || exit 5;
           exit 0;

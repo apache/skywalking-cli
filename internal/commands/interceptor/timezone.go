@@ -23,8 +23,8 @@ import (
 
 	"github.com/urfave/cli/v2"
 
-	"github.com/apache/skywalking-cli/internal/logger"
 	"github.com/apache/skywalking-cli/pkg/graphql/metadata"
+	"github.com/apache/skywalking-cli/pkg/logger"
 )
 
 // TimezoneInterceptor sets the server timezone if the server supports the API,
@@ -35,8 +35,7 @@ func TimezoneInterceptor(ctx *cli.Context) error {
 		return nil
 	}
 
-	serverTimeInfo, err := metadata.ServerTimeInfo(ctx)
-
+	serverTimeInfo, err := metadata.ServerTimeInfo(ctx.Context)
 	if err != nil {
 		logger.Log.Debugf("Failed to get server time info: %v\n", err)
 		return nil

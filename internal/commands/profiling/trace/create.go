@@ -81,12 +81,11 @@ $ swctl profiling trace create --service-name=service-name --endpoint=endpoint -
 			MaxSamplingCount:     ctx.Int("max-sampling-count"),
 		}
 
-		task, err := profiling.CreateTraceTask(ctx, request)
-
+		task, err := profiling.CreateTraceTask(ctx.Context, request)
 		if err != nil {
 			return err
 		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: task, Condition: request})
+		return display.Display(ctx.Context, &displayable.Displayable{Data: task, Condition: request})
 	},
 }

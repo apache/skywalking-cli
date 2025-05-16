@@ -71,11 +71,11 @@ $ swctl profiling continuous monitoring --service-name=business-zone::projectC -
 			return fmt.Errorf("unknown target type: %s", targetString)
 		}
 
-		instances, err := profiling.QueryContinuousProfilingMonitoringInstances(ctx, serviceID, target)
+		instances, err := profiling.QueryContinuousProfilingMonitoringInstances(ctx.Context, serviceID, target)
 		if err != nil {
 			return err
 		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: instances})
+		return display.Display(ctx.Context, &displayable.Displayable{Data: instances})
 	},
 }

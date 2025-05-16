@@ -19,10 +19,14 @@ nodes:
   name: provider
   type: Python
   isreal: true
+  layers:
+    - GENERAL
 - id: {{ b64enc "consumer" }}.1
   name: consumer
   type: Python
   isreal: true
+  layers:
+    - GENERAL
   {{- end }}
 calls:
   {{- contains .calls }}
@@ -37,3 +41,4 @@ calls:
     - CLIENT
     - SERVER
   {{- end }}
+debuggingtrace: null

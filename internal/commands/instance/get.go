@@ -40,11 +40,11 @@ $ swctl instance get cHJvdmlkZXI=.1_cHJvdmlkZXIx`,
 			return fmt.Errorf("instance-id must be provide")
 		}
 
-		instance, err := metadata.GetInstance(ctx, ctx.Args().First())
+		instance, err := metadata.GetInstance(ctx.Context, ctx.Args().First())
 		if err != nil {
 			return err
 		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: instance})
+		return display.Display(ctx.Context, &displayable.Displayable{Data: instance})
 	},
 }

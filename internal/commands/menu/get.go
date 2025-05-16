@@ -34,10 +34,10 @@ Examples:
 1. Get the UI menu items:
 $swctl menu get`,
 	Action: func(ctx *cli.Context) error {
-		menuItems, err := menu.GetItems(ctx)
+		menuItems, err := menu.GetItems(ctx.Context)
 		if err != nil {
 			return err
 		}
-		return display.Display(ctx, &displayable.Displayable{Data: menuItems})
+		return display.Display(ctx.Context, &displayable.Displayable{Data: menuItems})
 	},
 }

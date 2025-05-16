@@ -52,8 +52,8 @@ var getProfiledAnalyzeCommand = &cli.Command{
 		tagStr := ctx.String("time-ranges")
 		var queries []*api.SegmentProfileAnalyzeQuery = nil
 		if tagStr != "" {
-			tagArr := strings.Split(tagStr, ",")
-			for _, tag := range tagArr {
+			tagArr := strings.SplitSeq(tagStr, ",")
+			for tag := range tagArr {
 				kv := strings.Split(tag, "-")
 				start, err := strconv.ParseInt(kv[0], 10, 64)
 				if err != nil {
@@ -76,12 +76,11 @@ var getProfiledAnalyzeCommand = &cli.Command{
 			}
 		}
 
-		analysis, err := profiling.GetTraceProfilingAnalyze(ctx, queries)
-
+		analysis, err := profiling.GetTraceProfilingAnalyze(ctx.Context, queries)
 		if err != nil {
 			return err
 		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: analysis, Condition: segmentIDs})
+		return display.Display(ctx.Context, &displayable.Displayable{Data: analysis, Condition: segmentIDs})
 	},
 }

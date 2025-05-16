@@ -71,15 +71,14 @@ $ swctl metrics nullable --name endpoint_cpm --service-name business-zone::proje
 			Step:  step.(*model.StepEnumValue).Selected,
 		}
 
-		metricsValue, err := metrics.NullableIntValue(ctx, api.MetricsCondition{
+		metricsValue, err := metrics.NullableIntValue(ctx.Context, api.MetricsCondition{
 			Name:   metricsName,
 			Entity: entity,
 		}, duration)
-
 		if err != nil {
 			return err
 		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: metricsValue})
+		return display.Display(ctx.Context, &displayable.Displayable{Data: metricsValue})
 	},
 }

@@ -51,12 +51,11 @@ var SearchCommand = &cli.Command{
 		step := ctx.Generic("step")
 		regex := ctx.String("regex")
 
-		instances, err := metadata.Instances(ctx, serviceID, api.Duration{
+		instances, err := metadata.Instances(ctx.Context, serviceID, api.Duration{
 			Start: start,
 			End:   end,
 			Step:  step.(*model.StepEnumValue).Selected,
 		})
-
 		if err != nil {
 			return err
 		}
@@ -69,6 +68,6 @@ var SearchCommand = &cli.Command{
 				}
 			}
 		}
-		return display.Display(ctx, &displayable.Displayable{Data: result})
+		return display.Display(ctx.Context, &displayable.Displayable{Data: result})
 	},
 }

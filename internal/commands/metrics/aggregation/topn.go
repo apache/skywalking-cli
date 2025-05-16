@@ -24,11 +24,11 @@ import (
 
 	"github.com/apache/skywalking-cli/internal/commands/interceptor"
 	"github.com/apache/skywalking-cli/internal/flags"
-	"github.com/apache/skywalking-cli/internal/logger"
 	"github.com/apache/skywalking-cli/internal/model"
 	"github.com/apache/skywalking-cli/pkg/display"
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
 	"github.com/apache/skywalking-cli/pkg/graphql/metrics"
+	"github.com/apache/skywalking-cli/pkg/logger"
 )
 
 var TopN = &cli.Command{
@@ -74,11 +74,11 @@ $ swctl metrics top --name service_instance_sla --service-name boutique::adservi
 		}
 
 		logger.Log.Debugln(condition.Name, condition.Scope, condition.TopN)
-		metricsValues, err := metrics.SortMetrics(ctx, *condition, *duration)
+		metricsValues, err := metrics.SortMetrics(ctx.Context, *condition, *duration)
 		if err != nil {
 			return err
 		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: metricsValues})
+		return display.Display(ctx.Context, &displayable.Displayable{Data: metricsValues})
 	},
 }

@@ -51,12 +51,12 @@ func newColumnValues(values []int64) *columnValues {
 	v := make([]int64, len(values))
 	copy(v, values)
 
-	min, max := minMax(values)
+	mn, mx := minMax(values)
 
 	return &columnValues{
 		values: v,
-		Min:    min,
-		Max:    max,
+		Min:    mn,
+		Max:    mx,
 	}
 }
 
@@ -159,7 +159,7 @@ func (hp *HeatMap) axesDetails(cvs *canvas.Canvas) (*axes.XDetails, *axes.YDetai
 
 // Draw draws the values as HeatMap.
 // Implements widgetapi.Widget.Draw.
-func (hp *HeatMap) Draw(cvs *canvas.Canvas, meta *widgetapi.Meta) error {
+func (hp *HeatMap) Draw(cvs *canvas.Canvas, _ *widgetapi.Meta) error {
 	hp.mu.Lock()
 	defer hp.mu.Unlock()
 
@@ -193,7 +193,7 @@ func (hp *HeatMap) drawColumns(cvs *canvas.Canvas, xd *axes.XDetails, yd *axes.Y
 	for i, xl := range hp.XLabels {
 		cv := hp.columns[xl]
 
-		for j := 0; j < len(cv.values); j++ {
+		for j := range cv.values {
 			v := cv.values[j]
 
 			startX := xd.Start.X + 1 + i*hp.opts.cellWidth
@@ -250,12 +250,12 @@ func (hp *HeatMap) minSize() image.Point {
 }
 
 // Keyboard input isn't supported on the SparkLine widget.
-func (*HeatMap) Keyboard(k *terminalapi.Keyboard) error {
+func (*HeatMap) Keyboard(_ *terminalapi.Keyboard) error {
 	return errors.New("the HeatMap widget doesn't support keyboard events")
 }
 
 // Mouse input isn't supported on the SparkLine widget.
-func (*HeatMap) Mouse(m *terminalapi.Mouse) error {
+func (*HeatMap) Mouse(_ *terminalapi.Mouse) error {
 	return errors.New("the HeatMap widget doesn't support mouse events")
 }
 
@@ -280,13 +280,13 @@ func (hp *HeatMap) getBlockColor(value int64) cell.Color {
 }
 
 // minMax returns the min and max values in given integer array.
-func minMax(values []int64) (min, max int64) {
-	min = math.MaxInt64
-	max = math.MinInt64
+func minMax(values []int64) (mn, mx int64) {
+	mn = math.MaxInt64
+	mx = math.MinInt64
 
 	for _, v := range values {
-		min = int64(math.Min(float64(min), float64(v)))
-		max = int64(math.Max(float64(max), float64(v)))
+		mn = int64(math.Min(float64(mn), float64(v)))
+		mx = int64(math.Max(float64(mx), float64(v)))
 	}
 	return
 }

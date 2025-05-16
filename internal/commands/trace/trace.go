@@ -44,13 +44,12 @@ $ swctl trace "321661b1-9a31-4e12-ad64-c8f6711f108d"`,
 			return fmt.Errorf("command trace without sub command requires 1 trace id as argument")
 		}
 
-		trace, err := trace.Trace(ctx, ctx.Args().First())
-
+		trace, err := trace.Trace(ctx.Context, ctx.Args().First())
 		if err != nil {
 			return err
 		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: trace})
+		return display.Display(ctx.Context, &displayable.Displayable{Data: trace})
 	},
 	Subcommands: cli.Commands{
 		ListCommand,

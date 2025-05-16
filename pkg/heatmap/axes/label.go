@@ -43,11 +43,11 @@ type Label struct {
 // Labels are returned with Y coordinates in ascending order.
 // Y coordinates grow down.
 func yLabels(graphHeight, labelWidth int, stringLabels []string) ([]*Label, error) {
-	if min := 2; graphHeight < min {
-		return nil, fmt.Errorf("cannot place labels on a canvas with height %d, minimum is %d", graphHeight, min)
+	if mn := 2; graphHeight < mn {
+		return nil, fmt.Errorf("cannot place labels on a canvas with height %d, minimum is %d", graphHeight, mn)
 	}
-	if min := 0; labelWidth < min {
-		return nil, fmt.Errorf("cannot place labels in label area width %d, minimum is %d", labelWidth, min)
+	if mn := 0; labelWidth < mn {
+		return nil, fmt.Errorf("cannot place labels in label area width %d, minimum is %d", labelWidth, mn)
 	}
 
 	var labels []*Label

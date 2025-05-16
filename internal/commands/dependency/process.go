@@ -57,11 +57,11 @@ var ProcessCommand = &cli.Command{
 			Step:  step.(*model.StepEnumValue).Selected,
 		}
 
-		dependency, err := dependency.ProcessTopology(ctx, instanceID, duration)
+		dependency, err := dependency.ProcessTopology(ctx.Context, instanceID, duration)
 		if err != nil {
 			return err
 		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: dependency})
+		return display.Display(ctx.Context, &displayable.Displayable{Data: dependency})
 	},
 }

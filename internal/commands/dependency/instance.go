@@ -59,12 +59,11 @@ var InstanceCommand = &cli.Command{
 			Step:  step.(*model.StepEnumValue).Selected,
 		}
 
-		dependency, err := dependency.InstanceTopology(ctx, srcSvcID, dstSvcID, duration)
-
+		dependency, err := dependency.InstanceTopology(ctx.Context, srcSvcID, dstSvcID, duration)
 		if err != nil {
 			return err
 		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: dependency})
+		return display.Display(ctx.Context, &displayable.Displayable{Data: dependency})
 	},
 }

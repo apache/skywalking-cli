@@ -55,10 +55,10 @@ build: $(BUILDS)
 
 .PHONY: deps
 deps:
-	@$(GO_GET) -v -t -d ./...
+	@$(GO_GET) -v -t ./...
 
 $(GO_LINT):
-	@$(GO_LINT) version > /dev/null 2>&1 || curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(GO_PATH)/bin v1.50.0
+	@$(GO_LINT) version > /dev/null 2>&1 || go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.64.0
 $(LICENSE_EYE):
 	@$(LICENSE_EYE) --version > /dev/null 2>&1 || go install github.com/apache/skywalking-eyes/cmd/license-eye@d38fe05
 

@@ -18,18 +18,20 @@
 package interceptor
 
 import (
+	"context"
 	"fmt"
 	"strconv"
 	"time"
 
 	api "skywalking.apache.org/repo/goapi/query"
 
+	"github.com/apache/skywalking-cli/pkg/contextkey"
 	"github.com/apache/skywalking-cli/pkg/graphql/utils"
 
 	"github.com/urfave/cli/v2"
 
-	"github.com/apache/skywalking-cli/internal/logger"
 	"github.com/apache/skywalking-cli/internal/model"
+	"github.com/apache/skywalking-cli/pkg/logger"
 )
 
 func TryParseTime(unparsed string, userStep api.Step) (api.Step, time.Time, error) {
@@ -50,11 +52,11 @@ func TryParseTime(unparsed string, userStep api.Step) (api.Step, time.Time, erro
 
 // DurationInterceptor sets the duration if absent, and formats it accordingly,
 // see ParseDuration
-func DurationInterceptor(ctx *cli.Context) error {
-	start := ctx.String("start")
-	end := ctx.String("end")
-	userStep := ctx.Generic("step")
-	if timezone := ctx.String("timezone"); timezone != "" {
+func DurationInterceptor(cliCtx *cli.Context) error {
+	start := cliCtx.String("start")
+	end := cliCtx.String("end")
+	userStep := cliCtx.Generic("step")
+	if timezone := cliCtx.String("timezone"); timezone != "" {
 		if offset, err := strconv.Atoi(timezone); err == nil {
 			// `offset` is in form of "+1300", while `time.FixedZone` takes offset in seconds
 			time.Local = time.FixedZone("", offset/100*60*60)
@@ -68,16 +70,29 @@ func DurationInterceptor(ctx *cli.Context) error {
 
 	startTime, endTime, step, dt := ParseDuration(start, end, s)
 
-	if err := ctx.Set("start", startTime.Format(utils.StepFormats[step])); err != nil {
+	if err := cliCtx.Set("start", startTime.Format(utils.StepFormats[step])); err != nil {
 		return err
-	} else if err := ctx.Set("end", endTime.Format(utils.StepFormats[step])); err != nil {
+	} else if err := cliCtx.Set("end", endTime.Format(utils.StepFormats[step])); err != nil {
 		return err
-	} else if err := ctx.Set("step", step.String()); err != nil {
+	} else if err := cliCtx.Set("step", step.String()); err != nil {
 		return err
-	} else if err := ctx.Set("duration-type", dt.String()); err != nil {
+	} else if err := cliCtx.Set("duration-type", dt.String()); err != nil {
 		return err
 	}
+
+	ctx := cliCtx.Context
+	ctx = context.WithValue(ctx, contextkey.DurationStart{}, startTime.Format(utils.StepFormats[step]))
+	ctx = context.WithValue(ctx, contextkey.DurationEnd{}, endTime.Format(utils.StepFormats[step]))
+	ctx = context.WithValue(ctx, contextkey.DurationStep{}, step)
+	ctx = context.WithValue(ctx, contextkey.DurationType{}, utils.DurationType(dt.String()))
+	cliCtx.Context = ctx
+
 	return nil
+}
+
+// IsSetDurationFlags checks if the duration flags are set
+func IsSetDurationFlags(ctx *cli.Context) bool {
+	return ctx.IsSet("start") || ctx.IsSet("end") || ctx.IsSet("step")
 }
 
 // ParseDuration parses the `start` and `end` to a triplet, (startTime, endTime, step),
@@ -101,7 +116,7 @@ func ParseDuration(start, end string, userStep api.Step) (startTime, endTime tim
 	var err error
 
 	// both are present
-	if len(start) > 0 && len(end) > 0 {
+	if start != "" && end != "" {
 		if userStep, startTime, err = TryParseTime(start, userStep); err != nil {
 			logger.Log.Fatalln("Unsupported time format:", start, err)
 		}
@@ -115,12 +130,12 @@ func ParseDuration(start, end string, userStep api.Step) (startTime, endTime tim
 			logger.Log.Fatalln("Unsupported time format:", start, err)
 		}
 		return startTime, startTime.Add(30 * utils.StepDuration[step]), step, utils.EndAbsent
-	} else { // start is absent
-		if step, endTime, err = TryParseTime(end, userStep); err != nil {
-			logger.Log.Fatalln("Unsupported time format:", end, err)
-		}
-		return endTime.Add(-30 * utils.StepDuration[step]), endTime, step, utils.StartAbsent
 	}
+	// start is absent
+	if step, endTime, err = TryParseTime(end, userStep); err != nil {
+		logger.Log.Fatalln("Unsupported time format:", end, err)
+	}
+	return endTime.Add(-30 * utils.StepDuration[step]), endTime, step, utils.StartAbsent
 }
 
 // AlignPrecision aligns the two time strings to same precision

@@ -23,7 +23,7 @@ import (
 
 	d "github.com/apache/skywalking-cli/pkg/display/displayable"
 
-	"github.com/apache/skywalking-cli/internal/logger"
+	"github.com/apache/skywalking-cli/pkg/logger"
 
 	"github.com/olekukonko/tablewriter"
 )

@@ -2,10 +2,43 @@ Changes by Version
 ==================
 Release Notes.
 
+0.15.0
+------------------
+
+### Features
+
+* Add the sub-command `profiling async` for async-profiler query API by @zhengziyi0117 in https://github.com/apache/skywalking-cli/pull/203
+* Support the owner in MQE response by using [10.2 MQE query protocol](https://github.com/apache/skywalking-query-protocol/pull/141) by @zhengziyi0117 in https://github.com/apache/skywalking-cli/pull/203
+* Add the sub-command `alarm autocomplete-keys` and `alarm auto-complete-values` for alarm query API by @mrproliu in https://github.com/apache/skywalking-cli/pull/210
+* Adapt the alarm message query API by @mrproliu in https://github.com/apache/skywalking-cli/pull/210
+* Add the owner field in the `metrics exec` query API by @mrproliu in https://github.com/apache/skywalking-cli/pull/210
+
+### Bug Fixes
+
+* Fix wrong process id format by @mrproliu in https://github.com/apache/skywalking-cli/pull/215
+
+0.14.0
+------------------
+
+### Features
+
+* Add the sub-command `dependency global` for adapt the global dependency query API by @mrproliu in https://github.com/apache/skywalking-cli/pull/198
+* Upgrade crypto lib to fix cve by @mrproliu in https://github.com/apache/skywalking-cli/pull/199
+* Add the **hierarchy** related commands `hierarchy service`, `hierarchy instance` and `hierarchy layer-levels` by @mrproliu in https://github.com/apache/skywalking-cli/pull/200
+* Add the `layers` field to `nodes` in the `dependency service` command by @mrproliu in https://github.com/apache/skywalking-cli/pull/200
+* Add the duration related flags in the `endpoint list` command by @mrproliu in https://github.com/apache/skywalking-cli/pull/201
+
+### Bug Fixes
+
 0.13.0
 ------------------
 
 ### Features
+
+### Bug Fixes
+
+* Fix the record list query does not support new OAP versions (with major version number > 9).
+
 ## What's Changed
 
 * Add the sub-command `menu get` for get the ui menu items by @mrproliu in https://github.com/apache/skywalking-cli/pull/187

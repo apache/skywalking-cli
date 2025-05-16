@@ -45,12 +45,11 @@ $ swctl metrics list --regex "service_.*"`,
 	Action: func(ctx *cli.Context) error {
 		regex := ctx.String("regex")
 
-		metricsValue, err := metrics.ListMetrics(ctx, regex)
-
+		metricsValue, err := metrics.ListMetrics(ctx.Context, regex)
 		if err != nil {
 			return err
 		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: metricsValue})
+		return display.Display(ctx.Context, &displayable.Displayable{Data: metricsValue})
 	},
 }

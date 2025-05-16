@@ -28,6 +28,9 @@ query ($expression: String!, $entity: Entity!, $duration: Duration!) {
                 id
                 value
                 traceID
+                owner {
+                    scope serviceID serviceName normal serviceInstanceID serviceInstanceName endpointID endpointName
+                }
             }
         }
         error

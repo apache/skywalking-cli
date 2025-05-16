@@ -30,5 +30,6 @@ var Command = &cli.Command{
 		ServiceCommand,
 		InstanceCommand,
 		ProcessCommand,
+		GlobalCommand,
 	},
 }

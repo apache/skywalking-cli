@@ -18,8 +18,9 @@
 package dependency
 
 import (
+	"context"
+
 	"github.com/machinebox/graphql"
-	"github.com/urfave/cli/v2"
 
 	api "skywalking.apache.org/repo/goapi/query"
 
@@ -27,7 +28,7 @@ import (
 	"github.com/apache/skywalking-cli/pkg/graphql/client"
 )
 
-func EndpointDependency(ctx *cli.Context, endpointID string, duration api.Duration) (api.EndpointTopology, error) {
+func EndpointDependency(ctx context.Context, endpointID string, duration api.Duration) (api.EndpointTopology, error) {
 	var response map[string]api.EndpointTopology
 
 	request := graphql.NewRequest(assets.Read("graphqls/dependency/EndpointDependency.graphql"))
@@ -39,7 +40,30 @@ func EndpointDependency(ctx *cli.Context, endpointID string, duration api.Durati
 	return response["result"], err
 }
 
-func ServiceTopology(ctx *cli.Context, serviceID string, duration api.Duration) (api.Topology, error) {
+func GlobalTopology(ctx context.Context, layer string, duration api.Duration) (api.Topology, error) {
+	var response map[string]api.Topology
+
+	request := graphql.NewRequest(assets.Read("graphqls/dependency/GlobalTopology.graphql"))
+	request.Var("layer", layer)
+	request.Var("duration", duration)
+
+	err := client.ExecuteQuery(ctx, request, &response)
+
+	return response["result"], err
+}
+
+func GlobalTopologyWithoutLayer(ctx context.Context, duration api.Duration) (api.Topology, error) {
+	var response map[string]api.Topology
+
+	request := graphql.NewRequest(assets.Read("graphqls/dependency/GlobalTopologyWithoutLayer.graphql"))
+	request.Var("duration", duration)
+
+	err := client.ExecuteQuery(ctx, request, &response)
+
+	return response["result"], err
+}
+
+func ServiceTopology(ctx context.Context, serviceID string, duration api.Duration) (api.Topology, error) {
 	var response map[string]api.Topology
 
 	request := graphql.NewRequest(assets.Read("graphqls/dependency/ServiceTopology.graphql"))
@@ -51,7 +75,7 @@ func ServiceTopology(ctx *cli.Context, serviceID string, duration api.Duration) 
 	return response["result"], err
 }
 
-func InstanceTopology(ctx *cli.Context, clientServiceID, serverServiceID string, duration api.Duration) (api.ServiceInstanceTopology, error) {
+func InstanceTopology(ctx context.Context, clientServiceID, serverServiceID string, duration api.Duration) (api.ServiceInstanceTopology, error) {
 	var response map[string]api.ServiceInstanceTopology
 
 	request := graphql.NewRequest(assets.Read("graphqls/dependency/InstanceTopology.graphql"))
@@ -64,7 +88,7 @@ func InstanceTopology(ctx *cli.Context, clientServiceID, serverServiceID string,
 	return response["result"], err
 }
 
-func ProcessTopology(ctx *cli.Context, instanceID string, duration api.Duration) (api.ProcessTopology, error) {
+func ProcessTopology(ctx context.Context, instanceID string, duration api.Duration) (api.ProcessTopology, error) {
 	var response map[string]api.ProcessTopology
 
 	request := graphql.NewRequest(assets.Read("graphqls/dependency/ProcessTopology.graphql"))

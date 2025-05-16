@@ -18,12 +18,12 @@
 package alarm
 
 import (
+	"context"
+
 	"github.com/apache/skywalking-cli/assets"
 	"github.com/apache/skywalking-cli/pkg/graphql/client"
 
 	"github.com/machinebox/graphql"
-
-	"github.com/urfave/cli/v2"
 
 	api "skywalking.apache.org/repo/goapi/query"
 )
@@ -36,7 +36,7 @@ type ListAlarmCondition struct {
 	Paging   *api.Pagination
 }
 
-func Alarms(ctx *cli.Context, condition *ListAlarmCondition) (api.Alarms, error) {
+func Alarms(ctx context.Context, condition *ListAlarmCondition) (api.Alarms, error) {
 	var response map[string]api.Alarms
 
 	request := graphql.NewRequest(assets.Read("graphqls/alarm/alarms.graphql"))
@@ -47,6 +47,29 @@ func Alarms(ctx *cli.Context, condition *ListAlarmCondition) (api.Alarms, error)
 	if condition.Scope != "" {
 		request.Var("scope", condition.Scope)
 	}
+
+	err := client.ExecuteQuery(ctx, request, &response)
+
+	return response["result"], err
+}
+
+func TagAutocompleteKeys(ctx context.Context, duration api.Duration) ([]string, error) {
+	var response map[string][]string
+
+	request := graphql.NewRequest(assets.Read("graphqls/alarm/tagAutocompleteKeys.graphql"))
+	request.Var("duration", duration)
+
+	err := client.ExecuteQuery(ctx, request, &response)
+
+	return response["result"], err
+}
+
+func TagAutocompleteValues(ctx context.Context, duration api.Duration, key string) ([]string, error) {
+	var response map[string][]string
+
+	request := graphql.NewRequest(assets.Read("graphqls/alarm/tagAutocompleteValues.graphql"))
+	request.Var("duration", duration)
+	request.Var("tagKey", key)
 
 	err := client.ExecuteQuery(ctx, request, &response)
 

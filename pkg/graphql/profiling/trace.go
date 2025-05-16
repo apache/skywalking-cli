@@ -18,17 +18,17 @@
 package profiling
 
 import (
+	"context"
+
 	"github.com/apache/skywalking-cli/assets"
 	"github.com/apache/skywalking-cli/pkg/graphql/client"
 
 	"github.com/machinebox/graphql"
 
-	"github.com/urfave/cli/v2"
-
 	api "skywalking.apache.org/repo/goapi/query"
 )
 
-func CreateTraceTask(ctx *cli.Context, condition *api.ProfileTaskCreationRequest) (api.ProfileTaskCreationResult, error) {
+func CreateTraceTask(ctx context.Context, condition *api.ProfileTaskCreationRequest) (api.ProfileTaskCreationResult, error) {
 	var response map[string]api.ProfileTaskCreationResult
 
 	request := graphql.NewRequest(assets.Read("graphqls/profiling/trace/CreateTask.graphql"))
@@ -39,7 +39,7 @@ func CreateTraceTask(ctx *cli.Context, condition *api.ProfileTaskCreationRequest
 	return response["result"], err
 }
 
-func GetTraceProfilingTaskList(ctx *cli.Context, serviceID, endpointName string) ([]*api.ProfileTask, error) {
+func GetTraceProfilingTaskList(ctx context.Context, serviceID, endpointName string) ([]*api.ProfileTask, error) {
 	var response map[string][]*api.ProfileTask
 
 	request := graphql.NewRequest(assets.Read("graphqls/profiling/trace/GetTaskList.graphql"))
@@ -51,7 +51,7 @@ func GetTraceProfilingTaskList(ctx *cli.Context, serviceID, endpointName string)
 	return response["result"], err
 }
 
-func GetTraceProfilingTaskLogList(ctx *cli.Context, taskID string) ([]*api.ProfileTaskLog, error) {
+func GetTraceProfilingTaskLogList(ctx context.Context, taskID string) ([]*api.ProfileTaskLog, error) {
 	var response map[string][]*api.ProfileTaskLog
 
 	request := graphql.NewRequest(assets.Read("graphqls/profiling/trace/GetProfileTaskLogs.graphql"))
@@ -62,7 +62,7 @@ func GetTraceProfilingTaskLogList(ctx *cli.Context, taskID string) ([]*api.Profi
 	return response["result"], err
 }
 
-func GetTraceProfilingTaskSegmentList(ctx *cli.Context, taskID string) ([]*api.ProfiledTraceSegments, error) {
+func GetTraceProfilingTaskSegmentList(ctx context.Context, taskID string) ([]*api.ProfiledTraceSegments, error) {
 	var response map[string][]*api.ProfiledTraceSegments
 
 	request := graphql.NewRequest(assets.Read("graphqls/profiling/trace/GetTaskSegmentsList.graphql"))
@@ -73,7 +73,7 @@ func GetTraceProfilingTaskSegmentList(ctx *cli.Context, taskID string) ([]*api.P
 	return response["result"], err
 }
 
-func GetTraceProfilingAnalyze(ctx *cli.Context, queries []*api.SegmentProfileAnalyzeQuery) (api.ProfileAnalyzation, error) {
+func GetTraceProfilingAnalyze(ctx context.Context, queries []*api.SegmentProfileAnalyzeQuery) (api.ProfileAnalyzation, error) {
 	var response map[string]api.ProfileAnalyzation
 
 	request := graphql.NewRequest(assets.Read("graphqls/profiling/trace/GetSegmentsProfileAnalyze.graphql"))
