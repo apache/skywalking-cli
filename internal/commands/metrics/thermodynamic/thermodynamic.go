@@ -57,6 +57,7 @@ $ swctl metrics thermodynamic --scope all --name all_heatmap
 		end := ctx.String("end")
 		start := ctx.String("start")
 		step := ctx.Generic("step")
+		coldStage := ctx.Bool("cold")
 
 		metricsName := ctx.String("name")
 		entity, err := interceptor.ParseEntity(ctx)
@@ -65,9 +66,10 @@ $ swctl metrics thermodynamic --scope all --name all_heatmap
 		}
 
 		duration := api.Duration{
-			Start: start,
-			End:   end,
-			Step:  step.(*model.StepEnumValue).Selected,
+			Start:     start,
+			End:       end,
+			Step:      step.(*model.StepEnumValue).Selected,
+			ColdStage: &coldStage,
 		}
 
 		metricsValues, err := metrics.Thermodynamic(ctx.Context, api.MetricsCondition{

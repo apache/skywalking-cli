@@ -89,11 +89,13 @@ $ swctl event list
 		start := ctx.String("start")
 		end := ctx.String("end")
 		step := ctx.Generic("step")
+		coldStage := ctx.Bool("cold")
 
 		duration := api.Duration{
-			Start: start,
-			End:   end,
-			Step:  step.(*model.StepEnumValue).Selected,
+			Start:     start,
+			End:       end,
+			Step:      step.(*model.StepEnumValue).Selected,
+			ColdStage: &coldStage,
 		}
 		serviceName := ctx.String("service-name")
 		serviceInstanceName := ctx.String("instance-name")

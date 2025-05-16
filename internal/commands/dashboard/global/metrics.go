@@ -54,15 +54,17 @@ var Metrics = &cli.Command{
 		end := cliCtx.String("end")
 		start := cliCtx.String("start")
 		step := cliCtx.Generic("step")
+		coldStage := cliCtx.Bool("cold")
 
 		ctx := cliCtx.Context
 		ctx = context.WithValue(ctx, contextkey.DashboardTemplate{}, cliCtx.String("template"))
 		cliCtx.Context = ctx
 
 		globalMetrics, err := dashboard.Metrics(cliCtx.Context, api.Duration{
-			Start: start,
-			End:   end,
-			Step:  step.(*model.StepEnumValue).Selected,
+			Start:     start,
+			End:       end,
+			Step:      step.(*model.StepEnumValue).Selected,
+			ColdStage: &coldStage,
 		})
 		if err != nil {
 			return err

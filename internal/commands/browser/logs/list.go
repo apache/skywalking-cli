@@ -55,11 +55,13 @@ $ swctl browser logs list`,
 		start := ctx.String("start")
 		end := ctx.String("end")
 		step := ctx.Generic("step")
+		coldStage := ctx.Bool("cold")
 
 		duration := api.Duration{
-			Start: start,
-			End:   end,
-			Step:  step.(*model.StepEnumValue).Selected,
+			Start:     start,
+			End:       end,
+			Step:      step.(*model.StepEnumValue).Selected,
+			ColdStage: &coldStage,
 		}
 
 		serviceID := ctx.String("service-id")

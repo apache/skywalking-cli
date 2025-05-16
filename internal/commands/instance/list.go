@@ -54,12 +54,14 @@ $ swctl instance ls --service-id YnVzaW5lc3Mtem9uZTo6cHJvamVjdEM=.1`,
 		end := ctx.String("end")
 		start := ctx.String("start")
 		step := ctx.Generic("step")
+		coldStage := ctx.Bool("cold")
 		serviceID := ctx.String("service-id")
 
 		instances, err := metadata.Instances(ctx.Context, serviceID, api.Duration{
-			Start: start,
-			End:   end,
-			Step:  step.(*model.StepEnumValue).Selected,
+			Start:     start,
+			End:       end,
+			Step:      step.(*model.StepEnumValue).Selected,
+			ColdStage: &coldStage,
 		})
 		if err != nil {
 			return err

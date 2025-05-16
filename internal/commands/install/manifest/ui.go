@@ -67,8 +67,10 @@ var uiCmd = &cli.Command{
 		if err != nil {
 			return fmt.Errorf("failed to convert yaml to UI: %v", err)
 		}
-		base.Default()
-		if err := base.ValidateCreate(); err != nil {
+		if err := base.Default(ctx.Context, base); err != nil {
+			return fmt.Errorf("failed to default UI: %v", err)
+		}
+		if _, err := base.ValidateCreate(ctx.Context, base); err != nil {
 			return fmt.Errorf("failed to validate UI: %v", err)
 		}
 		return render("ui", ctx, base, &operatorv1alpha1.UI{})

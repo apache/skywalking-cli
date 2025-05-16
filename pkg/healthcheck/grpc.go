@@ -44,7 +44,6 @@ func HealthCheck(addr string, enableTLS bool) int {
 
 	opts := []grpc.DialOption{
 		grpc.WithUserAgent("swctl_health_probe"),
-		grpc.WithBlock(),
 	}
 	if enableTLS {
 		// #nosec
@@ -55,9 +54,7 @@ func HealthCheck(addr string, enableTLS bool) int {
 	} else {
 		opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	}
-	dialCtx, cancel := context.WithTimeout(ctx, time.Second)
-	defer cancel()
-	conn, err := grpc.DialContext(dialCtx, addr, opts...)
+	conn, err := grpc.NewClient(addr, opts...)
 	if err != nil {
 		if err == context.DeadlineExceeded {
 			logger.Log.Printf("timeout: failed to connect service %q within 1 second", addr)

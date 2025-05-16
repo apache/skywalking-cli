@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+- CLICKHOUSE
 - BROWSER
 - RABBITMQ
 - MESH
@@ -21,9 +22,12 @@
 - MESH_CP
 - AWS_GATEWAY
 - NGINX
+- SO11Y_JAVA_AGENT
+- ACTIVEMQ
 - SO11Y_SATELLITE
 - K8S_SERVICE
 - VIRTUAL_GATEWAY
+- CILIUM_SERVICE
 - AWS_EKS
 - MQ
 - MYSQL
@@ -34,6 +38,7 @@
 - MONGODB
 - CACHE
 - OS_WINDOWS
+- SO11Y_GO_AGENT
 - MESH_DP
 - SO11Y_OAP
 - DATABASE
@@ -47,4 +52,7 @@
 - POSTGRESQL
 - AWS_S3
 - BOOKKEEPER
+- KONG
+- FLINK
 - AWS_DYNAMODB
+

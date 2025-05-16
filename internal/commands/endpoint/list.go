@@ -83,10 +83,12 @@ $ swctl endpoint ls --service-name business-zone::projectC --keyword projectC`,
 			end := ctx.String("end")
 			start := ctx.String("start")
 			step := ctx.Generic("step")
+			coldStage := ctx.Bool("cold")
 			duration = &api.Duration{
-				Start: start,
-				End:   end,
-				Step:  step.(*model.StepEnumValue).Selected,
+				Start:     start,
+				End:       end,
+				Step:      step.(*model.StepEnumValue).Selected,
+				ColdStage: &coldStage,
 			}
 		}
 

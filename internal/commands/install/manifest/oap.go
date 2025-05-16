@@ -58,8 +58,10 @@ and connect to elasticsearch cluster 'es1.foo:9200':
 		if err != nil {
 			return fmt.Errorf("failed to convert yaml to OAPServer: %v", err)
 		}
-		base.Default()
-		if err := base.ValidateCreate(); err != nil {
+		if err := base.Default(ctx.Context, base); err != nil {
+			return fmt.Errorf("failed to default OAPServer: %v", err)
+		}
+		if _, err := base.ValidateCreate(ctx.Context, base); err != nil {
 			return fmt.Errorf("failed to validate OAPServer: %v", err)
 		}
 		return render("oapserver", ctx, base, &operatorv1alpha1.OAPServer{})

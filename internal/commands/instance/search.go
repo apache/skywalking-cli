@@ -49,12 +49,14 @@ var SearchCommand = &cli.Command{
 		end := ctx.String("end")
 		start := ctx.String("start")
 		step := ctx.Generic("step")
+		coldStage := ctx.Bool("cold")
 		regex := ctx.String("regex")
 
 		instances, err := metadata.Instances(ctx.Context, serviceID, api.Duration{
-			Start: start,
-			End:   end,
-			Step:  step.(*model.StepEnumValue).Selected,
+			Start:     start,
+			End:       end,
+			Step:      step.(*model.StepEnumValue).Selected,
+			ColdStage: &coldStage,
 		})
 		if err != nil {
 			return err

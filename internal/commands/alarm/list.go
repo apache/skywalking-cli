@@ -76,15 +76,17 @@ $ swctl alarm list
 		start := ctx.String("start")
 		end := ctx.String("end")
 		step := ctx.Generic("step")
+		coldStage := ctx.Bool("cold")
 
 		keyword := ctx.String("keyword")
 		tagStr := ctx.String("tags")
 		scope := ctx.Generic("scope").(*model.ScopeEnumValue).Selected
 
 		duration := api.Duration{
-			Start: start,
-			End:   end,
-			Step:  step.(*model.StepEnumValue).Selected,
+			Start:     start,
+			End:       end,
+			Step:      step.(*model.StepEnumValue).Selected,
+			ColdStage: &coldStage,
 		}
 
 		var tags []*api.AlarmTag

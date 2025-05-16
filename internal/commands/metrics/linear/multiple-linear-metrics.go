@@ -78,6 +78,7 @@ $ swctl metrics multiple-linear --name all_percentile --labels=0,1,2,3,4 --relab
 		end := ctx.String("end")
 		start := ctx.String("start")
 		step := ctx.Generic("step")
+		coldStage := ctx.Bool("cold")
 
 		metricsName := ctx.String("name")
 		labelsString := ctx.String("labels")
@@ -108,9 +109,10 @@ $ swctl metrics multiple-linear --name all_percentile --labels=0,1,2,3,4 --relab
 		}
 
 		duration := api.Duration{
-			Start: start,
-			End:   end,
-			Step:  step.(*model.StepEnumValue).Selected,
+			Start:     start,
+			End:       end,
+			Step:      step.(*model.StepEnumValue).Selected,
+			ColdStage: &coldStage,
 		}
 
 		metricsValuesArray, err := metrics.MultipleLinearIntValues(ctx.Context, api.MetricsCondition{
