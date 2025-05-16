@@ -18,17 +18,17 @@
 package event
 
 import (
+	"context"
+
 	"github.com/apache/skywalking-cli/assets"
 	"github.com/apache/skywalking-cli/pkg/graphql/client"
 
 	"github.com/machinebox/graphql"
 
-	"github.com/urfave/cli/v2"
-
 	api "skywalking.apache.org/repo/goapi/query"
 )
 
-func Events(ctx *cli.Context, condition *api.EventQueryCondition) (api.Events, error) {
+func Events(ctx context.Context, condition *api.EventQueryCondition) (api.Events, error) {
 	var response map[string]api.Events
 
 	request := graphql.NewRequest(assets.Read("graphqls/event/events.graphql"))

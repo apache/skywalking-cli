@@ -18,11 +18,14 @@
 package global
 
 import (
+	"context"
+
 	"github.com/urfave/cli/v2"
 
 	"github.com/apache/skywalking-cli/internal/commands/interceptor"
 	"github.com/apache/skywalking-cli/internal/flags"
 	"github.com/apache/skywalking-cli/internal/model"
+	"github.com/apache/skywalking-cli/pkg/contextkey"
 	"github.com/apache/skywalking-cli/pkg/display"
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
 	"github.com/apache/skywalking-cli/pkg/graphql/dashboard"
@@ -47,21 +50,24 @@ var Metrics = &cli.Command{
 	Before: interceptor.BeforeChain(
 		interceptor.DurationInterceptor,
 	),
-	Action: func(ctx *cli.Context) error {
-		end := ctx.String("end")
-		start := ctx.String("start")
-		step := ctx.Generic("step")
+	Action: func(cliCtx *cli.Context) error {
+		end := cliCtx.String("end")
+		start := cliCtx.String("start")
+		step := cliCtx.Generic("step")
 
-		globalMetrics, err := dashboard.Metrics(ctx, api.Duration{
+		ctx := cliCtx.Context
+		ctx = context.WithValue(ctx, contextkey.DashboardTemplate{}, cliCtx.String("template"))
+		cliCtx.Context = ctx
+
+		globalMetrics, err := dashboard.Metrics(cliCtx.Context, api.Duration{
 			Start: start,
 			End:   end,
 			Step:  step.(*model.StepEnumValue).Selected,
 		})
-
 		if err != nil {
 			return err
 		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: globalMetrics})
+		return display.Display(cliCtx.Context, &displayable.Displayable{Data: globalMetrics})
 	},
 }

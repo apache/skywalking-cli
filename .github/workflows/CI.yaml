@@ -1,0 +1,147 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+  schedule:
+    - cron: "0 18 * * *" # TimeZone: UTC 0
+
+concurrency:
+  group: skywalking-cli-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check-license:
+    name: License header
+    if: github.repository == 'apache/skywalking-cli'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check License Header
+        uses: apache/skywalking-eyes@5dfa68f93380a5e57259faaf95088b7f133b5778
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.24"
+
+      - name: Check Dependencies License
+        run: make dependency-license
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    if: github.repository == 'apache/skywalking-cli'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.24
+
+      - name: Check code generation
+        run: make check-codegen
+
+      - name: Lint
+        run: make lint
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: check-diff
+          path: /tmp/swctl/check.diff
+
+      - name: Build
+        run: make build -j3
+
+      - name: Build Docker images
+        run: make docker
+
+
+  command-tests:
+    name: Command Tests
+    runs-on: ubuntu-latest
+    if: github.repository == 'apache/skywalking-cli'
+    strategy:
+      matrix:
+        oap:
+          - a65a6e0ff2ef9c716131b36172399076307c35f1 # Feb 27th, 2024
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.24
+
+      - name: Install swctl
+        run: make install DESTDIR=/usr/local/bin
+
+      - name: Test commands
+        uses: apache/skywalking-infra-e2e@cf589b4a0b9f8e6f436f78e9cfd94a1ee5494180
+        env:
+          OAP_TAG: ${{ matrix.oap }}
+        with:
+          e2e-file: test/cases/basic/test.yaml
+
+
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    if: github.repository == 'apache/skywalking-cli'
+    steps:
+      - uses: actions/checkout@v4
+      - name: setup go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+
+      - name: run unit tests and report coverage
+        working-directory: ./
+        run: |
+          make coverage
+
+  required:
+    if: always()
+    name: Required
+    needs:
+      - check-license
+      - build
+      - command-tests
+      - unit-tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Merge Requirement
+        run: |
+          checkLicense=${{ needs.check-license.result }}
+          [[ ${checkLicense} == 'success' ]] || exit 1;
+          build=${{ needs.build.result }};
+          commandTests=${{ needs.command-tests.result }};
+          unitTests=${{ needs.unit-tests.result }};
+          [[ ${build} == 'success' ]] || [[ ${build} == 'skipped' ]] || exit 3;
+          [[ ${commandTests} == 'success' ]] || [[ ${commandTests} == 'skipped' ]] || exit 4;
+          [[ ${unitTests} == 'success' ]] || [[ ${unitTests} == 'skipped' ]] || exit 5;
+          exit 0;

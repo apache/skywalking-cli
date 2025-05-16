@@ -16,13 +16,24 @@ same as GUI.
 
 ### Quick install
 
-#### Linux or macOS
+#### Linux
 
 Install the latest version with the following command:
 
 ```shell
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/apache/skywalking-cli/master/scripts/install.sh)"
 ```
+
+#### MacOS
+
+Use [Homebrew](https://brew.sh/) to install swctl on the macOS.
+
+```shell
+brew update
+brew install swctl
+```
+
+Besides that, you could still use the same command in Linux to install it.
 
 #### Windows
 
@@ -156,12 +167,17 @@ jobs:
 
 # Compatibility
 
-SkyWalking CLI and SkyWalking OAP communicate with different query version, here is a summary of the compatible version of both.
+SkyWalking CLI and SkyWalking OAP communicate with different query versions, here is a summary of the compatible versions of both.
+Note that many queries in older CLI releases can still work with new OAP versions and vice versa because most query APIs are forward-compatible.
+The compatibility table here only lists fully compatible OAP versions, which mean new query APIs are implemented in this specific version.
 
 | SkyWalking CLI | OAP Server Version |
 |----------------|---------------|
 | \> = 0.11.0    | \> = 9.2.0    |
 | \> = 0.12.0    | \> = 9.3.0    |
+| \> = 0.12.0    | \> = 9.5.0    |
+| \> = 0.13.0    | \> = 9.6.0    |
+| \> = 0.14.0    | \> = 10.2.0   |
 
 # Contributing
 

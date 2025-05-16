@@ -16,25 +16,15 @@
 
 linters-settings:
   govet:
-    check-shadowing: true
-  golint:
-    min-confidence: 0
+    enable:
+      - shadow
   gocyclo:
     min-complexity: 15
-  maligned:
-    suggest-new: true
   dupl:
     threshold: 200
   goconst:
     min-len: 2
     min-occurrences: 2
-  depguard:
-    list-type: blacklist
-    packages:
-      -
-    include-go-root: true
-    packages-with-error-messages:
-      fmt: "logging is allowed only by logutils.Log"
   misspell:
     locale: US
   lll:
@@ -56,11 +46,17 @@ linters-settings:
   whitespace:
     multi-if: false
     multi-func: false
+  depguard:
+    rules:
+      prevent_cli_in_pkg:
+        files: ["**/pkg/**/*.go"]
+        deny:
+          - pkg: "github.com/urfave/cli/v2"
+            desc: "github.com/urfave/cli/v2 is not allowed in pkg module"
 
 linters:
   enable:
     - bodyclose
-    - depguard
     - dogsled
     - dupl
     - errcheck
@@ -85,8 +81,4 @@ linters:
     - unparam
     - unused
     - whitespace
-
-service:
-  golangci-lint-version: 1.20.x
-  prepare:
-    - echo "here I can run custom commands, but no preparation needed for this repo"
+    - depguard

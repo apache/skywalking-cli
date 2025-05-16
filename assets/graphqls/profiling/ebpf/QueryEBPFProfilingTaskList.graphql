@@ -32,6 +32,7 @@ query ($serviceId: ID!, $triggerType: EBPFProfilingTriggerType){
             type
             singleValue {threshold current}
             uri {uriRegex uriPath threshold current}
+            message
         }
         targetType
         createTime

@@ -18,18 +18,19 @@
 package profiling
 
 import (
+	"context"
+
 	"github.com/apache/skywalking-cli/assets"
 	"github.com/apache/skywalking-cli/pkg/graphql/client"
 
 	"github.com/machinebox/graphql"
 
-	"github.com/urfave/cli/v2"
-
 	api "skywalking.apache.org/repo/goapi/query"
 )
 
-func CreateEBPFProfilingFixedTimeTask(ctx *cli.Context,
-	condition *api.EBPFProfilingTaskFixedTimeCreationRequest) (api.EBPFProfilingTaskCreationResult, error) {
+func CreateEBPFProfilingFixedTimeTask(ctx context.Context,
+	condition *api.EBPFProfilingTaskFixedTimeCreationRequest,
+) (api.EBPFProfilingTaskCreationResult, error) {
 	var response map[string]api.EBPFProfilingTaskCreationResult
 
 	request := graphql.NewRequest(assets.Read("graphqls/profiling/ebpf/CreateEBPFProfilingFixedTimeTask.graphql"))
@@ -40,7 +41,9 @@ func CreateEBPFProfilingFixedTimeTask(ctx *cli.Context,
 	return response["result"], err
 }
 
-func CreateEBPFNetworkProfilingTask(ctx *cli.Context, condition *api.EBPFProfilingNetworkTaskRequest) (api.EBPFProfilingTaskCreationResult, error) {
+func CreateEBPFNetworkProfilingTask(ctx context.Context,
+	condition *api.EBPFProfilingNetworkTaskRequest,
+) (api.EBPFProfilingTaskCreationResult, error) {
 	var response map[string]api.EBPFProfilingTaskCreationResult
 
 	request := graphql.NewRequest(assets.Read("graphqls/profiling/ebpf/CreateEBPFNetworkProfilingTask.graphql"))
@@ -51,7 +54,7 @@ func CreateEBPFNetworkProfilingTask(ctx *cli.Context, condition *api.EBPFProfili
 	return response["result"], err
 }
 
-func QueryPrepareCreateEBPFProfilingTaskData(ctx *cli.Context, serviceID string) (*api.EBPFProfilingTaskPrepare, error) {
+func QueryPrepareCreateEBPFProfilingTaskData(ctx context.Context, serviceID string) (*api.EBPFProfilingTaskPrepare, error) {
 	var response map[string]*api.EBPFProfilingTaskPrepare
 
 	request := graphql.NewRequest(assets.Read("graphqls/profiling/ebpf/QueryPrepareCreateEBPFProfilingTaskData.graphql"))
@@ -62,7 +65,7 @@ func QueryPrepareCreateEBPFProfilingTaskData(ctx *cli.Context, serviceID string)
 	return response["result"], err
 }
 
-func QueryEBPFProfilingTaskList(ctx *cli.Context, serviceID string, triggerType api.EBPFProfilingTriggerType) ([]*api.EBPFProfilingTask, error) {
+func QueryEBPFProfilingTaskList(ctx context.Context, serviceID string, triggerType api.EBPFProfilingTriggerType) ([]*api.EBPFProfilingTask, error) {
 	var response map[string][]*api.EBPFProfilingTask
 
 	request := graphql.NewRequest(assets.Read("graphqls/profiling/ebpf/QueryEBPFProfilingTaskList.graphql"))
@@ -74,7 +77,7 @@ func QueryEBPFProfilingTaskList(ctx *cli.Context, serviceID string, triggerType 
 	return response["result"], err
 }
 
-func QueryEBPFProfilingScheduleList(ctx *cli.Context, taskID string) ([]*api.EBPFProfilingSchedule, error) {
+func QueryEBPFProfilingScheduleList(ctx context.Context, taskID string) ([]*api.EBPFProfilingSchedule, error) {
 	var response map[string][]*api.EBPFProfilingSchedule
 
 	request := graphql.NewRequest(assets.Read("graphqls/profiling/ebpf/QueryEBPFProfilingScheduleList.graphql"))
@@ -85,8 +88,9 @@ func QueryEBPFProfilingScheduleList(ctx *cli.Context, taskID string) ([]*api.EBP
 	return response["result"], err
 }
 
-func AnalysisEBPFProfilingResult(ctx *cli.Context, scheduleIDList []string,
-	timeRanges []*api.EBPFProfilingAnalyzeTimeRange, aggregateType api.EBPFProfilingAnalyzeAggregateType) (*api.EBPFProfilingAnalyzation, error) {
+func AnalysisEBPFProfilingResult(ctx context.Context, scheduleIDList []string,
+	timeRanges []*api.EBPFProfilingAnalyzeTimeRange, aggregateType api.EBPFProfilingAnalyzeAggregateType,
+) (*api.EBPFProfilingAnalyzation, error) {
 	var response map[string]*api.EBPFProfilingAnalyzation
 
 	request := graphql.NewRequest(assets.Read("graphqls/profiling/ebpf/AnalysisEBPFProfilingResult.graphql"))
@@ -99,7 +103,7 @@ func AnalysisEBPFProfilingResult(ctx *cli.Context, scheduleIDList []string,
 	return response["result"], err
 }
 
-func KeepNetworkProfilingTask(ctx *cli.Context, taskID string) (*api.EBPFNetworkKeepProfilingResult, error) {
+func KeepNetworkProfilingTask(ctx context.Context, taskID string) (*api.EBPFNetworkKeepProfilingResult, error) {
 	var response map[string]*api.EBPFNetworkKeepProfilingResult
 
 	request := graphql.NewRequest(assets.Read("graphqls/profiling/ebpf/KeepNetworkProfilingTask.graphql"))

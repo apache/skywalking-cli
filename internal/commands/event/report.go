@@ -26,11 +26,11 @@ import (
 
 	"github.com/apache/skywalking-cli/internal/commands/interceptor"
 	"github.com/apache/skywalking-cli/internal/flags"
-	"github.com/apache/skywalking-cli/internal/logger"
 	"github.com/apache/skywalking-cli/internal/model"
 	"github.com/apache/skywalking-cli/pkg/display"
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
 	"github.com/apache/skywalking-cli/pkg/grpc"
+	"github.com/apache/skywalking-cli/pkg/logger"
 )
 
 var reportCommand = &cli.Command{
@@ -112,6 +112,6 @@ one for starting of the event (--start-time is required) and the other one for e
 		}
 
 		logger.Log.Printf("Report the event successfully, whose uuid is %s\n", ctx.String("uuid"))
-		return display.Display(ctx, &displayable.Displayable{Data: reply})
+		return display.Display(ctx.Context, &displayable.Displayable{Data: reply})
 	},
 }

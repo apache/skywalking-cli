@@ -98,8 +98,8 @@ $ swctl trace ls --trace-id "321661b1-9a31-4e12-ad64-c8f6711f108d"
 		tagStr := ctx.String("tags")
 		var tags []*api.SpanTag = nil
 		if tagStr != "" {
-			tagArr := strings.Split(tagStr, ",")
-			for _, tag := range tagArr {
+			tagArr := strings.SplitSeq(tagStr, ",")
+			for tag := range tagArr {
 				kv := strings.Split(tag, "=")
 				tags = append(tags, &api.SpanTag{Key: kv[0], Value: &kv[1]})
 			}
@@ -134,12 +134,11 @@ $ swctl trace ls --trace-id "321661b1-9a31-4e12-ad64-c8f6711f108d"
 			Tags:              tags,
 			Paging:            &paging,
 		}
-		traces, err := trace.Traces(ctx, condition)
-
+		traces, err := trace.Traces(ctx.Context, condition)
 		if err != nil {
 			return err
 		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: traces, Condition: condition})
+		return display.Display(ctx.Context, &displayable.Displayable{Data: traces, Condition: condition})
 	},
 }

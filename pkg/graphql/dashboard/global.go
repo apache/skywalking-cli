@@ -19,23 +19,26 @@ package dashboard
 
 import (
 	"bytes"
+	"context"
 	"os"
 	"strings"
 	"sync"
+
+	"github.com/apache/skywalking-cli/pkg/contextkey"
+	"github.com/apache/skywalking-cli/pkg/display/displayable"
 
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 	api "skywalking.apache.org/repo/goapi/query"
 
 	"github.com/spf13/viper"
-	"github.com/urfave/cli/v2"
 
 	"gopkg.in/yaml.v2"
 
 	"github.com/apache/skywalking-cli/assets"
-	"github.com/apache/skywalking-cli/internal/logger"
 	"github.com/apache/skywalking-cli/pkg/graphql/metrics"
 	"github.com/apache/skywalking-cli/pkg/graphql/utils"
+	"github.com/apache/skywalking-cli/pkg/logger"
 )
 
 type ButtonTemplate struct {
@@ -67,16 +70,18 @@ type GlobalTemplate struct {
 }
 
 type GlobalData struct {
-	Metrics         [][]*api.SelectedRecord       `json:"metrics"`
-	ResponseLatency map[string]map[string]float64 `json:"responseLatency"`
-	HeatMap         api.HeatMap                   `json:"heatMap"`
+	Metrics         [][]*api.SelectedRecord                        `json:"metrics"`
+	ResponseLatency map[string]map[string]*displayable.MetricValue `json:"responseLatency"`
+	HeatMap         api.HeatMap                                    `json:"heatMap"`
 }
 
 // Use singleton pattern to make sure to load template only once.
 var globalTemplate *GlobalTemplate
 
-const templateType = "yml"
-const DefaultTemplatePath = "templates/dashboard/global.yml"
+const (
+	templateType        = "yml"
+	DefaultTemplatePath = "templates/dashboard/global.yml"
+)
 
 // newGlobalTemplate create a new GlobalTemplate and set default values for buttons' template.
 func newGlobalTemplate() GlobalTemplate {
@@ -129,7 +134,7 @@ func LoadTemplate(filename string) (*GlobalTemplate, error) {
 func getButtonTexts(byteValue []byte) ([]string, error) {
 	var ret []string
 
-	c := make(map[string]interface{})
+	c := make(map[string]any)
 	if err := yaml.Unmarshal(byteValue, &c); err != nil {
 		return nil, err
 	}
@@ -142,10 +147,10 @@ func getButtonTexts(byteValue []byte) ([]string, error) {
 	return ret, nil
 }
 
-func Metrics(ctx *cli.Context, duration api.Duration) ([][]*api.SelectedRecord, error) {
+func Metrics(ctx context.Context, duration api.Duration) ([][]*api.SelectedRecord, error) {
 	var ret [][]*api.SelectedRecord
 
-	template, err := LoadTemplate(ctx.String("template"))
+	template, err := LoadTemplate(ctx.Value(contextkey.DashboardTemplate{}).(string))
 	if err != nil {
 		return nil, nil
 	}
@@ -166,8 +171,8 @@ func Metrics(ctx *cli.Context, duration api.Duration) ([][]*api.SelectedRecord, 
 	return ret, nil
 }
 
-func responseLatency(ctx *cli.Context, duration api.Duration) map[string]map[string]float64 {
-	template, err := LoadTemplate(ctx.String("template"))
+func responseLatency(ctx context.Context, duration api.Duration) map[string]map[string]*displayable.MetricValue {
+	template, err := LoadTemplate(ctx.Value(contextkey.DashboardTemplate{}).(string))
 	if err != nil {
 		return nil
 	}
@@ -183,13 +188,12 @@ func responseLatency(ctx *cli.Context, duration api.Duration) map[string]map[str
 	relabels := strings.Split(template.ResponseLatency.Relabels, ",")
 
 	responseLatency, err := metrics.MultipleLinearIntValues(ctx, template.ResponseLatency.Condition, labels, duration)
-
 	if err != nil {
 		logger.Log.Fatalln(err)
 	}
 
 	mapping := make(map[string]string, len(labels))
-	for i := 0; i < len(labels); i++ {
+	for i := range labels {
 		mapping[labels[i]] = relabels[i]
 	}
 
@@ -197,8 +201,8 @@ func responseLatency(ctx *cli.Context, duration api.Duration) map[string]map[str
 	return utils.MetricsValuesArrayToMap(duration, responseLatency, mapping)
 }
 
-func heatMap(ctx *cli.Context, duration api.Duration) (api.HeatMap, error) {
-	template, err := LoadTemplate(ctx.String("template"))
+func heatMap(ctx context.Context, duration api.Duration) (api.HeatMap, error) {
+	template, err := LoadTemplate(ctx.Value(contextkey.DashboardTemplate{}).(string))
 	if err != nil {
 		return api.HeatMap{}, nil
 	}
@@ -211,9 +215,9 @@ func heatMap(ctx *cli.Context, duration api.Duration) (api.HeatMap, error) {
 	return metrics.Thermodynamic(ctx, template.HeatMap.Condition, duration)
 }
 
-func Global(ctx *cli.Context, duration api.Duration) (*GlobalData, error) {
+func Global(ctx context.Context, duration api.Duration) (*GlobalData, error) {
 	// Load template to `globalTemplate`, so the subsequent three calls can ues it directly.
-	_, err := LoadTemplate(ctx.String("template"))
+	_, err := LoadTemplate(ctx.Value(contextkey.DashboardTemplate{}).(string))
 	if err != nil {
 		return nil, nil
 	}
@@ -232,7 +236,7 @@ func Global(ctx *cli.Context, duration api.Duration) (*GlobalData, error) {
 		}
 		wg.Done()
 	}()
-	var rl map[string]map[string]float64
+	var rl map[string]map[string]*displayable.MetricValue
 	go func() {
 		rl = responseLatency(ctx, duration)
 		wg.Done()

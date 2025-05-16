@@ -57,12 +57,11 @@ var EndpointCommand = &cli.Command{
 			Step:  step.(*model.StepEnumValue).Selected,
 		}
 
-		dependency, err := dependency.EndpointDependency(ctx, endpointID, duration)
-
+		dependency, err := dependency.EndpointDependency(ctx.Context, endpointID, duration)
 		if err != nil {
 			return err
 		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: dependency})
+		return display.Display(ctx.Context, &displayable.Displayable{Data: dependency})
 	},
 }

@@ -19,19 +19,26 @@ nodes:
   name: provider
   type: Python
   isreal: true
+  layers:
+    - GENERAL
 - id: {{ b64enc "consumer" }}.1
   name: consumer
   type: Python
   isreal: true
+  layers:
+    - GENERAL
   {{- end }}
 calls:
   {{- contains .calls }}
 - source: {{ b64enc "consumer" }}.1
-  sourcecomponents: [ ]
+  sourcecomponents:
+    - Python
   target: {{ b64enc "provider" }}.1
-  targetcomponents: [ ]
+  targetcomponents:
+    - Python
   id: {{ b64enc "consumer" }}.1-{{ b64enc "provider"}}.1
   detectpoints:
     - CLIENT
     - SERVER
   {{- end }}
+debuggingtrace: null

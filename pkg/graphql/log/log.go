@@ -18,17 +18,17 @@
 package log
 
 import (
+	"context"
+
 	"github.com/apache/skywalking-cli/assets"
 	"github.com/apache/skywalking-cli/pkg/graphql/client"
 
 	"github.com/machinebox/graphql"
 
-	"github.com/urfave/cli/v2"
-
 	api "skywalking.apache.org/repo/goapi/query"
 )
 
-func Logs(ctx *cli.Context, condition *api.LogQueryCondition) (api.Logs, error) {
+func Logs(ctx context.Context, condition *api.LogQueryCondition) (api.Logs, error) {
 	var response map[string]api.Logs
 
 	request := graphql.NewRequest(assets.Read("graphqls/logs/Logs.graphql"))
@@ -39,7 +39,7 @@ func Logs(ctx *cli.Context, condition *api.LogQueryCondition) (api.Logs, error) 
 	return response["result"], err
 }
 
-func BrowserLogs(ctx *cli.Context, condition *api.BrowserErrorLogQueryCondition) (api.BrowserErrorLogs, error) {
+func BrowserLogs(ctx context.Context, condition *api.BrowserErrorLogQueryCondition) (api.BrowserErrorLogs, error) {
 	var response map[string]api.BrowserErrorLogs
 
 	request := graphql.NewRequest(assets.Read("graphqls/logs/BrowserLogs.graphql"))

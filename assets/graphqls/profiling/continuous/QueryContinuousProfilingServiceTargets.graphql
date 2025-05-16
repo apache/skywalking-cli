@@ -26,5 +26,7 @@ query ($serviceId: ID!){
             uriList
             uriRegex
         }
+        triggeredCount
+        lastTriggerTimestamp
     }
 }

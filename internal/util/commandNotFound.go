@@ -19,6 +19,7 @@ package util
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/urfave/cli/v2"
 )
@@ -55,6 +56,7 @@ func CommandNotFound(c *cli.Context, s string) {
 	} else {
 		fmt.Printf("Run 'swctl %s --help' for usage.\n", parentCommand)
 	}
+	os.Exit(1)
 }
 
 // minEditDistance calculates the edit distance of two strings.
@@ -64,10 +66,10 @@ func minEditDistance(word1, word2 string) int {
 	for i := range dp {
 		dp[i] = make([]int, n+1)
 	}
-	for i := 0; i < m+1; i++ {
+	for i := range m + 1 {
 		dp[i][0] = i
 	}
-	for j := 0; j < n+1; j++ {
+	for j := range n + 1 {
 		dp[0][j] = j
 	}
 	for i := 1; i < m+1; i++ {
@@ -80,15 +82,4 @@ func minEditDistance(word1, word2 string) int {
 		}
 	}
 	return dp[m][n]
-}
-
-// min get The minimum of the args.
-func min(args ...int) int {
-	min := args[0]
-	for _, item := range args {
-		if item < min {
-			min = item
-		}
-	}
-	return min
 }

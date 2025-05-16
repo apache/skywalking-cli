@@ -26,12 +26,12 @@ import (
 
 	"github.com/apache/skywalking-cli/internal/commands/interceptor"
 	"github.com/apache/skywalking-cli/internal/flags"
-	"github.com/apache/skywalking-cli/internal/logger"
 	"github.com/apache/skywalking-cli/internal/model"
 	"github.com/apache/skywalking-cli/pkg/display"
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
 	"github.com/apache/skywalking-cli/pkg/graphql/metadata"
 	"github.com/apache/skywalking-cli/pkg/graphql/metrics"
+	"github.com/apache/skywalking-cli/pkg/logger"
 )
 
 var SampledRecords = &cli.Command{
@@ -70,25 +70,25 @@ $ swctl metrics sampled-record --name top_n_database_statement 5
 	),
 	Action: func(ctx *cli.Context) error {
 		// read OAP version
-		major, minor, err := metadata.BackendVersion(ctx)
+		major, minor, err := metadata.BackendVersion(ctx.Context)
 		if err != nil {
 			return fmt.Errorf("read backend version failure: %v", err)
 		}
 
 		// since 9.3.0, use new record query API
-		if major >= 9 && minor >= 3 {
+		if (major == 9 && minor >= 3) || major > 9 {
 			condition, duration, err1 := buildReadRecordsCondition(ctx)
 			if err1 != nil {
 				return err1
 			}
 			logger.Log.Debugln(condition.Name, condition.TopN)
 
-			records, err1 := metrics.ReadRecords(ctx, *condition, *duration)
+			records, err1 := metrics.ReadRecords(ctx.Context, *condition, *duration)
 			if err1 != nil {
 				return err1
 			}
 
-			return display.Display(ctx, &displayable.Displayable{Data: records})
+			return display.Display(ctx.Context, &displayable.Displayable{Data: records})
 		}
 
 		condition, duration, err := buildSortedCondition(ctx, false)
@@ -97,11 +97,11 @@ $ swctl metrics sampled-record --name top_n_database_statement 5
 		}
 
 		logger.Log.Debugln(condition.Name, condition.Scope, condition.TopN)
-		sampledRecords, err := metrics.SampledRecords(ctx, *condition, *duration)
+		sampledRecords, err := metrics.SampledRecords(ctx.Context, *condition, *duration)
 		if err != nil {
 			return err
 		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: sampledRecords})
+		return display.Display(ctx.Context, &displayable.Displayable{Data: sampledRecords})
 	},
 }

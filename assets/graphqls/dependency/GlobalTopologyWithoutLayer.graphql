@@ -15,17 +15,21 @@
 # specific language governing permissions and limitations
 # under the License.
 
-query ($segmentId: String!, $timeRanges: [ProfileAnalyzeTimeRange!]!) {
-    result: getProfileAnalyze(segmentId: $segmentId, timeRanges: $timeRanges) {
-        trees {
-            elements {
-                id
-                parentId
-                codeSignature
-                duration
-                durationChildExcluded
-                count
-            }
+query ($duration: Duration!) {
+    result: getGlobalTopology(duration: $duration) {
+        nodes {
+            id
+            name
+            type
+            isReal
+        }
+        calls {
+            id
+            source
+            detectPoints
+            target
+            sourceComponents
+            targetComponents
         }
     }
 }

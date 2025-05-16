@@ -24,3 +24,4 @@ traces:
   traceids:
     - {{ index .traceids 0 }}
   {{- end }}
+debuggingtrace: null

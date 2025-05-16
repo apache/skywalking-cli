@@ -2,6 +2,66 @@ Changes by Version
 ==================
 Release Notes.
 
+0.15.0
+------------------
+
+### Features
+
+* Add the sub-command `profiling async` for async-profiler query API by @zhengziyi0117 in https://github.com/apache/skywalking-cli/pull/203
+* Support the owner in MQE response by using [10.2 MQE query protocol](https://github.com/apache/skywalking-query-protocol/pull/141) by @zhengziyi0117 in https://github.com/apache/skywalking-cli/pull/203
+* Add the sub-command `alarm autocomplete-keys` and `alarm auto-complete-values` for alarm query API by @mrproliu in https://github.com/apache/skywalking-cli/pull/210
+* Adapt the alarm message query API by @mrproliu in https://github.com/apache/skywalking-cli/pull/210
+* Add the owner field in the `metrics exec` query API by @mrproliu in https://github.com/apache/skywalking-cli/pull/210
+
+### Bug Fixes
+
+* Fix wrong process id format by @mrproliu in https://github.com/apache/skywalking-cli/pull/215
+
+0.14.0
+------------------
+
+### Features
+
+* Add the sub-command `dependency global` for adapt the global dependency query API by @mrproliu in https://github.com/apache/skywalking-cli/pull/198
+* Upgrade crypto lib to fix cve by @mrproliu in https://github.com/apache/skywalking-cli/pull/199
+* Add the **hierarchy** related commands `hierarchy service`, `hierarchy instance` and `hierarchy layer-levels` by @mrproliu in https://github.com/apache/skywalking-cli/pull/200
+* Add the `layers` field to `nodes` in the `dependency service` command by @mrproliu in https://github.com/apache/skywalking-cli/pull/200
+* Add the duration related flags in the `endpoint list` command by @mrproliu in https://github.com/apache/skywalking-cli/pull/201
+
+### Bug Fixes
+
+0.13.0
+------------------
+
+### Features
+
+### Bug Fixes
+
+* Fix the record list query does not support new OAP versions (with major version number > 9).
+
+## What's Changed
+
+* Add the sub-command `menu get` for get the ui menu items by @mrproliu in https://github.com/apache/skywalking-cli/pull/187
+
+0.12.0
+------------------
+
+### Features
+## What's Changed
+
+* Add the sub-command `records list` for adapt the new record query API by @mrproliu in https://github.com/apache/skywalking-cli/pull/167
+* Add the attached events fields into the `trace` sub-command by @mrproliu in https://github.com/apache/skywalking-cli/pull/169
+* Add the sampling config file into the `profiling ebpf create network` sub-command by @mrproliu in https://github.com/apache/skywalking-cli/pull/171
+* Add the sub-command `profiling continuous` for adapt the new continuous profiling API by @mrproliu in https://github.com/apache/skywalking-cli/pull/173
+* Adapt the sub-command `metrics` for deprecate scope fron entity by @mrproliu in https://github.com/apache/skywalking-cli/pull/173
+* Add components in topology related sub-commands. @mrproliu in https://github.com/apache/skywalking-cli/pull/175
+* Add the sub-command `metrics nullable` for query the nullable metrics value. @mrproliu in https://github.com/apache/skywalking-cli/pull/176
+* Adapt the sub-command `profiling trace` for adapt the new trace profiling protocol. @mrproliu in https://github.com/apache/skywalking-cli/pull/177
+* Add `isEmptyValue` field in metrics related sub-commands. @mrproliu in https://github.com/apache/skywalking-cli/pull/180
+* Add the sub-command `metrics execute` for execute the metrics query. @mrproliu in https://github.com/apache/skywalking-cli/pull/182
+* Add the sub-command `profiling continuous monitoring` for query all continuous profiling monitoring instances. @mrproliu in https://github.com/apache/skywalking-cli/pull/182
+* Add `continuousProfilingCauses.message` field in the `profiling ebpf list` comamnds by @mrproliu in https://github.com/apache/skywalking-cli/pull/184
+
 0.11.0
 ------------------
 
@@ -31,11 +91,6 @@ Release Notes.
 * Bump up swck dependency for transitive dep upgrade by @kezhenxu94 in https://github.com/apache/skywalking-cli/pull/162
 * Add the sub-commands for query sorted metrics/records by @mrproliu in https://github.com/apache/skywalking-cli/pull/163
 * Add compatibility documentation by @mrproliu in https://github.com/apache/skywalking-cli/pull/164
-* Add the sub-command `records list` for adapt the new record query API by @mrproliu in https://github.com/apache/skywalking-cli/pull/167
-* Add the attached events fields into the `trace` sub-command by @mrproliu in https://github.com/apache/skywalking-cli/pull/169
-* Add the sampling config file into the `profiling ebpf create network` sub-command by @mrproliu in https://github.com/apache/skywalking-cli/pull/171
-* Add the sub-command `profiling continuous` for adapt the new continuous profiling API by @mrproliu in https://github.com/apache/skywalking-cli/pull/173
-* Adapt the sub-command `metrics` for deprecate scope fron entity by @mrproliu in https://github.com/apache/skywalking-cli/pull/173
 
 0.10.0
 ------------------

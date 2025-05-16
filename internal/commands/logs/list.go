@@ -87,8 +87,8 @@ $ swctl logs list --trace-id 3d56f33f-bcd3-4e40-9e4f-5dc547998ef5`,
 		tagStr := ctx.String("tags")
 		var tags []*api.LogTag = nil
 		if tagStr != "" {
-			tagArr := strings.Split(tagStr, ",")
-			for _, tag := range tagArr {
+			tagArr := strings.SplitSeq(tagStr, ",")
+			for tag := range tagArr {
 				kv := strings.Split(tag, "=")
 				tags = append(tags, &api.LogTag{Key: kv[0], Value: &kv[1]})
 			}
@@ -108,12 +108,11 @@ $ swctl logs list --trace-id 3d56f33f-bcd3-4e40-9e4f-5dc547998ef5`,
 			QueryDuration:     &duration,
 			Paging:            &paging,
 		}
-		logs, err := log.Logs(ctx, condition)
-
+		logs, err := log.Logs(ctx.Context, condition)
 		if err != nil {
 			return err
 		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: logs, Condition: condition})
+		return display.Display(ctx.Context, &displayable.Displayable{Data: logs, Condition: condition})
 	},
 }

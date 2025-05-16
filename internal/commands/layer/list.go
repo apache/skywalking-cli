@@ -36,11 +36,11 @@ Examples:
 $ swctl layer list
 `,
 	Action: func(ctx *cli.Context) error {
-		layers, err := metadata.ListLayers(ctx)
+		layers, err := metadata.ListLayers(ctx.Context)
 		if err != nil {
 			return err
 		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: layers})
+		return display.Display(ctx.Context, &displayable.Displayable{Data: layers})
 	},
 }

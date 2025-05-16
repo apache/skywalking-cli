@@ -21,6 +21,7 @@ query ($serviceId: ID!, $duration: Duration!) {
             id
             name
             type
+            layers
             isReal
         }
         calls {
@@ -28,6 +29,8 @@ query ($serviceId: ID!, $duration: Duration!) {
             source
             detectPoints
             target
+            sourceComponents
+            targetComponents
         }
     }
 }

@@ -100,3 +100,4 @@ spans:
     logs: [ ]
     attachedevents: []
   {{- end }}
+debuggingtrace: null

@@ -18,6 +18,7 @@
 package metadata
 
 import (
+	"context"
 	"fmt"
 	"regexp"
 	"strconv"
@@ -25,7 +26,6 @@ import (
 	api "skywalking.apache.org/repo/goapi/query"
 
 	"github.com/machinebox/graphql"
-	"github.com/urfave/cli/v2"
 
 	"github.com/apache/skywalking-cli/assets"
 	"github.com/apache/skywalking-cli/pkg/graphql/client"
@@ -34,7 +34,7 @@ import (
 
 var backendVersion = regexp.MustCompile(`^(?P<Major>\d+)\.(?P<Minor>\d+)`)
 
-func AllServices(cliCtx *cli.Context, duration api.Duration) ([]api.Service, error) {
+func AllServices(cliCtx context.Context, duration api.Duration) ([]api.Service, error) {
 	var response map[string][]api.Service
 
 	version, err := protocolVersion(cliCtx)
@@ -49,10 +49,10 @@ func AllServices(cliCtx *cli.Context, duration api.Duration) ([]api.Service, err
 	return response["result"], err
 }
 
-func SearchService(cliCtx *cli.Context, serviceCode string) (service api.Service, err error) {
+func SearchService(ctx context.Context, serviceCode string) (service api.Service, err error) {
 	var response map[string]api.Service
 
-	majorVersion, _, err := BackendVersion(cliCtx)
+	majorVersion, _, err := BackendVersion(ctx)
 	if err != nil {
 		return api.Service{}, err
 	}
@@ -65,7 +65,7 @@ func SearchService(cliCtx *cli.Context, serviceCode string) (service api.Service
 		request.Var("serviceCode", serviceCode)
 	}
 
-	err = client.ExecuteQuery(cliCtx, request, &response)
+	err = client.ExecuteQuery(ctx, request, &response)
 
 	service = response["result"]
 
@@ -76,7 +76,7 @@ func SearchService(cliCtx *cli.Context, serviceCode string) (service api.Service
 	return service, err
 }
 
-func AllBrowserServices(cliCtx *cli.Context, duration api.Duration) ([]api.Service, error) {
+func AllBrowserServices(cliCtx context.Context, duration api.Duration) ([]api.Service, error) {
 	var response map[string][]api.Service
 
 	version, err := protocolVersion(cliCtx)
@@ -91,7 +91,7 @@ func AllBrowserServices(cliCtx *cli.Context, duration api.Duration) ([]api.Servi
 	return response["result"], err
 }
 
-func SearchBrowserService(cliCtx *cli.Context, serviceCode string) (service api.Service, err error) {
+func SearchBrowserService(cliCtx context.Context, serviceCode string) (service api.Service, err error) {
 	var response map[string]api.Service
 
 	version, err := protocolVersion(cliCtx)
@@ -112,16 +112,22 @@ func SearchBrowserService(cliCtx *cli.Context, serviceCode string) (service api.
 	return service, err
 }
 
-func SearchEndpoints(cliCtx *cli.Context, serviceID, keyword string, limit int) ([]api.Endpoint, error) {
+func SearchEndpoints(cliCtx context.Context, serviceID, keyword string, limit int, duration *api.Duration) ([]api.Endpoint, error) {
 	var response map[string][]api.Endpoint
 
-	majorVersion, _, err := BackendVersion(cliCtx)
+	majorVersion, minorVersion, err := BackendVersion(cliCtx)
 	if err != nil {
 		return nil, err
 	}
 	var request *graphql.Request
-	if majorVersion >= 9 {
-		request = graphql.NewRequest(assets.Read("graphqls/metadata/v2/FindEndpoints.graphql"))
+	if majorVersion >= 10 && minorVersion >= 2 {
+		request = graphql.NewRequest(assets.Read("graphqls/metadata/v2/FindEndpointsWithDuration.graphql"))
+		request.Var("serviceId", serviceID)
+		request.Var("keyword", keyword)
+		request.Var("limit", limit)
+		request.Var("duration", duration)
+	} else if majorVersion >= 9 {
+		request = graphql.NewRequest(assets.Read("graphqls/metadata/v2/FindEndpointsWithoutDuration.graphql"))
 		request.Var("serviceId", serviceID)
 		request.Var("keyword", keyword)
 		request.Var("limit", limit)
@@ -136,7 +142,7 @@ func SearchEndpoints(cliCtx *cli.Context, serviceID, keyword string, limit int) 
 	return response["result"], err
 }
 
-func Instances(cliCtx *cli.Context, serviceID string, duration api.Duration) ([]api.ServiceInstance, error) {
+func Instances(cliCtx context.Context, serviceID string, duration api.Duration) ([]api.ServiceInstance, error) {
 	var response map[string][]api.ServiceInstance
 
 	version, err := protocolVersion(cliCtx)
@@ -152,7 +158,7 @@ func Instances(cliCtx *cli.Context, serviceID string, duration api.Duration) ([]
 	return response["result"], err
 }
 
-func GetInstance(cliCtx *cli.Context, instanceID string) (api.ServiceInstance, error) {
+func GetInstance(cliCtx context.Context, instanceID string) (api.ServiceInstance, error) {
 	var response map[string]api.ServiceInstance
 
 	request := graphql.NewRequest(assets.Read("graphqls/metadata/v2/GetInstance.graphql"))
@@ -163,7 +169,7 @@ func GetInstance(cliCtx *cli.Context, instanceID string) (api.ServiceInstance, e
 	return response["result"], err
 }
 
-func GetEndpointInfo(cliCtx *cli.Context, endpointID string) (api.EndpointInfo, error) {
+func GetEndpointInfo(cliCtx context.Context, endpointID string) (api.EndpointInfo, error) {
 	var response map[string]api.EndpointInfo
 
 	request := graphql.NewRequest(assets.Read("graphqls/metadata/v2/GetEndpointInfo.graphql"))
@@ -174,7 +180,7 @@ func GetEndpointInfo(cliCtx *cli.Context, endpointID string) (api.EndpointInfo, 
 	return response["result"], err
 }
 
-func Processes(cliCtx *cli.Context, instanceID string, duration api.Duration) ([]api.Process, error) {
+func Processes(cliCtx context.Context, instanceID string, duration api.Duration) ([]api.Process, error) {
 	var response map[string][]api.Process
 
 	request := graphql.NewRequest(assets.Read("graphqls/metadata/v2/Processes.graphql"))
@@ -186,7 +192,7 @@ func Processes(cliCtx *cli.Context, instanceID string, duration api.Duration) ([
 	return response["result"], err
 }
 
-func GetProcess(cliCtx *cli.Context, processID string) (api.Process, error) {
+func GetProcess(cliCtx context.Context, processID string) (api.Process, error) {
 	var response map[string]api.Process
 
 	request := graphql.NewRequest(assets.Read("graphqls/metadata/v2/GetProcess.graphql"))
@@ -197,7 +203,7 @@ func GetProcess(cliCtx *cli.Context, processID string) (api.Process, error) {
 	return response["result"], err
 }
 
-func EstimateProcessScale(cliCtx *cli.Context, serviceID string, labels []string) (int64, error) {
+func EstimateProcessScale(cliCtx context.Context, serviceID string, labels []string) (int64, error) {
 	var response map[string]int64
 
 	request := graphql.NewRequest(assets.Read("graphqls/metadata/v2/EstimateProcessScale.graphql"))
@@ -209,7 +215,7 @@ func EstimateProcessScale(cliCtx *cli.Context, serviceID string, labels []string
 	return response["result"], err
 }
 
-func ServerTimeInfo(cliCtx *cli.Context) (api.TimeInfo, error) {
+func ServerTimeInfo(cliCtx context.Context) (api.TimeInfo, error) {
 	var response map[string]api.TimeInfo
 
 	request := graphql.NewRequest(assets.Read("graphqls/metadata/v2/ServerTimeInfo.graphql"))
@@ -221,7 +227,7 @@ func ServerTimeInfo(cliCtx *cli.Context) (api.TimeInfo, error) {
 	return response["result"], nil
 }
 
-func ListLayers(cliCtx *cli.Context) ([]string, error) {
+func ListLayers(cliCtx context.Context) ([]string, error) {
 	var response map[string][]string
 
 	request := graphql.NewRequest(assets.Read("graphqls/metadata/v2/ListLayers.graphql"))
@@ -233,7 +239,7 @@ func ListLayers(cliCtx *cli.Context) ([]string, error) {
 	return response["result"], nil
 }
 
-func ListLayerService(cliCtx *cli.Context, layer string) ([]api.Service, error) {
+func ListLayerService(cliCtx context.Context, layer string) ([]api.Service, error) {
 	var response map[string][]api.Service
 
 	request := graphql.NewRequest(assets.Read("graphqls/metadata/v2/ListService.graphql"))
@@ -244,8 +250,8 @@ func ListLayerService(cliCtx *cli.Context, layer string) ([]api.Service, error) 
 	return response["result"], err
 }
 
-func BackendVersion(cliCtx *cli.Context) (major, minor int, err error) {
-	version, err := common.Version(cliCtx)
+func BackendVersion(ctx context.Context) (major, minor int, err error) {
+	version, err := common.Version(ctx)
 	if err != nil {
 		return 0, 0, err
 	}
@@ -268,8 +274,8 @@ func BackendVersion(cliCtx *cli.Context) (major, minor int, err error) {
 	return major, minor, nil
 }
 
-func protocolVersion(cliCtx *cli.Context) (string, error) {
-	if majorVersion, _, err := BackendVersion(cliCtx); err != nil {
+func protocolVersion(ctx context.Context) (string, error) {
+	if majorVersion, _, err := BackendVersion(ctx); err != nil {
 		return "", err
 	} else if majorVersion >= 9 {
 		return "v2", nil

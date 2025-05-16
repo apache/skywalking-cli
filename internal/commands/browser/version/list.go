@@ -56,16 +56,15 @@ $ swctl browser version ls --service-id dGVzdC11aQ==.1`,
 		step := ctx.Generic("step")
 		serviceID := ctx.String("service-id")
 
-		instances, err := metadata.Instances(ctx, serviceID, api.Duration{
+		instances, err := metadata.Instances(ctx.Context, serviceID, api.Duration{
 			Start: start,
 			End:   end,
 			Step:  step.(*model.StepEnumValue).Selected,
 		})
-
 		if err != nil {
 			return err
 		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: instances})
+		return display.Display(ctx.Context, &displayable.Displayable{Data: instances})
 	},
 }

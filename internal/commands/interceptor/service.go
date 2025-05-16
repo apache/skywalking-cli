@@ -25,8 +25,8 @@ import (
 	"github.com/urfave/cli/v2"
 	api "skywalking.apache.org/repo/goapi/query"
 
-	"github.com/apache/skywalking-cli/internal/logger"
 	"github.com/apache/skywalking-cli/pkg/graphql/metadata"
+	"github.com/apache/skywalking-cli/pkg/logger"
 )
 
 type nodeType int
@@ -94,9 +94,9 @@ func parseService(required bool, idFlagName, nameFlagName string, nodeType nodeT
 			var err error
 			switch nodeType {
 			case normal:
-				service, err = metadata.SearchService(ctx, name)
+				service, err = metadata.SearchService(ctx.Context, name)
 			case browser:
-				service, err = metadata.SearchBrowserService(ctx, name)
+				service, err = metadata.SearchBrowserService(ctx.Context, name)
 			}
 			if err != nil {
 				return err

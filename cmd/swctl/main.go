@@ -30,18 +30,21 @@ import (
 	"github.com/apache/skywalking-cli/internal/commands/endpoint"
 	"github.com/apache/skywalking-cli/internal/commands/event"
 	"github.com/apache/skywalking-cli/internal/commands/healthcheck"
+	"github.com/apache/skywalking-cli/internal/commands/hierarchy"
 	"github.com/apache/skywalking-cli/internal/commands/install"
 	"github.com/apache/skywalking-cli/internal/commands/instance"
 	"github.com/apache/skywalking-cli/internal/commands/interceptor"
 	"github.com/apache/skywalking-cli/internal/commands/layer"
 	"github.com/apache/skywalking-cli/internal/commands/logs"
+	"github.com/apache/skywalking-cli/internal/commands/menu"
 	"github.com/apache/skywalking-cli/internal/commands/metrics"
 	"github.com/apache/skywalking-cli/internal/commands/process"
 	"github.com/apache/skywalking-cli/internal/commands/profiling"
 	"github.com/apache/skywalking-cli/internal/commands/records"
 	"github.com/apache/skywalking-cli/internal/commands/service"
 	"github.com/apache/skywalking-cli/internal/commands/trace"
-	"github.com/apache/skywalking-cli/internal/logger"
+	intutil "github.com/apache/skywalking-cli/internal/util"
+	"github.com/apache/skywalking-cli/pkg/logger"
 	"github.com/apache/skywalking-cli/pkg/util"
 
 	"github.com/sirupsen/logrus"
@@ -49,8 +52,10 @@ import (
 	"github.com/urfave/cli/v2/altsrc"
 )
 
-var log *logrus.Logger
-var version string // Will be initialized when building
+var (
+	log     *logrus.Logger
+	version string // Will be initialized when building
+)
 
 func init() {
 	log = logger.Log
@@ -106,6 +111,8 @@ services, service instances, etc.`
 		process.Command,
 		profiling.Command,
 		records.Command,
+		menu.Command,
+		hierarchy.Command,
 	}
 
 	app.Before = interceptor.BeforeChain(
@@ -115,7 +122,7 @@ services, service instances, etc.`
 	)
 
 	app.Flags = flags
-	app.CommandNotFound = util.CommandNotFound
+	app.CommandNotFound = intutil.CommandNotFound
 
 	// Enable auto-completion.
 	app.EnableBashCompletion = true
@@ -165,6 +172,12 @@ func flags() []cli.Flag {
 			Usage: "`authorization` header, can be something like `Basic base64(username:password)` or `Bearer jwt-token`, " +
 				"if `authorization` is set, `--username` and `--password` are ignored",
 			Value: "",
+		}),
+		altsrc.NewStringFlag(&cli.StringFlag{
+			Name:     "insecure",
+			Required: false,
+			Usage:    "skip TLS certificate verification",
+			Value:    "",
 		}),
 		altsrc.NewStringFlag(&cli.StringFlag{
 			Name:     "timezone",

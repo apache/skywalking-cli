@@ -43,12 +43,11 @@ $ swctl profiling trace logs --task-id=task-id`,
 	Action: func(ctx *cli.Context) error {
 		taskID := ctx.String("task-id")
 
-		task, err := profiling.GetTraceProfilingTaskLogList(ctx, taskID)
-
+		task, err := profiling.GetTraceProfilingTaskLogList(ctx.Context, taskID)
 		if err != nil {
 			return err
 		}
 
-		return display.Display(ctx, &displayable.Displayable{Data: task, Condition: taskID})
+		return display.Display(ctx.Context, &displayable.Displayable{Data: task, Condition: taskID})
 	},
 }

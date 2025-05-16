@@ -15,39 +15,29 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package trace
+package hierarchy
 
 import (
+	"github.com/apache/skywalking-cli/internal/commands/interceptor"
+	"github.com/apache/skywalking-cli/internal/flags"
 	"github.com/apache/skywalking-cli/pkg/display"
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
-	"github.com/apache/skywalking-cli/pkg/graphql/profiling"
+	"github.com/apache/skywalking-cli/pkg/graphql/hierarchy"
 
 	"github.com/urfave/cli/v2"
 )
 
-var getProfiledSegmentCommand = &cli.Command{
-	Name:    "profiled-segment",
-	Aliases: []string{"ps"},
-	Usage:   "Analyze profiled segment with time ranges",
-	UsageText: `Analyze profiled segment with time ranges.
-
-Examples:
-1. Analyze profiled segment with time ranges.
-$ swctl profiling trace profiled-segment --segment-id=<segment-id>`,
-	Flags: []cli.Flag{
-		&cli.StringFlag{
-			Name:  "segment-id",
-			Usage: "profiled segment id.",
-		},
-	},
+var layerCommand = &cli.Command{
+	Name:    "layer-levels",
+	Aliases: []string{"ll"},
+	Usage:   "Query all layer hierarchy levels",
+	Flags:   flags.Flags(),
+	Before:  interceptor.BeforeChain(),
 	Action: func(ctx *cli.Context) error {
-		segmentID := ctx.String("segment-id")
-		segment, err := profiling.GetTraceProfilingSegment(ctx, segmentID)
-
+		levels, err := hierarchy.ListLayerLevels(ctx.Context)
 		if err != nil {
 			return err
 		}
-
-		return display.Display(ctx, &displayable.Displayable{Data: segment, Condition: segmentID})
+		return display.Display(ctx.Context, &displayable.Displayable{Data: levels})
 	},
 }

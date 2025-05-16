@@ -25,6 +25,7 @@ import (
 
 	"github.com/apache/skywalking-cli/internal/commands/metrics/thermodynamic"
 
+	"github.com/apache/skywalking-cli/internal/commands/metrics/expression"
 	"github.com/apache/skywalking-cli/internal/commands/metrics/linear"
 	"github.com/apache/skywalking-cli/internal/commands/metrics/single"
 )
@@ -34,6 +35,7 @@ var Command = &cli.Command{
 	Usage: "Query metrics defined in backend OAL",
 	Subcommands: cli.Commands{
 		single.Command,
+		single.NullableCommand,
 		linear.Single,
 		linear.Multiple,
 		thermodynamic.Command,
@@ -41,5 +43,6 @@ var Command = &cli.Command{
 		aggregation.SortedMetrics,
 		aggregation.SampledRecords,
 		list.Command,
+		expression.ExecCommand,
 	},
 }

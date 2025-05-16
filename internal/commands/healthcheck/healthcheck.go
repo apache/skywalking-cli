@@ -22,8 +22,8 @@ import (
 
 	"github.com/apache/skywalking-cli/pkg/healthcheck"
 
-	"github.com/apache/skywalking-cli/internal/logger"
 	hc "github.com/apache/skywalking-cli/pkg/graphql/healthcheck"
+	"github.com/apache/skywalking-cli/pkg/logger"
 )
 
 var Command = &cli.Command{
@@ -59,8 +59,7 @@ $ swctl health --grpc=false
 		},
 	},
 	Action: func(ctx *cli.Context) error {
-		healthStatus, err := hc.CheckHealth(ctx)
-
+		healthStatus, err := hc.CheckHealth(ctx.Context)
 		if err != nil {
 			return err
 		}

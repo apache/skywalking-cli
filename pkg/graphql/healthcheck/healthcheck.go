@@ -18,8 +18,9 @@
 package healthcheck
 
 import (
+	"context"
+
 	"github.com/machinebox/graphql"
-	"github.com/urfave/cli/v2"
 
 	api "skywalking.apache.org/repo/goapi/query"
 
@@ -28,7 +29,7 @@ import (
 )
 
 // CheckHealth intends to query the health status of OAP server
-func CheckHealth(ctx *cli.Context) (api.HealthStatus, error) {
+func CheckHealth(ctx context.Context) (api.HealthStatus, error) {
 	var response map[string]api.HealthStatus
 
 	request := graphql.NewRequest(assets.Read("graphqls/healthcheck/healthcheck.graphql"))

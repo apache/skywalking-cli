@@ -21,6 +21,8 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/apache/skywalking-cli/pkg/display/displayable"
+
 	api "skywalking.apache.org/repo/goapi/query"
 )
 
@@ -32,7 +34,7 @@ func TestMetricsToMap(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want map[string]float64
+		want map[string]*displayable.MetricValue
 	}{
 		{
 			name: "Should convert to map",
@@ -57,15 +59,15 @@ func TestMetricsToMap(t *testing.T) {
 					},
 				},
 			},
-			want: map[string]float64{
-				"2020-01-01 0000": 0,
-				"2020-01-01 0001": 1,
-				"2020-01-01 0002": 2,
-				"2020-01-01 0003": 3,
-				"2020-01-01 0004": 4,
-				"2020-01-01 0005": 5,
-				"2020-01-01 0006": 6,
-				"2020-01-01 0007": 7,
+			want: map[string]*displayable.MetricValue{
+				"2020-01-01 0000": {Value: 0, IsEmptyValue: false},
+				"2020-01-01 0001": {Value: 1, IsEmptyValue: false},
+				"2020-01-01 0002": {Value: 2, IsEmptyValue: false},
+				"2020-01-01 0003": {Value: 3, IsEmptyValue: false},
+				"2020-01-01 0004": {Value: 4, IsEmptyValue: false},
+				"2020-01-01 0005": {Value: 5, IsEmptyValue: false},
+				"2020-01-01 0006": {Value: 6, IsEmptyValue: false},
+				"2020-01-01 0007": {Value: 7, IsEmptyValue: false},
 			},
 		},
 	}
