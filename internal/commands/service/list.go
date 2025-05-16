@@ -52,15 +52,17 @@ $ swctl svc ls projectC`,
 		end := ctx.String("end")
 		start := ctx.String("start")
 		step := ctx.Generic("step")
+		coldStage := ctx.Bool("cold")
 
 		var services []api.Service
 		var err error
 
 		if args := ctx.Args(); args.Len() == 0 {
 			services, err = metadata.AllServices(ctx.Context, api.Duration{
-				Start: start,
-				End:   end,
-				Step:  step.(*model.StepEnumValue).Selected,
+				Start:     start,
+				End:       end,
+				Step:      step.(*model.StepEnumValue).Selected,
+				ColdStage: &coldStage,
 			})
 			if err != nil {
 				return err

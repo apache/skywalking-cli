@@ -72,11 +72,13 @@ $ swctl logs list --trace-id 3d56f33f-bcd3-4e40-9e4f-5dc547998ef5`,
 		start := ctx.String("start")
 		end := ctx.String("end")
 		step := ctx.Generic("step")
+		coldStage := ctx.Bool("cold")
 
 		duration := api.Duration{
-			Start: start,
-			End:   end,
-			Step:  step.(*model.StepEnumValue).Selected,
+			Start:     start,
+			End:       end,
+			Step:      step.(*model.StepEnumValue).Selected,
+			ColdStage: &coldStage,
 		}
 		serviceID := ctx.String("service-id")
 		serviceInstanceID := ctx.String("instance-id")

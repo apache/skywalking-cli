@@ -58,6 +58,7 @@ $ swctl metrics single --name endpoint_cpm --service-name business-zone::project
 		end := ctx.String("end")
 		start := ctx.String("start")
 		step := ctx.Generic("step")
+		coldStage := ctx.Bool("cold")
 
 		metricsName := ctx.String("name")
 		entity, err := interceptor.ParseEntity(ctx)
@@ -66,9 +67,10 @@ $ swctl metrics single --name endpoint_cpm --service-name business-zone::project
 		}
 
 		duration := api.Duration{
-			Start: start,
-			End:   end,
-			Step:  step.(*model.StepEnumValue).Selected,
+			Start:     start,
+			End:       end,
+			Step:      step.(*model.StepEnumValue).Selected,
+			ColdStage: &coldStage,
 		}
 
 		metricsValue, err := metrics.IntValues(ctx.Context, api.MetricsCondition{

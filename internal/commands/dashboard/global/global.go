@@ -77,11 +77,13 @@ $ swctl dashboard global --template my-global-template.yml
 		end := ctx.String("end")
 		start := ctx.String("start")
 		step := ctx.Generic("step")
+		coldStage := ctx.Bool("cold")
 
 		globalData, err := dashboard.Global(ctx.Context, api.Duration{
-			Start: start,
-			End:   end,
-			Step:  step.(*model.StepEnumValue).Selected,
+			Start:     start,
+			End:       end,
+			Step:      step.(*model.StepEnumValue).Selected,
+			ColdStage: &coldStage,
 		})
 		if err != nil {
 			return err

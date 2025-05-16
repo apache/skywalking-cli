@@ -30,7 +30,7 @@ import (
 
 // ReportEvent creates a grpc client and reports an event to OAP.
 func ReportEvent(addr string, e *event.Event) (*common.Commands, error) {
-	conn, err := grpc.Dial(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.NewClient(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		return nil, err
 	}

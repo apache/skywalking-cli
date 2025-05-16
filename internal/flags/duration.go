@@ -72,6 +72,11 @@ var DurationFlags = []cli.Flag{
 			Selected: api.StepMinute,
 		},
 	},
+	&cli.BoolFlag{
+		Name:  "cold",
+		Usage: "query from cold-stage storage",
+		Value: false,
+	},
 	&cli.StringFlag{
 		Name:   "duration-type",
 		Usage:  "the type of duration",

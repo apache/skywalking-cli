@@ -56,11 +56,13 @@ $ swctl process ls --instance-id cHJvdmlkZXI=.1_cHJvdmlkZXIx`,
 		end := ctx.String("end")
 		start := ctx.String("start")
 		step := ctx.Generic("step")
+		coldStage := ctx.Bool("cold")
 
 		processes, err := metadata.Processes(ctx.Context, instanceID, api.Duration{
-			Start: start,
-			End:   end,
-			Step:  step.(*model.StepEnumValue).Selected,
+			Start:     start,
+			End:       end,
+			Step:      step.(*model.StepEnumValue).Selected,
+			ColdStage: &coldStage,
 		})
 		if err != nil {
 			return err

@@ -55,11 +55,13 @@ var GlobalCommand = &cli.Command{
 		end := ctx.String("end")
 		start := ctx.String("start")
 		step := ctx.Generic("step")
+		coldStage := ctx.Bool("cold")
 
 		duration := api.Duration{
-			Start: start,
-			End:   end,
-			Step:  step.(*model.StepEnumValue).Selected,
+			Start:     start,
+			End:       end,
+			Step:      step.(*model.StepEnumValue).Selected,
+			ColdStage: &coldStage,
 		}
 
 		major, _, err := metadata.BackendVersion(ctx.Context)

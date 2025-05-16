@@ -77,11 +77,6 @@ $ swctl trace ls --trace-id "321661b1-9a31-4e12-ad64-c8f6711f108d" --cold
 				Usage: "`order` of the returned traces, can be `duration` or `startTime`",
 				Value: "duration",
 			},
-			&cli.BoolFlag{
-				Name:  "cold",
-				Usage: "query trace from cold-stage storage, must be used with trace-id",
-				Value: false,
-			},
 		},
 	),
 	Before: interceptor.BeforeChain(
@@ -93,11 +88,13 @@ $ swctl trace ls --trace-id "321661b1-9a31-4e12-ad64-c8f6711f108d" --cold
 		start := ctx.String("start")
 		end := ctx.String("end")
 		step := ctx.Generic("step")
+		coldStage := ctx.Bool("cold")
 
 		duration := api.Duration{
-			Start: start,
-			End:   end,
-			Step:  step.(*model.StepEnumValue).Selected,
+			Start:     start,
+			End:       end,
+			Step:      step.(*model.StepEnumValue).Selected,
+			ColdStage: &coldStage,
 		}
 		serviceID := ctx.String("service-id")
 		endpointID := ctx.String("endpoint-id")

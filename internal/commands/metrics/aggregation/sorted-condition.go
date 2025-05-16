@@ -35,6 +35,7 @@ func buildSortedCondition(ctx *cli.Context, parseScope bool) (*api.TopNCondition
 	start := ctx.String("start")
 	end := ctx.String("end")
 	step := ctx.Generic("step").(*model.StepEnumValue).Selected
+	coldStage := ctx.Bool("cold")
 
 	metricsName := ctx.String("name")
 	var scope *api.Scope
@@ -66,9 +67,10 @@ func buildSortedCondition(ctx *cli.Context, parseScope bool) (*api.TopNCondition
 			TopN:          topN,
 			Order:         order,
 		}, &api.Duration{
-			Start: start,
-			End:   end,
-			Step:  step,
+			Start:     start,
+			End:       end,
+			Step:      step,
+			ColdStage: &coldStage,
 		}, nil
 }
 
@@ -76,6 +78,7 @@ func buildReadRecordsCondition(ctx *cli.Context) (*api.RecordCondition, *api.Dur
 	start := ctx.String("start")
 	end := ctx.String("end")
 	step := ctx.Generic("step").(*model.StepEnumValue).Selected
+	coldStage := ctx.Bool("cold")
 
 	metricsName := ctx.String("name")
 	order := ctx.Generic("order").(*model.OrderEnumValue).Selected
@@ -99,8 +102,9 @@ func buildReadRecordsCondition(ctx *cli.Context) (*api.RecordCondition, *api.Dur
 			TopN:         topN,
 			Order:        order,
 		}, &api.Duration{
-			Start: start,
-			End:   end,
-			Step:  step,
+			Start:     start,
+			End:       end,
+			Step:      step,
+			ColdStage: &coldStage,
 		}, nil
 }
