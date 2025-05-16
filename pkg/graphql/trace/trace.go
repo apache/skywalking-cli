@@ -39,6 +39,17 @@ func Trace(ctx context.Context, traceID string) (api.Trace, error) {
 	return response["result"], err
 }
 
+func ColdTrace(ctx context.Context, duration api.Duration, traceID string) (api.Trace, error) {
+	var response map[string]api.Trace
+
+	request := graphql.NewRequest(assets.Read("graphqls/trace/ColdTrace.graphql"))
+	request.Var("traceId", traceID)
+	request.Var("duration", duration)
+	err := client.ExecuteQuery(ctx, request, &response)
+
+	return response["result"], err
+}
+
 func Traces(ctx context.Context, condition *api.TraceQueryCondition) (api.TraceBrief, error) {
 	var response map[string]api.TraceBrief
 
