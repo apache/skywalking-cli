@@ -25,11 +25,12 @@ import (
 	event "skywalking.apache.org/repo/goapi/collect/event/v3"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 // ReportEvent creates a grpc client and reports an event to OAP.
 func ReportEvent(addr string, e *event.Event) (*common.Commands, error) {
-	conn, err := grpc.Dial(addr, grpc.WithInsecure())
+	conn, err := grpc.Dial(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		return nil, err
 	}
