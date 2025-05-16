@@ -181,7 +181,7 @@ The following components are provided under the Apache-2.0 License. See project 
 The text of each license is also included at licenses/license-[project].txt.
 
 
-    github.com/Masterminds/goutils v1.1.0 Apache-2.0
+    github.com/Masterminds/goutils v1.1.1 Apache-2.0
     github.com/apache/skywalking-swck/operator v0.0.0-20220815142653-ed08076b7433 Apache-2.0
     github.com/go-logr/logr v0.4.0 Apache-2.0
     github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da Apache-2.0
@@ -199,8 +199,8 @@ The text of each license is also included at licenses/license-[project].txt.
     github.com/spf13/afero v1.2.2 Apache-2.0
     gomodules.xyz/jsonpatch/v2 v2.2.0 Apache-2.0
     google.golang.org/appengine v1.6.7 Apache-2.0
-    google.golang.org/genproto v0.0.0-20210624195500-8bfb893ecb84 Apache-2.0
-    google.golang.org/grpc v1.40.0 Apache-2.0
+    google.golang.org/genproto v0.0.0-20230410155749-daa745c078e1 Apache-2.0
+    google.golang.org/grpc v1.56.3 Apache-2.0
     gopkg.in/ini.v1 v1.51.0 Apache-2.0
     gopkg.in/yaml.v2 v2.4.0 Apache-2.0
     k8s.io/api v0.22.1 Apache-2.0
@@ -238,17 +238,17 @@ The text of each license is also included at licenses/license-[project].txt.
     github.com/evanphx/json-patch v4.11.0+incompatible BSD-3-Clause
     github.com/fsnotify/fsnotify v1.4.9 BSD-3-Clause
     github.com/gogo/protobuf v1.3.2 BSD-3-Clause
-    github.com/golang/protobuf v1.5.2 BSD-3-Clause
-    github.com/google/go-cmp v0.5.6 BSD-3-Clause
+    github.com/golang/protobuf v1.5.3 BSD-3-Clause
+    github.com/google/go-cmp v0.5.9 BSD-3-Clause
     github.com/google/uuid v1.3.0 BSD-3-Clause
     github.com/imdario/mergo v0.3.12 BSD-3-Clause
     github.com/spf13/pflag v1.0.5 BSD-3-Clause
-    golang.org/x/crypto v0.20.0 BSD-3-Clause
+    golang.org/x/crypto v0.35.0 BSD-3-Clause
     golang.org/x/net v0.21.0 BSD-3-Clause
-    golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d BSD-3-Clause
-    golang.org/x/sys v0.17.0 BSD-3-Clause
-    golang.org/x/term v0.17.0 BSD-3-Clause
-    golang.org/x/text v0.14.0 BSD-3-Clause
+    golang.org/x/oauth2 v0.7.0 BSD-3-Clause
+    golang.org/x/sys v0.30.0 BSD-3-Clause
+    golang.org/x/term v0.29.0 BSD-3-Clause
+    golang.org/x/text v0.22.0 BSD-3-Clause
     golang.org/x/time v0.0.0-20210723032227-1f47c861a9ac BSD-3-Clause
     google.golang.org/protobuf v1.32.0 BSD-3-Clause
     gopkg.in/inf.v0 v0.9.1 BSD-3-Clause
@@ -275,7 +275,7 @@ The text of each license is also included at licenses/license-[project].txt.
     github.com/Masterminds/semver/v3 v3.1.0 MIT
     github.com/Masterminds/sprig/v3 v3.1.0 MIT
     github.com/beorn7/perks v1.0.1 MIT
-    github.com/cespare/xxhash/v2 v2.1.1 MIT
+    github.com/cespare/xxhash/v2 v2.2.0 MIT
     github.com/cpuguy83/go-md2man/v2 v2.0.0 MIT
     github.com/gizak/termui/v3 v3.1.0 MIT
     github.com/huandu/xstrings v1.3.1 MIT
