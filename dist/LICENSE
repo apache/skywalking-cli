@@ -304,7 +304,7 @@ The following components are provided under the MIT and Apache-2.0 License. See 
 The text of each license is also included at licenses/license-[project].txt.
 
 
-    gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b MIT and Apache-2.0
+    gopkg.in/yaml.v3 v3.0.0 MIT and Apache-2.0
 
 ========================================================================
 MIT and BSD-3-Clause licenses
