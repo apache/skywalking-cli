@@ -53,6 +53,9 @@ $ swctl trace ls --service-name "business-zone::projectB" --endpoint-name "/proj
 
 3. Query the monitored trace of id "321661b1-9a31-4e12-ad64-c8f6711f108d":
 $ swctl trace ls --trace-id "321661b1-9a31-4e12-ad64-c8f6711f108d"
+
+4. Query the monitored trace of id "321661b1-9a31-4e12-ad64-c8f6711f108d" from cold-stage storage:
+$ swctl trace ls --trace-id "321661b1-9a31-4e12-ad64-c8f6711f108d" --cold
 `,
 	Flags: flags.Flags(
 		flags.DurationFlags,
@@ -73,6 +76,11 @@ $ swctl trace ls --trace-id "321661b1-9a31-4e12-ad64-c8f6711f108d"
 				Name:  "order",
 				Usage: "`order` of the returned traces, can be `duration` or `startTime`",
 				Value: "duration",
+			},
+			&cli.BoolFlag{
+				Name:  "cold",
+				Usage: "query trace from cold-stage storage, must be used with trace-id",
+				Value: false,
 			},
 		},
 	),
@@ -96,6 +104,20 @@ $ swctl trace ls --trace-id "321661b1-9a31-4e12-ad64-c8f6711f108d"
 		serviceInstanceID := ctx.String("instance-id")
 		traceID := ctx.String("trace-id")
 		tagStr := ctx.String("tags")
+		cold := ctx.Bool("cold")
+
+		if cold && traceID == "" {
+			return fmt.Errorf("cold storage must be queried with trace-id")
+		}
+
+		if cold {
+			trace, err := trace.ColdTrace(ctx.Context, duration, traceID)
+			if err != nil {
+				return err
+			}
+			return display.Display(ctx.Context, &displayable.Displayable{Data: trace})
+		}
+
 		var tags []*api.SpanTag = nil
 		if tagStr != "" {
 			tagArr := strings.SplitSeq(tagStr, ",")
