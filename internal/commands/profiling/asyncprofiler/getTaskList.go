@@ -57,10 +57,12 @@ $ swctl profiling async list --service-name=service-name`,
 		start := ctx.String("start")
 		end := ctx.String("end")
 		step := ctx.Generic("step")
+		cold := ctx.Bool("cold")
 		duration := query.Duration{
-			Start: start,
-			End:   end,
-			Step:  step.(*model.StepEnumValue).Selected,
+			Start:     start,
+			End:       end,
+			Step:      step.(*model.StepEnumValue).Selected,
+			ColdStage: &cold,
 		}
 		var limit *int
 		if limitArg := ctx.Int("limit"); limitArg != 0 {
