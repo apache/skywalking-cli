@@ -64,6 +64,7 @@ $ swctl metrics execute --expression="service_resp_time" --service-name business
 		end := ctx.String("end")
 		start := ctx.String("start")
 		step := ctx.Generic("step")
+		cold := ctx.Bool("cold")
 
 		expression := ctx.String(expressionParameterName)
 		entity, err := interceptor.ParseEntity(ctx)
@@ -72,9 +73,10 @@ $ swctl metrics execute --expression="service_resp_time" --service-name business
 		}
 
 		duration := api.Duration{
-			Start: start,
-			End:   end,
-			Step:  step.(*model.StepEnumValue).Selected,
+			Start:     start,
+			End:       end,
+			Step:      step.(*model.StepEnumValue).Selected,
+			ColdStage: &cold,
 		}
 
 		result, err := metrics.Execute(ctx.Context, expression, entity, duration)
