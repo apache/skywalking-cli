@@ -101,13 +101,8 @@ $ swctl trace ls --trace-id "321661b1-9a31-4e12-ad64-c8f6711f108d" --cold
 		serviceInstanceID := ctx.String("instance-id")
 		traceID := ctx.String("trace-id")
 		tagStr := ctx.String("tags")
-		cold := ctx.Bool("cold")
 
-		if cold && traceID == "" {
-			return fmt.Errorf("cold storage must be queried with trace-id")
-		}
-
-		if cold {
+		if coldStage && traceID != "" {
 			trace, err := trace.ColdTrace(ctx.Context, duration, traceID)
 			if err != nil {
 				return err
