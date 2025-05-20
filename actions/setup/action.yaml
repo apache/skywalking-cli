@@ -1,0 +1,57 @@
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+
+inputs:
+  install-dir:
+    description: The directory to install swctl
+    required: false
+    default: /usr/local/bin
+  version:
+    description: The version of swctl to install
+    required: false
+    default: ""
+
+name: Setup swctl
+description: Setup swctl
+branding:
+  icon: book
+  color: orange
+runs:
+  using: "composite"
+  steps:
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: 1.24
+        cache-dependency-path: ${{ github.action_path }}/go.sum
+    - name: Checkout
+      if: inputs.version != ''
+      uses: actions/checkout@v4
+      with:
+        repository: apache/skywalking-cli
+        ref: ${{ inputs.version }}
+        path: skywalking-cli-${{ inputs.version }}
+    - if: inputs.version == ''
+      shell: bash -euxo pipefail {0}
+      run: |
+        sudo make -C ${GITHUB_ACTION_PATH}/../.. DESTDIR=${{ inputs.install-dir }} install
+        swctl --version
+    - if: inputs.version != ''
+      shell: bash -euxo pipefail {0}
+      run: |
+        sudo make -C ${GITHUB_WORKSPACE}/skywalking-cli-${{ inputs.version }} DESTDIR=${{ inputs.install-dir }} install
+        swctl --version

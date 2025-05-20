@@ -19,6 +19,7 @@ VERSION ?= dev-$(shell git rev-parse --short HEAD)
 APP_NAME = skywalking-cli
 OUT_DIR = bin
 BINARY = swctl
+DESTDIR ?= /usr/local/bin
 
 HUB ?= docker.io/apache
 
