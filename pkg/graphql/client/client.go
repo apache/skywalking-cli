@@ -29,10 +29,19 @@ import (
 	"github.com/apache/skywalking-cli/pkg/logger"
 )
 
+// newClient creates a new GraphQL client with configuration from context.
+//
+// CLI has its own defaults, but for calls from other servers,
+// we also add validation and certain default values here.
 func newClient(ctx context.Context) *graphql.Client {
 	options := []graphql.ClientOption{}
 
-	insecure := ctx.Value(contextkey.Insecure{}).(bool)
+	var insecure bool
+	if val := ctx.Value(contextkey.Insecure{}); val != nil {
+		if flag, ok := val.(bool); ok {
+			insecure = flag
+		}
+	}
 	if insecure {
 		customTransport := http.DefaultTransport.(*http.Transport).Clone()
 		customTransport.TLSClientConfig = &tls.Config{InsecureSkipVerify: insecure} // #nosec G402
@@ -40,7 +49,17 @@ func newClient(ctx context.Context) *graphql.Client {
 		options = append(options, graphql.WithHTTPClient(httpClient))
 	}
 
-	client := graphql.NewClient(ctx.Value(contextkey.BaseURL{}).(string), options...)
+	var baseURL string
+	if val := ctx.Value(contextkey.BaseURL{}); val != nil {
+		if str, ok := val.(string); ok {
+			baseURL = str
+		}
+	}
+	if baseURL == "" {
+		baseURL = "http://127.0.0.1:12800/graphql"
+	}
+
+	client := graphql.NewClient(baseURL, options...)
 	client.Log = func(msg string) {
 		logger.Log.Debugln(msg)
 	}
@@ -49,9 +68,23 @@ func newClient(ctx context.Context) *graphql.Client {
 
 // ExecuteQuery executes the `request` and parse to the `response`, returning `error` if there is any.
 func ExecuteQuery(ctx context.Context, request *graphql.Request, response any) error {
-	username := ctx.Value(contextkey.Username{}).(string)
-	password := ctx.Value(contextkey.Password{}).(string)
-	authorization := ctx.Value(contextkey.Authorization{}).(string)
+	var username, password, authorization string
+	if val := ctx.Value(contextkey.Username{}); val != nil {
+		if str, ok := val.(string); ok {
+			username = str
+		}
+	}
+	if val := ctx.Value(contextkey.Password{}); val != nil {
+		if str, ok := val.(string); ok {
+			password = str
+		}
+	}
+	if val := ctx.Value(contextkey.Authorization{}); val != nil {
+		if str, ok := val.(string); ok {
+			authorization = str
+		}
+	}
+
 	if authorization == "" && username != "" && password != "" {
 		authorization = "Basic " + base64.StdEncoding.EncodeToString([]byte(username+":"+password))
 	}
