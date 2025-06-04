@@ -29,6 +29,7 @@ import (
 	"github.com/apache/skywalking-cli/pkg/logger"
 )
 
+// newClient creates a new GraphQL client with configuration from context.
 func newClient(ctx context.Context) *graphql.Client {
 	options := []graphql.ClientOption{}
 
@@ -40,7 +41,8 @@ func newClient(ctx context.Context) *graphql.Client {
 		options = append(options, graphql.WithHTTPClient(httpClient))
 	}
 
-	client := graphql.NewClient(ctx.Value(contextkey.BaseURL{}).(string), options...)
+	baseURL := getValue(ctx, contextkey.BaseURL{}, "http://127.0.0.1:12800/graphql")
+	client := graphql.NewClient(baseURL, options...)
 	client.Log = func(msg string) {
 		logger.Log.Debugln(msg)
 	}
@@ -49,9 +51,10 @@ func newClient(ctx context.Context) *graphql.Client {
 
 // ExecuteQuery executes the `request` and parse to the `response`, returning `error` if there is any.
 func ExecuteQuery(ctx context.Context, request *graphql.Request, response any) error {
-	username := ctx.Value(contextkey.Username{}).(string)
-	password := ctx.Value(contextkey.Password{}).(string)
-	authorization := ctx.Value(contextkey.Authorization{}).(string)
+	username := getValue(ctx, contextkey.Username{}, "")
+	password := getValue(ctx, contextkey.Password{}, "")
+	authorization := getValue(ctx, contextkey.Authorization{}, "")
+
 	if authorization == "" && username != "" && password != "" {
 		authorization = "Basic " + base64.StdEncoding.EncodeToString([]byte(username+":"+password))
 	}
@@ -62,4 +65,13 @@ func ExecuteQuery(ctx context.Context, request *graphql.Request, response any) e
 	client := newClient(ctx)
 	err := client.Run(ctx, request, response)
 	return err
+}
+
+// getValue safely extracts a value from the context.
+func getValue[T any](ctx context.Context, key any, defaultValue T) T {
+	val := ctx.Value(key)
+	if v, ok := val.(T); ok {
+		return v
+	}
+	return defaultValue
 }
