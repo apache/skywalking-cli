@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package trace
+package tracev2
 
 import (
 	"context"
@@ -28,29 +28,10 @@ import (
 	"github.com/apache/skywalking-cli/pkg/graphql/client"
 )
 
-func Trace(ctx context.Context, duration *api.Duration, traceID string) (api.Trace, error) {
-	var response map[string]api.Trace
+func Traces(ctx context.Context, condition *api.TraceQueryCondition) (api.TraceList, error) {
+	var response map[string]api.TraceList
 
-	graphQLFile := "graphqls/trace/Trace.graphql"
-	if duration == nil {
-		graphQLFile = "graphqls/trace/TraceWithoutDuration.graphql"
-	}
-
-	request := graphql.NewRequest(assets.Read(graphQLFile))
-	request.Var("traceId", traceID)
-	if duration != nil {
-		request.Var("duration", duration)
-	}
-
-	err := client.ExecuteQuery(ctx, request, &response)
-
-	return response["result"], err
-}
-
-func Traces(ctx context.Context, condition *api.TraceQueryCondition) (api.TraceBrief, error) {
-	var response map[string]api.TraceBrief
-
-	request := graphql.NewRequest(assets.Read("graphqls/trace/Traces.graphql"))
+	request := graphql.NewRequest(assets.Read("graphqls/tracev2/Traces.graphql"))
 	request.Var("condition", condition)
 
 	err := client.ExecuteQuery(ctx, request, &response)

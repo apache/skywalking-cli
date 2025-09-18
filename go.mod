@@ -14,11 +14,11 @@ require (
 	github.com/spf13/viper v1.7.0
 	github.com/urfave/cli/v2 v2.3.0
 	golang.org/x/text v0.25.0
-	google.golang.org/grpc v1.72.0
+	google.golang.org/grpc v1.73.0
 	gopkg.in/yaml.v2 v2.4.0
 	k8s.io/apimachinery v0.33.1
 	sigs.k8s.io/controller-runtime v0.20.4
-	skywalking.apache.org/repo/goapi v0.0.0-20250516073621-c1d2fb980695
+	skywalking.apache.org/repo/goapi v0.0.0-20250918024206-7be91673cadc
 )
 
 require (

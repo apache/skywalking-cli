@@ -43,6 +43,7 @@ import (
 	"github.com/apache/skywalking-cli/internal/commands/records"
 	"github.com/apache/skywalking-cli/internal/commands/service"
 	"github.com/apache/skywalking-cli/internal/commands/trace"
+	"github.com/apache/skywalking-cli/internal/commands/tracev2"
 	intutil "github.com/apache/skywalking-cli/internal/util"
 	"github.com/apache/skywalking-cli/pkg/logger"
 	"github.com/apache/skywalking-cli/pkg/util"
@@ -99,6 +100,7 @@ services, service instances, etc.`
 		service.Command,
 		metrics.Command,
 		trace.Command,
+		tracev2.Command,
 		healthcheck.Command,
 		dashboard.Command,
 		install.Command,

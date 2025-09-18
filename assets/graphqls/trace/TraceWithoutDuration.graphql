@@ -15,8 +15,8 @@
 # specific language governing permissions and limitations
 # under the License.
 
-query ($traceId: ID!, $duration: Duration!) {
-    result: queryTraceFromColdStage(traceId: $traceId, duration: $duration) {
+query ($traceId: ID!) {
+    result: queryTrace(traceId: $traceId) {
         spans {
             traceId
             segmentId
