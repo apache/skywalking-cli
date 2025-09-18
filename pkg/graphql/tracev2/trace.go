@@ -28,8 +28,8 @@ import (
 	"github.com/apache/skywalking-cli/pkg/graphql/client"
 )
 
-func Traces(ctx context.Context, condition *api.TraceQueryCondition) (api.TraceBrief, error) {
-	var response map[string]api.TraceBrief
+func Traces(ctx context.Context, condition *api.TraceQueryCondition) (api.TraceList, error) {
+	var response map[string]api.TraceList
 
 	request := graphql.NewRequest(assets.Read("graphqls/tracev2/Traces.graphql"))
 	request.Var("condition", condition)
