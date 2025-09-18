@@ -31,9 +31,16 @@ import (
 func Trace(ctx context.Context, duration *api.Duration, traceID string) (api.Trace, error) {
 	var response map[string]api.Trace
 
-	request := graphql.NewRequest(assets.Read("graphqls/trace/Trace.graphql"))
+	graphQLFile := "graphqls/trace/Trace.graphql"
+	if duration == nil {
+		graphQLFile = "graphqls/trace/TraceWithoutDuration.graphql"
+	}
+
+	request := graphql.NewRequest(assets.Read(graphQLFile))
 	request.Var("traceId", traceID)
-	request.Var("duration", duration)
+	if duration != nil {
+		request.Var("duration", duration)
+	}
 
 	err := client.ExecuteQuery(ctx, request, &response)
 
