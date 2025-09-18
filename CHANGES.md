@@ -12,6 +12,9 @@ Release Notes.
 * Add the sub-command `alarm autocomplete-keys` and `alarm auto-complete-values` for alarm query API by @mrproliu in https://github.com/apache/skywalking-cli/pull/210
 * Adapt the alarm message query API by @mrproliu in https://github.com/apache/skywalking-cli/pull/210
 * Add the owner field in the `metrics exec` query API by @mrproliu in https://github.com/apache/skywalking-cli/pull/210
+* Add the `trace-v2 list` command for adapt the new trace query API by @mrproliu in https://github.com/apache/skywalking-cli/pull/225
+* Add the duration field in the `trace list` command by @mrproliu in https://github.com/apache/skywalking-cli/pull/225
+* Remove the oldest `queryTraceFromColdStage` query call in the `trace list` command by @mrproliu in https://github.com/apache/skywalking-cli/pull/225
 
 ### Bug Fixes
 

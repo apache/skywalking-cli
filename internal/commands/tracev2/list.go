@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package trace
+package tracev2
 
 import (
 	"fmt"
@@ -30,7 +30,7 @@ import (
 	"github.com/apache/skywalking-cli/internal/model"
 	"github.com/apache/skywalking-cli/pkg/display"
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
-	"github.com/apache/skywalking-cli/pkg/graphql/trace"
+	"github.com/apache/skywalking-cli/pkg/graphql/tracev2"
 )
 
 const DefaultPageSize = 15
@@ -43,19 +43,19 @@ var ListCommand = &cli.Command{
 
 Examples:
 1. Query all monitored traces:
-$ swctl trace ls
+$ swctl trace-v2 ls
 
 2. Query all monitored traces of service "business-zone::projectB":
-$ swctl trace ls --service-name "business-zone::projectB"
+$ swctl trace-v2 ls --service-name "business-zone::projectB"
 
 3. Query all monitored traces of endpoint "/projectB/{value}" of service "business-zone::projectB":
-$ swctl trace ls --service-name "business-zone::projectB" --endpoint-name "/projectB/{value}"
+$ swctl trace-v2 ls --service-name "business-zone::projectB" --endpoint-name "/projectB/{value}"
 
 3. Query the monitored trace of id "321661b1-9a31-4e12-ad64-c8f6711f108d":
-$ swctl trace ls --trace-id "321661b1-9a31-4e12-ad64-c8f6711f108d"
+$ swctl trace-v2 ls --trace-id "321661b1-9a31-4e12-ad64-c8f6711f108d"
 
 4. Query the monitored trace of id "321661b1-9a31-4e12-ad64-c8f6711f108d" from cold-stage storage:
-$ swctl trace ls --trace-id "321661b1-9a31-4e12-ad64-c8f6711f108d" --cold
+$ swctl trace-v2 ls --trace-id "321661b1-9a31-4e12-ad64-c8f6711f108d" --cold
 `,
 	Flags: flags.Flags(
 		flags.DurationFlags,
@@ -140,7 +140,7 @@ $ swctl trace ls --trace-id "321661b1-9a31-4e12-ad64-c8f6711f108d" --cold
 			Tags:              tags,
 			Paging:            &paging,
 		}
-		traces, err := trace.Traces(ctx.Context, condition)
+		traces, err := tracev2.Traces(ctx.Context, condition)
 		if err != nil {
 			return err
 		}

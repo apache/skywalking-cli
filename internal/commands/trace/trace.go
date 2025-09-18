@@ -22,6 +22,11 @@ import (
 
 	"github.com/urfave/cli/v2"
 
+	api "skywalking.apache.org/repo/goapi/query"
+
+	"github.com/apache/skywalking-cli/internal/commands/interceptor"
+	"github.com/apache/skywalking-cli/internal/flags"
+	"github.com/apache/skywalking-cli/internal/model"
 	"github.com/apache/skywalking-cli/pkg/display"
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
 	"github.com/apache/skywalking-cli/pkg/graphql/trace"
@@ -39,12 +44,33 @@ with specified options, like service name, endpoint name, etc.
 Examples:
 1. Query the trace details (spans) of id "321661b1-9a31-4e12-ad64-c8f6711f108d":
 $ swctl trace "321661b1-9a31-4e12-ad64-c8f6711f108d"`,
+	Flags: flags.Flags(flags.DurationFlags),
 	Action: func(ctx *cli.Context) error {
 		if ctx.NArg() == 0 {
 			return fmt.Errorf("command trace without sub command requires 1 trace id as argument")
 		}
 
-		trace, err := trace.Trace(ctx.Context, ctx.Args().First())
+		// if the user has set start or end, then we use the duration
+		var duration *api.Duration
+		start := ctx.String("start")
+		end := ctx.String("end")
+		if start != "" || end != "" {
+			if err := interceptor.DurationInterceptor(ctx); err != nil {
+				return err
+			}
+			step := ctx.Generic("step")
+			coldStage := ctx.Bool("cold")
+			start = ctx.String("start")
+			end = ctx.String("end")
+			duration = &api.Duration{
+				Start:     start,
+				End:       end,
+				Step:      step.(*model.StepEnumValue).Selected,
+				ColdStage: &coldStage,
+			}
+		}
+
+		trace, err := trace.Trace(ctx.Context, duration, ctx.Args().First())
 		if err != nil {
 			return err
 		}

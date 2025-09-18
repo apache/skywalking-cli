@@ -15,8 +15,8 @@
 # specific language governing permissions and limitations
 # under the License.
 
-query ($traceId: ID!) {
-    result: queryTrace(traceId: $traceId) {
+query ($traceId: ID!, $duration: Duration) {
+    result: queryTrace(traceId: $traceId, duration: $duration) {
         spans {
             traceId
             segmentId

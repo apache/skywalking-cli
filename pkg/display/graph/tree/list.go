@@ -93,7 +93,7 @@ func DisplayList(ctx context.Context, displayable *d.Displayable) error {
 }
 
 func draw(ctx context.Context, list *widgets.List, tree *widgets.Tree, detail, help *widgets.Paragraph, data api.TraceBrief,
-	_ *api.TraceQueryCondition,
+	condition *api.TraceQueryCondition,
 ) {
 	x, y := ui.TerminalDimensions()
 
@@ -101,7 +101,7 @@ func draw(ctx context.Context, list *widgets.List, tree *widgets.Tree, detail, h
 		showIndex := list.SelectedRow
 		traceID := data.Traces[showIndex].TraceIds[0]
 		list.Title = fmt.Sprintf("[%s]", traceID)
-		nodes, serviceNames := getNodeData(ctx, traceID)
+		nodes, serviceNames := getNodeData(ctx, traceID, condition.QueryDuration)
 		tree.Title = fmt.Sprintf("[%s]", strings.Join(serviceNames, "->"))
 		tree.SetNodes(nodes)
 		list.Rows = rows(data, x/4)
@@ -202,8 +202,8 @@ func listActions(key string, list *widgets.List, tree *widgets.Tree, listActive 
 	return f
 }
 
-func getNodeData(ctx context.Context, traceID string) (nodes []*widgets.TreeNode, serviceNames []string) {
-	data, err := trace.Trace(ctx, traceID)
+func getNodeData(ctx context.Context, traceID string, duration *api.Duration) (nodes []*widgets.TreeNode, serviceNames []string) {
+	data, err := trace.Trace(ctx, duration, traceID)
 	if err != nil {
 		logger.Log.Fatalln(err)
 	}
