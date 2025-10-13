@@ -15,28 +15,35 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package profiling
+package pprof
 
 import (
-	"github.com/urfave/cli/v2"
+	"fmt"
+	"strings"
 
-	"github.com/apache/skywalking-cli/internal/commands/profiling/asyncprofiler"
-	"github.com/apache/skywalking-cli/internal/commands/profiling/continuous"
-	"github.com/apache/skywalking-cli/internal/commands/profiling/ebpf"
-	"github.com/apache/skywalking-cli/internal/commands/profiling/pprof"
-	"github.com/apache/skywalking-cli/internal/commands/profiling/trace"
+	api "skywalking.apache.org/repo/goapi/query"
 )
 
-var Command = &cli.Command{
-	Name:  "profiling",
-	Usage: "profiling related sub-command",
-	UsageText: `If your application has performance issue, you could try to profiling. 
-Please following sub-command to get more information.`,
-	Subcommands: []*cli.Command{
-		trace.Command,
-		ebpf.Command,
-		continuous.Command,
-		asyncprofiler.Command,
-		pprof.Command,
-	},
+type ProfilingEventTypeEnumValue struct {
+	Enum     []api.PprofEventType
+	Default  api.PprofEventType
+	Selected api.PprofEventType
+}
+
+func (e *ProfilingEventTypeEnumValue) Set(value string) error {
+	for _, enum := range e.Enum {
+		if strings.EqualFold(enum.String(), value) {
+			e.Selected = enum
+			return nil
+		}
+	}
+	orders := make([]string, len(api.AllPprofEventType))
+	for i, order := range api.AllPprofEventType {
+		orders[i] = order.String()
+	}
+	return fmt.Errorf("allowed analysis aggregate type are %s", strings.Join(orders, ", "))
+}
+
+func (e *ProfilingEventTypeEnumValue) String() string {
+	return e.Selected.String()
 }

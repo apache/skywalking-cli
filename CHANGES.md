@@ -15,6 +15,7 @@ Release Notes.
 * Add the `trace-v2 list` command for adapt the new trace query API by @mrproliu in https://github.com/apache/skywalking-cli/pull/225
 * Add the duration field in the `trace list` command by @mrproliu in https://github.com/apache/skywalking-cli/pull/225
 * Remove the oldest `queryTraceFromColdStage` query call in the `trace list` command by @mrproliu in https://github.com/apache/skywalking-cli/pull/225
+* Add the sub-command `profiling pprof` for pprof query API by @JophieQu in https://github.com/apache/skywalking-cli/pull/226
 
 ### Bug Fixes
 
