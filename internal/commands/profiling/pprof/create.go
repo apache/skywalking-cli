@@ -65,6 +65,7 @@ $ swctl profiling pprof create --service-name=service-name --duration=10 --event
 		},
 	),
 	Before: interceptor.BeforeChain(
+		interceptor.ParseService(true),
 		interceptor.ParseInstanceList(true),
 	),
 	Action: func(ctx *cli.Context) error {

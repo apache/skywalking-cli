@@ -52,6 +52,7 @@ $ swctl profiling pprof analysis --service-name=service-name --task-id=task-id \
 		},
 	),
 	Before: interceptor.BeforeChain(
+		interceptor.ParseService(true),
 		interceptor.ParseInstanceList(true),
 	),
 	Action: func(ctx *cli.Context) error {

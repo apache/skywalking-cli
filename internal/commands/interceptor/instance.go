@@ -106,6 +106,7 @@ func parseInstanceList(required bool, idListFlagName, nameListFlagName, serviceI
 
 		if idsArg == "" && namesArgs == "" {
 			if required {
+				_ = cli.ShowSubcommandHelp(ctx)
 				return fmt.Errorf(`either flags "--%s" or "--%s" must be given`, idListFlagName, nameListFlagName)
 			}
 			return nil
