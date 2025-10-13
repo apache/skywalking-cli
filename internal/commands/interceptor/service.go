@@ -74,6 +74,7 @@ func parseService(required bool, idFlagName, nameFlagName string, nodeType nodeT
 
 		if id == "" && name == "" {
 			if required {
+				_ = cli.ShowSubcommandHelp(ctx)
 				return fmt.Errorf(`either flags "--%s" or "--%s" must be given`, idFlagName, nameFlagName)
 			}
 			return nil
