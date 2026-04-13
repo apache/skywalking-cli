@@ -46,7 +46,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.24"
+          go-version: "1.26"
 
       - name: Check Dependencies License
         run: make dependency-license
@@ -60,7 +60,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: 1.24
+          go-version: "1.26"
 
       - name: Check code generation
         run: make check-codegen
@@ -94,7 +94,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: 1.24
+          go-version: "1.26"
 
       - name: Install swctl
         run: make install DESTDIR=/usr/local/bin
@@ -116,7 +116,7 @@ jobs:
       - name: setup go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.24'
+          go-version: "1.26"
 
       - name: run unit tests and report coverage
         working-directory: ./
