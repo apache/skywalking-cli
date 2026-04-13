@@ -59,7 +59,7 @@ deps:
 	@$(GO_GET) -v -t ./...
 
 $(GO_LINT):
-	@$(GO_LINT) version > /dev/null 2>&1 || go install github.com/golangci/golangci-lint/cmd/golangci-lint@v2.11.4
+	@$(GO_LINT) version > /dev/null 2>&1 || go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.11.4
 $(LICENSE_EYE):
 	@$(LICENSE_EYE) --version > /dev/null 2>&1 || go install github.com/apache/skywalking-eyes/cmd/license-eye@d38fe05
 

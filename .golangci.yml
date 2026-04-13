@@ -35,7 +35,6 @@ linters:
     - misspell
     - nakedret
     - staticcheck
-    - typecheck
     - unconvert
     - unparam
     - unused
@@ -78,6 +77,24 @@ linters:
           deny:
             - pkg: "github.com/urfave/cli/v2"
               desc: "github.com/urfave/cli/v2 is not allowed in pkg module"
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    rules:
+      - linters: [revive]
+        text: "exported: exported .* should have comment"
+      - linters: [gosec]
+        text: "G104"
+      - linters: [errcheck]
+        text: "Error return value of .((os\\.)?std(out|err)\\..*|.*Close|.*Flush|os\\.Remove(All)?|.*printf?|os\\.(Un)?Setenv). is not checked"
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
 
 formatters:
   enable:
