@@ -88,7 +88,7 @@ jobs:
     strategy:
       matrix:
         oap:
-          - b55fa2a5193618cdd7d699ad96fa20ceca9d507e
+          - 42c613bea94999a6cc8e805ed4c8c7659f3a735c
     steps:
       - uses: actions/checkout@v4
       - name: Set up Go
