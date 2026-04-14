@@ -1,6 +1,6 @@
 module github.com/apache/skywalking-cli
 
-go 1.24.2
+go 1.26
 
 require (
 	github.com/apache/skywalking-swck/operator v0.0.0-20250424112814-f5c5243fcfb2

@@ -14,47 +14,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-linters-settings:
-  govet:
-    enable:
-      - shadow
-  gocyclo:
-    min-complexity: 15
-  dupl:
-    threshold: 200
-  goconst:
-    min-len: 2
-    min-occurrences: 2
-  misspell:
-    locale: US
-  lll:
-    line-length: 150
-  goimports:
-    local-prefixes: github.com/apache/skywalking-cli
-  gocritic:
-    enabled-tags:
-      - diagnostic
-      - experimental
-      - opinionated
-      - performance
-      - style
-    disabled-checks:
-      - ifElseChain
-  funlen:
-    lines: 100
-    statements: 50
-  whitespace:
-    multi-if: false
-    multi-func: false
-  depguard:
-    rules:
-      prevent_cli_in_pkg:
-        files: ["**/pkg/**/*.go"]
-        deny:
-          - pkg: "github.com/urfave/cli/v2"
-            desc: "github.com/urfave/cli/v2 is not allowed in pkg module"
+version: "2"
 
 linters:
+  default: none
   enable:
     - bodyclose
     - dogsled
@@ -64,21 +27,80 @@ linters:
     - goconst
     - gocritic
     - gocyclo
-    - gofmt
-    - goimports
     - revive
     - gosec
-    - gosimple
     - govet
     - ineffassign
     - lll
     - misspell
     - nakedret
     - staticcheck
-    - stylecheck
-    - typecheck
     - unconvert
     - unparam
     - unused
     - whitespace
     - depguard
+  settings:
+    govet:
+      enable:
+        - shadow
+    gocyclo:
+      min-complexity: 15
+    dupl:
+      threshold: 200
+    goconst:
+      min-len: 2
+      min-occurrences: 2
+    misspell:
+      locale: US
+    lll:
+      line-length: 150
+    gocritic:
+      enabled-tags:
+        - diagnostic
+        - experimental
+        - opinionated
+        - performance
+        - style
+      disabled-checks:
+        - ifElseChain
+    funlen:
+      lines: 100
+      statements: 50
+    whitespace:
+      multi-if: false
+      multi-func: false
+    depguard:
+      rules:
+        prevent_cli_in_pkg:
+          files: ["**/pkg/**/*.go"]
+          deny:
+            - pkg: "github.com/urfave/cli/v2"
+              desc: "github.com/urfave/cli/v2 is not allowed in pkg module"
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    rules:
+      - linters: [revive]
+        text: "exported: exported .* should have comment"
+      - linters: [gosec]
+        text: "G104"
+      - linters: [errcheck]
+        text: "Error return value of .((os\\.)?std(out|err)\\..*|.*Close|.*Flush|os\\.Remove(All)?|.*printf?|os\\.(Un)?Setenv). is not checked"
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+
+formatters:
+  enable:
+    - gofmt
+    - goimports
+  settings:
+    goimports:
+      local-prefixes:
+        - github.com/apache/skywalking-cli
