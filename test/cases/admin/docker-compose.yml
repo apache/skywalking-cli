@@ -13,6 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Minimal topology for the admin-server REST commands: just BanyanDB + OAP. The admin
+# feature modules (status / inspect / ui-management / dsl-debugging / runtime-rule)
+# are enabled by default in OAP 11.0.0+, so no extra environment is required — only
+# the admin REST port (17128) needs to be published alongside the GraphQL port (12800).
+# Requires an OAP build that includes the admin host (OAP_TAG >= 11.0.0).
+
 version: "2.1"
 
 services:
@@ -26,26 +32,9 @@ services:
       service: oap
     ports:
       - 12800
+      - 17128
     depends_on:
       banyandb:
-        condition: service_healthy
-
-  provider:
-    extends:
-      file: ../../base/docker-compose.yml
-      service: provider
-    depends_on:
-      oap:
-        condition: service_healthy
-
-  consumer:
-    extends:
-      file: ../../base/docker-compose.yml
-      service: consumer
-    ports:
-      - 9090
-    depends_on:
-      provider:
         condition: service_healthy
 
 networks:

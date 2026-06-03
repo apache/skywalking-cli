@@ -29,24 +29,47 @@ import (
 )
 
 type ListAlarmCondition struct {
-	Duration *api.Duration
-	Keyword  string
-	Scope    api.Scope
-	Tags     []*api.AlarmTag
-	Paging   *api.Pagination
+	Duration  *api.Duration
+	Keyword   string
+	Tags      []*api.AlarmTag
+	Paging    *api.Pagination
+	Layer     string
+	RuleNames []string
+	Entities  []*api.Entity
+}
+
+// alarmQueryCondition mirrors the GraphQL `AlarmQueryCondition` input of `queryAlarms`.
+// It is JSON-encoded as the `condition` variable, so the field tags must match the
+// schema field names exactly.
+type alarmQueryCondition struct {
+	Duration  *api.Duration   `json:"duration"`
+	Paging    *api.Pagination `json:"paging"`
+	Entities  []*api.Entity   `json:"entities,omitempty"`
+	Layer     *string         `json:"layer,omitempty"`
+	RuleNames []string        `json:"ruleNames,omitempty"`
+	Keyword   *string         `json:"keyword,omitempty"`
+	Tags      []*api.AlarmTag `json:"tags,omitempty"`
 }
 
 func Alarms(ctx context.Context, condition *ListAlarmCondition) (api.Alarms, error) {
 	var response map[string]api.Alarms
 
-	request := graphql.NewRequest(assets.Read("graphqls/alarm/alarms.graphql"))
-	request.Var("paging", condition.Paging)
-	request.Var("tags", condition.Tags)
-	request.Var("duration", condition.Duration)
-	request.Var("keyword", condition.Keyword)
-	if condition.Scope != "" {
-		request.Var("scope", condition.Scope)
+	queryCondition := alarmQueryCondition{
+		Duration:  condition.Duration,
+		Paging:    condition.Paging,
+		Entities:  condition.Entities,
+		RuleNames: condition.RuleNames,
+		Tags:      condition.Tags,
 	}
+	if condition.Keyword != "" {
+		queryCondition.Keyword = &condition.Keyword
+	}
+	if condition.Layer != "" {
+		queryCondition.Layer = &condition.Layer
+	}
+
+	request := graphql.NewRequest(assets.Read("graphqls/alarm/alarms.graphql"))
+	request.Var("condition", queryCondition)
 
 	err := client.ExecuteQuery(ctx, request, &response)
 

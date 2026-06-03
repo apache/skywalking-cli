@@ -13,40 +13,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-version: "2.1"
-
-services:
-  banyandb:
-    extends:
-      file: ../../base/docker-compose.yml
-      service: banyandb
-  oap:
-    extends:
-      file: ../../base/docker-compose.yml
-      service: oap
-    ports:
-      - 12800
-    depends_on:
-      banyandb:
-        condition: service_healthy
-
-  provider:
-    extends:
-      file: ../../base/docker-compose.yml
-      service: provider
-    depends_on:
-      oap:
-        condition: service_healthy
-
-  consumer:
-    extends:
-      file: ../../base/docker-compose.yml
-      service: consumer
-    ports:
-      - 9090
-    depends_on:
-      provider:
-        condition: service_healthy
-
-networks:
-  test:
+ok

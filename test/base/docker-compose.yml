@@ -16,17 +16,20 @@
 version: "2.1"
 
 services:
-  es:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.10.1
+  # BanyanDB is SkyWalking's native, lightweight storage — far cheaper to spin up in
+  # CI than Elasticsearch. The image tag is pinned to the same BanyanDB build the
+  # upstream skywalking master e2e validates against (test/e2e-v2/script/env:
+  # SW_BANYANDB_COMMIT); keep it in sync when bumping OAP_TAG.
+  banyandb:
+    image: ghcr.io/apache/skywalking-banyandb:84b919efca3fee3d51df9e97a734a9f10ae6f1d2
     expose:
-      - 9200
+      - 17912
+      - 17913
     networks:
       - test
-    environment:
-      - discovery.type=single-node
-      - xpack.security.enabled=false
+    command: standalone --measure-metadata-cache-wait-duration 1m --stream-metadata-cache-wait-duration 1m
     healthcheck:
-      test: ["CMD", "bash", "-c", "cat < /dev/null > /dev/tcp/127.0.0.1/9200"]
+      test: ["CMD", "sh", "-c", "nc -nz 127.0.0.1 17912"]
       interval: 5s
       timeout: 60s
       retries: 120
@@ -39,8 +42,8 @@ services:
     networks:
       - test
     environment:
-      - SW_STORAGE=elasticsearch
-      - SW_STORAGE_ES_CLUSTER_NODES=es:9200
+      - SW_STORAGE=banyandb
+      - SW_STORAGE_BANYANDB_TARGETS=banyandb:17912
       - SW_HEALTH_CHECKER=default
       - SW_TELEMETRY=prometheus
     healthcheck:
@@ -48,6 +51,7 @@ services:
       interval: 5s
       timeout: 60s
       retries: 120
+      start_period: 30s
 
   provider:
     image: apache/skywalking-python:0.8.0-grpc-py3.9

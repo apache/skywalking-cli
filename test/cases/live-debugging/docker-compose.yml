@@ -13,6 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Topology for the OAL live-debugging case: BanyanDB + OAP (admin REST on 17128) plus
+# the provider/consumer demo apps. Unlike the static `admin` case, the DSL live
+# debugger captures live ingest, so this case needs traffic — the consumer→provider
+# calls drive Service / ServiceRelation source events through the shipped core.oal
+# pipeline while the debug session is attached.
+# Requires an admin-capable OAP (OAP_TAG >= 11.0.0).
+
 version: "2.1"
 
 services:
@@ -26,6 +33,7 @@ services:
       service: oap
     ports:
       - 12800
+      - 17128
     depends_on:
       banyandb:
         condition: service_healthy

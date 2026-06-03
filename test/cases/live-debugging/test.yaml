@@ -1,0 +1,46 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# OAL live-debugging E2E: drives swctl's `admin dsl-debug session` lifecycle against a
+# real OAL capture. The trigger sends continuous traffic so the OAL pipeline keeps
+# firing while the debug session is attached; the flow script does the stateful
+# start → poll → assert → stop and prints "ok" on success. Requires an admin-capable
+# OAP (OAP_TAG >= 11.0.0).
+
+setup:
+  env: compose
+  file: docker-compose.yml
+  timeout: 25m
+  steps:
+    - name: install yq
+      command: yq > /dev/null 2>&1 || go install github.com/mikefarah/yq/v4@latest
+
+trigger:
+  action: http
+  interval: 3s
+  # Continuous traffic: the live debugger captures ingest as it flows, so the OAL
+  # pipeline must keep firing for the whole session lifecycle.
+  times: -1
+  url: http://${consumer_host}:${consumer_9090}/users
+  method: POST
+
+verify:
+  # The flow script owns its own polling/retry budget, so a single verify pass is enough.
+  retry:
+    count: 1
+    interval: 1s
+  cases:
+    - query: OAP_HOST=${oap_host} OAP_ADMIN_PORT=${oap_17128} bash test/cases/live-debugging/oal-debug-flow.sh
+      expected: expected/ok.yml

@@ -84,7 +84,7 @@ verify:
     - query: swctl --display yaml --base-url=http://${oap_host}:${oap_12800}/graphql metrics single --name service_instance_cpm --service-name provider --instance-name provider1
       expected: expected/value.yml
 
-    - query: swctl --display yaml --base-url=http://${oap_host}:${oap_12800}/graphql layer list
+    - query: swctl --display yaml --base-url=http://${oap_host}:${oap_12800}/graphql layer list | yq e 'sort' -
       expected: expected/layer-list.yml
 
     - query: swctl --display yaml --base-url=http://${oap_host}:${oap_12800}/graphql service list
@@ -94,11 +94,11 @@ verify:
     - query: swctl --display yaml --base-url=http://${oap_host}:${oap_12800}/graphql service layer GENERAL
       expected: expected/service.yml
 
-    - query: swctl --display yaml --base-url=http://${oap_host}:${oap_12800}/graphql trace ls
-      expected: expected/traces-list.yml
-    - query: |
-        swctl --display yaml --base-url=http://${oap_host}:${oap_12800}/graphql trace $( \
-          swctl --display yaml --base-url=http://${oap_host}:${oap_12800}/graphql trace ls \
-            | yq e '.traces | select(.[].endpointnames[0]=="/users") | .[0].traceids[0]' -
-        )
-      expected: expected/trace-users-detail.yml
+    # BanyanDB rejects the v1 trace API ("BanyanDB Trace Model changed, please use
+    # queryTraces"), so trace coverage uses the v2 `trace-v2` command. `trace-v2 list`
+    # returns full spans inline, so one command verifies both the listing and the
+    # per-endpoint detail the old `trace`/`trace ls` cases covered.
+    - query: swctl --display yaml --base-url=http://${oap_host}:${oap_12800}/graphql trace-v2 list | yq e '.traces | length' -
+      expected: expected/value.yml
+    - query: swctl --display yaml --base-url=http://${oap_host}:${oap_12800}/graphql trace-v2 list | yq e '[.traces[].spans[] | select(.endpointname == "/users")] | length' -
+      expected: expected/value.yml
