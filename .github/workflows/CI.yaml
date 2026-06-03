@@ -88,7 +88,7 @@ jobs:
     strategy:
       matrix:
         oap:
-          - 42c613bea94999a6cc8e805ed4c8c7659f3a735c
+          - 768d0693aac34ed49ce4d1c89e4a56df353e4140
     steps:
       - uses: actions/checkout@v4
       - name: Set up Go
@@ -105,6 +105,62 @@ jobs:
           OAP_TAG: ${{ matrix.oap }}
         with:
           e2e-file: test/cases/basic/test.yaml
+
+
+  admin-command-tests:
+    name: Admin Command Tests
+    runs-on: ubuntu-latest
+    if: github.repository == 'apache/skywalking-cli'
+    strategy:
+      matrix:
+        # Must be an admin-capable OAP build: the admin-server REST host (port 17128)
+        # and the queryAlarms / menu-retirement changes landed in OAP 11.0.0.
+        oap:
+          - 768d0693aac34ed49ce4d1c89e4a56df353e4140
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.26"
+
+      - name: Install swctl
+        run: make install DESTDIR=/usr/local/bin
+
+      - name: Test admin commands
+        uses: apache/skywalking-infra-e2e@cf589b4a0b9f8e6f436f78e9cfd94a1ee5494180
+        env:
+          OAP_TAG: ${{ matrix.oap }}
+        with:
+          e2e-file: test/cases/admin/test.yaml
+
+
+  live-debugging-tests:
+    name: Live Debugging Tests
+    runs-on: ubuntu-latest
+    if: github.repository == 'apache/skywalking-cli'
+    strategy:
+      matrix:
+        # OAL live debugging needs the admin host (OAP 11.0.0+); the demo traffic drives
+        # the captured OAL pipeline.
+        oap:
+          - 768d0693aac34ed49ce4d1c89e4a56df353e4140
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.26"
+
+      - name: Install swctl
+        run: make install DESTDIR=/usr/local/bin
+
+      - name: Test OAL live debugging
+        uses: apache/skywalking-infra-e2e@cf589b4a0b9f8e6f436f78e9cfd94a1ee5494180
+        env:
+          OAP_TAG: ${{ matrix.oap }}
+        with:
+          e2e-file: test/cases/live-debugging/test.yaml
 
 
   unit-tests:
@@ -130,6 +186,8 @@ jobs:
       - check-license
       - build
       - command-tests
+      - admin-command-tests
+      - live-debugging-tests
       - unit-tests
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -140,8 +198,12 @@ jobs:
           [[ ${checkLicense} == 'success' ]] || exit 1;
           build=${{ needs.build.result }};
           commandTests=${{ needs.command-tests.result }};
+          adminCommandTests=${{ needs.admin-command-tests.result }};
+          liveDebuggingTests=${{ needs.live-debugging-tests.result }};
           unitTests=${{ needs.unit-tests.result }};
           [[ ${build} == 'success' ]] || [[ ${build} == 'skipped' ]] || exit 3;
           [[ ${commandTests} == 'success' ]] || [[ ${commandTests} == 'skipped' ]] || exit 4;
+          [[ ${adminCommandTests} == 'success' ]] || [[ ${adminCommandTests} == 'skipped' ]] || exit 6;
+          [[ ${liveDebuggingTests} == 'success' ]] || [[ ${liveDebuggingTests} == 'skipped' ]] || exit 7;
           [[ ${unitTests} == 'success' ]] || [[ ${unitTests} == 'skipped' ]] || exit 5;
           exit 0;

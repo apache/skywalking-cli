@@ -15,8 +15,8 @@
 # specific language governing permissions and limitations
 # under the License.
 
-query ($duration: Duration!, $scope: Scope, $keyword: String, $paging: Pagination!, $tags: [AlarmTag]) {
-    result: getAlarm(duration: $duration, scope: $scope, keyword: $keyword, paging: $paging, tags: $tags) {
+query ($condition: AlarmQueryCondition!) {
+    result: queryAlarms(condition: $condition) {
         msgs {
             startTime
             scope

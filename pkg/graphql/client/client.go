@@ -19,29 +19,23 @@ package client
 
 import (
 	"context"
-	"crypto/tls"
-	"encoding/base64"
-	"net/http"
 
 	"github.com/machinebox/graphql"
 
 	"github.com/apache/skywalking-cli/pkg/contextkey"
 	"github.com/apache/skywalking-cli/pkg/logger"
+	"github.com/apache/skywalking-cli/pkg/transport"
 )
 
 // newClient creates a new GraphQL client with configuration from context.
 func newClient(ctx context.Context) *graphql.Client {
 	options := []graphql.ClientOption{}
 
-	insecure := ctx.Value(contextkey.Insecure{}).(bool)
-	if insecure {
-		customTransport := http.DefaultTransport.(*http.Transport).Clone()
-		customTransport.TLSClientConfig = &tls.Config{InsecureSkipVerify: insecure} // #nosec G402
-		httpClient := &http.Client{Transport: customTransport}
-		options = append(options, graphql.WithHTTPClient(httpClient))
+	if transport.Insecure(ctx) {
+		options = append(options, graphql.WithHTTPClient(transport.HTTPClient(ctx)))
 	}
 
-	baseURL := getValue(ctx, contextkey.BaseURL{}, "http://127.0.0.1:12800/graphql")
+	baseURL := transport.GetValue(ctx, contextkey.BaseURL{}, "http://127.0.0.1:12800/graphql")
 	client := graphql.NewClient(baseURL, options...)
 	client.Log = func(msg string) {
 		logger.Log.Debugln(msg)
@@ -51,27 +45,11 @@ func newClient(ctx context.Context) *graphql.Client {
 
 // ExecuteQuery executes the `request` and parse to the `response`, returning `error` if there is any.
 func ExecuteQuery(ctx context.Context, request *graphql.Request, response any) error {
-	username := getValue(ctx, contextkey.Username{}, "")
-	password := getValue(ctx, contextkey.Password{}, "")
-	authorization := getValue(ctx, contextkey.Authorization{}, "")
-
-	if authorization == "" && username != "" && password != "" {
-		authorization = "Basic " + base64.StdEncoding.EncodeToString([]byte(username+":"+password))
-	}
-	if authorization != "" {
+	if authorization := transport.AuthHeader(ctx); authorization != "" {
 		request.Header.Set("Authorization", authorization)
 	}
 
 	client := newClient(ctx)
 	err := client.Run(ctx, request, response)
 	return err
-}
-
-// getValue safely extracts a value from the context.
-func getValue[T any](ctx context.Context, key any, defaultValue T) T {
-	val := ctx.Value(key)
-	if v, ok := val.(T); ok {
-		return v
-	}
-	return defaultValue
 }

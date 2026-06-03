@@ -1,0 +1,72 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# E2E coverage for the OAP admin-server REST commands (`swctl admin ...`) and the
+# OAP 11.0.0 regression fixes (alarm -> queryAlarms, menu retirement detection).
+# Requires an admin-capable OAP (OAP_TAG >= 11.0.0). The admin host needs no traffic,
+# so this suite does not run the provider/consumer demo apps or a trigger.
+
+setup:
+  env: compose
+  file: docker-compose.yml
+  timeout: 20m
+  steps:
+    - name: install yq
+      command: yq > /dev/null 2>&1 || go install github.com/mikefarah/yq/v4@latest
+
+verify:
+  retry:
+    count: 20
+    interval: 10s
+  cases:
+    # admin-server reachability + feature detection (GET /debugging/config/dump).
+    - query: swctl --display json --admin-url=http://${oap_host}:${oap_17128} admin preflight | yq e '.adminReachable' -
+      expected: expected/true.yml
+
+    # status module — cluster membership, effective config, alarm runtime status.
+    - query: swctl --display json --admin-url=http://${oap_host}:${oap_17128} admin cluster nodes | yq e 'has("nodes")' -
+      expected: expected/true.yml
+    - query: swctl --display json --admin-url=http://${oap_host}:${oap_17128} admin config dump | yq e 'length' -
+      expected: expected/count.yml
+    - query: swctl --display json --admin-url=http://${oap_host}:${oap_17128} admin alarm rules | yq e 'has("oapInstances")' -
+      expected: expected/true.yml
+
+    # inspect module — metric catalog.
+    - query: swctl --display json --admin-url=http://${oap_host}:${oap_17128} admin inspect metrics --mqe-queryable | yq e '.metrics | length' -
+      expected: expected/count.yml
+
+    # ui-management module — dashboard templates (a sequence, possibly empty).
+    - query: swctl --display json --admin-url=http://${oap_host}:${oap_17128} admin ui-template list | yq e 'length > -1' -
+      expected: expected/true.yml
+
+    # runtime-rule module — live rule state.
+    - query: swctl --display json --admin-url=http://${oap_host}:${oap_17128} admin runtime-rule list | yq e 'has("rules")' -
+      expected: expected/true.yml
+
+    # dsl-debugging module + OAL picker.
+    - query: swctl --display json --admin-url=http://${oap_host}:${oap_17128} admin dsl-debug status | yq e 'has("module")' -
+      expected: expected/true.yml
+    - query: swctl --display json --admin-url=http://${oap_host}:${oap_17128} admin oal files | yq e '.files | length' -
+      expected: expected/count.yml
+
+    # regression — `alarm list` migrated from getAlarm to queryAlarms (GraphQL on 12800).
+    - query: swctl --display json --base-url=http://${oap_host}:${oap_12800}/graphql alarm list | yq e 'has("msgs")' -
+      expected: expected/true.yml
+
+    # regression — `menu get` reports the 11.0.0 retirement gracefully instead of a raw error.
+    - query: |
+        out=$(swctl --base-url=http://${oap_host}:${oap_12800}/graphql menu get 2>&1 || true)
+        echo "$out" | grep -q "no longer serves the UI menu" && echo ok
+      expected: expected/ok.yml

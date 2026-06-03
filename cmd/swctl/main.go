@@ -22,6 +22,7 @@ import (
 	"os"
 	"runtime"
 
+	"github.com/apache/skywalking-cli/internal/commands/admin"
 	"github.com/apache/skywalking-cli/internal/commands/alarm"
 	"github.com/apache/skywalking-cli/internal/commands/browser"
 	"github.com/apache/skywalking-cli/internal/commands/completion"
@@ -115,6 +116,7 @@ services, service instances, etc.`
 		records.Command,
 		menu.Command,
 		hierarchy.Command,
+		admin.Command,
 	}
 
 	app.Before = interceptor.BeforeChain(
@@ -149,6 +151,15 @@ func flags() []cli.Flag {
 			Required: false,
 			Usage:    "base `url` of the OAP backend graphql service",
 			Value:    "http://127.0.0.1:12800/graphql",
+		}),
+		altsrc.NewStringFlag(&cli.StringFlag{
+			Name:     "admin-url",
+			Required: false,
+			EnvVars:  []string{"SW_ADMIN_URL"},
+			Usage: "base `url` of the OAP admin-server REST service (default port 17128), " +
+				"used by `swctl admin ...` sub-commands. If empty, it is derived from `--base-url` " +
+				"by reusing its host with port 17128.",
+			Value: "",
 		}),
 		altsrc.NewStringFlag(&cli.StringFlag{
 			Name:     "grpc-addr",

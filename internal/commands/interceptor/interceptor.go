@@ -20,6 +20,7 @@ package interceptor
 import (
 	"context"
 
+	adminclient "github.com/apache/skywalking-cli/pkg/admin/client"
 	"github.com/apache/skywalking-cli/pkg/contextkey"
 
 	"github.com/urfave/cli/v2"
@@ -30,6 +31,8 @@ func BeforeChain(beforeFunctions ...cli.BeforeFunc) cli.BeforeFunc {
 	return func(cliCtx *cli.Context) error {
 		ctx := cliCtx.Context
 		ctx = context.WithValue(ctx, contextkey.BaseURL{}, cliCtx.String("base-url"))
+		ctx = context.WithValue(ctx, contextkey.AdminURL{},
+			adminclient.DeriveAdminURL(cliCtx.String("base-url"), cliCtx.String("admin-url")))
 		ctx = context.WithValue(ctx, contextkey.Insecure{}, cliCtx.Bool("insecure"))
 		ctx = context.WithValue(ctx, contextkey.Username{}, cliCtx.String("username"))
 		ctx = context.WithValue(ctx, contextkey.Password{}, cliCtx.String("password"))

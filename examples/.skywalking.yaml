@@ -16,6 +16,9 @@
 # under the License.
 
 base-url: http://demo.skywalking.apache.org/graphql
+# admin-url is the OAP admin-server REST host used by `swctl admin ...` sub-commands.
+# When omitted, it is derived from base-url's host with port 17128.
+admin-url: http://demo.skywalking.apache.org:17128
 grpc-addr: 127.0.0.1:11800
 username: basic-auth-username
 password: basic-auth-password

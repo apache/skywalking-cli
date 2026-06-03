@@ -29,6 +29,7 @@ import (
 	"github.com/apache/skywalking-cli/pkg/display"
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
 	"github.com/apache/skywalking-cli/pkg/graphql/alarm"
+	"github.com/apache/skywalking-cli/pkg/logger"
 
 	api "skywalking.apache.org/repo/goapi/query"
 )
@@ -58,9 +59,19 @@ $ swctl alarm list
 				Usage:    "`tags` of the alarm, in form of `key=value,key=value`",
 				Required: false,
 			},
+			&cli.StringFlag{
+				Name:     "layer",
+				Usage:    "filter alarms by the underlying entity `layer`, e.g. GENERAL, MESH",
+				Required: false,
+			},
+			&cli.StringFlag{
+				Name:     "rules",
+				Usage:    "filter alarms by the alarm `rule` name(s) that fired them, comma-separated",
+				Required: false,
+			},
 			&cli.GenericFlag{
 				Name:  "scope",
-				Usage: "the `scope` of the alarm entity",
+				Usage: "(deprecated) the `scope` of the alarm entity; ignored, queryAlarms filters by entity/layer/rule instead",
 				Value: &model.ScopeEnumValue{
 					Enum:     api.AllScope,
 					Default:  "",
@@ -80,7 +91,21 @@ $ swctl alarm list
 
 		keyword := ctx.String("keyword")
 		tagStr := ctx.String("tags")
-		scope := ctx.Generic("scope").(*model.ScopeEnumValue).Selected
+		layer := ctx.String("layer")
+
+		if ctx.IsSet("scope") {
+			logger.Log.Warn("--scope is deprecated and ignored: the queryAlarms API filters by entity/layer/rule, " +
+				"not by a bare scope. Use --layer and --rules instead.")
+		}
+
+		var ruleNames []string
+		if rules := ctx.String("rules"); rules != "" {
+			for rule := range strings.SplitSeq(rules, ",") {
+				if r := strings.TrimSpace(rule); r != "" {
+					ruleNames = append(ruleNames, r)
+				}
+			}
+		}
 
 		duration := api.Duration{
 			Start:     start,
@@ -108,11 +133,12 @@ $ swctl alarm list
 		}
 
 		condition := &alarm.ListAlarmCondition{
-			Duration: &duration,
-			Keyword:  keyword,
-			Scope:    scope,
-			Tags:     tags,
-			Paging:   &paging,
+			Duration:  &duration,
+			Keyword:   keyword,
+			Tags:      tags,
+			Paging:    &paging,
+			Layer:     layer,
+			RuleNames: ruleNames,
 		}
 		alarms, err := alarm.Alarms(ctx.Context, condition)
 		if err != nil {
