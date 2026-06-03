@@ -84,7 +84,10 @@ jobs:
         run: make build -j3
 
       - name: Build Docker images
-        run: make docker
+        # Retry once: booting buildkit pulls moby/buildkit from Docker Hub, which
+        # intermittently times out on shared runners. Mirrors publish-docker.yaml's
+        # `make docker.push || make docker.push`.
+        run: make docker || make docker
 
 
   command-tests:
