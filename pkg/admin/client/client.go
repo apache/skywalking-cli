@@ -26,6 +26,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"net"
 	"net/http"
 	"net/url"
 	"strings"
@@ -63,7 +64,8 @@ func DeriveAdminURL(baseURL, adminURL string) string {
 	if scheme == "" {
 		scheme = "http"
 	}
-	return fmt.Sprintf("%s://%s:%s", scheme, u.Hostname(), DefaultAdminPort)
+	// net.JoinHostPort brackets IPv6 hosts, e.g. http://[::1]:17128.
+	return scheme + "://" + net.JoinHostPort(u.Hostname(), DefaultAdminPort)
 }
 
 // BaseURL returns the admin REST base URL stored in the context (set by the

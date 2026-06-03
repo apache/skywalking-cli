@@ -82,32 +82,30 @@ log "=== Phase 3: assert the captured pipeline is exactly ${METRIC} ==="
 samples="$(echo "${body}" | yq e '[.nodes[].records[].samples[]] | length' -)"
 [ "${samples}" -gt 0 ] || fail "captured records carry no samples"
 
-# 3a. Per-metric gate isolation: every captured record is bound to ${METRIC}; no sibling
-#     rule on the same OAL dispatcher leaked into this per-metric session.
-foreign="$(echo "${body}" | yq e "[.nodes[].records[] | select(.rule.ruleName != \"${METRIC}\")] | length" -)"
-[ "${foreign}" = "0" ] || fail "${foreign} record(s) bound to a rule other than ${METRIC}"
+# We assert the bound rule from the verbatim .dsl source and the output samples rather
+# than the per-record .rule envelope, which the server does not reliably populate for OAL.
 
-# 3b. Each record carries the verbatim core.oal source of ${METRIC}.
+# 3a. Each record carries the verbatim core.oal source of ${METRIC}.
 dsl_hits="$(echo "${body}" | yq e "[.nodes[].records[] | select(.dsl | contains(\"${METRIC}\"))] | length" -)"
 [ "${dsl_hits}" -gt 0 ] || fail "no record's .dsl carries the ${METRIC} OAL source"
 
-# 3c. Source stage: an input sample drawn from the ${SOURCE_TYPE} source.
+# 3b. Source stage: an input sample drawn from the ${SOURCE_TYPE} source.
 src="$(echo "${body}" | yq e "[.nodes[].records[].samples[] | select(.type == \"input\" and .payload.type == \"${SOURCE_TYPE}\")] | length" -)"
 [ "${src}" -gt 0 ] || fail "no input sample from the ${SOURCE_TYPE} source"
 
-# 3d. Aggregation stage: the verbatim cpm() function from the rule.
+# 3c. Aggregation stage: the verbatim cpm() function from the rule.
 agg="$(echo "${body}" | yq e '[.nodes[].records[].samples[] | select(.type == "aggregation" and .sourceText == "cpm()")] | length' -)"
 [ "${agg}" -gt 0 ] || fail "no cpm() aggregation sample for ${METRIC}"
 
-# 3e. Output stage: the materialised ${METRIC} metric.
+# 3d. Output stage: the materialised ${METRIC} metric.
 out="$(echo "${body}" | yq e "[.nodes[].records[].samples[] | select(.type == \"output\" and .sourceText == \"${METRIC}\")] | length" -)"
 [ "${out}" -gt 0 ] || fail "no output sample for metric ${METRIC}"
 
-# 3f. Gate isolation on output: no OTHER metric's output leaked through this session.
+# 3e. Per-metric gate isolation: no OTHER metric's output leaked through this session.
 leak="$(echo "${body}" | yq e "[.nodes[].records[].samples[] | select(.type == \"output\" and .sourceText != \"${METRIC}\")] | length" -)"
 [ "${leak}" = "0" ] || fail "${leak} output sample(s) for a metric other than ${METRIC} leaked into the session"
 
-log "✓ capture is exactly ${METRIC}: ${samples} samples — ${SOURCE_TYPE} source → cpm() → ${METRIC} output, no foreign rules"
+log "✓ capture is exactly ${METRIC}: ${samples} samples — ${SOURCE_TYPE} source → cpm() → ${METRIC} output, no other metric leaked"
 
 # --- Phase 4: stop session ------------------------------------------------------------
 log "=== Phase 4: stop session ==="

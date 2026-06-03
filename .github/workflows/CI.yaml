@@ -30,6 +30,12 @@ concurrency:
   group: skywalking-cli-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
+# OAP image tag used by the E2E suites. Must be an admin-capable build: the admin-server
+# REST host (port 17128), queryAlarms and the menu retirement landed in OAP 11.0.0; the
+# OAL live-debugging case additionally needs the demo traffic to drive the captured pipeline.
+env:
+  OAP_TAG: 768d0693aac34ed49ce4d1c89e4a56df353e4140
+
 jobs:
   check-license:
     name: License header
@@ -85,10 +91,6 @@ jobs:
     name: Command Tests
     runs-on: ubuntu-latest
     if: github.repository == 'apache/skywalking-cli'
-    strategy:
-      matrix:
-        oap:
-          - 768d0693aac34ed49ce4d1c89e4a56df353e4140
     steps:
       - uses: actions/checkout@v4
       - name: Set up Go
@@ -101,8 +103,6 @@ jobs:
 
       - name: Test commands
         uses: apache/skywalking-infra-e2e@cf589b4a0b9f8e6f436f78e9cfd94a1ee5494180
-        env:
-          OAP_TAG: ${{ matrix.oap }}
         with:
           e2e-file: test/cases/basic/test.yaml
 
@@ -111,12 +111,6 @@ jobs:
     name: Admin Command Tests
     runs-on: ubuntu-latest
     if: github.repository == 'apache/skywalking-cli'
-    strategy:
-      matrix:
-        # Must be an admin-capable OAP build: the admin-server REST host (port 17128)
-        # and the queryAlarms / menu-retirement changes landed in OAP 11.0.0.
-        oap:
-          - 768d0693aac34ed49ce4d1c89e4a56df353e4140
     steps:
       - uses: actions/checkout@v4
       - name: Set up Go
@@ -129,8 +123,6 @@ jobs:
 
       - name: Test admin commands
         uses: apache/skywalking-infra-e2e@cf589b4a0b9f8e6f436f78e9cfd94a1ee5494180
-        env:
-          OAP_TAG: ${{ matrix.oap }}
         with:
           e2e-file: test/cases/admin/test.yaml
 
@@ -139,12 +131,6 @@ jobs:
     name: Live Debugging Tests
     runs-on: ubuntu-latest
     if: github.repository == 'apache/skywalking-cli'
-    strategy:
-      matrix:
-        # OAL live debugging needs the admin host (OAP 11.0.0+); the demo traffic drives
-        # the captured OAL pipeline.
-        oap:
-          - 768d0693aac34ed49ce4d1c89e4a56df353e4140
     steps:
       - uses: actions/checkout@v4
       - name: Set up Go
@@ -157,8 +143,6 @@ jobs:
 
       - name: Test OAL live debugging
         uses: apache/skywalking-infra-e2e@cf589b4a0b9f8e6f436f78e9cfd94a1ee5494180
-        env:
-          OAP_TAG: ${{ matrix.oap }}
         with:
           e2e-file: test/cases/live-debugging/test.yaml
 

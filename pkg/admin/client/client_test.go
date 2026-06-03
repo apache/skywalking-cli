@@ -42,6 +42,11 @@ func TestDeriveAdminURL(t *testing.T) {
 			want:    "https://oap.example.com:17128",
 		},
 		{
+			name:    "derive brackets an IPv6 host",
+			baseURL: "http://[::1]:12800/graphql",
+			want:    "http://[::1]:17128",
+		},
+		{
 			name:     "explicit admin-url wins and trailing slash trimmed",
 			baseURL:  "http://1.2.3.4:12800/graphql",
 			adminURL: "http://admin.example.com:17128/",

@@ -20,7 +20,6 @@ package runtimerule
 import (
 	"fmt"
 	"os"
-	"strings"
 
 	"github.com/urfave/cli/v2"
 
@@ -240,7 +239,11 @@ func readFile(path string) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("failed to read rule file %q: %w", path, err)
 	}
-	return strings.TrimSpace(string(content)) + "\n", nil
+	// Send the rule bytes verbatim. The runtime-rule API hashes the raw body for its
+	// contentHash / no-change detection, so the CLI must not normalize whitespace —
+	// trimming or re-adding a trailing newline would make a byte-identical rule look
+	// like a change.
+	return string(content), nil
 }
 
 func explain(ctx *cli.Context, err error) error {
