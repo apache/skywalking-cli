@@ -129,7 +129,7 @@ $ swctl admin inspect entities --metric meter_foo --value-column value --value-t
 		}
 		step := ctx.Generic("step").(*model.StepEnumValue).Selected
 
-		entities, err := inspect.ListEntities(ctx.Context, inspect.EntitiesOptions{
+		entities, err := inspect.ListEntities(ctx.Context, &inspect.EntitiesOptions{
 			Metric:      ctx.String("metric"),
 			Start:       ctx.String("start"),
 			End:         ctx.String("end"),

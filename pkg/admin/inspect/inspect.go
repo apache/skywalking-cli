@@ -112,7 +112,7 @@ func ListMetrics(ctx context.Context, opts MetricsOptions) (*Metrics, error) {
 
 // ListEntities enumerates the entities holding values for a metric over a time range
 // (GET /inspect/entities). Only REGULAR_VALUE / LABELED_VALUE metrics are accepted.
-func ListEntities(ctx context.Context, opts EntitiesOptions) (*Entities, error) {
+func ListEntities(ctx context.Context, opts *EntitiesOptions) (*Entities, error) {
 	query := url.Values{}
 	query.Set("metric", opts.Metric)
 	query.Set("start", opts.Start)
