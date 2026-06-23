@@ -92,7 +92,11 @@ Each row carries an MQE-ready entity to paste into a follow-up "swctl metrics ex
 
 Examples:
 1. Entities reporting service_cpm in the last 30 minutes:
-$ swctl admin inspect entities --metric service_cpm`,
+$ swctl admin inspect entities --metric service_cpm
+
+2. Inspect a metric persisted by ANOTHER OAP (not defined on this OAP) — supply its value
+   column + type so the OAP resolves it from storage without its local registry:
+$ swctl admin inspect entities --metric meter_foo --value-column value --value-type LONG`,
 	Flags: flags.Flags(
 		flags.DurationFlags,
 		[]cli.Flag{
@@ -104,6 +108,14 @@ $ swctl admin inspect entities --metric service_cpm`,
 			&cli.IntFlag{
 				Name:  "limit",
 				Usage: fmt.Sprintf("max rows scanned at the storage layer (1-%d, server default 300)", inspect.MaxLimit),
+			},
+			&cli.StringFlag{
+				Name:  "value-column",
+				Usage: "the metric's value `column` (e.g. value, value_, double_value); REQUIRED when the metric is not defined on the target OAP",
+			},
+			&cli.StringFlag{
+				Name:  "value-type",
+				Usage: "value data `type` (LONG / INT / DOUBLE / LABELED); REQUIRED when the metric is not defined on the target OAP",
 			},
 		},
 	),
@@ -117,12 +129,14 @@ $ swctl admin inspect entities --metric service_cpm`,
 		}
 		step := ctx.Generic("step").(*model.StepEnumValue).Selected
 
-		entities, err := inspect.ListEntities(ctx.Context, inspect.EntitiesOptions{
-			Metric: ctx.String("metric"),
-			Start:  ctx.String("start"),
-			End:    ctx.String("end"),
-			Step:   string(step),
-			Limit:  limit,
+		entities, err := inspect.ListEntities(ctx.Context, &inspect.EntitiesOptions{
+			Metric:      ctx.String("metric"),
+			Start:       ctx.String("start"),
+			End:         ctx.String("end"),
+			Step:        string(step),
+			Limit:       limit,
+			ValueColumn: ctx.String("value-column"),
+			ValueType:   ctx.String("value-type"),
 		})
 		if err != nil {
 			return preflight.Explain(ctx.Context, err, preflight.ModuleInspect, "SW_INSPECT")

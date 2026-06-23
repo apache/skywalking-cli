@@ -82,6 +82,11 @@ type EntitiesOptions struct {
 	End    string
 	Step   string
 	Limit  int
+	// ValueColumn / ValueType are required only when the metric is NOT defined on the target OAP
+	// (a metric persisted by another OAP). When set, the OAP resolves the metric from storage
+	// using this caller-supplied metadata instead of its local registry.
+	ValueColumn string
+	ValueType   string
 }
 
 // ListMetrics lists the registered metric catalog (GET /inspect/metrics).
@@ -107,7 +112,7 @@ func ListMetrics(ctx context.Context, opts MetricsOptions) (*Metrics, error) {
 
 // ListEntities enumerates the entities holding values for a metric over a time range
 // (GET /inspect/entities). Only REGULAR_VALUE / LABELED_VALUE metrics are accepted.
-func ListEntities(ctx context.Context, opts EntitiesOptions) (*Entities, error) {
+func ListEntities(ctx context.Context, opts *EntitiesOptions) (*Entities, error) {
 	query := url.Values{}
 	query.Set("metric", opts.Metric)
 	query.Set("start", opts.Start)
@@ -115,6 +120,12 @@ func ListEntities(ctx context.Context, opts EntitiesOptions) (*Entities, error) 
 	query.Set("step", opts.Step)
 	if opts.Limit > 0 {
 		query.Set("limit", strconv.Itoa(opts.Limit))
+	}
+	if opts.ValueColumn != "" {
+		query.Set("valueColumn", opts.ValueColumn)
+	}
+	if opts.ValueType != "" {
+		query.Set("valueType", opts.ValueType)
 	}
 
 	var out Entities
