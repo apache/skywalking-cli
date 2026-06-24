@@ -17,6 +17,7 @@ Release Notes.
 * Remove the oldest `queryTraceFromColdStage` query call in the `trace list` command by @mrproliu in https://github.com/apache/skywalking-cli/pull/225
 * Add the sub-command `profiling pprof` for pprof query API by @JophieQu in https://github.com/apache/skywalking-cli/pull/226
 * Add the `admin` command group for the OAP admin-server REST host (default port `17128`), with a new global `--admin-url` flag (derived from `--base-url` when unset). Covers every admin feature module: `admin preflight`; `admin cluster nodes`, `admin config dump|ttl`, `admin alarm rules|rule` (status); `admin inspect metrics|entities` (inspect); `admin ui-template list|get|create|update|disable` (ui-management); `admin runtime-rule list|bundled|get|add|inactivate|delete|dump` (runtime-rule); and `admin dsl-debug status|sessions|session start|get|stop` plus `admin oal files|file|rules|rule` (dsl-debugging).
+* Add the sub-command `admin inspect values` to read the VALUES of metric(s) an OAP does not define locally (foreign metrics) by supplying their `{valueColumn, valueType}` metadata, via the new `POST /inspect/values` admin API; returns the native MQE result.
 
 ### Bug Fixes
 
