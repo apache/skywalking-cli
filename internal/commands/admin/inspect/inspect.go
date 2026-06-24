@@ -19,6 +19,7 @@ package inspect
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/urfave/cli/v2"
 
@@ -37,6 +38,7 @@ var Command = &cli.Command{
 	Subcommands: []*cli.Command{
 		metricsCommand,
 		entitiesCommand,
+		valuesCommand,
 	},
 }
 
@@ -142,5 +144,98 @@ $ swctl admin inspect entities --metric meter_foo --value-column value --value-t
 			return preflight.Explain(ctx.Context, err, preflight.ModuleInspect, "SW_INSPECT")
 		}
 		return display.Display(ctx.Context, &displayable.Displayable{Data: entities})
+	},
+}
+
+var valuesCommand = &cli.Command{
+	Name:  "values",
+	Usage: "Read the VALUES of metric(s) persisted by another OAP (POST /inspect/values)",
+	UsageText: `Evaluate an MQE expression over metric(s) the target OAP does not define locally, by
+supplying each foreign metric's metadata. Returns the native MQE result (the same shape the UI
+renders for catalog metrics). The entity scope is inferred from which name flags are set.
+
+Example — read a foreign service metric's value series:
+$ swctl admin inspect values --expression meter_foo --service-name my-svc \
+    --foreign-metric meter_foo,value,LONG`,
+	Flags: flags.Flags(
+		flags.DurationFlags,
+		[]cli.Flag{
+			&cli.StringFlag{
+				Name:     "expression",
+				Usage:    "the MQE `expression` to evaluate",
+				Required: true,
+			},
+			&cli.StringFlag{
+				Name:     "service-name",
+				Usage:    "the `service` entity to query",
+				Required: true,
+			},
+			&cli.StringFlag{
+				Name:  "service-instance-name",
+				Usage: "the `instance` to query (selects ServiceInstance scope)",
+			},
+			&cli.StringFlag{
+				Name:  "endpoint-name",
+				Usage: "the `endpoint` to query (selects Endpoint scope)",
+			},
+			&cli.BoolFlag{
+				Name:  "normal",
+				Usage: "whether the service is normal (agent-reported)",
+				Value: true,
+			},
+			&cli.StringSliceFlag{
+				Name: "foreign-metric",
+				Usage: "metadata for one foreign metric as `name,valueColumn,valueType` " +
+					"(repeatable — supply one per foreign metric in the expression)",
+				Required: true,
+			},
+		},
+	),
+	Before: interceptor.BeforeChain(
+		interceptor.DurationInterceptor,
+	),
+	Action: func(ctx *cli.Context) error {
+		step := ctx.Generic("step").(*model.StepEnumValue).Selected
+
+		entity := inspect.QueryEntity{
+			ServiceName: ctx.String("service-name"),
+			Normal:      ctx.Bool("normal"),
+		}
+		switch {
+		case ctx.String("endpoint-name") != "":
+			entity.Scope = "Endpoint"
+			entity.EndpointName = ctx.String("endpoint-name")
+		case ctx.String("service-instance-name") != "":
+			entity.Scope = "ServiceInstance"
+			entity.ServiceInstanceName = ctx.String("service-instance-name")
+		default:
+			entity.Scope = "Service"
+		}
+
+		var foreign []inspect.ForeignMetricInput
+		for _, fm := range ctx.StringSlice("foreign-metric") {
+			parts := strings.Split(fm, ",")
+			if len(parts) != 3 {
+				return fmt.Errorf("--foreign-metric must be name,valueColumn,valueType (got %q)", fm)
+			}
+			foreign = append(foreign, inspect.ForeignMetricInput{
+				Name:        parts[0],
+				ValueColumn: parts[1],
+				ValueType:   parts[2],
+			})
+		}
+
+		result, err := inspect.ListValues(ctx.Context, &inspect.ValuesOptions{
+			Expression:     ctx.String("expression"),
+			Entity:         entity,
+			Start:          ctx.String("start"),
+			End:            ctx.String("end"),
+			Step:           string(step),
+			ForeignMetrics: foreign,
+		})
+		if err != nil {
+			return preflight.Explain(ctx.Context, err, preflight.ModuleInspect, "SW_INSPECT")
+		}
+		return display.Display(ctx.Context, &displayable.Displayable{Data: result})
 	},
 }

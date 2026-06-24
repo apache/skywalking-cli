@@ -23,6 +23,7 @@ package inspect
 
 import (
 	"context"
+	"net/http"
 	"net/url"
 	"strconv"
 
@@ -130,5 +131,87 @@ func ListEntities(ctx context.Context, opts *EntitiesOptions) (*Entities, error)
 
 	var out Entities
 	err := client.GetJSON(ctx, "/inspect/entities", query, &out)
+	return &out, err
+}
+
+// QueryEntity is the MQE query entity for a value query; its scope binds every foreign metric.
+type QueryEntity struct {
+	Scope               string `json:"scope,omitempty"`
+	ServiceName         string `json:"serviceName,omitempty"`
+	Normal              bool   `json:"normal"`
+	ServiceInstanceName string `json:"serviceInstanceName,omitempty"`
+	EndpointName        string `json:"endpointName,omitempty"`
+}
+
+// ForeignMetricInput is caller-supplied metadata for one metric the target OAP does not define.
+type ForeignMetricInput struct {
+	Name        string `json:"name"`
+	ValueColumn string `json:"valueColumn"`
+	ValueType   string `json:"valueType"`
+}
+
+// ValuesOptions holds the parameters of POST /inspect/values.
+type ValuesOptions struct {
+	Expression     string
+	Entity         QueryEntity
+	Start          string
+	End            string
+	Step           string
+	ForeignMetrics []ForeignMetricInput
+}
+
+// ExpressionResult is the native MQE result returned by POST /inspect/values, mirroring the
+// GraphQL execExpression shape.
+type ExpressionResult struct {
+	Type    string      `json:"type"`
+	Error   string      `json:"error,omitempty"`
+	Results []MQEValues `json:"results"`
+}
+
+// MQEValues is one (optionally labeled) series of an ExpressionResult.
+type MQEValues struct {
+	Metric MQEMetric  `json:"metric"`
+	Values []MQEValue `json:"values"`
+}
+
+// MQEMetric carries the label set of an MQEValues series.
+type MQEMetric struct {
+	Labels []KeyValue `json:"labels"`
+}
+
+// MQEValue is one time-bucket point.
+type MQEValue struct {
+	ID    string `json:"id"`
+	Value string `json:"value"`
+}
+
+// KeyValue is a metric label.
+type KeyValue struct {
+	Key   string `json:"key"`
+	Value string `json:"value"`
+}
+
+type valuesRequest struct {
+	Expression     string               `json:"expression"`
+	Entity         QueryEntity          `json:"entity"`
+	Start          string               `json:"start"`
+	End            string               `json:"end"`
+	Step           string               `json:"step"`
+	ForeignMetrics []ForeignMetricInput `json:"foreignMetrics"`
+}
+
+// ListValues evaluates an MQE expression over foreign metric(s) — metrics the target OAP does not
+// define locally — by supplying their metadata (POST /inspect/values). Returns the native MQE result.
+func ListValues(ctx context.Context, opts *ValuesOptions) (*ExpressionResult, error) {
+	body := valuesRequest{
+		Expression:     opts.Expression,
+		Entity:         opts.Entity,
+		Start:          opts.Start,
+		End:            opts.End,
+		Step:           opts.Step,
+		ForeignMetrics: opts.ForeignMetrics,
+	}
+	var out ExpressionResult
+	err := client.SendJSON(ctx, http.MethodPost, "/inspect/values", nil, body, &out)
 	return &out, err
 }
