@@ -31,9 +31,6 @@ import (
 	"github.com/apache/skywalking-cli/pkg/admin/client"
 )
 
-// Catalogs accepted by the runtime-rule endpoints.
-var Catalogs = []string{"otel-rules", "log-mal-rules", "telegraf-rules", "lal"}
-
 // ApplyResult is the JSON envelope returned by addOrUpdate / inactivate / delete.
 type ApplyResult struct {
 	ApplyStatus string `json:"applyStatus"`

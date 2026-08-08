@@ -86,7 +86,7 @@ $ swctl admin dsl-debug session start --catalog otel-rules --name vm --rule-name
 	Flags: []cli.Flag{
 		&cli.StringFlag{
 			Name:     "catalog",
-			Usage:    "session `catalog`: otel-rules / log-mal-rules / telegraf-rules / lal / oal",
+			Usage:    "session `catalog`: otel-rules / log-mal-rules / telegraf-rules / meter-analyzer-config / lal / oal",
 			Required: true,
 		},
 		&cli.StringFlag{

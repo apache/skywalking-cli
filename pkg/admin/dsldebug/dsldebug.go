@@ -36,9 +36,6 @@ const (
 	MaxRetentionMillis = 60 * 60 * 1000
 )
 
-// Catalogs accepted by a debug session.
-var Catalogs = []string{"otel-rules", "log-mal-rules", "telegraf-rules", "lal", "oal"}
-
 // StartArgs holds the inputs of POST /dsl-debugging/session. Catalog, Name, RuleName
 // and ClientID are mandatory query params; RecordCap / RetentionMillis are optional and
 // sent as a JSON body only when set. Granularity (LAL only) is sent as a query param.
