@@ -36,7 +36,7 @@ var Command = &cli.Command{
 	UsageText: `Add, override, inactivate and delete MAL / LAL rule files at runtime without
 restarting OAP, and inspect the live and bundled rule state.
 
-Catalogs: otel-rules, log-mal-rules, telegraf-rules, lal.`,
+Catalogs: otel-rules, log-mal-rules, telegraf-rules, meter-analyzer-config, lal.`,
 	Subcommands: []*cli.Command{
 		listCommand,
 		bundledCommand,
@@ -51,7 +51,7 @@ Catalogs: otel-rules, log-mal-rules, telegraf-rules, lal.`,
 func catalogFlag(required bool) cli.Flag {
 	return &cli.StringFlag{
 		Name:     "catalog",
-		Usage:    "rule `catalog`: otel-rules / log-mal-rules / telegraf-rules / lal",
+		Usage:    "rule `catalog`: otel-rules / log-mal-rules / telegraf-rules / meter-analyzer-config / lal",
 		Required: required,
 	}
 }
