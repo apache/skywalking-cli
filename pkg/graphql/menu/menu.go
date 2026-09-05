@@ -24,12 +24,24 @@ import (
 	"github.com/apache/skywalking-cli/pkg/graphql/client"
 
 	"github.com/machinebox/graphql"
-
-	api "skywalking.apache.org/repo/goapi/query"
 )
 
-func GetItems(ctx context.Context) ([]*api.MenuItem, error) {
-	var response map[string][]*api.MenuItem
+// Item is one entry of the UI menu the OAP served before 11.0.0. The query protocol
+// retired getItems, so goapi no longer generates the type; the command stays for the
+// older backends and carries the shape itself.
+type Item struct {
+	Title        string  `json:"title"`
+	Icon         *string `json:"icon,omitempty"`
+	Layer        string  `json:"layer"`
+	Activate     bool    `json:"activate"`
+	SubItems     []*Item `json:"subItems"`
+	Description  *string `json:"description,omitempty"`
+	DocumentLink *string `json:"documentLink,omitempty"`
+	I18nKey      *string `json:"i18nKey,omitempty"`
+}
+
+func GetItems(ctx context.Context) ([]*Item, error) {
+	var response map[string][]*Item
 
 	request := graphql.NewRequest(assets.Read("graphqls/menu/GetItems.graphql"))
 
