@@ -7,6 +7,7 @@ Release Notes.
 
 ### Features
 
+* Add the `ai-agent` commands, `list`, `files` and `view`, for the AI agent conversations the AI Sessionizer lands in the OAP (11.1.0+); `view` reads the whole conversation as one `asz.view` document from the OAP's streamed route on the GraphQL host by @wu-sheng in https://github.com/apache/skywalking-cli/pull/234
 * Add the sub-command `profiling async` for async-profiler query API by @zhengziyi0117 in https://github.com/apache/skywalking-cli/pull/203
 * Support the owner in MQE response by using [10.2 MQE query protocol](https://github.com/apache/skywalking-query-protocol/pull/141) by @zhengziyi0117 in https://github.com/apache/skywalking-cli/pull/203
 * Add the sub-command `alarm autocomplete-keys` and `alarm auto-complete-values` for alarm query API by @mrproliu in https://github.com/apache/skywalking-cli/pull/210

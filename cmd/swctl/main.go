@@ -23,6 +23,7 @@ import (
 	"runtime"
 
 	"github.com/apache/skywalking-cli/internal/commands/admin"
+	"github.com/apache/skywalking-cli/internal/commands/aiagent"
 	"github.com/apache/skywalking-cli/internal/commands/alarm"
 	"github.com/apache/skywalking-cli/internal/commands/browser"
 	"github.com/apache/skywalking-cli/internal/commands/completion"
@@ -117,6 +118,7 @@ services, service instances, etc.`
 		menu.Command,
 		hierarchy.Command,
 		admin.Command,
+		aiagent.Command,
 	}
 
 	app.Before = interceptor.BeforeChain(
