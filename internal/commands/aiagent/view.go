@@ -38,10 +38,11 @@ The "--display" option does not apply; the document is printed as the OAP sends 
 
 Examples:
 1. A conversation as JSON, into a file:
-$ swctl ai-agent view --service-name "Claude Code" --conversation 7a3c882e-0dc0-46a0-b814-6613d24b7ac2 --output conversation.json
+$ swctl ai-agent view --service-name "Claude Code" --instance-name laptop \
+    --conversation 7a3c882e-0dc0-46a0-b814-6613d24b7ac2 --output conversation.json
 
 2. As YAML, on the terminal:
-$ swctl ai-agent view --service-name "Claude Code" --conversation 7a3c882e-0dc0-46a0-b814-6613d24b7ac2 --yaml`,
+$ swctl ai-agent view --service-name "Claude Code" --instance-name laptop --conversation 7a3c882e-0dc0-46a0-b814-6613d24b7ac2 --yaml`,
 	Flags: flags.Flags(
 		flags.ServiceFlags,
 		flags.InstanceFlags,
@@ -63,7 +64,7 @@ $ swctl ai-agent view --service-name "Claude Code" --conversation 7a3c882e-0dc0-
 	),
 	Before: interceptor.BeforeChain(
 		interceptor.ParseService(true),
-		interceptor.ParseInstance(false),
+		interceptor.ParseInstance(true),
 	),
 	Action: func(ctx *cli.Context) error {
 		var out io.Writer = os.Stdout

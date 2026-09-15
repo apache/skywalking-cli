@@ -15,9 +15,9 @@
 // specific language governing permissions and limitations
 // under the License.
 
-// Package aiagent wraps the GraphQL queries of ai-agent-conversation.graphqls: the
-// list page and the raw-file export of the conversations the AI Sessionizer lands.
-// The conversation document itself is not a GraphQL query; see pkg/aiagent/view.
+// Package aiagent wraps the GraphQL query of ai-agent-conversation.graphqls: the list
+// page of the conversations the AI Sessionizer lands. The conversation document and its
+// files are not GraphQL queries; see pkg/aiagent/view and pkg/aiagent/files.
 package aiagent
 
 import (
@@ -38,20 +38,6 @@ func ListConversations(ctx context.Context, condition *api.ConversationListCondi
 	request := graphql.NewRequest(assets.Read("graphqls/aiagent/ListConversations.graphql"))
 	request.Var("condition", condition)
 	request.Var("duration", duration)
-
-	err := client.ExecuteQuery(ctx, request, &response)
-	return response["result"], err
-}
-
-// RawFiles lists every landed file and round of a conversation as stored, or only the
-// named ones; with body, each file comes verbatim, which is the export path.
-func RawFiles(ctx context.Context, condition *api.ConversationCondition, files []string, body bool) (api.ConversationRawFiles, error) {
-	var response map[string]api.ConversationRawFiles
-
-	request := graphql.NewRequest(assets.Read("graphqls/aiagent/ConversationRawFiles.graphql"))
-	request.Var("condition", condition)
-	request.Var("files", files)
-	request.Var("body", body)
 
 	err := client.ExecuteQuery(ctx, request, &response)
 	return response["result"], err

@@ -81,13 +81,14 @@ func Path(conversation string) string {
 }
 
 // Fetch streams the document of the conversation to out and returns the Content-Type
-// it came with. serviceName is required; instanceName narrows the read to one sender.
-// A non-2xx answer is returned as a *Problem when the OAP sent one.
+// it came with. serviceName and instanceName are both required, as a list row names the
+// sender of every conversation. A non-2xx answer is returned as a *Problem when the OAP
+// sent one.
 func Fetch(ctx context.Context, conversation, serviceName, instanceName string, yaml bool, out io.Writer) (string, error) {
-	query := url.Values{"service": {serviceName}}
-	if instanceName != "" {
-		query.Set("instance", instanceName)
+	if serviceName == "" || instanceName == "" {
+		return "", fmt.Errorf("the service and the instance are both required")
 	}
+	query := url.Values{"service": {serviceName}, "instance": {instanceName}}
 	full := CoreURL(transport.GetValue(ctx, contextkey.BaseURL{}, defaultBaseURL)) + Path(conversation) + "?" + query.Encode()
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, full, http.NoBody)
@@ -111,15 +112,15 @@ func Fetch(ctx context.Context, conversation, serviceName, instanceName string, 
 
 	contentType := resp.Header.Get("Content-Type")
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		return contentType, readError(resp, full)
+		return contentType, ReadError(resp, full)
 	}
 	_, err = io.Copy(out, resp.Body)
 	return contentType, err
 }
 
-// readError turns a non-2xx response into an error: the problem document when the OAP
+// ReadError turns a non-2xx response into an error: the problem document when the OAP
 // sent one, otherwise the status and whatever the body says.
-func readError(resp *http.Response, full string) error {
+func ReadError(resp *http.Response, full string) error {
 	body, _ := io.ReadAll(io.LimitReader(resp.Body, 64*1024))
 	mediaType, _, _ := mime.ParseMediaType(resp.Header.Get("Content-Type"))
 	if mediaType == problemType {
