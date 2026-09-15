@@ -21,37 +21,35 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
-
-	api "skywalking.apache.org/repo/goapi/query"
 
 	"github.com/urfave/cli/v2"
 
 	"github.com/apache/skywalking-cli/internal/commands/interceptor"
 	"github.com/apache/skywalking-cli/internal/flags"
+	"github.com/apache/skywalking-cli/pkg/aiagent/files"
 	"github.com/apache/skywalking-cli/pkg/display"
 	"github.com/apache/skywalking-cli/pkg/display/displayable"
-	"github.com/apache/skywalking-cli/pkg/graphql/aiagent"
 )
 
 var filesCommand = &cli.Command{
 	Name:  "files",
-	Usage: "List or export the raw files of a conversation, as the OAP stores them",
-	UsageText: `List every landed file and round of a conversation with its digest and size, or
-export them: "--export DIR" reads each body and writes it to its id path under DIR,
-which gives a storage root that "asz verify" and "asz view" read like the original.
+	Usage: "List or export chosen stored files of a conversation, as the OAP stores them",
+	UsageText: `Read chosen Session Data files of a conversation's session from the OAP's route
+GET /ai-agent/conversations/{conversation}/v1/files, on the "--base-url" host, and list each
+with its digest and size, or export them: "--export DIR" writes each file to its name under DIR.
+A file is chosen by "--session" and "--seqs", its landed seq; the asz.view document's files
+list gives both. Each file's bytes are checked against the digest the OAP names.
 
 Examples:
-1. The files of a conversation:
-$ swctl ai-agent files --service-name "Claude Code" --conversation 7a3c882e-0dc0-46a0-b814-6613d24b7ac2
+1. Two files of a session, listed:
+$ swctl ai-agent files --service-name "Claude Code" --instance-name laptop --conversation 7a3c882e-0dc0-46a0-b814-6613d24b7ac2 \
+    --session 7a3c882e-0dc0-46a0-b814-6613d24b7ac2 --seqs 408,409
 
-2. Export them all:
-$ swctl ai-agent files --service-name "Claude Code" --conversation 7a3c882e-0dc0-46a0-b814-6613d24b7ac2 --export ./root
-
-3. Export two named files:
-$ swctl ai-agent files --service-name "Claude Code" --conversation 7a3c882e-0dc0-46a0-b814-6613d24b7ac2 \
-    --files 7a3c882e-0dc0-46a0-b814-6613d24b7ac2/streams/main/transcript-20260904T152815.774957000Z-000408.sd \
-    --export ./root`,
+2. The same files, exported:
+$ swctl ai-agent files --service-name "Claude Code" --instance-name laptop --conversation 7a3c882e-0dc0-46a0-b814-6613d24b7ac2 \
+    --session 7a3c882e-0dc0-46a0-b814-6613d24b7ac2 --seqs 408,409 --export ./root`,
 	Flags: flags.Flags(
 		flags.ServiceFlags,
 		flags.InstanceFlags,
@@ -62,80 +60,112 @@ $ swctl ai-agent files --service-name "Claude Code" --conversation 7a3c882e-0dc0
 				Required: true,
 			},
 			&cli.StringFlag{
-				Name:  "files",
-				Usage: "only these file `ids`, comma separated; without it, every file of the conversation",
+				Name:     "session",
+				Usage:    "the `session` the files belong to",
+				Required: true,
+			},
+			&cli.StringFlag{
+				Name:     "seqs",
+				Usage:    "the landed `seqs` of the files, comma separated",
+				Required: true,
 			},
 			&cli.StringFlag{
 				Name:  "export",
-				Usage: "write each file's body to its id path under this `directory`",
+				Usage: "write each file to its name under this `directory`",
 			},
 		},
 	),
 	Before: interceptor.BeforeChain(
 		interceptor.ParseService(true),
-		interceptor.ParseInstance(false),
+		interceptor.ParseInstance(true),
 	),
 	Action: func(ctx *cli.Context) error {
-		condition := &api.ConversationCondition{
-			Service:      &api.ServiceCondition{ServiceName: ctx.String("service-name")},
-			Conversation: ctx.String("conversation"),
-			Instance:     instanceCondition(ctx),
-		}
-		var files []string
-		if arg := strings.TrimSpace(ctx.String("files")); arg != "" {
-			files = strings.Split(arg, ",")
-		}
-		exportDir := ctx.String("export")
-
-		raw, err := aiagent.RawFiles(ctx.Context, condition, files, exportDir != "")
+		seqs, err := numbers(ctx.String("seqs"))
 		if err != nil {
 			return err
 		}
-		if raw.ErrorReason != nil && *raw.ErrorReason != "" {
-			return fmt.Errorf("%s", *raw.ErrorReason)
+		if len(seqs) == 0 {
+			return fmt.Errorf("--seqs needs at least one number")
 		}
-		if exportDir == "" {
-			return display.Display(ctx.Context, &displayable.Displayable{Data: raw, Condition: condition})
+		var root *os.Root
+		if exportDir := ctx.String("export"); exportDir != "" {
+			if mkErr := os.MkdirAll(exportDir, 0o755); mkErr != nil {
+				return mkErr
+			}
+			if root, err = os.OpenRoot(exportDir); err != nil {
+				return err
+			}
+			defer root.Close()
 		}
 
-		written, err := export(exportDir, raw.Files)
+		out := List{Files: []files.File{}}
+		var written []Exported
+		err = files.Read(ctx.Context, ctx.String("conversation"), ctx.String("service-name"), ctx.String("instance-name"),
+			ctx.String("session"), seqs, func(f files.File, content []byte) error {
+				if root == nil {
+					out.Files = append(out.Files, f)
+					return nil
+				}
+				path, exportErr := export(root, f.ID, content)
+				if exportErr != nil {
+					return exportErr
+				}
+				written = append(written, Exported{ID: f.ID, Path: path, Bytes: len(content)})
+				return nil
+			})
 		if err != nil {
 			return err
 		}
-		return display.Display(ctx.Context, &displayable.Displayable{Data: written, Condition: condition})
+		if root == nil {
+			return display.Display(ctx.Context, &displayable.Displayable{Data: out})
+		}
+		return display.Display(ctx.Context, &displayable.Displayable{Data: written})
 	},
 }
 
-// Exported is one file written by "--export": its id path and size, the body left out.
+// List is what "files" prints without "--export": each stored file's naming line.
+type List struct {
+	Files []files.File `json:"files"`
+}
+
+// Exported is one file written by "--export": its name, its path and its size.
 type Exported struct {
-	ID    string `json:"id"`
+	ID    string `json:"file"`
 	Path  string `json:"path"`
 	Bytes int    `json:"bytes"`
 }
 
-// export writes each body to its id path under dir. An id is a relative path inside the
-// Sessionizer's storage root; one that would leave dir is refused.
-func export(dir string, files []*api.ConversationRawFile) ([]Exported, error) {
-	root, err := filepath.Abs(dir)
-	if err != nil {
-		return nil, err
-	}
-	out := make([]Exported, 0, len(files))
-	for _, f := range files {
-		if f.Body == nil {
-			return nil, fmt.Errorf("the OAP returned no body for %s", f.ID)
+// numbers reads a comma separated list of positive whole numbers.
+func numbers(arg string) ([]int64, error) {
+	var out []int64
+	for _, part := range strings.Split(arg, ",") {
+		if part = strings.TrimSpace(part); part == "" {
+			continue
 		}
-		path := filepath.Join(root, filepath.FromSlash(f.ID))
-		if !strings.HasPrefix(path, root+string(filepath.Separator)) {
-			return nil, fmt.Errorf("refusing to write %s outside %s", f.ID, root)
+		n, err := strconv.ParseInt(part, 10, 64)
+		if err != nil || n <= 0 {
+			return nil, fmt.Errorf("%q is not a positive whole number", part)
 		}
-		if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
-			return nil, err
-		}
-		if err := os.WriteFile(path, []byte(*f.Body), 0o644); err != nil { // #nosec G306 -- a landed file is readable by design
-			return nil, err
-		}
-		out = append(out, Exported{ID: f.ID, Path: path, Bytes: len(*f.Body)})
+		out = append(out, n)
 	}
 	return out, nil
+}
+
+// export writes one file to its name under root. A name is a relative path inside the Sessionizer's
+// storage root. The root refuses a name that would leave it, through ".." or through a symbolic
+// link, so a file the OAP names can only land inside the export directory.
+func export(root *os.Root, name string, content []byte) (string, error) {
+	rel := filepath.FromSlash(name)
+	if !filepath.IsLocal(rel) {
+		return "", fmt.Errorf("refusing to write %s outside %s", name, root.Name())
+	}
+	if dir := filepath.Dir(rel); dir != "." {
+		if err := root.MkdirAll(dir, 0o755); err != nil {
+			return "", err
+		}
+	}
+	if err := root.WriteFile(rel, content, 0o644); err != nil { // #nosec G306 -- a landed file is readable by design
+		return "", err
+	}
+	return filepath.Join(root.Name(), rel), nil
 }

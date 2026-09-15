@@ -123,7 +123,7 @@ func TestAProblemDocumentIsTheError(t *testing.T) {
 	}
 	defer resp.Body.Close()
 	var problem *Problem
-	if err := readError(resp, req.URL.String()); !errors.As(err, &problem) ||
+	if err := ReadError(resp, req.URL.String()); !errors.As(err, &problem) ||
 		problem.Status != 404 || problem.Detail != "no round" || problem.Title != "Not Found" {
 		t.Fatalf("problem: %v", err)
 	}

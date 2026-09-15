@@ -17,8 +17,8 @@
 
 // Package aiagent holds the commands for the conversations of long-lived AI agents
 // that the AI Sessionizer (apache/skywalking-ai-sessionizer) lands in the OAP under
-// the AI_AGENT layer: the list page, the raw-file export, and the conversation itself
-// as one asz.view document.
+// the AI_AGENT layer: the list page, the conversation itself as one asz.view document,
+// and its stored files.
 package aiagent
 
 import (
@@ -29,9 +29,11 @@ var Command = &cli.Command{
 	Name:  "ai-agent",
 	Usage: "AI agent conversations landed by the AI Sessionizer",
 	UsageText: `The AI Sessionizer collects an agent runtime's transcripts and pushes them to the OAP
-under the AI_AGENT layer. "list" and "files" are GraphQL queries on the "--base-url"
-endpoint; "view" reads the whole conversation as one asz.view document from the OAP's
-streamed route on the same host, GET /ai-agent/conversations/{conversation}/v1/view.`,
+under the AI_AGENT layer. "list" is a GraphQL query on the "--base-url" endpoint. "view"
+and "files" read the OAP's streamed routes on the same host: the whole conversation as one
+asz.view document, GET /ai-agent/conversations/{conversation}/v1/view, and its stored files
+by name, GET /ai-agent/conversations/{conversation}/v1/files. Both need the service and the
+sender's instance, as "list" names them.`,
 	Subcommands: []*cli.Command{
 		listCommand,
 		filesCommand,
