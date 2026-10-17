@@ -19,26 +19,44 @@
 # 1. update change log
 # 2. clear milestone issues, and create a new one if needed
 # 3. export VERSION=<the version to release>
+# 4. build with the Go version CI uses, e.g. export GOTOOLCHAIN=go1.26.<latest patch>
+# 5. run this script from an empty directory, it clones skywalking-cli and checks out the svn dev area there
 
 set -ex
 
 [ -z "$VERSION" ] && echo "VERSION is not set" && exit 1
 
-if ls skywalking-cli > /dev/null 2>&1; then
-  rm -rf skywalking-cli
+# Both directories are recreated below, so ask before deleting anything that already exists here.
+# Under `set -e`, a failing command that is not the last one of an `a && b` chain does not stop the script, so every
+# step below that must succeed sits on its own line.
+existing=""
+for dir in skywalking-cli skywalking; do
+  if [ -e "$dir" ] || [ -L "$dir" ]; then
+    existing="$existing $dir"
+  fi
+done
+if [ -n "$existing" ]; then
+  printf 'Already in %s:%s. Remove and continue? [y/N] ' "$(pwd)" "$existing"
+  read -r answer
+  # $existing is unquoted on purpose: it only holds the fixed names listed in the prompt.
+  # shellcheck disable=SC2086
+  case "$answer" in
+    [yY] | [yY][eE][sS]) rm -rf $existing ;;
+    *) echo "Aborted, nothing was removed" && exit 1 ;;
+  esac
 fi
 
-git clone --recurse-submodules git@github.com:apache/skywalking-cli && cd skywalking-cli
+git clone --recurse-submodules git@github.com:apache/skywalking-cli
+cd skywalking-cli
 git tag -a "$VERSION" -m "Release Apache SkyWalking-CLI $VERSION"
-git push --tags
 
-make clean && make release
+make clean
+make release
+
+# Push the tag only after the packages are built and signed, so a failed build leaves no published tag.
+git push origin "$VERSION"
 
 cd ..
-
-if ls skywalking > /dev/null 2>&1; then
-  rm -rf skywalking
-fi
 
 svn co https://dist.apache.org/repos/dist/dev/skywalking/
 mkdir -p skywalking/cli/"$VERSION"
@@ -46,8 +64,13 @@ cp skywalking-cli/skywalking*.tgz skywalking/cli/"$VERSION"
 cp skywalking-cli/skywalking*.tgz.asc skywalking/cli/"$VERSION"
 cp skywalking-cli/skywalking-cli*.tgz.sha512 skywalking/cli/"$VERSION"
 
-cd skywalking/cli && svn add "$VERSION" && svn commit -m "Draft Apache SkyWalking-CLI release $VERSION"
+cd skywalking/cli
+svn add "$VERSION"
+svn commit -m "Draft Apache SkyWalking-CLI release $VERSION"
 cd ../..
+
+# The svn working copy is only needed for the upload above, the packages stay in ./skywalking-cli.
+rm -rf skywalking
 
 cd skywalking-cli
 
@@ -70,8 +93,8 @@ Release Candidate:
  * https://dist.apache.org/repos/dist/dev/skywalking/cli/$VERSION/
 
  * sha512 checksums
-   - $(cat skywalking-cli*bin*tgz.sha512) skywalking-cli-$VERSION-bin.tgz
-   - $(cat skywalking-cli*src*tgz.sha512) skywalking-cli-$VERSION-src.tgz
+   - $(cat skywalking-cli*bin*tgz.sha512)
+   - $(cat skywalking-cli*src*tgz.sha512)
 
 Release Tag :
 

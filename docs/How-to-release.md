@@ -22,27 +22,44 @@ check the release for vote.
 
 ## Build and sign the source code package
 
+Run the release from an empty directory. Build with the Go version CI uses (`go-version` in
+`.github/workflows/CI.yaml`), not a newer local Go: `make release` runs the linter, and the release binaries embed the
+Go standard library. `GOTOOLCHAIN` selects that version without installing it separately.
+
 ```shell
 export VERSION=<the version to release>
+export GOTOOLCHAIN=go1.26.<latest patch>
+mkdir release-cli && cd release-cli
 git clone --recurse-submodules git@github.com:apache/skywalking-cli && cd skywalking-cli
 git tag -a "$VERSION" -m "Release Apache SkyWalking-CLI $VERSION"
-git push --tags
-make clean && make release
+make clean && make release && git push origin "$VERSION"
 ```
+
+Push the tag only after `make release` succeeds, which the `&&` chain above enforces. `scripts/pre-release.sh` runs
+these steps and the svn upload below.
 
 **In total, six files should be automatically generated in the directory**: `skywalking-cli-${VERSION}-bin.tgz`
 , `skywalking-cli-${VERSION}-src.tgz`, and their corresponding `asc`, `sha512` files.
 
+`make release` packs both tarballs with `COPYFILE_DISABLE=1 tar --no-xattrs`, so a release built on macOS carries no
+AppleDouble `._*` files or extended attributes. It fails if either package still contains `._*`, `.DS_Store` or
+`__MACOSX` entries.
+
 ## Upload to Apache svn
 
+Continue from inside `skywalking-cli`, where the build step above leaves you: the block first moves up to the release
+directory. The svn working copy is removed only after the commit succeeds.
+
 ```bash
+cd ..
 svn co https://dist.apache.org/repos/dist/dev/skywalking/
 mkdir -p skywalking/cli/"$VERSION"
 cp skywalking-cli/skywalking*.tgz skywalking/cli/"$VERSION"
 cp skywalking-cli/skywalking*.tgz.asc skywalking/cli/"$VERSION"
 cp skywalking-cli/skywalking-cli*.tgz.sha512 skywalking/cli/"$VERSION"
 
-cd skywalking/cli && svn add "$VERSION" && svn commit -m "Draft Apache SkyWalking-CLI release $VERSION"
+cd skywalking/cli && svn add "$VERSION" && svn commit -m "Draft Apache SkyWalking-CLI release $VERSION" && \
+  cd ../.. && rm -rf skywalking
 ```
 
 ## Make the internal announcement
@@ -72,7 +89,7 @@ Release Candidate:
 
 Release Tag :
 
- * (Git Tag) v$VERSION
+ * (Git Tag) $VERSION
 
 Release Commit Hash :
 
@@ -80,7 +97,7 @@ Release Commit Hash :
 
 Keys to verify the Release Candidate :
 
- * http://pgp.mit.edu:11371/pks/lookup?op=get&search=0x8BD99F552D9F33D7 corresponding to kezhenxu94@apache.org
+ * https://dist.apache.org/repos/dist/release/skywalking/KEYS
 
 Guide to build the release from source :
 
@@ -120,7 +137,7 @@ Release Candidate:
 
 Release Tag :
 
- * (Git Tag) v$VERSION
+ * (Git Tag) $VERSION
 
 Release Commit Hash :
 
@@ -150,10 +167,14 @@ Thanks.
 All PMC members and committers should check these before voting +1:
 
 1. Features test.
-1. All artifacts in staging repository are published with `.asc`, `.md5`, and `sha` files.
+1. All artifacts in staging repository are published with `.asc` and `.sha512` files.
 1. Source codes and distribution packages (`skywalking-cli-$VERSION-{src,bin}.tgz`)
    are in `https://dist.apache.org/repos/dist/dev/skywalking/cli/$VERSION` with `.asc`, `.sha512`.
 1. `LICENSE` and `NOTICE` are in source codes and distribution package.
+1. The packages contain no macOS metadata files:
+   `tar -tzf skywalking-cli-$VERSION-src.tgz | grep -E '(^|/)(\._|(\.DS_Store|__MACOSX)(/|$))'` prints nothing, and the
+   same for the bin package. On macOS, use `tar --options '!mac-ext' -tzf ...` instead: the system bsdtar hides
+   AppleDouble `._*` entries when listing an archive.
 1. Check `shasum -c skywalking-cli-$VERSION-{src,bin}.tgz.sha512`.
 1. Check `gpg --verify skywalking-cli-$VERSION-{src,bin}.tgz.asc skywalking-cli-$VERSION-{src,bin}.tgz`.
 1. Build distribution from source code package by following
@@ -204,7 +225,7 @@ have [to enable BuildKit in the Docker daemon](https://docs.docker.com/develop/d
 make docker.push
 ```
 
-1. Refer to the previous [PR](https://github.com/apache/skywalking-website/pull/212), update the event and download
+1. Refer to the previous [PR](https://github.com/apache/skywalking-website/pull/751), update the event and download
    links on the website.
 
 1. Update [Github release page](https://github.com/apache/skywalking-cli/releases), follow the previous convention.
