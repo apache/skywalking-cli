@@ -23,13 +23,11 @@ set -ex
 
 [ -z "$VERSION" ] && echo "VERSION is not set" && exit 1
 
- if ls skywalking > /dev/null 2>&1; then
-   rm -rf skywalking
- fi
+ # No `|| true`: if the packages cannot be promoted, stop before printing the announcement.
+ svn mv https://dist.apache.org/repos/dist/dev/skywalking/cli/"$VERSION" https://dist.apache.org/repos/dist/release/skywalking/cli/"$VERSION" -m"Release Apache SkyWalking-CLI $VERSION"
 
- svn mv https://dist.apache.org/repos/dist/dev/skywalking/cli/"$VERSION" https://dist.apache.org/repos/dist/release/skywalking/cli/"$VERSION" -m"Release Apache SkyWalking-CLI $VERSION" || true
-
- echo "Make sure you have released the GitHub release, updated the events, download links and menus?" && read -r
+ # POSIX `read` needs a variable name, dash fails without one.
+ echo "Make sure you have released the GitHub release, updated the events, download links and menus?" && read -r _
 
 cat << EOF
 =========================================================================

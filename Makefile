@@ -26,6 +26,10 @@ HUB ?= docker.io/apache
 RELEASE_BIN = skywalking-cli-$(VERSION)-bin
 RELEASE_SRC = skywalking-cli-$(VERSION)-src
 
+# COPYFILE_DISABLE stops macOS bsdtar from adding AppleDouble `._*` files, and --no-xattrs (bsdtar and GNU tar)
+# keeps extended attributes such as com.apple.provenance out of the tar headers.
+TAR = COPYFILE_DISABLE=1 tar --no-xattrs
+
 GO = go
 GO_PATH = $$($(GO) env GOPATH)
 GO_BUILD = $(GO) build
@@ -69,6 +73,11 @@ lint: $(GO_LINT)
 .PHONY: fix-lint
 fix-lint: $(GO_LINT)
 	$(GO_LINT) run -v --fix ./...
+
+# `all` and `verify` depend on `license`. Without this target, case-insensitive macOS filesystems let the LICENSE file
+# satisfy it (so no license check ran), and Linux failed with "No rule to make target 'license'".
+.PHONY: license
+license: license-header dependency-license
 
 .PHONY: license-header
 license-header: clean $(LICENSE_EYE)
@@ -118,26 +127,52 @@ clean:
 	-rm -rf *.sha512
 	@go mod tidy &> /dev/null
 
+# The source tarball is packed into a temporary directory and moved here: GNU tar exits 1 ("file changed as we read it")
+# when the archive it writes is inside the directory being packed. Packing errors must fail the release.
 release-src: clean
-	-tar -zcvf $(RELEASE_SRC).tgz \
+	tmp=$$(mktemp -d) && trap 'rm -rf "$$tmp"' EXIT && \
+	$(TAR) -zcvf "$$tmp/$(RELEASE_SRC).tgz" \
 	--exclude bin \
 	--exclude .git \
 	--exclude .idea \
 	--exclude .DS_Store \
 	--exclude dist \
+	--exclude coverage.txt \
 	--exclude $(RELEASE_SRC).tgz \
-	.
+	--exclude $(RELEASE_BIN) \
+	--exclude $(RELEASE_BIN).tgz \
+	. && \
+	mv "$$tmp/$(RELEASE_SRC).tgz" .
 
 release-bin: build
-	-mkdir $(RELEASE_BIN)
-	-cp -R bin $(RELEASE_BIN)
-	-cp -R dist/* $(RELEASE_BIN)
-	-cp -R CHANGES.md $(RELEASE_BIN)
-	-cp -R README.md $(RELEASE_BIN)
-	-tar -zcvf $(RELEASE_BIN).tgz $(RELEASE_BIN)
-	-rm -rf $(RELEASE_BIN)
+	rm -rf $(RELEASE_BIN)
+	mkdir $(RELEASE_BIN)
+	cp -R bin $(RELEASE_BIN)
+	cp -R dist/* $(RELEASE_BIN)
+	cp -R CHANGES.md $(RELEASE_BIN)
+	cp -R README.md $(RELEASE_BIN)
+	$(TAR) -zcvf $(RELEASE_BIN).tgz $(RELEASE_BIN)
+	rm -rf $(RELEASE_BIN)
 
+# macOS bsdtar folds AppleDouble `._*` entries into the next entry when listing, so `-t` alone would hide them.
+# `--options !mac-ext` lists every entry as it is. GNU tar has no such option and lists them anyway.
+.PHONY: release-check
+release-check:
+	@list_opts=""; \
+	if tar --version 2>/dev/null | grep -q bsdtar; then list_opts="--options !mac-ext"; fi; \
+	for pkg in $(RELEASE_SRC).tgz $(RELEASE_BIN).tgz; do \
+		if [ ! -f "$$pkg" ]; then echo "$$pkg was not created"; exit 1; fi; \
+		entries=$$(tar $$list_opts -tzf "$$pkg") || { echo "$$pkg is not a readable tar.gz"; exit 1; }; \
+		if echo "$$entries" | grep -E '(^|/)(\._|(\.DS_Store|__MACOSX)(/|$$))'; then \
+			echo "$$pkg contains the macOS metadata files listed above"; \
+			exit 1; \
+		fi; \
+	done
+
+# release-check runs as a recipe step, not a prerequisite, so it always runs after both packages exist, even with -j.
+# `-f` keeps the sub-make on this Makefile when it was given with `make -f`, since a sub-make does not inherit `-f`.
 release: verify release-src release-bin
+	@$(MAKE) -f $(firstword $(MAKEFILE_LIST)) --no-print-directory release-check
 	gpg --batch --yes --armor --detach-sig $(RELEASE_SRC).tgz
 	shasum -a 512 $(RELEASE_SRC).tgz > $(RELEASE_SRC).tgz.sha512
 	gpg --batch --yes --armor --detach-sig $(RELEASE_BIN).tgz
