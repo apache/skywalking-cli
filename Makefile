@@ -154,25 +154,35 @@ release-bin: build
 	$(TAR) -zcvf $(RELEASE_BIN).tgz $(RELEASE_BIN)
 	rm -rf $(RELEASE_BIN)
 
-# macOS bsdtar folds AppleDouble `._*` entries into the next entry when listing, so `-t` alone would hide them.
-# `--options !mac-ext` lists every entry as it is. GNU tar has no such option and lists them anyway.
+# Fails if a package is missing, unreadable, or contains macOS metadata. macOS bsdtar folds AppleDouble `._*` entries
+# into the next entry when listing, so `-t` alone would hide them. `--options !mac-ext` lists every entry as it is.
+# GNU tar has no such option and lists them anyway. Shared as a macro so `release` runs it without a sub-make.
+define check_release_packages
+@list_opts=""; \
+if tar --version 2>/dev/null | grep -q bsdtar; then list_opts="--options !mac-ext"; fi; \
+for pkg in $(RELEASE_SRC).tgz $(RELEASE_BIN).tgz; do \
+	if [ ! -f "$$pkg" ]; then echo "$$pkg was not created"; exit 1; fi; \
+	entries=$$(tar $$list_opts -tzf "$$pkg") || { echo "$$pkg is not a readable tar.gz"; exit 1; }; \
+	if echo "$$entries" | grep -E '(^|/)(\._|(\.DS_Store|__MACOSX)(/|$$))'; then \
+		echo "$$pkg contains the macOS metadata files listed above"; \
+		exit 1; \
+	fi; \
+done
+endef
+
 .PHONY: release-check
 release-check:
-	@list_opts=""; \
-	if tar --version 2>/dev/null | grep -q bsdtar; then list_opts="--options !mac-ext"; fi; \
-	for pkg in $(RELEASE_SRC).tgz $(RELEASE_BIN).tgz; do \
-		if [ ! -f "$$pkg" ]; then echo "$$pkg was not created"; exit 1; fi; \
-		entries=$$(tar $$list_opts -tzf "$$pkg") || { echo "$$pkg is not a readable tar.gz"; exit 1; }; \
-		if echo "$$entries" | grep -E '(^|/)(\._|(\.DS_Store|__MACOSX)(/|$$))'; then \
-			echo "$$pkg contains the macOS metadata files listed above"; \
-			exit 1; \
-		fi; \
-	done
+	$(check_release_packages)
 
-# release-check runs as a recipe step, not a prerequisite, so it always runs after both packages exist, even with -j.
-# `-f` keeps the sub-make on this Makefile when it was given with `make -f`, since a sub-make does not inherit `-f`.
+# Packaging copies dist/LICENSE, which `verify` rewrites, and bin/, which `clean` deletes, so the release steps must
+# not run in parallel, even with -j in MAKEFLAGS. Scoped to the release goals to keep `make build -j3` (CI) parallel.
+ifneq ($(filter release release-src release-bin,$(MAKECMDGOALS)),)
+.NOTPARALLEL:
+endif
+
+# The package check is a recipe step, not a prerequisite, so it always runs after both packages exist.
 release: verify release-src release-bin
-	@$(MAKE) -f $(firstword $(MAKEFILE_LIST)) --no-print-directory release-check
+	$(check_release_packages)
 	gpg --batch --yes --armor --detach-sig $(RELEASE_SRC).tgz
 	shasum -a 512 $(RELEASE_SRC).tgz > $(RELEASE_SRC).tgz.sha512
 	gpg --batch --yes --armor --detach-sig $(RELEASE_BIN).tgz

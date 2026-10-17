@@ -47,8 +47,8 @@ AppleDouble `._*` files or extended attributes. It fails if either package still
 
 ## Upload to Apache svn
 
-Run this from the release directory, the parent of `skywalking-cli`. The svn working copy is removed only after the
-commit succeeds.
+Continue from inside `skywalking-cli`, where the build step above leaves you: the block first moves up to the release
+directory. The svn working copy is removed only after the commit succeeds.
 
 ```bash
 cd ..
