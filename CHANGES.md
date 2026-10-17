@@ -24,6 +24,7 @@ Release Notes.
 ### Bug Fixes
 
 * Upgrade `google.golang.org/grpc` to v1.84.0, `golang.org/x/crypto` to v0.54.0 and `golang.org/x/net` to v0.57.0 to fix known CVEs (grpc CVE-2026-33186, GHSA-hrxh-6v49-42gf, CVE-2026-84445, CVE-2026-84304, CVE-2026-84303; x/crypto CVE-2026-39827 through CVE-2026-39835, CVE-2026-42508, CVE-2026-46595, CVE-2026-46597, CVE-2026-46598, CVE-2025-47914, CVE-2025-58181; x/net CVE-2026-25680).
+* Upgrade `golang.org/x/net` to v0.60.0, `golang.org/x/crypto` to v0.57.0 and `golang.org/x/text` to v0.42.0 to fix the advisories left after the previous bump (x/net HTTP/2 CVE-2026-78659, CVE-2026-78660, CVE-2026-78663, CVE-2026-78669, CVE-2026-97032, reachable from swctl's HTTP clients; x/crypto CVE-2026-56854, CVE-2026-56855, CVE-2026-78662; x/text CVE-2026-56851).
 * Fix wrong process id format by @mrproliu in https://github.com/apache/skywalking-cli/pull/215
 * Migrate `alarm list` from the deprecated `getAlarm` GraphQL query to `queryAlarms`, adding `--layer` and `--rules` filters (OAP 11.0.0).
 * `menu get` now reports a clear message when the OAP backend no longer serves the UI menu (retired in OAP 11.0.0) instead of a raw GraphQL error.

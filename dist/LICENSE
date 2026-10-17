@@ -254,13 +254,13 @@ The text of each license is also included at licenses/license-[project].txt.
     github.com/google/uuid v1.6.0 BSD-3-Clause
     github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 BSD-3-Clause
     github.com/spf13/pflag v1.0.6 BSD-3-Clause
-    golang.org/x/crypto v0.54.0 BSD-3-Clause
-    golang.org/x/net v0.57.0 BSD-3-Clause
+    golang.org/x/crypto v0.57.0 BSD-3-Clause
+    golang.org/x/net v0.60.0 BSD-3-Clause
     golang.org/x/oauth2 v0.36.0 BSD-3-Clause
-    golang.org/x/sync v0.22.0 BSD-3-Clause
-    golang.org/x/sys v0.47.0 BSD-3-Clause
-    golang.org/x/term v0.45.0 BSD-3-Clause
-    golang.org/x/text v0.40.0 BSD-3-Clause
+    golang.org/x/sync v0.23.0 BSD-3-Clause
+    golang.org/x/sys v0.48.0 BSD-3-Clause
+    golang.org/x/term v0.46.0 BSD-3-Clause
+    golang.org/x/text v0.42.0 BSD-3-Clause
     golang.org/x/time v0.11.0 BSD-3-Clause
     google.golang.org/protobuf v1.36.11 BSD-3-Clause
     gopkg.in/evanphx/json-patch.v4 v4.12.0 BSD-3-Clause
