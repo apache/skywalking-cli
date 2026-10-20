@@ -209,6 +209,12 @@ Vote result should follow these:
 
 ## Publish release
 
+Run `scripts/release.sh` from the `skywalking-cli` checkout of the release tag, with `gh` logged in and `docker login`
+done. It does step 1, skipping it when the packages are already in dist/release, and asks before it publishes the
+GitHub release and before it pushes the Docker images. Then it lists what is done, reminds you to update the website,
+prints the announcement email, and asks before it removes the older releases from dist/release. Rerun it to finish a
+skipped or failed step.
+
 1. Move source codes tar balls and distributions to `https://dist.apache.org/repos/dist/release/skywalking/`, **you can
    do this only if you are a PMC member**.
 
