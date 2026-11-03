@@ -37,11 +37,11 @@ jobs:
       VERSION: ${{ github.sha }}
       APP_NAME: skywalking-cli
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v7
         with:
           submodules: true
       - name: Set up Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v7
         with:
           go-version: "1.26"
       # Plain `docker login` instead of docker/login-action: the ASF allow-list

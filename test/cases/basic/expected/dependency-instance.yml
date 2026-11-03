@@ -38,7 +38,6 @@ calls:
   detectpoints:
     {{- contains .detectpoints }}
     - SERVER
-    - CLIENT
     {{- end }}
   {{- end }}
 debuggingtrace: null
