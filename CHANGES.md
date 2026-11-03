@@ -2,6 +2,13 @@ Changes by Version
 ==================
 Release Notes.
 
+0.16.0
+------------------
+
+### Bug Fixes
+
+* Upgrade `golang.org/x/net` to v0.62.0 (with `golang.org/x/crypto` v0.58.0, `golang.org/x/text` v0.43.0 and `golang.org/x/sys` v0.49.0) to fix GO-2026-6860 and GO-2026-6866.
+
 0.15.0
 ------------------
 
