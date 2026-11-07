@@ -26,7 +26,10 @@ setup:
 trigger:
   action: http
   interval: 3s
-  times: 10
+  # Continuous traffic until the verify phase ends. The client-side relation metrics
+  # (service_relation_client_cpm, ...) need the OAP to resolve the consumer's exit
+  # peer to the provider service, which a short burst of requests may not outlast.
+  times: -1
   url: http://${consumer_host}:${consumer_9090}/users
   method: POST
 

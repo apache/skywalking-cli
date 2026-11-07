@@ -41,8 +41,10 @@ request. Your PR is most likely to be accepted if it:
 
 ## Compiling and building
 
-Clone the source code and simply run `make` in the source directory, this will download all necessary dependencies and
-run tests, lint, and build three binary files in `./bin/`, for Windows, Linux, MacOS respectively.
+Building needs Go 1.26 or later, and `make` also needs `license-eye` and `golangci-lint`. Clone the source code and
+simply run `make` in the source directory, this will download all necessary dependencies, check the license headers,
+lint, run tests, and build the binaries in `./bin/`, one per platform: `darwin` (`amd64`, `arm64`), `linux` (`386`,
+`amd64`, `arm64`) and `windows` (`386`, `amd64`). `make build` only builds them.
 
 ```shell
 make
@@ -103,17 +105,18 @@ This section guides committers and PMC members to release SkyWalking CLI in Apac
 
 - [x] [GNU Make](https://www.gnu.org/software/make/manual/make.html) is installed
 - [x] [GPG tool](https://gpgtools.org) is installed
-- [x] [Add your GPG key](docs/How-to-release.md#add-your-gpg-public-key)
+- [x] [Add your GPG key](docs/How-to-release.md#add-your-gpg-public-key-to-apache-svn)
 
 ### Release steps
 
-- Export the version that is to be released, `export VERSION=1.0.1 `
-- Tag the latest commit that is to be released with `git tag v${VERSION}` and push the tag
-  with `git push https://github.com/apache/skywalking-cli v${VERSION}`
-- Verify licenses, build and sign distribution packages, simply run `make release`, distribution packages and checksums
-  are generated
+- Export the version that is to be released, `export VERSION=1.0.1`, and the Go version CI uses,
+  `export GOTOOLCHAIN=go1.26.<latest patch>`
+- [Build and sign the source code package](docs/How-to-release.md#build-and-sign-the-source-code-package): tag the
+  release commit with the annotated tag `${VERSION}` (no `v` prefix), run `make release` to verify licenses, build and
+  sign the distribution packages, and push the tag only after it succeeds
 - [Upload the packages to SVN repository](docs/How-to-release.md#upload-to-apache-svn)
-- [Send internal announcement](docs/How-to-release.md#make-the-internal-announcements)
+- `scripts/pre-release.sh` runs the two steps above and prints the vote email
+- [Send internal announcement](docs/How-to-release.md#make-the-internal-announcement)
 - [Wait at least 48 hours for test responses](docs/How-to-release.md#wait-at-least-48-hours-for-test-responses)
-- [Call for vote](docs/How-to-release.md#call-a-vote-in-dev)
-- [Publish release](docs/How-to-release.md#publish-release)
+- [Call for vote](docs/How-to-release.md#call-for-vote-in-dev-mailing-list)
+- [Publish release](docs/How-to-release.md#publish-release), `scripts/release.sh` runs its steps

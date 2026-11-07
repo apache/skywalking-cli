@@ -50,21 +50,22 @@ including macOS, Linux, Windows.
 
 ### Build from source
 
-If you want to try the latest features, you can compile the latest source code and build `swctl` by yourself. Since
-SkyWalking CLI is using `Makefile`, compiling the project is as easy as executing a command in the root directory of the
-project.
+If you want to try the latest features, you can compile the latest source code and build `swctl` by yourself. Building
+needs Go 1.26 or later. Run this in the root directory of the project:
 
 ```shell
 git clone https://github.com/apache/skywalking-cli
 cd skywalking-cli
-make
+make build
 ```
 
-Then copy the `./bin/swctl-latest-(darwin|linux|windows)-amd64` to your `PATH` directory according to your OS,
-usually `/usr/bin/` or `/usr/local/bin`.
+`make build` writes one binary per platform to `./bin/`, named `swctl-<version>-<os>-<arch>`, for `darwin` (`amd64`,
+`arm64`), `linux` (`386`, `amd64`, `arm64`) and `windows` (`386`, `amd64`). `<version>` is `dev-<short commit id>`
+unless you set it, as in `make build VERSION=0.16.0`. A plain `make` also checks the license headers, lints and runs
+the tests before building, which needs `license-eye` and `golangci-lint` installed.
 
-You can also copy it to any directory you like, then add that directory to `PATH`. **We recommend you to rename
-the `swctl-latest-(darwin|linux|windows)-amd64` to `swctl`.**
+Then copy the binary for your OS and architecture to a directory in your `PATH`, usually `/usr/local/bin`, and rename it
+to `swctl`.
 
 ### Run from Docker image
 
@@ -149,7 +150,7 @@ jobs:
       # other steps such as checkout ...
 
       - name: Wrap the deployment steps with skywalking-cli
-        uses: apache/skywalking-cli@main # we always suggest using a revision instead of `main`
+        uses: apache/skywalking-cli@master # we always suggest pinning a release tag or a commit SHA instead of `master`
         with:
           oap-url: ${{ secrets.OAP_URL }}                       # Required. Set the OAP backend URL, such as example.com:11800
           auth-token: ${{ secrets.OAP_AUTH_TOKEN }}             # Optional. OAP auth token if you enable authentication in OAP
