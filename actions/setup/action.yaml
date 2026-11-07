@@ -36,7 +36,7 @@ runs:
     - name: Set up Go
       uses: actions/setup-go@v7
       with:
-        go-version: 1.24
+        go-version: "1.26"
         cache-dependency-path: ${{ github.action_path }}/go.sum
     - name: Checkout
       if: inputs.version != ''

@@ -225,7 +225,7 @@ skipped or failed step.
 2. Push Docker images.
 
 In order to publish the Docker images, you
-have [to enable BuildKit in the Docker daemon](https://docs.docker.com/develop/develop-images/build_enhancements/.
+have [to enable BuildKit in the Docker daemon](https://docs.docker.com/build/buildkit/).
 
 ```shell
 make docker.push
