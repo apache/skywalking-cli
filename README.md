@@ -180,6 +180,7 @@ The compatibility table here only lists fully compatible OAP versions, which mea
 | \> = 0.13.0    | \> = 9.6.0    |
 | \> = 0.14.0    | \> = 10.2.0   |
 | \> = 0.15.0    | \> = 11.0.0   |
+| \> = 0.15.0    | \> = 11.1.0   |
 
 # Contributing
 
