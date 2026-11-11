@@ -1,0 +1,93 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+name: Install Scripts
+
+# The quick install scripts in the README download the latest release from GitHub and the Apache download hosts, so
+# they can break without a change here: run them every week as well.
+on:
+  pull_request:
+    paths:
+      - scripts/install.sh
+      - scripts/install.bat
+      - .github/workflows/install-scripts.yaml
+  push:
+    branches:
+      - master
+    paths:
+      - scripts/install.sh
+      - scripts/install.bat
+      - .github/workflows/install-scripts.yaml
+  schedule:
+    - cron: "0 18 * * 1" # Mondays, TimeZone: UTC 0
+  workflow_dispatch:
+
+concurrency:
+  group: install-scripts-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  install-sh:
+    name: install.sh (${{ matrix.os }})
+    if: github.repository == 'apache/skywalking-cli'
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, ubuntu-24.04-arm, macos-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+
+      # Run it the way the README does.
+      - name: Install swctl
+        run: /bin/bash -c "$(cat scripts/install.sh)"
+
+      - name: Install swctl over the installed one
+        run: /bin/bash -c "$(cat scripts/install.sh)"
+
+      - name: Check swctl
+        run: |
+          file "$(command -v swctl)"
+          swctl --version
+
+  install-bat:
+    name: install.bat (windows-latest)
+    if: github.repository == 'apache/skywalking-cli'
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install swctl
+        shell: cmd
+        run: call scripts\install.bat
+
+      - name: Install swctl over the installed one
+        shell: cmd
+        run: call scripts\install.bat
+
+      # Steps keep the PATH the job started with, so read the system PATH the script changed.
+      - name: Check swctl
+        shell: pwsh
+        run: |
+          & 'C:\Program Files\swctl-cli\swctl.exe' --version
+          if ($LASTEXITCODE -ne 0) { exit 1 }
+          $entries = @([Environment]::GetEnvironmentVariable('Path', 'Machine') -split ';' |
+            Where-Object { $_.TrimEnd('\') -eq 'C:\Program Files\swctl-cli' })
+          if ($entries.Count -ne 1) { throw "The system PATH has the install directory $($entries.Count) times, not once." }

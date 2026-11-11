@@ -9,6 +9,12 @@ Release Notes.
 
 ### Bug Fixes
 
+* Fix the quick install scripts `scripts/install.sh` and `scripts/install.bat`, which failed since the website dropped
+  the `data/releases.yml` they read the latest version from. They now take it from the latest GitHub release, install
+  the binary for the machine's architecture instead of always `amd64`, and `install.bat` no longer rewrites the system
+  `PATH` with `setx`, which cut it at 1024 characters and added the install directory again on every run. A new
+  workflow runs both scripts on Linux, macOS and Windows every week.
+
 0.16.0
 ------------------
 
