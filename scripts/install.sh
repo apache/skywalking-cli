@@ -15,12 +15,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Installs the latest Apache SkyWalking CLI release as /usr/local/bin/swctl on macOS and Linux.
+
 # Treat unset variables and parameters other than the special parameters ‘@’ or ‘*’ as an error.
 set -u
 
 # Exit the script with a message.
 abort() {
-  printf "%s\n" "$@"
+  printf "%s\n" "$@" >&2
   exit 1
 }
 
@@ -30,55 +32,79 @@ if [ -z "${BASH_VERSION:-}" ]; then
 fi
 
 # Check OS.
-OS="$(uname)"
-if [[ "$OS" != "Darwin" && "$OS" != "Linux" ]]; then
-  abort "The install script is only supported on macOS and Linux."
-fi
+case "$(uname)" in
+  Darwin) OS=darwin ;;
+  Linux) OS=linux ;;
+  *) abort "The install script is only supported on macOS and Linux." ;;
+esac
 
-check_cmd() {
-    if ! command -v "$@" &> /dev/null 
-    then
-        abort "You must install "$@" before running the install script."
-    fi
-}
+# Pick the binary for this machine: the release has darwin-amd64, darwin-arm64, linux-386, linux-amd64 and linux-arm64.
+ARCH="$(uname -m)"
+case "$ARCH" in
+  x86_64 | amd64) ARCH=amd64 ;;
+  arm64 | aarch64) ARCH=arm64 ;;
+  i386 | i686) ARCH=386 ;;
+  *) abort "There is no swctl binary for the $ARCH architecture, try other install methods please." ;;
+esac
+# A shell running under Rosetta 2 reports x86_64 on Apple silicon; install the native binary there.
+if [ "$OS" = darwin ] && [ "$(sysctl -n hw.optional.arm64 2> /dev/null)" = 1 ]; then
+  ARCH=arm64
+fi
 
 # Check if the commands to be used exist.
-for cmd in shasum curl tar awk; do
-  check_cmd $cmd
+for cmd in curl tar; do
+  command -v "$cmd" > /dev/null || abort "You must install $cmd before running the install script."
 done
-
-# Convert the string to lower case.
-OS=$(echo $OS | awk '{print tolower($0)}')
-
-# Get the latest version of swctl.
-VERSION=$(curl "https://raw.githubusercontent.com/apache/skywalking-website/master/data/releases.yml" | grep --after-context=7 "name: SkyWalking CLI" | grep "version" | grep -Eo "[0-9]+.[0-9]+.[0-9]+")
-if [ "$VERSION" != "" ]; then
-    echo "The latest version of swctl is $VERSION"
-    
-    # Download the binary package.
-    curl -sSLO "https://archive.apache.org/dist/skywalking/cli/$VERSION/skywalking-cli-$VERSION-bin.tgz" > /dev/null
-    if [ -f "skywalking-cli-$VERSION-bin.tgz" ]; then
-        # Verify the integrity of the downloaded file.
-        curl -sSLO "https://archive.apache.org/dist/skywalking/cli/$VERSION/skywalking-cli-$VERSION-bin.tgz.sha512" > /dev/null
-        VERIFY=$(shasum -a512 -c "skywalking-cli-$VERSION-bin.tgz.sha512")
-        if [ "${VERIFY#* }" = "OK" ]; then
-            echo "The downloaded file is complete."
-            tar -zxvf skywalking-cli-$VERSION-bin.tgz
-            
-            # Add swctl to the environment variable PATH.
-            sudo cp skywalking-cli-$VERSION-bin/bin/swctl-$VERSION-$OS-amd64 /usr/local/bin/swctl
-            
-            # Delete unnecessary files.
-            sudo rm -rf "./skywalking-cli-$VERSION-bin.tgz.sha512" "./skywalking-cli-$VERSION-bin.tgz" "./skywalking-cli-$VERSION-bin"
- 
-            echo "Type 'swctl --help' to get more information."
-        else
-            abort "The downloaded file is incomplete."
-        fi
-    else
-        abort "Failed to download skywalking-cli-$VERSION-bin.tgz"
-    fi
+if command -v sha512sum > /dev/null; then
+  verify_sha512() { sha512sum -c "$1"; }
+elif command -v shasum > /dev/null; then
+  verify_sha512() { shasum -a 512 -c "$1"; }
 else
-    echo $VERSION
-    abort "Can't get the latest version. The install script may be invalid, try other install methods please."
+  abort "You must install sha512sum or shasum before running the install script."
 fi
+
+# Get the latest version of swctl: the latest GitHub release redirects to .../releases/tag/<version>.
+LATEST_URL=$(curl -fsSLI -o /dev/null -w '%{url_effective}' https://github.com/apache/skywalking-cli/releases/latest) || LATEST_URL=""
+VERSION=${LATEST_URL##*/}
+VERSION_PATTERN='^[0-9]+\.[0-9]+\.[0-9]+$'
+if ! [[ "$VERSION" =~ $VERSION_PATTERN ]]; then
+  abort "Can't get the latest version. The install script may be invalid, try other install methods please."
+fi
+echo "The latest version of swctl is $VERSION"
+
+TMP_DIR=$(mktemp -d) || abort "Failed to create a temporary directory."
+trap 'rm -rf "$TMP_DIR"' EXIT
+
+# Download the binary package and its checksum. downloads.apache.org has the current releases;
+# archive.apache.org has all of them, but picks up a new one later.
+PACKAGE="skywalking-cli-$VERSION-bin"
+DOWNLOADED=false
+for HOST in https://downloads.apache.org/skywalking/cli https://archive.apache.org/dist/skywalking/cli; do
+  echo "Downloading $HOST/$VERSION/$PACKAGE.tgz"
+  if curl -fL --progress-bar -o "$TMP_DIR/$PACKAGE.tgz" "$HOST/$VERSION/$PACKAGE.tgz" &&
+    curl -fsSL -o "$TMP_DIR/$PACKAGE.tgz.sha512" "$HOST/$VERSION/$PACKAGE.tgz.sha512"; then
+    DOWNLOADED=true
+    break
+  fi
+done
+[ "$DOWNLOADED" = true ] || abort "Failed to download $PACKAGE.tgz"
+
+# Verify the integrity of the downloaded file.
+(cd "$TMP_DIR" && verify_sha512 "$PACKAGE.tgz.sha512" > /dev/null) || abort "The downloaded file is incomplete."
+echo "The downloaded file is complete."
+
+BINARY="$PACKAGE/bin/swctl-$VERSION-$OS-$ARCH"
+tar -xzf "$TMP_DIR/$PACKAGE.tgz" -C "$TMP_DIR" "$BINARY" || abort "Failed to extract $BINARY from $PACKAGE.tgz"
+
+# Add swctl to the environment variable PATH, using sudo only when /usr/local/bin is not writable.
+INSTALL_DIR=/usr/local/bin
+SUDO=""
+if [ "$(id -u)" != 0 ] && ! { [ -d "$INSTALL_DIR" ] && [ -w "$INSTALL_DIR" ]; }; then
+  command -v sudo > /dev/null || abort "Writing to $INSTALL_DIR needs root, run the install script as root please."
+  SUDO=sudo
+fi
+if ! { $SUDO mkdir -p "$INSTALL_DIR" && $SUDO install -m 0755 "$TMP_DIR/$BINARY" "$INSTALL_DIR/swctl"; }; then
+  abort "Failed to install swctl to $INSTALL_DIR"
+fi
+
+echo "Installed swctl $VERSION ($OS-$ARCH) to $INSTALL_DIR/swctl. Type 'swctl --help' to get more information."
